@@ -1,4 +1,4 @@
-function DetailsSupplier() {
+function OrderView() {
   return (
     <div className="grid grid-cols-2 gap-4 p-6 shadow-lg">
       <div className="grid grid-cols-2 bg-white p-4 rounded-lg shadow-lg">
@@ -40,4 +40,4 @@ function DetailsSupplier() {
     </div>
   );
 }
-export default DetailsSupplier;
+export default OrderView;
