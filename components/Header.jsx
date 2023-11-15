@@ -10,6 +10,7 @@ function Header() {
         <button className="bg-white text-blue-500 rounded px-4 py-2">Categorías</button>
         <button className="bg-white text-blue-500 rounded px-4 py-2">Presentaciones</button>
         <button className="bg-white text-blue-500 rounded px-4 py-2">Proveedor</button>
+        <button className="bg-white text-blue-500 rounded px-4 py-2">Orders</button>
       </div>
     </div>
   )
