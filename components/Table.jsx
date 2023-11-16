@@ -46,68 +46,122 @@ export default function Table() {
   ]);
 
   return (
-    <div className="flex flex-col p-4">
-      <div className="overflow-x-auto">
-        <table className="w-full text-sm text-left rounded-lg">
-          <thead className="text-xs text-white uppercase bg-blue-700 rounded-b-lg">
-            <tr>
+    <div className="flex flex-col p-16 relative">
+      <div className="overflow-x-auto ">
+        <table className="w-full text-sm text-center  bg-white rounded-3xl table-auto  ">
+          <thead className=" text-white  ">
+            <tr className="text-lg  ">
               <th
                 scope="col"
-                className="px-6 py-3 border-2 bg-[#0c547a] rounded-lg"
+                className="px-6 py-3 bg-[#0c547a] rounded-lg w-[14.9%] h-[65px] absolute -mt-9 flex items-center 2xl:"
+                style={{
+                  boxShadow:
+                    "0px 10px 10px rgba(0, 0, 0, 0.5), 0px 0px 0px rgba(0, 0, 0, 0.2)",
+                }}
               >
-                ProductCode
+                <p className="text-xl text-[#ffffff]">Product Code</p>
+              </th>
+
+              <th
+                scope="col"
+                className="px-6 py-3 bg-[#0c547a] rounded-lg w-[15%] h-[65px] absolute -mt-9 ml-[15.2%] flex items-center justify-center 2xl:ml-[15.7%]"
+                style={{
+                  boxShadow:
+                    "0px 10px 10px rgba(0, 0, 0, 0.5), 0px 0px 0px rgba(0, 0, 0, 0.2)",
+                }}
+              >
+                <p className="text-xl text-[#ffffff]">Description</p>
+              </th>
+
+              <th
+                scope="col"
+                className="px-6 py-3  bg-[#0c547a]  rounded-lg w-[14.8%] h-[65px] absolute -mt-9 ml-[30.5%] flex items-center justify-center 2xl:ml-[31.3%]"
+                style={{
+                  boxShadow:
+                    "0px 10px 10px rgba(0, 0, 0, 0.5), 0px 0px 0px rgba(0, 0, 0, 0.2)",
+                }}
+              >
+                <p className="text-xl text-[#ffffff]">Quantity</p>
               </th>
               <th
                 scope="col"
-                className="px-6 py-3 border bg-[#0c547a] rounded-lg"
+                className="px-6 py-3  bg-[#0c547a] rounded-lg w-[14.8%] h-[65px] absolute -mt-9 ml-[45.6%] flex items-center justify-center 2xl:ml-[46.5%]"
+                style={{
+                  boxShadow:
+                    "0px 10px 10px rgba(0, 0, 0, 0.5), 0px 0px 0px rgba(0, 0, 0, 0.2)",
+                }}
               >
-                Description
+                <p className="text-[#ffffff] text-xl">Net</p>
               </th>
               <th
                 scope="col"
-                className="px-6 py-3 border bg-[#0c547a] rounded-lg"
+                className="px-6 py-3  bg-[#0c547a] rounded-lg w-[14.7%] h-[65px] absolute -mt-9  ml-[60.7%] flex items-center justify-center 2xl:ml-[62%]"
+                style={{
+                  boxShadow:
+                    "0px 10px 10px rgba(0, 0, 0, 0.5), 0px 0px 0px rgba(0, 0, 0, 0.2)",
+                }}
               >
-                Quantity
+                <p className="text-xl text-[#ffffff]">Tax</p>
               </th>
+
               <th
                 scope="col"
-                className="px-6 py-3 border bg-[#0c547a] rounded-lg"
+                className="px-6 py-4  bg-[#0c547a] rounded-lg w-[14.8%] h-[65px] absolute -mt-9 ml-[75.7%] flex items-center justify-center 2xl:ml-[77.5%]"
+                style={{
+                  boxShadow:
+                    "0px 10px 10px rgba(0, 0, 0, 0.5), 0px 0px 0px rgba(0, 0, 0, 0.2)",
+                }}
               >
-                Net
-              </th>
-              <th
-                scope="col"
-                className="px-6 py-3 border bg-[#0c547a] rounded-lg"
-              >
-                Tax
-              </th>
-              <th
-                scope="col"
-                className="px-6 py-4 border bg-[#0c547a] rounded-lg"
-              >
-                Total
+                <p className="text-xl text-[#ffffff]"> Total</p>
               </th>
             </tr>
           </thead>
           <tbody>
+            <tr>
+              <td className="h-[30px]"></td>
+            </tr>
             {data.map((row, index) => (
               <tr key={index}>
-                <td className="px-6 py-6 border-2 border-[#808e94]">
+                <td
+                  className={`w-[16.6%] px-6 py-8 border-t-2 border-r-2 border-r-[#0c547a] border-[#808e94] ${
+                    index === 0 ? "border-t-0 " : "border-t-2 "
+                  }`}
+                >
                   {row.productCode}
                 </td>
-                <td className="px-6 py-6 border-2 border-[#808e94]">
+                <td
+                  className={` w-[16.6%]px-6 py-6 border-t-2 border-r-2 border-r-[#0c547a] border-[#808e94] ${
+                    index === 0 ? "border-t-0" : "border-t-2"
+                  }`}
+                >
                   {row.description}
                 </td>
-                <td className="px-6 py-6 border-2 border-[#808e94]">
+                <td
+                  className={` w-[16.6%] px-6 py-6  border-[#808e94] border-r-[#0c547a] border-t-2 border-r-2 ${
+                    index === 0 ? "border-t-0" : "border-t-2"
+                  }`}
+                >
                   {row.quantity}
                 </td>
-                <td className="px-6 py-6 border-2 border-[#808e94]">
+                <td
+                  className={`w-[16.6%] px-6 py-6 border-t-2 border-r-2 border-[#808e94] border-r-[#0c547a] ${
+                    index === 0 ? "border-t-0" : "border-t-2"
+                  }`}
+                >
                   {row.net}
                 </td>
-                <td className="px-6 py-6 border-2 border-[#808e94]">
+                <td
+                  className={` w-[16.6%] px-6 py-6 border-t-2 border-r-2 border-[#808e94] border-r-[#0c547a] ${
+                    index === 0 ? "border-t-0" : "border-t-2"
+                  }`}
+                >
                   {row.tax}
                 </td>
-                <td className="px-6 py-6 border-2 border-[#808e94] rounded-xl">
+                <td
+                  className={`w-[16.6%] px-6 py-6 border-t-2  border-[#808e94] -mt-20 ${
+                    index === 0 ? "border-t-0" : "border-t-2"
+                  }`}
+                >
                   {row.total}
                 </td>
               </tr>
