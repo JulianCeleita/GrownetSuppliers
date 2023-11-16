@@ -51,7 +51,9 @@ function OrderView() {
           <input className="rounded p-2 border-2 border-dark-blue border-solid shadow-sm shadow-dark-blue" />
         </div>
       </div>
-      <Table />
+      <div className="bg-primary-blue ">
+        <Table />
+      </div>
     </>
   );
 }
