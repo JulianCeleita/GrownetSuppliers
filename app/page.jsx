@@ -5,10 +5,10 @@ import Main from "@/components/Main";
 
 function Home() {
   return (
-    <div>
+    <div className="font-poppins text-dark-blue">
       <Header />
       <OrderView />
-      <Main />
+      {/*<Main />*/}
       <Footer />
     </div>
   );
