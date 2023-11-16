@@ -53,7 +53,7 @@ export default function Table() {
             <tr className="text-lg  ">
               <th
                 scope="col"
-                className="px-6 py-3 bg-[#0c547a] rounded-lg w-[14.9%] h-[65px] absolute -mt-9 flex items-center 2xl:"
+                className="px-6 py-3 bg-dark-blue rounded-lg w-[14.9%] h-[65px] absolute -mt-9 flex items-center 2xl:"
                 style={{
                   boxShadow:
                     "0px 10px 10px rgba(0, 0, 0, 0.5), 0px 0px 0px rgba(0, 0, 0, 0.2)",
@@ -64,7 +64,7 @@ export default function Table() {
 
               <th
                 scope="col"
-                className="px-6 py-3 bg-[#0c547a] rounded-lg w-[15%] h-[65px] absolute -mt-9 ml-[15.2%] flex items-center justify-center 2xl:ml-[15.7%]"
+                className="px-6 py-3 bg-dark-blue rounded-lg w-[15%] h-[65px] absolute -mt-9 ml-[15.2%] flex items-center justify-center 2xl:ml-[15.7%]"
                 style={{
                   boxShadow:
                     "0px 10px 10px rgba(0, 0, 0, 0.5), 0px 0px 0px rgba(0, 0, 0, 0.2)",
@@ -75,7 +75,7 @@ export default function Table() {
 
               <th
                 scope="col"
-                className="px-6 py-3  bg-[#0c547a]  rounded-lg w-[14.8%] h-[65px] absolute -mt-9 ml-[30.5%] flex items-center justify-center 2xl:ml-[31.3%]"
+                className="px-6 py-3  bg-dark-blue  rounded-lg w-[14.8%] h-[65px] absolute -mt-9 ml-[30.5%] flex items-center justify-center 2xl:ml-[31.3%]"
                 style={{
                   boxShadow:
                     "0px 10px 10px rgba(0, 0, 0, 0.5), 0px 0px 0px rgba(0, 0, 0, 0.2)",
@@ -85,7 +85,7 @@ export default function Table() {
               </th>
               <th
                 scope="col"
-                className="px-6 py-3  bg-[#0c547a] rounded-lg w-[14.8%] h-[65px] absolute -mt-9 ml-[45.6%] flex items-center justify-center 2xl:ml-[46.5%]"
+                className="px-6 py-3  bg-dark-blue rounded-lg w-[14.8%] h-[65px] absolute -mt-9 ml-[45.6%] flex items-center justify-center 2xl:ml-[46.5%]"
                 style={{
                   boxShadow:
                     "0px 10px 10px rgba(0, 0, 0, 0.5), 0px 0px 0px rgba(0, 0, 0, 0.2)",
@@ -95,7 +95,7 @@ export default function Table() {
               </th>
               <th
                 scope="col"
-                className="px-6 py-3  bg-[#0c547a] rounded-lg w-[14.7%] h-[65px] absolute -mt-9  ml-[60.7%] flex items-center justify-center 2xl:ml-[62%]"
+                className="px-6 py-3  bg-dark-blue rounded-lg w-[14.7%] h-[65px] absolute -mt-9  ml-[60.7%] flex items-center justify-center 2xl:ml-[62%]"
                 style={{
                   boxShadow:
                     "0px 10px 10px rgba(0, 0, 0, 0.5), 0px 0px 0px rgba(0, 0, 0, 0.2)",
@@ -106,7 +106,7 @@ export default function Table() {
 
               <th
                 scope="col"
-                className="px-6 py-4  bg-[#0c547a] rounded-lg w-[14.8%] h-[65px] absolute -mt-9 ml-[75.7%] flex items-center justify-center 2xl:ml-[77.5%]"
+                className="px-6 py-4  bg-dark-blue rounded-lg w-[14.8%] h-[65px] absolute -mt-9 ml-[75.7%] flex items-center justify-center 2xl:ml-[77.5%]"
                 style={{
                   boxShadow:
                     "0px 10px 10px rgba(0, 0, 0, 0.5), 0px 0px 0px rgba(0, 0, 0, 0.2)",
