@@ -5,8 +5,8 @@ import {
   TrashIcon,
   PlusCircleIcon,
 } from "@heroicons/react/24/outline";
-import NewCategoryModal from "./NewCategoryModal";
-import EditCategory from "./EditCategory";
+import NewCategory from "../components/NewCategory";
+import EditCategory from "../components/EditCategory";
 
 function Categories() {
   const [showNewCategory, setShowNewCategory] = useState(false);
@@ -75,7 +75,7 @@ function Categories() {
         isvisible={showEditCategory}
         onClose={() => setShowEditCategory(false)}
       />
-      <NewCategoryModal
+      <NewCategory
         isvisible={showNewCategory}
         onClose={() => setShowNewCategory(false)}
       />

@@ -1,6 +1,6 @@
 import { XMarkIcon } from "@heroicons/react/24/outline";
 
-function NewCategoryModal({ isvisible, onClose }) {
+function NewCategory({ isvisible, onClose }) {
   if (!isvisible) {
     return null;
   }
@@ -43,4 +43,4 @@ function NewCategoryModal({ isvisible, onClose }) {
     </div>
   );
 }
-export default NewCategoryModal;
+export default NewCategory;
