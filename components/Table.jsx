@@ -1,6 +1,10 @@
 "use client";
 import React, { useEffect, useMemo, useRef, useState } from "react";
 
+const totalRefs = useMemo(() => {
+  return Array.from({ length: 5 }, () => useRef(null));
+}, []);
+
 export default function Table() {
   const [rows, setRows] = useState(
     Array.from({ length: 5 }, () => ({
@@ -13,15 +17,13 @@ export default function Table() {
     }))
   );
 
-  const totalRefs = useRef(Array.from({ length: 5 }, () => useRef(null)));
-
   const inputRefs = {
     productCode: Array.from({ length: rows.length }, () => useRef(null)),
     description: Array.from({ length: rows.length }, () => useRef(null)),
     quantity: Array.from({ length: rows.length }, () => useRef(null)),
     net: Array.from({ length: rows.length }, () => useRef(null)),
     tax: Array.from({ length: rows.length }, () => useRef(null)),
-    total: totalRefs.current,
+    total: Array.from({ length: rows.length }, () => useRef(null)),
   };
 
   const getNextFieldName = (currentFieldName) => {
