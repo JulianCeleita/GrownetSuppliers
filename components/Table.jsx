@@ -1,49 +1,87 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
+
+const totalRefs = useMemo(() => {
+  return Array.from({ length: 5 }, () => useRef(null));
+}, []);
 
 export default function Table() {
-  const [data, setData] = useState([
-    {
-      productCode: "P1",
-      description: "Product 1",
-      quantity: 10,
-      net: 100,
-      tax: 10,
-      total: 110,
-    },
-    {
-      productCode: "P2",
-      description: "Product 2",
-      quantity: 20,
-      net: 200,
-      tax: 20,
-      total: 220,
-    },
-    {
-      productCode: "P3",
-      description: "Product 3",
-      quantity: 10,
-      net: 100,
-      tax: 10,
-      total: 110,
-    },
-    {
-      productCode: "P4",
-      description: "Product 4",
-      quantity: 20,
-      net: 200,
-      tax: 20,
-      total: 220,
-    },
-    {
-      productCode: "P5",
-      description: "Product 5",
-      quantity: 10,
-      net: 100,
-      tax: 10,
-      total: 110,
-    },
-  ]);
+  const [rows, setRows] = useState(
+    Array.from({ length: 5 }, () => ({
+      productCode: "",
+      description: "",
+      quantity: "",
+      net: "",
+      tax: "",
+      total: "",
+    }))
+  );
+
+  const inputRefs = {
+    productCode: Array.from({ length: rows.length }, () => useRef(null)),
+    description: Array.from({ length: rows.length }, () => useRef(null)),
+    quantity: Array.from({ length: rows.length }, () => useRef(null)),
+    net: Array.from({ length: rows.length }, () => useRef(null)),
+    tax: Array.from({ length: rows.length }, () => useRef(null)),
+    total: Array.from({ length: rows.length }, () => useRef(null)),
+  };
+
+  const getNextFieldName = (currentFieldName) => {
+    const fieldNames = [
+      "productCode",
+      "description",
+      "quantity",
+      "net",
+      "tax",
+      "total",
+    ];
+    const currentIndex = fieldNames.indexOf(currentFieldName);
+    const nextIndex = currentIndex + 1;
+
+    return nextIndex < fieldNames.length ? fieldNames[nextIndex] : null;
+  };
+
+  const handleKeyDown = (e, rowIndex, fieldName) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+
+      const nextFieldName = getNextFieldName(fieldName);
+
+      if (nextFieldName) {
+        const nextFieldRefs = inputRefs[nextFieldName];
+        if (nextFieldRefs && nextFieldRefs[rowIndex]) {
+          nextFieldRefs[rowIndex].current.focus();
+        }
+      } else {
+        const newRowIndex = rowIndex + 1;
+
+        if (newRowIndex === rows.length) {
+          setRows((prevRows) => [
+            ...prevRows,
+            {
+              productCode: "",
+              description: "",
+              quantity: "",
+              net: "",
+              tax: "",
+              total: "",
+            },
+          ]);
+
+          setTimeout(() => {
+            inputRefs.productCode[newRowIndex].current.focus();
+          });
+        } else {
+          if (inputRefs.productCode[newRowIndex]) {
+            inputRefs.productCode[newRowIndex].current.focus();
+          }
+        }
+      }
+    }
+  };
+  useEffect(() => {
+    inputRefs.productCode[0].current.focus();
+  }, []);
 
   return (
     <div className="flex flex-col p-16 relative">
@@ -120,49 +158,109 @@ export default function Table() {
             <tr>
               <td className="h-[25px]"></td>
             </tr>
-            {data.map((row, index) => (
-              <tr key={index}>
+            {rows.map((row, rowIndex) => (
+              <tr key={rowIndex}>
                 <td
-                  className={`w-[16.6%] px-6 py-3  border-r-2 border-r-[#0c547a] border-[#808e94] ${
-                    index === 0 ? "border-t-0 " : "border-t-2 "
+                  className={`w-[14.9%] px-6 py-3    border-r-2 border-r-[#0c547a] border-[#808e94] ${
+                    rowIndex === 0 ? "border-t-0" : "border-t-2"
                   }`}
                 >
-                  {row.productCode}
+                  <input
+                    ref={inputRefs.productCode[rowIndex]}
+                    value={row.productCode}
+                    onChange={(e) => {
+                      const updatedRows = [...rows];
+                      updatedRows[rowIndex].productCode = e.target.value;
+                      setRows(updatedRows);
+                    }}
+                    onKeyDown={(e) => handleKeyDown(e, rowIndex, "productCode")}
+                    className="w-full outline-none"
+                  />
                 </td>
                 <td
-                  className={` w-[16.6%]px-6 py-3  border-r-2 border-r-[#0c547a] border-[#808e94] ${
-                    index === 0 ? "border-t-0" : "border-t-2"
+                  className={` w-[15%] px-6 py-3  border-r-2  border-r-[#0c547a] border-[#808e94] ${
+                    rowIndex === 0 ? "border-t-0" : "border-t-2"
                   }`}
                 >
-                  {row.description}
+                  <input
+                    ref={inputRefs.description[rowIndex]}
+                    value={row.description}
+                    onChange={(e) => {
+                      const updatedRows = [...rows];
+                      updatedRows[rowIndex].description = e.target.value;
+                      setRows(updatedRows);
+                    }}
+                    onKeyDown={(e) => handleKeyDown(e, rowIndex, "description")}
+                    className="w-full outline-none"
+                  />
                 </td>
                 <td
-                  className={` w-[16.6%] px-6 py-3  border-[#808e94] border-r-[#0c547a]  border-r-2 ${
-                    index === 0 ? "border-t-0" : "border-t-2"
+                  className={` w-[14.8%] px-6 py-3   border-[#808e94] border-r-[#0c547a]  border-r-2 ${
+                    rowIndex === 0 ? "border-t-0" : "border-t-2"
                   }`}
                 >
-                  {row.quantity}
+                  <input
+                    ref={inputRefs.quantity[rowIndex]}
+                    value={row.quantity}
+                    onChange={(e) => {
+                      const updatedRows = [...rows];
+                      updatedRows[rowIndex].quantity = e.target.value;
+                      setRows(updatedRows);
+                    }}
+                    onKeyDown={(e) => handleKeyDown(e, rowIndex, "quantity")}
+                    className="w-full outline-none"
+                  />
                 </td>
                 <td
-                  className={`w-[16.6%] px-6 py-3  border-r-2 border-[#808e94] border-r-[#0c547a] ${
-                    index === 0 ? "border-t-0" : "border-t-2"
+                  className={`w-[14.8%] px-6 py-3  border-r-2 border-[#808e94] border-r-[#0c547a] ${
+                    rowIndex === 0 ? "border-t-0" : "border-t-2"
                   }`}
                 >
-                  {row.net}
+                  <input
+                    ref={inputRefs.net[rowIndex]}
+                    value={row.net}
+                    onChange={(e) => {
+                      const updatedRows = [...rows];
+                      updatedRows[rowIndex].net = e.target.value;
+                      setRows(updatedRows);
+                    }}
+                    onKeyDown={(e) => handleKeyDown(e, rowIndex, "net")}
+                    className="w-full outline-none"
+                  />
                 </td>
                 <td
-                  className={` w-[16.6%] px-6 py-3  border-r-2 border-[#808e94] border-r-[#0c547a] ${
-                    index === 0 ? "border-t-0" : "border-t-2"
+                  className={` w-[14.7%] px-6 py-3  border-r-2 border-[#808e94] border-r-[#0c547a] ${
+                    rowIndex === 0 ? "border-t-0" : "border-t-2"
                   }`}
                 >
-                  {row.tax}
+                  <input
+                    ref={inputRefs.tax[rowIndex]}
+                    value={row.tax}
+                    onChange={(e) => {
+                      const updatedRows = [...rows];
+                      updatedRows[rowIndex].tax = e.target.value;
+                      setRows(updatedRows);
+                    }}
+                    onKeyDown={(e) => handleKeyDown(e, rowIndex, "tax")}
+                    className="w-full outline-none"
+                  />
                 </td>
                 <td
-                  className={`w-[16.6%] px-6 py-3   border-[#808e94] -mt-20 ${
-                    index === 0 ? "border-t-0" : "border-t-2"
+                  className={`w-[14.8%] px-6 py-3   border-[#808e94] -mt-20 ${
+                    rowIndex === 0 ? "border-t-0" : "border-t-2"
                   }`}
                 >
-                  {row.total}
+                  <input
+                    ref={inputRefs.total[rowIndex]}
+                    value={row.total}
+                    onChange={(e) => {
+                      const updatedRows = [...rows];
+                      updatedRows[rowIndex].total = e.target.value;
+                      setRows(updatedRows);
+                    }}
+                    onKeyDown={(e) => handleKeyDown(e, rowIndex, "total")}
+                    className="w-full outline-none"
+                  />
                 </td>
               </tr>
             ))}
