@@ -51,10 +51,6 @@ export default function Table() {
   const form = useRef();
   const { onEnterKey } = useFocusOnEnter(form);
 
-  useEffect(() => {
-    inputRefs.productCode[0]?.current?.focus();
-  }, []);
-
   const addNewRow = () => {
     setRows((prevRows) => [...prevRows, { ...initialRowsState }]);
   };
@@ -205,6 +201,7 @@ export default function Table() {
                         handleKeyDown(e, rowIndex, "productCode")
                       }
                       className="w-full outline-none"
+                      autoFocus={rowIndex === 0}
                     />
                   </td>
                   <td
