@@ -5,18 +5,18 @@ import {
   TrashIcon,
   PlusCircleIcon,
 } from "@heroicons/react/24/outline";
-import NewCategory from "../components/NewCategory";
-import EditCategory from "../components/EditCategory";
+import NewCategory from "../../components/NewCategory";
+import EditCategory from "../../components/EditCategory";
 
 function Categories() {
   const [showNewCategory, setShowNewCategory] = useState(false);
   const [showEditCategory, setShowEditCategory] = useState(false);
   return (
     <div>
-      <div className="flex justify-between m-8 ">
-        <h1 className="text-2xl font-bold">Lista de categorias</h1>
+      <div className="flex justify-between p-8 pb-20 bg-primary-blue">
+        <h1 className="text-2xl text-white font-semibold">Categories list</h1>
         <button
-          className="flex bg-primary-blue py-3 px-4 rounded-lg text-white font-medium hover:bg-dark-blue hover:scale-110 "
+          className="flex bg-green py-3 px-4 rounded-lg text-white font-medium hover:bg-dark-blue hover:scale-110 "
           type="button"
           onClick={() => setShowNewCategory(true)}
         >
@@ -24,7 +24,7 @@ function Categories() {
           New category
         </button>
       </div>
-      <div className="flex items-center justify-center mb-6">
+      <div className="flex items-center justify-center mb-6 -mt-14">
         <table className="w-[90%] bg-white rounded-2xl text-center shadow-[0_8px_30px_rgb(0,0,0,0.12)]">
           <thead>
             <tr className="border-b-2 border-stone-100 text-dark-blue">

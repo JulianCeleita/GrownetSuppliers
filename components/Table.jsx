@@ -1,9 +1,9 @@
 "use client";
 import React, { useEffect, useMemo, useRef, useState } from "react";
 
-const totalRefs = useMemo(() => {
+/*const totalRefs = useMemo(() => {
   return Array.from({ length: 5 }, () => useRef(null));
-}, []);
+}, []);*/
 
 export default function Table() {
   const [rows, setRows] = useState(

@@ -15,20 +15,20 @@ function Header() {
         </Link>
       </div>
       <div className="flex gap-8 mx-10">
-        <Link href="#" className="text-white rounded m-2 py-2">
-          Productos
-        </Link>
-        <Link href="#" className="text-white rounded m-2 py-2">
-          Categorías
-        </Link>
-        <Link href="#" className="text-white rounded m-2 py-2">
-          Presentaciones
-        </Link>
-        <Link href="#" className="text-white rounded m-2 py-2">
-          Proveedor
-        </Link>
-        <Link href="#" className="text-white rounded m-2 py-2">
+        <Link href="/" className="text-white rounded m-2 py-2">
           Orders
+        </Link>
+        <Link href="/products" className="text-white rounded m-2 py-2">
+          Products
+        </Link>
+        <Link href="#" className="text-white rounded m-2 py-2">
+          Presentations
+        </Link>
+        <Link href="/categories" className="text-white rounded m-2 py-2">
+          Categories
+        </Link>
+        <Link href="/suppliers" className="text-white rounded m-2 py-2">
+          Suppliers
         </Link>
       </div>
     </div>
