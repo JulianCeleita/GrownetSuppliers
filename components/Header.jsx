@@ -15,20 +15,35 @@ function Header() {
         </Link>
       </div>
       <div className="flex gap-8 mx-10">
-        <Link href="#" className="text-white rounded m-2 py-2">
-          Productos
-        </Link>
-        <Link href="#" className="text-white rounded m-2 py-2">
-          Categorías
-        </Link>
-        <Link href="#" className="text-white rounded m-2 py-2">
-          Presentaciones
-        </Link>
-        <Link href="#" className="text-white rounded m-2 py-2">
-          Proveedor
-        </Link>
-        <Link href="#" className="text-white rounded m-2 py-2">
+        <Link
+          href="/"
+          className="text-white rounded m-2 py-2 hover:text-light-green hover:scale-110"
+        >
           Orders
+        </Link>
+        <Link
+          href="/products"
+          className="text-white rounded m-2 py-2 hover:text-light-green hover:scale-110"
+        >
+          Products
+        </Link>
+        <Link
+          href="/presentations"
+          className="text-white rounded m-2 py-2 hover:text-light-green hover:scale-110"
+        >
+          Presentations
+        </Link>
+        <Link
+          href="/categories"
+          className="text-white rounded m-2 py-2 hover:text-light-green hover:scale-110"
+        >
+          Categories
+        </Link>
+        <Link
+          href="/suppliers"
+          className="text-white rounded m-2 py-2 hover:text-light-green hover:scale-110"
+        >
+          Suppliers
         </Link>
       </div>
     </div>

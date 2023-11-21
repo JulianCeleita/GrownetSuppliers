@@ -43,6 +43,9 @@ const useFocusOnEnter = (formRef) => {
   };
   return { onEnterKey };
 };
+/*const totalRefs = useMemo(() => {
+  return Array.from({ length: 5 }, () => useRef(null));
+}, []);*/
 
 export default function Table() {
   const [rows, setRows] = useState(
@@ -304,7 +307,7 @@ export default function Table() {
               Total
             </label>
             <input
-              className="rounded-xl h-7 p-2 border w-[50%] border-[#85FE9D]  "
+              className="rounded-xl h-7 p-2 border w-[50%] border-[#85FE9D] outline-none"
               style={{ boxShadow: "0px 0px 10px rgba(0, 0, 0, 0.8)" }}
             />
           </div>
@@ -313,13 +316,13 @@ export default function Table() {
               Total Im
             </label>
             <input
-              className="rounded-xl p-2 h-7 border w-[50%] border-[#85FE9D] "
+              className="rounded-xl p-2 h-7 border w-[50%] border-[#85FE9D] outline-none"
               style={{ boxShadow: "0px 0px 10px rgba(0, 0, 0, 0.8)" }}
             />
           </div>
           <div className="w-full flex justify-end ">
-            <button className=" w-[80px] bg-primary-blue text-white rounded-2xl px-6 py-2 mt-5  mr-8">
-              save
+            <button className=" w-[80px] bg-primary-blue text-white rounded-2xl px-4 py-2 mt-5 mr-8">
+              Save
             </button>
           </div>
         </div>
