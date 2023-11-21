@@ -43,6 +43,9 @@ const useFocusOnEnter = (formRef) => {
   };
   return { onEnterKey };
 };
+/*const totalRefs = useMemo(() => {
+  return Array.from({ length: 5 }, () => useRef(null));
+}, []);*/
 
 export default function Table() {
   const [rows, setRows] = useState(

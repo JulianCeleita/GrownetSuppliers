@@ -5,31 +5,31 @@ import {
   TrashIcon,
   PlusCircleIcon,
 } from "@heroicons/react/24/outline";
-import NewCategory from "../components/NewCategory";
-import EditCategory from "../components/EditCategory";
 
-function Categories() {
-  const [showNewCategory, setShowNewCategory] = useState(false);
-  const [showEditCategory, setShowEditCategory] = useState(false);
+function Presentations() {
+  const [showNewPresentations, setShowNewPresentations] = useState(false);
+  const [showEditPresentations, setShowEditPresentations] = useState(false);
   return (
     <div>
-      <div className="flex justify-between m-8 ">
-        <h1 className="text-2xl font-bold">Lista de categorias</h1>
+      <div className="flex justify-between p-8 pb-20 bg-primary-blue">
+        <h1 className="text-2xl text-white font-semibold">
+          Presentations list
+        </h1>
         <button
-          className="flex bg-primary-blue py-3 px-4 rounded-lg text-white font-medium hover:bg-dark-blue hover:scale-110 "
+          className="flex bg-green py-3 px-4 rounded-lg text-white font-medium hover:bg-dark-blue hover:scale-110 "
           type="button"
-          onClick={() => setShowNewCategory(true)}
+          onClick={() => setShowNewPresentations(true)}
         >
           <PlusCircleIcon className="h-6 w-6 mr-3 font-bold" />
-          New category
+          New Presentations
         </button>
       </div>
-      <div className="flex items-center justify-center mb-6">
+      <div className="flex items-center justify-center mb-6 -mt-14">
         <table className="w-[90%] bg-white rounded-2xl text-center shadow-[0_8px_30px_rgb(0,0,0,0.12)]">
           <thead>
             <tr className="border-b-2 border-stone-100 text-dark-blue">
               <th className="py-4 pl-4">ID</th>
-              <th className="py-4">Category</th>
+              <th className="py-4">Presentations</th>
               <th className="py-4">Operate</th>
             </tr>
           </thead>
@@ -39,7 +39,7 @@ function Categories() {
               <td className="py-4 border-b-2 border-stone-100">Dry goods</td>
               <td className="py-4 flex justify-center border-b-2 border-stone-100">
                 <button
-                  onClick={() => setShowEditCategory(true)}
+                  onClick={() => setShowEditPresentations(true)}
                   className="flex text-primary-blue mr-6 font-medium hover:scale-110 hover:text-green hover:border-green"
                 >
                   <PencilSquareIcon className="h-6 w-6 mr-1" />
@@ -56,7 +56,7 @@ function Categories() {
               <td className="py-4 border-b-2 border-stone-100">Fruit</td>
               <td className="py-4 flex justify-center border-b-2 border-stone-100">
                 <button
-                  onClick={() => setShowEditCategory(true)}
+                  onClick={() => setShowEditPresentations(true)}
                   className="flex text-primary-blue mr-6 font-medium hover:scale-110 hover:text-green hover:border-green"
                 >
                   <PencilSquareIcon className="h-6 w-6 mr-1" />
@@ -71,15 +71,15 @@ function Categories() {
           </tbody>
         </table>
       </div>
-      <EditCategory
-        isvisible={showEditCategory}
-        onClose={() => setShowEditCategory(false)}
+      {/*<EditPresentations
+        isvisible={showEditPresentations}
+        onClose={() => setShowEditPresentations(false)}
       />
-      <NewCategory
-        isvisible={showNewCategory}
-        onClose={() => setShowNewCategory(false)}
-      />
+      <NewPresentations
+        isvisible={showNewPresentations}
+        onClose={() => setShowNewPresentations(false)}
+  />*/}
     </div>
   );
 }
-export default Categories;
+export default Presentations;
