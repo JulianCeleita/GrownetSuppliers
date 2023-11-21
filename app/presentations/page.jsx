@@ -5,7 +5,8 @@ import {
   TrashIcon,
   PlusCircleIcon,
 } from "@heroicons/react/24/outline";
-
+import NewPresentation from "@/components/NewPresentation";
+import EditPresentation from "@/components/EditPresentation";
 function Presentations() {
   const [showNewPresentations, setShowNewPresentations] = useState(false);
   const [showEditPresentations, setShowEditPresentations] = useState(false);
@@ -29,31 +30,20 @@ function Presentations() {
           <thead>
             <tr className="border-b-2 border-stone-100 text-dark-blue">
               <th className="py-4 pl-4">ID</th>
-              <th className="py-4">Presentations</th>
+              <th className="py-4">Unit of measurement</th>
+              <th className="py-4">Product</th>
+              <th className="py-4">Name</th>
+              <th className="py-4">Value</th>
               <th className="py-4">Operate</th>
             </tr>
           </thead>
           <tbody>
             <tr className="text-dark-blue ">
               <td className="py-4 border-b-2 border-stone-100">1</td>
+              <td className="py-4 border-b-2 border-stone-100">Unit</td>
               <td className="py-4 border-b-2 border-stone-100">Dry goods</td>
-              <td className="py-4 flex justify-center border-b-2 border-stone-100">
-                <button
-                  onClick={() => setShowEditPresentations(true)}
-                  className="flex text-primary-blue mr-6 font-medium hover:scale-110 hover:text-green hover:border-green"
-                >
-                  <PencilSquareIcon className="h-6 w-6 mr-1" />
-                  Edit
-                </button>
-                <button className="flex text-primary-blue font-medium hover:scale-110 hover:text-danger hover:border-danger">
-                  <TrashIcon className="h-6 w-6 mr-1" />
-                  Delete
-                </button>
-              </td>
-            </tr>
-            <tr className="text-dark-blue ">
-              <td className="py-4 border-b-2 border-stone-100">2</td>
-              <td className="py-4 border-b-2 border-stone-100">Fruit</td>
+              <td className="py-4 border-b-2 border-stone-100">Each</td>
+              <td className="py-4 border-b-2 border-stone-100">10.5</td>
               <td className="py-4 flex justify-center border-b-2 border-stone-100">
                 <button
                   onClick={() => setShowEditPresentations(true)}
@@ -71,14 +61,14 @@ function Presentations() {
           </tbody>
         </table>
       </div>
-      {/*<EditPresentations
+      <EditPresentation
         isvisible={showEditPresentations}
         onClose={() => setShowEditPresentations(false)}
       />
-      <NewPresentations
+      <NewPresentation
         isvisible={showNewPresentations}
         onClose={() => setShowNewPresentations(false)}
-  />*/}
+      />
     </div>
   );
 }
