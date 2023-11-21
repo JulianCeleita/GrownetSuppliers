@@ -78,7 +78,7 @@ function NewProduct({ isvisible, onClose }) {
               </select>
             </div>
           </div>
-          <label>Attach the product's photo: </label>
+          <label>Attach the product&apos;s photo: </label>
           <input
             className="p-3 rounded-md mr-3 mt-3 cursor-pointer"
             placeholder="Fruit"

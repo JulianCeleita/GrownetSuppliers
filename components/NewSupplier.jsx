@@ -34,7 +34,7 @@ function NewSupplier({ isvisible, onClose }) {
             ></input>
           </div>
 
-          <label>Attach the supplier's logo: </label>
+          <label>Attach the supplier&apos;s logo: </label>
           <input
             className="p-3 rounded-md mr-3 mt-3 cursor-pointer"
             placeholder="Fruit"
