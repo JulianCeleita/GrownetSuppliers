@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useRef, useState, useMemo } from "react";
+import React, { useRef, useState } from "react";
 
 const initialRowsState = {
   productCode: "",
@@ -43,9 +43,6 @@ const useFocusOnEnter = (formRef) => {
   };
   return { onEnterKey };
 };
-/*const totalRefs = useMemo(() => {
-  return Array.from({ length: 5 }, () => useRef(null));
-}, []);*/
 
 export default function Table() {
   const [rows, setRows] = useState(
@@ -110,15 +107,21 @@ export default function Table() {
   };
 
   return (
-    <div className="flex flex-col p-16 relative">
-      <div className="overflow-x-auto ">
+    <div className="flex flex-col p-16 ">
+      <div className="overflow-x-auto  ">
         <form ref={form} onKeyUp={(event) => onEnterKey(event)}>
-          <table className="w-full text-sm text-center  bg-white rounded-2xl table-auto  ">
-            <thead className=" text-white  ">
-              <tr className="text-lg  ">
+          <table
+            className="w-full text-sm text-center rounded-2xl overflow-hidden"
+            style={{
+              background:
+                "linear-gradient(to bottom, transparent 10%, #ffffff 10%)",
+            }}
+          >
+            <thead className=" text-white ">
+              <tr className="text-lg ">
                 <th
                   scope="col"
-                  className="px-6 py-3 bg-dark-blue rounded-lg w-[14.9%]  absolute -mt-7 flex items-center 2xl:"
+                  className=" py-3 bg-dark-blue rounded-lg mx-3"
                   style={{
                     boxShadow:
                       "0px 5px 5px rgba(0, 0, 0, 0.5), 0px 0px 0px rgba(0, 0, 0, 0.2)",
@@ -129,7 +132,7 @@ export default function Table() {
 
                 <th
                   scope="col"
-                  className="px-6 py-3 bg-dark-blue rounded-lg w-[15%]  absolute -mt-7 ml-[15.2%] flex items-center justify-center 2xl:ml-[15.7%]"
+                  className=" bg-dark-blue rounded-lg "
                   style={{
                     boxShadow:
                       "0px 5px 5px rgba(0, 0, 0, 0.5), 0px 0px 0px rgba(0, 0, 0, 0.2)",
@@ -140,7 +143,7 @@ export default function Table() {
 
                 <th
                   scope="col"
-                  className="px-6 py-3  bg-dark-blue  rounded-lg w-[14.8%]  absolute -mt-7 ml-[30.5%] flex items-center justify-center 2xl:ml-[31.3%]"
+                  className="  bg-dark-blue  rounded-lg "
                   style={{
                     boxShadow:
                       "0px 5px 5px rgba(0, 0, 0, 0.5), 0px 0px 0px rgba(0, 0, 0, 0.2)",
@@ -150,7 +153,7 @@ export default function Table() {
                 </th>
                 <th
                   scope="col"
-                  className="px-6 py-3  bg-dark-blue rounded-lg w-[14.8%]  absolute -mt-7 ml-[45.6%] flex items-center justify-center 2xl:ml-[46.5%]"
+                  className=" bg-dark-blue rounded-lg   "
                   style={{
                     boxShadow:
                       "0px 5px 5px rgba(0, 0, 0, 0.5), 0px 0px 0px rgba(0, 0, 0, 0.2)",
@@ -160,7 +163,7 @@ export default function Table() {
                 </th>
                 <th
                   scope="col"
-                  className="px-6 py-3  bg-dark-blue rounded-lg w-[14.7%]  absolute -mt-7  ml-[60.7%] flex items-center justify-center 2xl:ml-[62%]"
+                  className="  bg-dark-blue rounded-lg "
                   style={{
                     boxShadow:
                       "0px 5px 5px rgba(0, 0, 0, 0.5), 0px 0px 0px rgba(0, 0, 0, 0.2)",
@@ -171,7 +174,7 @@ export default function Table() {
 
                 <th
                   scope="col"
-                  className="px-6 py-3  bg-dark-blue rounded-lg w-[14.8%]  absolute -mt-7 ml-[75.7%] flex items-center justify-center 2xl:ml-[77.5%]"
+                  className="  bg-dark-blue rounded-lg "
                   style={{
                     boxShadow:
                       "0px 5px 5px rgba(0, 0, 0, 0.5), 0px 0px 0px rgba(0, 0, 0, 0.2)",
@@ -182,9 +185,6 @@ export default function Table() {
               </tr>
             </thead>
             <tbody>
-              <tr>
-                <td className="h-[25px]"></td>
-              </tr>
               {rows.map((row, rowIndex) => (
                 <tr key={rowIndex}>
                   <td
