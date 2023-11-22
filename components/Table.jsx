@@ -121,7 +121,7 @@ export default function Table() {
               <tr className="text-lg ">
                 <th
                   scope="col"
-                  className=" py-3 bg-dark-blue rounded-lg mx-3"
+                  className=" py-3 bg-dark-blue rounded-lg "
                   style={{
                     boxShadow:
                       "0px 5px 5px rgba(0, 0, 0, 0.5), 0px 0px 0px rgba(0, 0, 0, 0.2)",
