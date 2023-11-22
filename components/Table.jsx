@@ -113,7 +113,7 @@ export default function Table() {
     <div className="flex flex-col p-16 relative">
       <div className="overflow-x-auto ">
         <form ref={form} onKeyUp={(event) => onEnterKey(event)}>
-          <table className="w-full text-sm text-center  bg-white rounded-2xl table-auto  ">
+          <table className="w-full text-sm text-center  bg-white  table-auto rounded-2xl">
             <thead className=" text-white  ">
               <tr className="text-lg  ">
                 <th
@@ -181,7 +181,7 @@ export default function Table() {
                 </th>
               </tr>
             </thead>
-            <tbody>
+            <tbody className=" border-2 border-dark-blue">
               <tr>
                 <td className="h-[25px]"></td>
               </tr>
@@ -300,29 +300,23 @@ export default function Table() {
           </table>
         </form>
       </div>
-      <div className="w-ful flex justify-end   items-center">
-        <div className=" flex-col w-[30%]  gap-4 p-4 mt-10 bg-[#ffffff] rounded-2xl">
+      <div className="w-ful flex justify-end items-center ">
+        <div className=" flex-col w-[20%]  gap-4 p-4 mt-10 bg-[#ffffff] rounded-2xl shadow-[0_3px_10px_rgb(0,0,0,0.2)]">
           <div className="flex justify-end items-center mt-2 mr-8">
             <label className="text-xl text-[#04444F] font-bold mr-5">
               Total
             </label>
-            <input
-              className="rounded-xl h-7 p-2 border w-[50%] border-[#85FE9D] outline-none"
-              style={{ boxShadow: "0px 0px 10px rgba(0, 0, 0, 0.8)" }}
-            />
+            <input className="rounded-md h-8 p-2 border w-[50%] border-green outline-none" />
           </div>
           <div className="flex justify-end items-center mt-6 mr-8">
             <label className="text-xl text-[#04444F] font-bold mr-5">
               Total Im
             </label>
-            <input
-              className="rounded-xl p-2 h-7 border w-[50%] border-[#85FE9D] outline-none"
-              style={{ boxShadow: "0px 0px 10px rgba(0, 0, 0, 0.8)" }}
-            />
+            <input className="rounded-md p-2 h-8 border w-[50%] border-green outline-none" />
           </div>
           <div className="w-full flex justify-end ">
-            <button className=" w-[80px] bg-primary-blue text-white rounded-2xl px-4 py-2 mt-5 mr-8">
-              Save
+            <button className="bg-primary-blue py-3 px-4 rounded-lg text-white font-medium mr-3">
+              Send order
             </button>
           </div>
         </div>

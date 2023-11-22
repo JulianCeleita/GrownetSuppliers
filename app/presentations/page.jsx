@@ -12,6 +12,25 @@ function Presentations() {
   const [showEditPresentations, setShowEditPresentations] = useState(false);
   return (
     <div>
+      <div className="bg-white p-5">
+        <div className="flex">
+          <div className="flex flex-col">
+            <label>Date: </label>
+            <input type="date" className="border p-3 rounded-md mr-3 mt-3" />
+            <label>A/C: </label>
+            <input type="text" className="border p-3 rounded-md mr-3 mt-3" />
+          </div>
+          <div className="flex flex-col">
+            <label>Inv. No.: </label>
+            <input type="text" className="border p-3 rounded-md mr-3 mt-3" />
+            <label>Order No.: </label>
+            <input type="text" className="border p-3 rounded-md mr-3 mt-3" />
+          </div>
+        </div>
+        <label>Customer: </label>
+        <input type="text" className="border p-3 rounded-md mr-3 mt-3" />
+      </div>
+
       <div className="flex justify-between p-8 pb-20 bg-primary-blue">
         <h1 className="text-2xl text-white font-semibold">
           Presentations list
