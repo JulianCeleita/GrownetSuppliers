@@ -107,21 +107,15 @@ export default function Table() {
   };
 
   return (
-    <div className="flex flex-col p-16 ">
+    <div className="flex flex-col p-8">
       <div className="overflow-x-auto  ">
-        <form ref={form} onKeyUp={(event) => onEnterKey(event)}>
-          <table
-            className="w-full text-sm text-center rounded-2xl  overflow-hidden "
-            style={{
-              background:
-                "linear-gradient(to bottom, transparent 10%, #ffffff 10%)",
-            }}
-          >
-            <thead className=" text-white ">
-              <tr className="text-lg ">
+        <form ref={form} onKeyUp={(event) => onEnterKey(event)} className="m-1">
+          <table className="w-full text-sm text-center">
+            <thead className="text-white">
+              <tr className="text-lg">
                 <th
                   scope="col"
-                  className=" py-3 bg-dark-blue rounded-lg "
+                  className="py-3 bg-dark-blue rounded-lg"
                   style={{
                     boxShadow:
                       "0px 5px 5px rgba(0, 0, 0, 0.5), 0px 0px 0px rgba(0, 0, 0, 0.2)",
@@ -184,7 +178,7 @@ export default function Table() {
                 </th>
               </tr>
             </thead>
-            <tbody className=" border-2 border-dark-blue">
+            <tbody className="shadow-[rgba(0,_0,_0,_0.24)_0px_3px_8px] rounded-xl ">
               <tr>
                 <td className="h-[25px]"></td>
               </tr>
@@ -304,21 +298,21 @@ export default function Table() {
         </form>
       </div>
       <div className="w-ful flex justify-end items-center ">
-        <div className=" flex-col w-[20%]  gap-4 p-4 mt-10 bg-[#ffffff] rounded-2xl shadow-[0_3px_10px_rgb(0,0,0,0.2)]">
-          <div className="flex justify-end items-center mt-2 mr-8">
-            <label className="text-xl text-[#04444F] font-bold mr-5">
-              Total
+        <div className=" flex-col w-auto  gap-4 p-5 mt-10 bg-[#ffffff] rounded-2xl shadow-[0_3px_10px_rgb(0,0,0,0.2)]">
+          <div className=" flex items-center mt-2 ">
+            <label className="text-xl text-[#04444F] font-semibold mr-5 w-[90px]">
+              Total:
             </label>
-            <input className="rounded-md h-8 p-2 border w-[50%] border-green outline-none" />
+            <input className="border p-2 rounded-md mr-2 w-[200px]" />
           </div>
-          <div className="flex justify-end items-center mt-6 mr-8">
-            <label className="text-xl text-[#04444F] font-bold mr-5">
-              Total Im
+          <div className="flex items-center mt-5 ">
+            <label className="text-xl text-[#04444F] font-semibold mr-5 w-[90px]">
+              Total Im:
             </label>
-            <input className="rounded-md p-2 h-8 border w-[50%] border-green outline-none" />
+            <input className="border p-2 rounded-md w-[200px]" />
           </div>
-          <div className="w-full flex justify-end ">
-            <button className="bg-primary-blue py-3 px-4 rounded-lg text-white font-medium mr-3">
+          <div className="w-full flex justify-end mt-5">
+            <button className="bg-primary-blue py-3 px-4 rounded-lg text-white font-medium mr-2">
               Send order
             </button>
           </div>

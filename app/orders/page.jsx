@@ -3,7 +3,7 @@ import Table from "@/components/Table";
 function OrderView() {
   return (
     <>
-      <div className="grid grid-cols-2 gap-4 p-6 shadow-lg bg-primary-blue">
+      <div className="grid grid-cols-2 gap-4 p-6 shadow-lg bg-primary-blue pb-20">
         <div className="grid grid-cols-2 bg-white p-4 rounded-lg shadow-lg text-dark-blue">
           <div className="grid grid-cols-2 m-4 gap-2">
             <h3>Account Number:</h3>
@@ -50,13 +50,10 @@ function OrderView() {
             </div>
           </div>
           <label>Customer: </label>
-          <input
-            type="text"
-            className="border p-3 rounded-md ml-2 mt-3 w-[88%]"
-          />
+          <input type="text" className="border p-3 rounded-md mt-3 w-full" />
         </div>
       </div>
-      <div className="bg-white ">
+      <div className="-mt-20">
         <Table />
       </div>
     </>
