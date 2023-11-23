@@ -180,7 +180,7 @@ export default function Table() {
             </thead>
             <tbody className="shadow-[rgba(0,_0,_0,_0.24)_0px_3px_8px] rounded-xl ">
               <tr>
-                <td className="h-[25px]"></td>
+                <td className=""></td>
               </tr>
               {rows.map((row, rowIndex) => (
                 <tr key={rowIndex}>
@@ -297,7 +297,7 @@ export default function Table() {
           </table>
         </form>
       </div>
-      <div className="w-ful flex justify-end items-center ">
+      <div className="w-ful flex justify-end items-center mb-60">
         <div className=" flex-col w-auto  gap-4 p-5 mt-10 bg-[#ffffff] rounded-2xl shadow-[0_3px_10px_rgb(0,0,0,0.2)]">
           <div className=" flex items-center mt-2 ">
             <label className="text-xl text-[#04444F] font-semibold mr-5 w-[90px]">

@@ -5,7 +5,7 @@ import React from "react";
 
 export default function Footer() {
   return (
-    <footer className="bottom-0 left-0 z-20 w-full bg-dark-blue dark:bg-gray-900 rounded-t-3xl shadow-[0px_10px_1px_rgba(221,_221,_221,_1),_0_10px_20px_rgba(204,_204,_204,_1)]">
+    <footer className="fixed bottom-0 left-0 z-20 w-full bg-dark-blue dark:bg-gray-900 rounded-t-3xl shadow-[0px_10px_1px_rgba(221,_221,_221,_1),_0_10px_20px_rgba(204,_204,_204,_1)]">
       <div className="w-full max-w-screen-xl mx-auto p-4 md:py-8">
         <div className="sm:flex sm:items-center sm:justify-between">
           <a
@@ -73,8 +73,8 @@ export default function Footer() {
             </li>
           </ul>
         </div>
-        <hr className="my-6 border-gray-200 sm:mx-auto dark:border-gray-700 lg:my-8" />
-        <span className="block text-sm text-white sm:text-center dark:text-gray-400">
+        <hr className="my-6 border-gray-200 sm:mx-auto dark:border-gray-700 lg:my-5" />
+        <span className="block text-sm text-white sm:text-center dark:text-gray-400 mt-7">
           © 2023{" "}
           <a href="https://grownetapp.com/" className="hover:underline">
             Grownet™
