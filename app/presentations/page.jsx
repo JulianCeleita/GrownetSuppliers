@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   PencilSquareIcon,
   TrashIcon,
@@ -7,9 +7,24 @@ import {
 } from "@heroicons/react/24/outline";
 import NewPresentation from "@/components/NewPresentation";
 import EditPresentation from "@/components/EditPresentation";
+import axios from "axios";
+import { presentationsUrl } from "@/config/urls.config";
+
 function Presentations() {
   const [showNewPresentations, setShowNewPresentations] = useState(false);
   const [showEditPresentations, setShowEditPresentations] = useState(false);
+  //Api
+  const [presentations, setPresentations] = useState([]);
+  useEffect(() => {
+    axios
+      .get(presentationsUrl, {})
+      .then((response) => {
+        setPresentations(response.data.presentations);
+      })
+      .catch((error) => {
+        console.error("Error al obtener los categorias:", error);
+      });
+  }, []);
   return (
     <div>
       <div className="flex justify-between p-8 pb-20 bg-primary-blue">
@@ -26,7 +41,7 @@ function Presentations() {
         </button>
       </div>
       <div className="flex items-center justify-center mb-6 -mt-14">
-        <table className="w-[90%] bg-white rounded-2xl text-center shadow-[0_8px_30px_rgb(0,0,0,0.12)]">
+        <table className="w-[90%] bg-white rounded-2xl text-center shadow-[0_8px_30px_rgb(0,0,0,0.12)] mb-60">
           <thead>
             <tr className="border-b-2 border-stone-100 text-dark-blue">
               <th className="py-4 pl-4">ID</th>
@@ -38,26 +53,31 @@ function Presentations() {
             </tr>
           </thead>
           <tbody>
-            <tr className="text-dark-blue ">
-              <td className="py-4 border-b-2 border-stone-100">1</td>
-              <td className="py-4 border-b-2 border-stone-100">Unit</td>
-              <td className="py-4 border-b-2 border-stone-100">Dry goods</td>
-              <td className="py-4 border-b-2 border-stone-100">Each</td>
-              <td className="py-4 border-b-2 border-stone-100">10.5</td>
-              <td className="py-4 flex justify-center border-b-2 border-stone-100">
-                <button
-                  onClick={() => setShowEditPresentations(true)}
-                  className="flex text-primary-blue mr-6 font-medium hover:scale-110 hover:text-green hover:border-green"
-                >
-                  <PencilSquareIcon className="h-6 w-6 mr-1" />
-                  Edit
-                </button>
-                <button className="flex text-primary-blue font-medium hover:scale-110 hover:text-danger hover:border-danger">
-                  <TrashIcon className="h-6 w-6 mr-1" />
-                  Delete
-                </button>
-              </td>
-            </tr>
+            {presentations.map((presentation) => (
+              <tr
+                key={presentation.id}
+                className="text-dark-blue border-b-2 border-stone-100 "
+              >
+                <td className="py-4">{presentation.id}</td>
+                <td className="py-4">{presentation.name}</td>
+                <td className="py-4">Dry goods</td>
+                <td className="py-4">Each</td>
+                <td className="py-4">10.5</td>
+                <td className="py-4 flex justify-center">
+                  <button
+                    onClick={() => setShowEditPresentations(true)}
+                    className="flex text-primary-blue mr-6 font-medium hover:scale-110 hover:text-green hover:border-green"
+                  >
+                    <PencilSquareIcon className="h-6 w-6 mr-1" />
+                    Edit
+                  </button>
+                  <button className="flex text-primary-blue font-medium hover:scale-110 hover:text-danger hover:border-danger">
+                    <TrashIcon className="h-6 w-6 mr-1" />
+                    Delete
+                  </button>
+                </td>
+              </tr>
+            ))}
           </tbody>
         </table>
       </div>

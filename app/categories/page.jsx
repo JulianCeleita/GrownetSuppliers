@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   PencilSquareIcon,
   TrashIcon,
@@ -7,10 +7,43 @@ import {
 } from "@heroicons/react/24/outline";
 import NewCategory from "../../components/NewCategory";
 import EditCategory from "../../components/EditCategory";
+import axios from "axios";
+import { categoriesUrl, deleteCategoryUrl } from "@/config/urls.config";
 
 function Categories() {
   const [showNewCategory, setShowNewCategory] = useState(false);
   const [showEditCategory, setShowEditCategory] = useState(false);
+  //Variable edit category
+  const [selectedCategory, setSelectedCategory] = useState(null);
+
+  //Api categorias
+  const [categories, setCategories] = useState([]);
+  useEffect(() => {
+    axios
+      .get(categoriesUrl, {})
+      .then((response) => {
+        setCategories(response.data.categories);
+      })
+      .catch((error) => {
+        console.error("Error al obtener los categorias:", error);
+      });
+  }, [categories]);
+  //Api delete
+  const [deleteResponse, setDeleteResponse] = useState(null);
+  const handleDeleteCategory = (category) => {
+    const { id, name } = category;
+    axios
+      .delete(`${deleteCategoryUrl}${id}`, {
+        data: { name },
+      })
+      .then((response) => {
+        setDeleteResponse(response.data);
+        console.log("Se borro con éxito");
+      })
+      .catch((error) => {
+        console.error("Error al eliminar la categoría:", error);
+      });
+  };
   return (
     <div>
       <div className="flex justify-between p-8 pb-20 bg-primary-blue">
@@ -25,7 +58,7 @@ function Categories() {
         </button>
       </div>
       <div className="flex items-center justify-center mb-6 -mt-14">
-        <table className="w-[90%] bg-white rounded-2xl text-center shadow-[0_8px_30px_rgb(0,0,0,0.12)]">
+        <table className="w-[90%] bg-white rounded-2xl text-center shadow-[0_8px_30px_rgb(0,0,0,0.12)] mb-20">
           <thead>
             <tr className="border-b-2 border-stone-100 text-dark-blue">
               <th className="py-4 pl-4">ID</th>
@@ -34,50 +67,47 @@ function Categories() {
             </tr>
           </thead>
           <tbody>
-            <tr className="text-dark-blue ">
-              <td className="py-4 border-b-2 border-stone-100">1</td>
-              <td className="py-4 border-b-2 border-stone-100">Dry goods</td>
-              <td className="py-4 flex justify-center border-b-2 border-stone-100">
-                <button
-                  onClick={() => setShowEditCategory(true)}
-                  className="flex text-primary-blue mr-6 font-medium hover:scale-110 hover:text-green hover:border-green"
-                >
-                  <PencilSquareIcon className="h-6 w-6 mr-1" />
-                  Edit
-                </button>
-                <button className="flex text-primary-blue font-medium hover:scale-110 hover:text-danger hover:border-danger">
-                  <TrashIcon className="h-6 w-6 mr-1" />
-                  Delete
-                </button>
-              </td>
-            </tr>
-            <tr className="text-dark-blue ">
-              <td className="py-4 border-b-2 border-stone-100">2</td>
-              <td className="py-4 border-b-2 border-stone-100">Fruit</td>
-              <td className="py-4 flex justify-center border-b-2 border-stone-100">
-                <button
-                  onClick={() => setShowEditCategory(true)}
-                  className="flex text-primary-blue mr-6 font-medium hover:scale-110 hover:text-green hover:border-green"
-                >
-                  <PencilSquareIcon className="h-6 w-6 mr-1" />
-                  Edit
-                </button>
-                <button className="flex text-primary-blue font-medium hover:scale-110 hover:text-danger hover:border-danger">
-                  <TrashIcon className="h-6 w-6 mr-1" />
-                  Delete
-                </button>
-              </td>
-            </tr>
+            {categories.map((category) => (
+              <tr
+                key={category.id}
+                className="text-dark-blue border-b-2 border-stone-100"
+              >
+                <td className="py-4">{category.id}</td>
+                <td className="py-4">{category.name}</td>
+                <td className="py-4 flex justify-center">
+                  <button
+                    onClick={() => {
+                      setSelectedCategory(category);
+                      setShowEditCategory(true);
+                    }}
+                    className="flex text-primary-blue mr-6 font-medium hover:scale-110 hover:text-green hover:border-green"
+                  >
+                    <PencilSquareIcon className="h-6 w-6 mr-1" />
+                    Edit
+                  </button>
+                  <button
+                    className="flex text-primary-blue font-medium hover:scale-110 hover:text-danger hover:border-danger"
+                    onClick={() => handleDeleteCategory(category)}
+                  >
+                    <TrashIcon className="h-6 w-6 mr-1" />
+                    Delete
+                  </button>
+                </td>
+              </tr>
+            ))}
           </tbody>
         </table>
       </div>
       <EditCategory
         isvisible={showEditCategory}
         onClose={() => setShowEditCategory(false)}
+        category={selectedCategory}
+        setCategories={setCategories}
       />
       <NewCategory
         isvisible={showNewCategory}
         onClose={() => setShowNewCategory(false)}
+        setCategories={setCategories}
       />
     </div>
   );

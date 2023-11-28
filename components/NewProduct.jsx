@@ -1,9 +1,33 @@
 import { XMarkIcon } from "@heroicons/react/24/outline";
 
-function NewProduct({ isvisible, onClose }) {
+function NewProduct({ isvisible, onClose, setProducts }) {
   if (!isvisible) {
     return null;
   }
+  const [addProduct, setAddProduct] = useState("");
+  //Add product api
+  const enviarData = (e) => {
+    e.preventDefault();
+    const postData = {
+      name: addProduct,
+      /*families_id: 
+      code:
+      categories_id:
+      stateProduct_id:
+      taxe_id:*/
+    };
+
+    axios
+      .post(addProductUrl, postData)
+      .then((response) => {
+        const newProduct = response.data;
+        setProducts((prevProducts) => [...prevProducts, newProduct]);
+        onClose();
+      })
+      .catch(function (error) {
+        console.error("Error al agregar la nueva categoria:", error);
+      });
+  };
   return (
     <div className="fixed inset-0 bg-black bg-opacity-25 backdrop-blur-sm flex flex-col justify-center items-center">
       <div className="bg-white p-8 rounded-2xl w-[800px] flex flex-col items-center">
@@ -83,7 +107,6 @@ function NewProduct({ isvisible, onClose }) {
             className="p-3 rounded-md mr-3 mt-3 cursor-pointer"
             placeholder="Fruit"
             type="file"
-            required
           ></input>
           <div>
             <label>Product status: </label>

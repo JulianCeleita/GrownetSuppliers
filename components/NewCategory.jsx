@@ -1,9 +1,30 @@
+import { addCategoryUrl } from "@/config/urls.config";
 import { XMarkIcon } from "@heroicons/react/24/outline";
-
-function NewCategory({ isvisible, onClose }) {
+import axios from "axios";
+import { useState } from "react";
+function NewCategory({ isvisible, onClose, setCategories }) {
   if (!isvisible) {
     return null;
   }
+  const [addCategory, setAddCategory] = useState("");
+  //Add category api
+  const enviarData = (e) => {
+    e.preventDefault();
+    const postData = {
+      name: addCategory,
+    };
+
+    axios
+      .post(addCategoryUrl, postData)
+      .then((response) => {
+        const newCategory = response.data;
+        setCategories((prevCategories) => [...prevCategories, newCategory]);
+        onClose();
+      })
+      .catch(function (error) {
+        console.error("Error al agregar la nueva categoria:", error);
+      });
+  };
   return (
     <div className="fixed inset-0 bg-black bg-opacity-25 backdrop-blur-sm flex flex-col justify-center items-center">
       <div className="bg-white p-8 rounded-2xl w-[600px] flex flex-col items-center">
@@ -17,10 +38,12 @@ function NewCategory({ isvisible, onClose }) {
           Add <span className="text-primary-blue">new category</span>
         </h1>
         <p>Enter the name of the new category you want to add</p>
-        <form>
+        <form onSubmit={enviarData}>
           <input
             className="border p-3 rounded-md mr-3 mt-3"
             placeholder="Fruit"
+            value={addCategory}
+            onChange={(e) => setAddCategory(e.target.value)}
             required
           ></input>
           <div className="mt-3">

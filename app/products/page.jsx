@@ -4,13 +4,42 @@ import {
   PlusCircleIcon,
   TrashIcon,
 } from "@heroicons/react/24/outline";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import NewProduct from "../../components/NewProduct";
 import EditProduct from "@/components/EditProduct";
+import axios from "axios";
+import { productsUrl, deleteProductUrl } from "@/config/urls.config";
 
 function Products() {
   const [showNewProduct, setShowNewProduct] = useState(false);
   const [showEditProduct, setShowEditProduct] = useState(false);
+  //Api
+  const [products, setProducts] = useState([]);
+  const urlImagen = "http://127.0.0.1:8000/";
+  useEffect(() => {
+    axios
+      .get(productsUrl, {})
+      .then((response) => {
+        setProducts(response.data.products);
+      })
+      .catch((error) => {
+        console.error("Error al obtener los productos:", error);
+      });
+  }, [products]);
+  //Api delete
+  const [deleteResponse, setDeleteResponse] = useState(null);
+  const handleDeleteProduct = (product) => {
+    const { id, name } = product;
+    axios
+      .delete(`${deleteProductUrl}${id}`)
+      .then((response) => {
+        setDeleteResponse(response.data);
+        console.log("Se borro con éxito el producto" + product);
+      })
+      .catch((error) => {
+        console.error("Error al eliminar la producto:", error);
+      });
+  };
   return (
     <div>
       <div className="flex justify-between p-8 pb-20 bg-primary-blue">
@@ -25,7 +54,7 @@ function Products() {
         </button>
       </div>
       <div className="flex items-center justify-center mb-6 -mt-14">
-        <table className="w-[90%] bg-white rounded-2xl text-center shadow-[0_8px_30px_rgb(0,0,0,0.12)]">
+        <table className="w-[90%] bg-white rounded-2xl text-center shadow-[0_8px_30px_rgb(0,0,0,0.12)] mb-80">
           <thead>
             <tr className="border-b-2 border-stone-100 text-dark-blue">
               <th className="py-4 pl-4">ID</th>
@@ -35,32 +64,53 @@ function Products() {
             </tr>
           </thead>
           <tbody>
-            <tr className="text-dark-blue ">
-              <td className="py-4 border-b-2 border-stone-100">1</td>
-              <td className="py-4 border-b-2 border-stone-100">Red pepper</td>
-              <td className="py-4 border-b-2 border-stone-100">
-                Product image
-              </td>
-              <td className="py-4 flex justify-center border-b-2 border-stone-100">
-                <button
-                  className="flex text-primary-blue mr-6 font-medium hover:scale-110 hover:text-green hover:border-green"
-                  onClick={() => setShowEditProduct(true)}
-                >
-                  <PencilSquareIcon className="h-6 w-6 mr-1" />
-                  Edit
-                </button>
-                <button className="flex text-primary-blue font-medium hover:scale-110 hover:text-danger hover:border-danger">
-                  <TrashIcon className="h-6 w-6 mr-1" />
-                  Delete
-                </button>
-              </td>
-            </tr>
+            {products.map((product) => (
+              <tr
+                key={product.id}
+                className="text-dark-blue border-b-2 border-stone-100"
+              >
+                <td style={{ textAlign: "center", padding: "1.5rem" }}>
+                  {product.id}
+                </td>
+                {product.stateProduct_id === 2 ? (
+                  <td className="py-3 text-danger">
+                    {product.name + " - Product disabled"}
+                  </td>
+                ) : (
+                  <td className="py-3">{product.name}</td>
+                )}
+                <td className="py-3">
+                  <img
+                    className="w-[40px] mx-auto"
+                    src={urlImagen + product.image}
+                    alt={product.name}
+                  />
+                </td>
+                <td className="py-4 flex justify-center">
+                  <button
+                    className="flex text-primary-blue mr-6 font-medium hover:scale-110 hover:text-green hover:border-green"
+                    onClick={() => setShowEditProduct(true)}
+                  >
+                    <PencilSquareIcon className="h-6 w-6 mr-1" />
+                    Edit
+                  </button>
+                  <button
+                    className="flex text-primary-blue font-medium hover:scale-110 hover:text-danger hover:border-danger"
+                    onClick={() => handleDeleteProduct(product)}
+                  >
+                    <TrashIcon className="h-6 w-6 mr-1" />
+                    Delete
+                  </button>
+                </td>
+              </tr>
+            ))}
           </tbody>
         </table>
       </div>
       <NewProduct
         isvisible={showNewProduct}
         onClose={() => setShowNewProduct(false)}
+        setProducts={setProducts}
       ></NewProduct>
       <EditProduct
         isvisible={showEditProduct}

@@ -1,6 +1,34 @@
-import { XMarkIcon, ExclamationCircleIcon } from "@heroicons/react/24/outline";
+import { ExclamationCircleIcon, XMarkIcon } from "@heroicons/react/24/outline";
+import axios from "axios";
+import { useState } from "react";
+import { updateCategoryUrl } from "@/config/urls.config";
 
-function EditCategory({ isvisible, onClose }) {
+function EditCategory({ isvisible, onClose, category, setCategories }) {
+  const [editedName, setEditedName] = useState(category ? category.name : "");
+
+  const handleEditCategory = (event) => {
+    event.preventDefault();
+
+    axios
+      .put(`${updateCategoryUrl}${category.id}`, {
+        name: editedName,
+      })
+      .then((response) => {
+        const updatedCategory = response.data;
+        setCategories((prevCategories) =>
+          prevCategories.map((c) =>
+            c.id === updatedCategory.id
+              ? { ...c, name: updatedCategory.name }
+              : c
+          )
+        );
+        onClose();
+      })
+      .catch((error) => {
+        console.error("Error editando la categoría:", error);
+      });
+  };
+
   if (!isvisible) {
     return null;
   }
@@ -16,10 +44,12 @@ function EditCategory({ isvisible, onClose }) {
         <ExclamationCircleIcon className="h-8 w-8 text-green mb-2" />
         <h1 className="text-2xl font-bold text-green mb-2">Edit category</h1>
         <p>Enter the correct name for the category</p>
-        <form>
+        <form onSubmit={handleEditCategory}>
           <input
             className="border p-3 rounded-md mr-3 mt-3"
             placeholder="Fruit"
+            value={editedName}
+            onChange={(e) => setEditedName(e.target.value)}
             required
           ></input>
           <div className="mt-3">
@@ -42,4 +72,5 @@ function EditCategory({ isvisible, onClose }) {
     </div>
   );
 }
+
 export default EditCategory;
