@@ -1,20 +1,20 @@
 // Products
-export const productsUrl = "https://127.0.0.1:8000/api/products/";
+export const productsUrl = "http://127.0.0.1:8000/api/products/";
 export const addProductUrl =
-  "https://127.0.0.1:8000/api/products/agregarProducto/";
+  "http://127.0.0.1:8000/api/products/agregarProducto/";
 export const updateProductUrl =
-  "https://127.0.0.1:8000/api/products/actualizarProducto/";
+  "http://127.0.0.1:8000/api/products/actualizarProducto/";
 export const deleteProductUrl =
-  "https://127.0.0.1:8000/api/products/eliminaProducto/";
+  "http://127.0.0.1:8000/api/products/eliminaProducto/";
 
 //Presentations
-export const presentationsUrl = "https://127.0.0.1:8000/api/presentations/";
+export const presentationsUrl = "http://127.0.0.1:8000/api/presentations/";
 export const addPresentationUrl =
-  "https://127.0.0.1:8000/api/presentations/agregarPresentacion/";
+  "http://127.0.0.1:8000/api/presentations/agregarPresentacion/";
 export const updatePresentationUrl =
-  "https://127.0.0.1:8000/api/presentations/actualizarPresentacion/";
+  "http://127.0.0.1:8000/api/presentations/actualizarPresentacion/";
 export const deletePresentationUrl =
-  "https://127.0.0.1:8000/api/presentations/eliminaPresentacion/";
+  "http://127.0.0.1:8000/api/presentations/eliminaPresentacion/";
 
 //Categories
 export const categoriesUrl =
@@ -27,10 +27,10 @@ export const deleteCategoryUrl =
   "https://api.grownetapp.com/grownet/api/categories/delete/";
 
 //Suppliers
-export const suppliersUrl = "https://127.0.0.1:8000/api/suppliers/";
+export const suppliersUrl = "http://127.0.0.1:8000/api/suppliers/";
 export const addSupplierUrl =
-  "https://127.0.0.1:8000/api/suppliers/agregarProveedor/";
+  "http://127.0.0.1:8000/api/suppliers/agregarProveedor/";
 export const updateSupplierUrl =
-  "https://127.0.0.1:8000/api/suppliers/actualizarProveedor/";
+  "http://127.0.0.1:8000/api/suppliers/actualizarProveedor/";
 export const deleteSupplierUrl =
-  "https://127.0.0.1:8000/api/suppliers/eliminaProveedor/";
+  "http://127.0.0.1:8000/api/suppliers/eliminaProveedor/";
