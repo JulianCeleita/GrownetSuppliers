@@ -1,20 +1,21 @@
 // Products
-export const productsUrl = "http://127.0.0.1:8000/api/products/";
-export const addProductUrl =
-  "http://127.0.0.1:8000/api/products/agregarProducto/";
+export const productsUrl =
+  "https://api.grownetapp.com/grownet/api/products/all";
+export const addProductUrl = "https://api.grownetapp.com/grownet/api/products/";
 export const updateProductUrl =
-  "http://127.0.0.1:8000/api/products/actualizarProducto/";
+  "https://api.grownetapp.com/grownet/api/products/update/";
 export const deleteProductUrl =
-  "http://127.0.0.1:8000/api/products/eliminaProducto/";
+  "https://api.grownetapp.com/grownet/api/products/delete/";
 
 //Presentations
-export const presentationsUrl = "http://127.0.0.1:8000/api/presentations/";
+export const presentationsUrl =
+  "https://api.grownetapp.com/grownet/api/presentations/all";
 export const addPresentationUrl =
-  "http://127.0.0.1:8000/api/presentations/agregarPresentacion/";
+  "https://api.grownetapp.com/grownet/api/presentations/create";
 export const updatePresentationUrl =
-  "http://127.0.0.1:8000/api/presentations/actualizarPresentacion/";
+  "https://api.grownetapp.com/grownet/api/presentations/update/";
 export const deletePresentationUrl =
-  "http://127.0.0.1:8000/api/presentations/eliminaPresentacion/";
+  "https://api.grownetapp.com/grownet/api/presentations/delete/";
 
 //Categories
 export const categoriesUrl =

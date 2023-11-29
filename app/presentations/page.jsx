@@ -9,15 +9,21 @@ import NewPresentation from "@/components/NewPresentation";
 import EditPresentation from "@/components/EditPresentation";
 import axios from "axios";
 import { presentationsUrl } from "@/config/urls.config";
+import useTokenStore from "@/store/useTokenStore";
 
 function Presentations() {
+  const { token } = useTokenStore();
   const [showNewPresentations, setShowNewPresentations] = useState(false);
   const [showEditPresentations, setShowEditPresentations] = useState(false);
   //Api
   const [presentations, setPresentations] = useState([]);
   useEffect(() => {
     axios
-      .get(presentationsUrl, {})
+      .get(presentationsUrl, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
       .then((response) => {
         setPresentations(response.data.presentations);
       })

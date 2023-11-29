@@ -10,15 +10,22 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import NewProduct from "../../components/NewProduct";
 import useProductStore from "@/store/useProductStore";
+import useTokenStore from "@/store/useTokenStore";
+
 function Products() {
+  const { token } = useTokenStore();
   const [showNewProduct, setShowNewProduct] = useState(false);
   const [showEditProduct, setShowEditProduct] = useState(false);
   //Api
   const { products, setProducts } = useProductStore();
-  const urlImagen = "http://127.0.0.1:8000/";
+  const urlImagen = "https://api.grownetapp.com/grownet/";
   useEffect(() => {
     axios
-      .get(productsUrl)
+      .get(productsUrl, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
       .then((response) => {
         const newProducts = Array.isArray(response.data.products)
           ? response.data.products
@@ -32,15 +39,19 @@ function Products() {
   //Api delete
   const [deleteResponse, setDeleteResponse] = useState(null);
   const handleDeleteProduct = (product) => {
-    const { id, name } = product;
+    const { id } = product;
     axios
-      .delete(`${deleteProductUrl}${id}`)
+      .post(`${deleteProductUrl}${id}`, null, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
       .then((response) => {
         setDeleteResponse(response.data);
-        console.log("Se borro con éxito el producto" + product);
+        console.log("Se borró con éxito el producto" + product.id);
       })
       .catch((error) => {
-        console.error("Error al eliminar la producto:", error);
+        console.error("Error al eliminar el producto:", error);
       });
   };
   return (
