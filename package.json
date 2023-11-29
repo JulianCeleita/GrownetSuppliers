@@ -2,7 +2,6 @@
   "name": "grownet-suppliers",
   "version": "0.1.0",
   "private": true,
-  
   "scripts": {
     "dev": "next dev",
     "build": "next build",
@@ -15,7 +14,8 @@
     "heroicons": "^2.0.18",
     "next": "14.0.2",
     "react": "^18",
-    "react-dom": "^18"
+    "react-dom": "^18",
+    "zustand": "^4.4.7"
   },
   "devDependencies": {
     "autoprefixer": "^10.0.1",

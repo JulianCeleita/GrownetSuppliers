@@ -1,9 +1,12 @@
 import { XMarkIcon } from "@heroicons/react/24/outline";
-
+import { useState, useEffect } from "react";
+import axios from "axios";
+import useCategoryStore from "@/store/useCategoryStore";
 function NewProduct({ isvisible, onClose, setProducts }) {
   if (!isvisible) {
     return null;
   }
+  const { categories } = useCategoryStore();
   const [addProduct, setAddProduct] = useState("");
   //Add product api
   const enviarData = (e) => {
@@ -12,7 +15,7 @@ function NewProduct({ isvisible, onClose, setProducts }) {
       name: addProduct,
       /*families_id: 
       code:
-      categories_id:
+      categories_id: category.id
       stateProduct_id:
       taxe_id:*/
     };
@@ -97,8 +100,11 @@ function NewProduct({ isvisible, onClose, setProducts }) {
                 className="border p-3 rounded-md mr-3 mt-3"
                 required
               >
-                <option value="fruit">Fruit</option>
-                <option value="vegetables">Vegetables</option>
+                {categories.map((category) => (
+                  <option key={category.id} value="fruit">
+                    {category.name}
+                  </option>
+                ))}
               </select>
             </div>
           </div>

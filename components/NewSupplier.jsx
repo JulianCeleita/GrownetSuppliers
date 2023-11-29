@@ -1,9 +1,31 @@
 import { XMarkIcon } from "@heroicons/react/24/outline";
-
-function NewSupplier({ isvisible, onClose }) {
+import axios from "axios";
+import { useState } from "react";
+import { addSupplierUrl } from "@/config/urls.config";
+function NewSupplier({ isvisible, onClose, setSuppliers }) {
   if (!isvisible) {
     return null;
   }
+  const [addSupplier, setAddSupplier] = useState("");
+  const [emailSupplier, setEmailSupplier] = useState("");
+  //Add Supplier api
+  const enviarData = (e) => {
+    e.preventDefault();
+    const postData = {
+      name: addSupplier,
+      email: emailSupplier,
+    };
+    axios
+      .post(addSupplierUrl, postData)
+      .then((response) => {
+        const newSupplier = response.data;
+        setSuppliers((prevSuppliers) => [...prevSuppliers, newSupplier]);
+        onClose();
+      })
+      .catch(function (error) {
+        console.error("Error al agregar la nueva categoria:", error);
+      });
+  };
   return (
     <div className="fixed inset-0 bg-black bg-opacity-25 backdrop-blur-sm flex flex-col justify-center items-center">
       <div className="bg-white p-8 rounded-2xl w-[750px] flex flex-col items-center">
@@ -16,13 +38,15 @@ function NewSupplier({ isvisible, onClose }) {
         <h1 className="text-2xl font-bold text-dark-blue mb-2">
           Add <span className="text-primary-blue">new supplier</span>
         </h1>
-        <form className="text-left">
+        <form className="text-left" onSubmit={enviarData}>
           <div>
             <label>Name: </label>
             <input
               className="border p-3 rounded-md mr-3 mt-3"
               placeholder="Foodpoint"
               type="text"
+              value={addSupplier}
+              onChange={(e) => setAddSupplier(e.target.value)}
               required
             ></input>
             <label>Email: </label>
@@ -30,6 +54,8 @@ function NewSupplier({ isvisible, onClose }) {
               className="border p-3 rounded-md mr-3 mt-3 w-200"
               placeholder="email@grownet.com"
               type="email"
+              value={emailSupplier}
+              onChange={(e) => setEmailSupplier(e.target.value)}
               required
             ></input>
           </div>
@@ -39,7 +65,6 @@ function NewSupplier({ isvisible, onClose }) {
             className="p-3 rounded-md mr-3 mt-3 cursor-pointer"
             placeholder="Fruit"
             type="file"
-            required
           ></input>
           <div className="mt-3 text-center">
             <button

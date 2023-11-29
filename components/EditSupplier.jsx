@@ -1,9 +1,39 @@
 import { XMarkIcon, ExclamationCircleIcon } from "@heroicons/react/24/outline";
-
-function EditSupplier({ isvisible, onClose }) {
+import axios from "axios";
+import { useState } from "react";
+import { updateSupplierUrl } from "@/config/urls.config";
+function EditSupplier({ isvisible, onClose, supplier, setSuppliers }) {
   if (!isvisible) {
     return null;
   }
+  const [editedName, setEditedName] = useState(supplier ? supplier.name : "");
+  const [editedEmail, setEditedEmail] = useState(
+    supplier ? supplier.email : ""
+  );
+  const handleEditSupplier = (event) => {
+    event.preventDefault();
+
+    axios
+      .put(`${updateSupplierUrl}${supplier.id}`, {
+        name: editedName,
+        email: editedEmail,
+      })
+      .then((response) => {
+        const updatedSupplier = response.data;
+        setSuppliers((prevSuppliers) =>
+          prevSuppliers.map((c) =>
+            c.id === updatedSupplier.id
+              ? { ...c, name: updatedSupplier.name }
+              : c
+          )
+        );
+        onClose();
+      })
+      .catch((error) => {
+        console.error("Error editando la categoría:", error);
+      });
+  };
+
   return (
     <div className="fixed inset-0 bg-black bg-opacity-25 backdrop-blur-sm flex flex-col justify-center items-center">
       <div className="bg-white p-8 rounded-2xl w-[750px] flex flex-col items-center">
@@ -15,13 +45,15 @@ function EditSupplier({ isvisible, onClose }) {
         </button>
         <ExclamationCircleIcon className="h-8 w-8 text-green mb-2" />
         <h1 className="text-2xl font-bold text-green mb-2">Edit Supplier</h1>
-        <form className="text-left">
+        <form className="text-left" onSubmit={handleEditSupplier}>
           <div>
             <label>Name: </label>
             <input
               className="border p-3 rounded-md mr-3 mt-3"
               placeholder="Foodpoint"
               type="text"
+              value={editedName}
+              onChange={(e) => setEditedName(e.target.value)}
               required
             ></input>
             <label>Email: </label>
@@ -29,6 +61,8 @@ function EditSupplier({ isvisible, onClose }) {
               className="border p-3 rounded-md mr-3 mt-3 w-200"
               placeholder="email@grownet.com"
               type="email"
+              value={editedEmail}
+              onChange={(e) => setEditedEmail(e.target.value)}
               required
             ></input>
           </div>
@@ -38,7 +72,6 @@ function EditSupplier({ isvisible, onClose }) {
             className="p-3 rounded-md mr-3 mt-3 cursor-pointer"
             placeholder="Fruit"
             type="file"
-            required
           ></input>
           <div className="mt-3 text-center">
             <button

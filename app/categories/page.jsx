@@ -9,23 +9,34 @@ import NewCategory from "../../components/NewCategory";
 import EditCategory from "../../components/EditCategory";
 import axios from "axios";
 import { categoriesUrl, deleteCategoryUrl } from "@/config/urls.config";
-
+import useTokenStore from "@/store/useTokenStore";
+import useCategoryStore from "@/store/useCategoryStore";
 function Categories() {
+  const { token } = useTokenStore();
   const [showNewCategory, setShowNewCategory] = useState(false);
   const [showEditCategory, setShowEditCategory] = useState(false);
   //Variable edit category
   const [selectedCategory, setSelectedCategory] = useState(null);
 
   //Api categorias
-  const [categories, setCategories] = useState([]);
+  const { categories, setCategories } = useCategoryStore();
   useEffect(() => {
     axios
-      .get(categoriesUrl, {})
+      .get(
+        categoriesUrl /*, {
+         headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }*/
+      )
       .then((response) => {
-        setCategories(response.data.categories);
+        const newCategories = Array.isArray(response.data.categories)
+          ? response.data.categories
+          : [];
+        setCategories(newCategories);
       })
       .catch((error) => {
-        console.error("Error al obtener los categorias:", error);
+        console.error("Error al obtener las categorías:", error);
       });
   }, [categories]);
   //Api delete
