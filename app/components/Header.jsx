@@ -27,9 +27,9 @@ function Header() {
           href="/orders"
           className="relative group text-white rounded m-2 py-2 hover:text-light-green hover:scale-110"
         >
-          <a className="block" onClick={() => setActiveLink("orders")}>
+          <h3 className="block" onClick={() => setActiveLink("orders")}>
             Orders
-          </a>
+          </h3>
           {activeLink === "orders" ? (
             <span className="absolute bottom-0 left-0  h-0.5 bg-light-green w-full transition-all duration-300 ease-in-out"></span>
           ) : (
@@ -40,9 +40,9 @@ function Header() {
           href="/products"
           className="relative group text-white rounded m-2 py-2 hover:text-light-green hover:scale-110"
         >
-          <a className="block" onClick={() => setActiveLink("products")}>
+          <h3 className="block" onClick={() => setActiveLink("products")}>
             Products
-          </a>
+          </h3>
           {activeLink === "products" ? (
             <span className="absolute bottom-0 left-0  h-0.5 bg-light-green w-full transition-all duration-300 ease-in-out"></span>
           ) : (
@@ -53,9 +53,9 @@ function Header() {
           href="/presentations"
           className="relative group text-white rounded m-2 py-2 hover:text-light-green hover:scale-110"
         >
-          <a className="block" onClick={() => setActiveLink("presentations")}>
+          <h3 className="block" onClick={() => setActiveLink("presentations")}>
             Presentations
-          </a>
+          </h3>
           {activeLink === "presentations" ? (
             <span className="absolute bottom-0 left-0  h-0.5 bg-light-green w-full transition-all duration-300 ease-in-out"></span>
           ) : (
@@ -66,9 +66,9 @@ function Header() {
           href="/categories"
           className="relative group text-white rounded m-2 py-2 hover:text-light-green hover:scale-110"
         >
-          <a className="block" onClick={() => setActiveLink("categories")}>
+          <h3 className="block" onClick={() => setActiveLink("categories")}>
             Categories
-          </a>
+          </h3>
           {activeLink === "categories" ? (
             <span className="absolute bottom-0 left-0  h-0.5 bg-light-green w-full transition-all duration-300 ease-in-out"></span>
           ) : (
@@ -79,9 +79,9 @@ function Header() {
           href="/suppliers"
           className="relative group text-white rounded m-2 py-2 hover:text-light-green hover:scale-110"
         >
-          <a className="block" onClick={() => setActiveLink("suppliers")}>
+          <h3 className="block" onClick={() => setActiveLink("suppliers")}>
             Suppliers
-          </a>
+          </h3>
           {activeLink === "suppliers" ? (
             <span className="absolute bottom-0 left-0  h-0.5 bg-light-green w-full transition-all duration-300 ease-in-out"></span>
           ) : (

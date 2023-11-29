@@ -1,8 +1,8 @@
-import { addCategoryUrl } from "@/config/urls.config";
+import { addCategoryUrl } from "@/app/config/urls.config";
 import { XMarkIcon } from "@heroicons/react/24/outline";
 import axios from "axios";
 import { useState } from "react";
-import useTokenStore from "@/store/useTokenStore";
+import useTokenStore from "@/app/store/useTokenStore";
 
 function NewCategory({ isvisible, onClose, setCategories }) {
   if (!isvisible) {

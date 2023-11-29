@@ -1,23 +1,34 @@
 import { XMarkIcon, ExclamationCircleIcon } from "@heroicons/react/24/outline";
 import axios from "axios";
 import { useState } from "react";
-import { updateSupplierUrl } from "@/config/urls.config";
+import { updateSupplierUrl } from "@/app/config/urls.config";
+import useTokenStore from "../store/useTokenStore";
+
 function EditSupplier({ isvisible, onClose, supplier, setSuppliers }) {
-  if (!isvisible) {
-    return null;
-  }
+  const { token } = useTokenStore();
   const [editedName, setEditedName] = useState(supplier ? supplier.name : "");
   const [editedEmail, setEditedEmail] = useState(
     supplier ? supplier.email : ""
   );
+  if (!isvisible) {
+    return null;
+  }
   const handleEditSupplier = (event) => {
     event.preventDefault();
 
     axios
-      .put(`${updateSupplierUrl}${supplier.id}`, {
-        name: editedName,
-        email: editedEmail,
-      })
+      .post(
+        `${updateSupplierUrl}${supplier.id}`,
+        {
+          name: editedName,
+          email: editedEmail,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      )
       .then((response) => {
         const updatedSupplier = response.data;
         setSuppliers((prevSuppliers) =>
@@ -30,7 +41,7 @@ function EditSupplier({ isvisible, onClose, supplier, setSuppliers }) {
         onClose();
       })
       .catch((error) => {
-        console.error("Error editando la categoría:", error);
+        console.error("Error editando la proveedor:", error);
       });
   };
 

@@ -1,8 +1,8 @@
 import { ExclamationCircleIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import axios from "axios";
 import { useState } from "react";
-import { updateCategoryUrl } from "@/config/urls.config";
-import useTokenStore from "@/store/useTokenStore";
+import { updateCategoryUrl } from "@/app/config/urls.config";
+import useTokenStore from "@/app/store/useTokenStore";
 function EditCategory({ isvisible, onClose, category, setCategories }) {
   const [editedName, setEditedName] = useState(category ? category.name : "");
   const { token } = useTokenStore();
