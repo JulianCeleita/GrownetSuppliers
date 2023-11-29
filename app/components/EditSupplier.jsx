@@ -1,31 +1,39 @@
-import { XMarkIcon } from "@heroicons/react/24/outline";
+import { XMarkIcon, ExclamationCircleIcon } from "@heroicons/react/24/outline";
 import axios from "axios";
 import { useState } from "react";
-import { addSupplierUrl } from "@/config/urls.config";
-function NewSupplier({ isvisible, onClose, setSuppliers }) {
+import { updateSupplierUrl } from "@/app/config/urls.config";
+function EditSupplier({ isvisible, onClose, supplier, setSuppliers }) {
   if (!isvisible) {
     return null;
   }
-  const [addSupplier, setAddSupplier] = useState("");
-  const [emailSupplier, setEmailSupplier] = useState("");
-  //Add Supplier api
-  const enviarData = (e) => {
-    e.preventDefault();
-    const postData = {
-      name: addSupplier,
-      email: emailSupplier,
-    };
+  const [editedName, setEditedName] = useState(supplier ? supplier.name : "");
+  const [editedEmail, setEditedEmail] = useState(
+    supplier ? supplier.email : ""
+  );
+  const handleEditSupplier = (event) => {
+    event.preventDefault();
+
     axios
-      .post(addSupplierUrl, postData)
+      .put(`${updateSupplierUrl}${supplier.id}`, {
+        name: editedName,
+        email: editedEmail,
+      })
       .then((response) => {
-        const newSupplier = response.data;
-        setSuppliers((prevSuppliers) => [...prevSuppliers, newSupplier]);
+        const updatedSupplier = response.data;
+        setSuppliers((prevSuppliers) =>
+          prevSuppliers.map((c) =>
+            c.id === updatedSupplier.id
+              ? { ...c, name: updatedSupplier.name }
+              : c
+          )
+        );
         onClose();
       })
-      .catch(function (error) {
-        console.error("Error al agregar la nueva categoria:", error);
+      .catch((error) => {
+        console.error("Error editando la categoría:", error);
       });
   };
+
   return (
     <div className="fixed inset-0 bg-black bg-opacity-25 backdrop-blur-sm flex flex-col justify-center items-center">
       <div className="bg-white p-8 rounded-2xl w-[750px] flex flex-col items-center">
@@ -35,18 +43,17 @@ function NewSupplier({ isvisible, onClose, setSuppliers }) {
         >
           <XMarkIcon className="h-6 w-6 text-gray-500" />
         </button>
-        <h1 className="text-2xl font-bold text-dark-blue mb-2">
-          Add <span className="text-primary-blue">new supplier</span>
-        </h1>
-        <form className="text-left" onSubmit={enviarData}>
+        <ExclamationCircleIcon className="h-8 w-8 text-green mb-2" />
+        <h1 className="text-2xl font-bold text-green mb-2">Edit Supplier</h1>
+        <form className="text-left" onSubmit={handleEditSupplier}>
           <div>
             <label>Name: </label>
             <input
               className="border p-3 rounded-md mr-3 mt-3"
               placeholder="Foodpoint"
               type="text"
-              value={addSupplier}
-              onChange={(e) => setAddSupplier(e.target.value)}
+              value={editedName}
+              onChange={(e) => setEditedName(e.target.value)}
               required
             ></input>
             <label>Email: </label>
@@ -54,8 +61,8 @@ function NewSupplier({ isvisible, onClose, setSuppliers }) {
               className="border p-3 rounded-md mr-3 mt-3 w-200"
               placeholder="email@grownet.com"
               type="email"
-              value={emailSupplier}
-              onChange={(e) => setEmailSupplier(e.target.value)}
+              value={editedEmail}
+              onChange={(e) => setEditedEmail(e.target.value)}
               required
             ></input>
           </div>
@@ -86,4 +93,4 @@ function NewSupplier({ isvisible, onClose, setSuppliers }) {
     </div>
   );
 }
-export default NewSupplier;
+export default EditSupplier;

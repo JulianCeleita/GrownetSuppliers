@@ -1,7 +1,7 @@
 import { XMarkIcon } from "@heroicons/react/24/outline";
 import { useState, useEffect } from "react";
 import axios from "axios";
-import useCategoryStore from "@/store/useCategoryStore";
+import useCategoryStore from "@/app/store/useCategoryStore";
 function NewProduct({ isvisible, onClose, setProducts }) {
   if (!isvisible) {
     return null;

@@ -5,10 +5,10 @@ import {
   TrashIcon,
   PlusCircleIcon,
 } from "@heroicons/react/24/outline";
-import NewSupplier from "@/components/NewSupplier";
-import EditSupplier from "@/components/EditSupplier";
+import NewSupplier from "@/app/components/NewSupplier";
+import EditSupplier from "@/app/components/EditSupplier";
 import axios from "axios";
-import { suppliersUrl, deleteSupplierUrl } from "@/config/urls.config";
+import { suppliersUrl, deleteSupplierUrl } from "@/app/config/urls.config";
 
 function Suppliers() {
   const [showNewSupplier, setShowNewSupplier] = useState(false);

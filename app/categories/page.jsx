@@ -5,12 +5,12 @@ import {
   TrashIcon,
   PlusCircleIcon,
 } from "@heroicons/react/24/outline";
-import NewCategory from "../../components/NewCategory";
-import EditCategory from "../../components/EditCategory";
+import NewCategory from "../components/NewCategory";
+import EditCategory from "../components/EditCategory";
 import axios from "axios";
-import { categoriesUrl, deleteCategoryUrl } from "@/config/urls.config";
-import useTokenStore from "@/store/useTokenStore";
-import useCategoryStore from "@/store/useCategoryStore";
+import { categoriesUrl, deleteCategoryUrl } from "@/app/config/urls.config";
+import useTokenStore from "@/app/store/useTokenStore";
+import useCategoryStore from "@/app/store/useCategoryStore";
 function Categories() {
   const { token } = useTokenStore();
   const [showNewCategory, setShowNewCategory] = useState(false);

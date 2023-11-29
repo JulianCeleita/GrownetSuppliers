@@ -5,10 +5,10 @@ import {
   TrashIcon,
   PlusCircleIcon,
 } from "@heroicons/react/24/outline";
-import NewPresentation from "@/components/NewPresentation";
-import EditPresentation from "@/components/EditPresentation";
+import NewPresentation from "@/app/components/NewPresentation";
+import EditPresentation from "@/app/components/EditPresentation";
 import axios from "axios";
-import { presentationsUrl } from "@/config/urls.config";
+import { presentationsUrl } from "@/app/config/urls.config";
 
 function Presentations() {
   const [showNewPresentations, setShowNewPresentations] = useState(false);
