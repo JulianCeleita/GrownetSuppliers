@@ -3,20 +3,22 @@ import React, { useRef, useState } from "react";
 
 const initialRowsState = {
   productCode: "",
+  presentation: "",
   description: "",
-  quantity: "",
-  net: "",
-  tax: "",
-  total: "",
+  UOM: "",
+  Qty: "",
+  price: "",
+  totalPrice: "",
 };
 
 const inputRefs = {
   productCode: [],
+  presentation: [],
   description: [],
-  quantity: [],
-  net: [],
-  tax: [],
-  total: [],
+  UOM: [],
+  Qty: [],
+  price: [],
+  totalPrice: [],
 };
 
 const useFocusOnEnter = (formRef) => {
@@ -58,11 +60,12 @@ export default function Table() {
   const getNextFieldName = (currentFieldName) => {
     const fieldNames = [
       "productCode",
+      "presentation",
       "description",
-      "quantity",
-      "net",
-      "tax",
-      "total",
+      "UOM",
+      "Qty",
+      "price",
+      "totalPrice",
     ];
     const currentIndex = fieldNames.indexOf(currentFieldName);
     const nextIndex = currentIndex + 1;
@@ -132,7 +135,7 @@ export default function Table() {
                       "0px 5px 5px rgba(0, 0, 0, 0.5), 0px 0px 0px rgba(0, 0, 0, 0.2)",
                   }}
                 >
-                  <p className="text-xl text-[#ffffff]">Description</p>
+                  <p className="text-xl text-[#ffffff]">Presentation</p>
                 </th>
 
                 <th
@@ -143,7 +146,7 @@ export default function Table() {
                       "0px 5px 5px rgba(0, 0, 0, 0.5), 0px 0px 0px rgba(0, 0, 0, 0.2)",
                   }}
                 >
-                  <p className="text-xl text-[#ffffff]">Quantity</p>
+                  <p className="text-xl text-[#ffffff]">Description</p>
                 </th>
                 <th
                   scope="col"
@@ -153,7 +156,7 @@ export default function Table() {
                       "0px 5px 5px rgba(0, 0, 0, 0.5), 0px 0px 0px rgba(0, 0, 0, 0.2)",
                   }}
                 >
-                  <p className="text-[#ffffff] text-xl">Net</p>
+                  <p className="text-[#ffffff] text-xl">UOM</p>
                 </th>
                 <th
                   scope="col"
@@ -163,7 +166,7 @@ export default function Table() {
                       "0px 5px 5px rgba(0, 0, 0, 0.5), 0px 0px 0px rgba(0, 0, 0, 0.2)",
                   }}
                 >
-                  <p className="text-xl text-[#ffffff]">Tax</p>
+                  <p className="text-xl text-[#ffffff]">Qty</p>
                 </th>
 
                 <th
@@ -174,18 +177,25 @@ export default function Table() {
                       "0px 5px 5px rgba(0, 0, 0, 0.5), 0px 0px 0px rgba(0, 0, 0, 0.2)",
                   }}
                 >
-                  <p className="text-xl text-[#ffffff]"> Total</p>
+                  <p className="text-xl text-[#ffffff]">Price</p>
+                </th>
+                <th
+                  scope="col"
+                  className="  bg-dark-blue rounded-lg "
+                  style={{
+                    boxShadow:
+                      "0px 5px 5px rgba(0, 0, 0, 0.5), 0px 0px 0px rgba(0, 0, 0, 0.2)",
+                  }}
+                >
+                  <p className="text-xl text-[#ffffff]">Total Price</p>
                 </th>
               </tr>
             </thead>
             <tbody className="shadow-[rgba(0,_0,_0,_0.24)_0px_3px_8px] rounded-xl ">
-              <tr>
-                <td className=""></td>
-              </tr>
               {rows.map((row, rowIndex) => (
                 <tr key={rowIndex}>
                   <td
-                    className={`w-[14.9%] px-6 py-3    border-r-2 border-r-[#0c547a] border-[#808e94] ${
+                    className={`w-[14.2%] px-6 py-3    border-r-2 border-r-[#0c547a] border-[#808e94] ${
                       rowIndex === 0 ? "border-t-0" : "border-t-2"
                     }`}
                   >
@@ -205,7 +215,26 @@ export default function Table() {
                     />
                   </td>
                   <td
-                    className={` w-[15%] px-6 py-3  border-r-2  border-r-[#0c547a] border-[#808e94] ${
+                    className={` w-[14.2%] px-6 py-3  border-r-2  border-r-[#0c547a] border-[#808e94] ${
+                      rowIndex === 0 ? "border-t-0" : "border-t-2"
+                    }`}
+                  >
+                    <input
+                      ref={inputRefs.presentation[rowIndex]}
+                      value={row.presentation}
+                      onChange={(e) => {
+                        const updatedRows = [...rows];
+                        updatedRows[rowIndex].presentation = e.target.value;
+                        setRows(updatedRows);
+                      }}
+                      onKeyDown={(e) =>
+                        handleKeyDown(e, rowIndex, "presentation")
+                      }
+                      className="w-full outline-none"
+                    />
+                  </td>
+                  <td
+                    className={` w-[14.2%] px-6 py-3   border-[#808e94] border-r-[#0c547a]  border-r-2 ${
                       rowIndex === 0 ? "border-t-0" : "border-t-2"
                     }`}
                   >
@@ -224,70 +253,72 @@ export default function Table() {
                     />
                   </td>
                   <td
-                    className={` w-[14.8%] px-6 py-3   border-[#808e94] border-r-[#0c547a]  border-r-2 ${
+                    className={`w-[14.2%] px-6 py-3  border-r-2 border-[#808e94] border-r-[#0c547a] ${
                       rowIndex === 0 ? "border-t-0" : "border-t-2"
                     }`}
                   >
                     <input
-                      ref={inputRefs.quantity[rowIndex]}
-                      value={row.quantity}
+                      ref={inputRefs.UOM[rowIndex]}
+                      value={row.UOM}
                       onChange={(e) => {
                         const updatedRows = [...rows];
-                        updatedRows[rowIndex].quantity = e.target.value;
+                        updatedRows[rowIndex].UOM = e.target.value;
                         setRows(updatedRows);
                       }}
-                      onKeyDown={(e) => handleKeyDown(e, rowIndex, "quantity")}
+                      onKeyDown={(e) => handleKeyDown(e, rowIndex, "UOM")}
                       className="w-full outline-none"
                     />
                   </td>
                   <td
-                    className={`w-[14.8%] px-6 py-3  border-r-2 border-[#808e94] border-r-[#0c547a] ${
+                    className={` w-[14.2%] px-6 py-3  border-r-2 border-[#808e94] border-r-[#0c547a] ${
                       rowIndex === 0 ? "border-t-0" : "border-t-2"
                     }`}
                   >
                     <input
-                      ref={inputRefs.net[rowIndex]}
-                      value={row.net}
+                      ref={inputRefs.Qty[rowIndex]}
+                      value={row.Qty}
                       onChange={(e) => {
                         const updatedRows = [...rows];
-                        updatedRows[rowIndex].net = e.target.value;
+                        updatedRows[rowIndex].Qty = e.target.value;
                         setRows(updatedRows);
                       }}
-                      onKeyDown={(e) => handleKeyDown(e, rowIndex, "net")}
+                      onKeyDown={(e) => handleKeyDown(e, rowIndex, "Qty")}
                       className="w-full outline-none"
                     />
                   </td>
                   <td
-                    className={` w-[14.7%] px-6 py-3  border-r-2 border-[#808e94] border-r-[#0c547a] ${
+                    className={` w-[14.2%] px-6 py-3  border-r-2 border-[#808e94] border-r-[#0c547a] ${
                       rowIndex === 0 ? "border-t-0" : "border-t-2"
                     }`}
                   >
                     <input
-                      ref={inputRefs.tax[rowIndex]}
-                      value={row.tax}
+                      ref={inputRefs.price[rowIndex]}
+                      value={row.price}
                       onChange={(e) => {
                         const updatedRows = [...rows];
-                        updatedRows[rowIndex].tax = e.target.value;
+                        updatedRows[rowIndex].price = e.target.value;
                         setRows(updatedRows);
                       }}
-                      onKeyDown={(e) => handleKeyDown(e, rowIndex, "tax")}
+                      onKeyDown={(e) => handleKeyDown(e, rowIndex, "price")}
                       className="w-full outline-none"
                     />
-                  </td>
+                  </td>{" "}
                   <td
-                    className={`w-[14.8%] px-6 py-3   border-[#808e94] -mt-20 ${
+                    className={`w-[14.2%] px-6 py-3   border-[#808e94]  ${
                       rowIndex === 0 ? "border-t-0" : "border-t-2"
                     }`}
                   >
                     <input
-                      ref={inputRefs.total[rowIndex]}
-                      value={row.total}
+                      ref={inputRefs.totalPrice[rowIndex]}
+                      value={row.totalPrice}
                       onChange={(e) => {
                         const updatedRows = [...rows];
-                        updatedRows[rowIndex].total = e.target.value;
+                        updatedRows[rowIndex].totalPrice = e.target.value;
                         setRows(updatedRows);
                       }}
-                      onKeyDown={(e) => handleKeyDown(e, rowIndex, "total")}
+                      onKeyDown={(e) =>
+                        handleKeyDown(e, rowIndex, "totalPrice")
+                      }
                       className="w-full outline-none"
                     />
                   </td>

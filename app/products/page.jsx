@@ -1,6 +1,6 @@
 "use client";
-import EditProduct from "@/components/EditProduct";
-import { deleteProductUrl, productsUrl } from "@/config/urls.config";
+import EditProduct from "@/app/components/EditProduct";
+import { deleteProductUrl, productsUrl } from "@/app/config/urls.config";
 import {
   PencilSquareIcon,
   PlusCircleIcon,
@@ -8,8 +8,8 @@ import {
 } from "@heroicons/react/24/outline";
 import axios from "axios";
 import { useEffect, useState } from "react";
-import NewProduct from "../../components/NewProduct";
-import useProductStore from "@/store/useProductStore";
+import NewProduct from "../components/NewProduct";
+import useProductStore from "@/app/store/useProductStore";
 function Products() {
   const [showNewProduct, setShowNewProduct] = useState(false);
   const [showEditProduct, setShowEditProduct] = useState(false);

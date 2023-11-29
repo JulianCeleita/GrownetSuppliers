@@ -1,4 +1,4 @@
-import Table from "@/components/Table";
+import Table from "@/app/components/Table";
 
 function OrderView() {
   return (
@@ -18,6 +18,8 @@ function OrderView() {
             <h3 className="underline decoration-2 decoration-green">
               123-654-789
             </h3>
+            <h3>Round:</h3>
+            <h3 className="underline decoration-2 decoration-green">R1</h3>
           </div>
           <div className="grid grid-cols-2 m-4 gap-2">
             <h3>Account Name:</h3>
@@ -32,6 +34,8 @@ function OrderView() {
             <h3 className="underline decoration-2 decoration-green">
               Kevin Pinzón
             </h3>
+            <h3>Drop:</h3>
+            <h3 className="underline decoration-2 decoration-green">12</h3>
           </div>
         </div>
         <div className="bg-white p-5 pr-9 pl-9 rounded-lg">
