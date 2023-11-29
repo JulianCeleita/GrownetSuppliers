@@ -9,17 +9,21 @@ import {
 import axios from "axios";
 import { useEffect, useState } from "react";
 import NewProduct from "../../components/NewProduct";
+import useProductStore from "@/store/useProductStore";
 function Products() {
   const [showNewProduct, setShowNewProduct] = useState(false);
   const [showEditProduct, setShowEditProduct] = useState(false);
   //Api
-  const [products, setProducts] = useState([]);
+  const { products, setProducts } = useProductStore();
   const urlImagen = "http://127.0.0.1:8000/";
   useEffect(() => {
     axios
-      .get(productsUrl, {})
+      .get(productsUrl)
       .then((response) => {
-        setProducts(response.data.products);
+        const newProducts = Array.isArray(response.data.products)
+          ? response.data.products
+          : [];
+        setProducts(newProducts);
       })
       .catch((error) => {
         console.error("Error al obtener los productos:", error);

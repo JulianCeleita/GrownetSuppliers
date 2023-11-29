@@ -11,6 +11,7 @@ import axios from "axios";
 import { categoriesUrl, deleteCategoryUrl } from "@/config/urls.config";
 import useTokenStore from "@/store/useTokenStore";
 import useCategoryStore from "@/store/useCategoryStore";
+
 function Categories() {
   const { token } = useTokenStore();
   const [showNewCategory, setShowNewCategory] = useState(false);
@@ -22,13 +23,11 @@ function Categories() {
   const { categories, setCategories } = useCategoryStore();
   useEffect(() => {
     axios
-      .get(
-        categoriesUrl /*, {
-         headers: {
+      .get(categoriesUrl, {
+        headers: {
           Authorization: `Bearer ${token}`,
         },
-      }*/
-      )
+      })
       .then((response) => {
         const newCategories = Array.isArray(response.data.categories)
           ? response.data.categories
@@ -42,10 +41,12 @@ function Categories() {
   //Api delete
   const [deleteResponse, setDeleteResponse] = useState(null);
   const handleDeleteCategory = (category) => {
-    const { id, name } = category;
+    const { id } = category;
     axios
       .delete(`${deleteCategoryUrl}${id}`, {
-        data: { name },
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
       })
       .then((response) => {
         setDeleteResponse(response.data);

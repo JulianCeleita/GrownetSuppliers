@@ -61,7 +61,7 @@ function Presentations() {
                 <td className="py-4">{presentation.id}</td>
                 <td className="py-4">{presentation.name}</td>
                 <td className="py-4">Dry goods</td>
-                <td className="py-4">Each</td>
+                <td className="py-4">{presentation.name}</td>
                 <td className="py-4">10.5</td>
                 <td className="py-4 flex justify-center">
                   <button

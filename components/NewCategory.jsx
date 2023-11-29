@@ -2,10 +2,13 @@ import { addCategoryUrl } from "@/config/urls.config";
 import { XMarkIcon } from "@heroicons/react/24/outline";
 import axios from "axios";
 import { useState } from "react";
+import useTokenStore from "@/store/useTokenStore";
+
 function NewCategory({ isvisible, onClose, setCategories }) {
   if (!isvisible) {
     return null;
   }
+  const { token } = useTokenStore();
   const [addCategory, setAddCategory] = useState("");
   //Add category api
   const enviarData = (e) => {
@@ -15,7 +18,11 @@ function NewCategory({ isvisible, onClose, setCategories }) {
     };
 
     axios
-      .post(addCategoryUrl, postData)
+      .post(addCategoryUrl, postData, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
       .then((response) => {
         const newCategory = response.data;
         setCategories((prevCategories) => [...prevCategories, newCategory]);
