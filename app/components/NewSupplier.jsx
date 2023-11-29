@@ -1,13 +1,17 @@
 import { XMarkIcon } from "@heroicons/react/24/outline";
 import axios from "axios";
 import { useState } from "react";
-import { addSupplierUrl } from "@/app/config/urls.config";
+import { addSupplierUrl } from "@/config/urls.config";
+import useTokenStore from "@/store/useTokenStore";
+
 function NewSupplier({ isvisible, onClose, setSuppliers }) {
+  const { token } = useTokenStore();
+  const [addSupplier, setAddSupplier] = useState("");
+  const [emailSupplier, setEmailSupplier] = useState("");
+
   if (!isvisible) {
     return null;
   }
-  const [addSupplier, setAddSupplier] = useState("");
-  const [emailSupplier, setEmailSupplier] = useState("");
   //Add Supplier api
   const enviarData = (e) => {
     e.preventDefault();
@@ -16,14 +20,18 @@ function NewSupplier({ isvisible, onClose, setSuppliers }) {
       email: emailSupplier,
     };
     axios
-      .post(addSupplierUrl, postData)
+      .post(addSupplierUrl, postData, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
       .then((response) => {
         const newSupplier = response.data;
         setSuppliers((prevSuppliers) => [...prevSuppliers, newSupplier]);
         onClose();
       })
       .catch(function (error) {
-        console.error("Error al agregar la nueva categoria:", error);
+        console.error("Error al agregar el nuevo proveedor:", error);
       });
   };
   return (

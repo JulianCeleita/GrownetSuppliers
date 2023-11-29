@@ -8,9 +8,11 @@ import {
 import NewSupplier from "@/app/components/NewSupplier";
 import EditSupplier from "@/app/components/EditSupplier";
 import axios from "axios";
-import { suppliersUrl, deleteSupplierUrl } from "@/app/config/urls.config";
+import { suppliersUrl, deleteSupplierUrl } from "@/config/urls.config";
+import useTokenStore from "@/store/useTokenStore";
 
 function Suppliers() {
+  const { token } = useTokenStore();
   const [showNewSupplier, setShowNewSupplier] = useState(false);
   const [showEditSupplier, setShowEditSupplier] = useState(false);
   //Variable edit supplier
@@ -21,29 +23,37 @@ function Suppliers() {
   const [suppliers, setSuppliers] = useState([]);
   useEffect(() => {
     axios
-      .get(suppliersUrl, {})
+      .get(suppliersUrl, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
       .then((response) => {
         setSuppliers(response.data.suppliers);
       })
       .catch((error) => {
-        console.error("Error al obtener los categorias:", error);
+        console.error("Error al obtener los proveedor:", error);
       });
   }, [suppliers]);
   //Api delete
   const [deleteResponse, setDeleteResponse] = useState(null);
   const handleDeleteSupplier = (supplier) => {
-    const { id, name, email } = supplier;
-    console.log(id, name, email);
+    const { id } = supplier;
     axios
       .delete(`${deleteSupplierUrl}${id}`, {
-        data: { name, email },
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
       })
       .then((response) => {
         setDeleteResponse(response.data);
-        console.log("Se borro con éxito");
+        setSuppliers((prevSuppliers) =>
+          prevSuppliers.filter((s) => s.id !== id)
+        );
+        console.log("Se borró con éxito");
       })
       .catch((error) => {
-        console.error("Error al eliminar la proveedores:", error);
+        console.error("Error al eliminar el proveedor:", error);
       });
   };
   return (
