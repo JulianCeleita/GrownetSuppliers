@@ -27,10 +27,11 @@ export const deleteCategoryUrl =
   "https://api.grownetapp.com/grownet/api/categories/delete/";
 
 //Suppliers
-export const suppliersUrl = "http://127.0.0.1:8000/api/suppliers/";
+export const suppliersUrl =
+  "https://api.grownetapp.com/grownet/api/suppliers/all";
 export const addSupplierUrl =
-  "http://127.0.0.1:8000/api/suppliers/agregarProveedor/";
+  "https://api.grownetapp.com/grownet/api/suppliers/create";
 export const updateSupplierUrl =
-  "http://127.0.0.1:8000/api/suppliers/actualizarProveedor/";
+  "https://api.grownetapp.com/grownet/api/suppliers/update/";
 export const deleteSupplierUrl =
-  "http://127.0.0.1:8000/api/suppliers/eliminaProveedor/";
+  "https://api.grownetapp.com/grownet/api/suppliers/delete/";
