@@ -22,13 +22,11 @@ function Categories() {
   const { categories, setCategories } = useCategoryStore();
   useEffect(() => {
     axios
-      .get(
-        categoriesUrl /*, {
-         headers: {
+      .get(categoriesUrl, {
+        headers: {
           Authorization: `Bearer ${token}`,
         },
-      }*/
-      )
+      })
       .then((response) => {
         const newCategories = Array.isArray(response.data.categories)
           ? response.data.categories
@@ -42,10 +40,12 @@ function Categories() {
   //Api delete
   const [deleteResponse, setDeleteResponse] = useState(null);
   const handleDeleteCategory = (category) => {
-    const { id, name } = category;
+    const { id } = category;
     axios
       .delete(`${deleteCategoryUrl}${id}`, {
-        data: { name },
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
       })
       .then((response) => {
         setDeleteResponse(response.data);

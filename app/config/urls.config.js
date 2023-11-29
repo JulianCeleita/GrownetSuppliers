@@ -17,13 +17,14 @@ export const deletePresentationUrl =
   "http://127.0.0.1:8000/api/presentations/eliminaPresentacion/";
 
 //Categories
-export const categoriesUrl = "http://127.0.0.1:8000/api/categories/";
+export const categoriesUrl =
+  "https://api.grownetapp.com/grownet/api/categories/all";
 export const addCategoryUrl =
-  "http://127.0.0.1:8000/api/categories/agregarCategoria/";
+  "https://api.grownetapp.com/grownet/api/categories/created";
 export const updateCategoryUrl =
-  "http://127.0.0.1:8000/api/categories/actualizarCategoria/";
+  "https://api.grownetapp.com/grownet/api/categories/updated/";
 export const deleteCategoryUrl =
-  "http://127.0.0.1:8000/api/categories/eliminaCategoria/";
+  "https://api.grownetapp.com/grownet/api/categories/delete/";
 
 //Suppliers
 export const suppliersUrl = "http://127.0.0.1:8000/api/suppliers/";

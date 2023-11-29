@@ -2,17 +2,26 @@ import { ExclamationCircleIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import axios from "axios";
 import { useState } from "react";
 import { updateCategoryUrl } from "@/app/config/urls.config";
-
+import useTokenStore from "@/app/store/useTokenStore";
 function EditCategory({ isvisible, onClose, category, setCategories }) {
   const [editedName, setEditedName] = useState(category ? category.name : "");
+  const { token } = useTokenStore();
 
   const handleEditCategory = (event) => {
     event.preventDefault();
 
     axios
-      .put(`${updateCategoryUrl}${category.id}`, {
-        name: editedName,
-      })
+      .post(
+        `${updateCategoryUrl}${category.id}`,
+        {
+          name: editedName,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      )
       .then((response) => {
         const updatedCategory = response.data;
         setCategories((prevCategories) =>
