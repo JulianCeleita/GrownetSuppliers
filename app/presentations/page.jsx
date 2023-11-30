@@ -8,15 +8,25 @@ import {
 import NewPresentation from "@/app/components/NewPresentation";
 import EditPresentation from "@/app/components/EditPresentation";
 import axios from "axios";
-import { presentationsUrl } from "@/app/config/urls.config";
+import {
+  presentationsUrl,
+  productsUrl,
+  uomUrl,
+  deletePresentationUrl,
+} from "@/app/config/urls.config";
 import useTokenStore from "@/app/store/useTokenStore";
 import useProductStore from "../store/useProductStore";
 
 function Presentations() {
   const { token } = useTokenStore();
-  const { products } = useProductStore();
+  const [products, setProducts] = useState([]);
+  const [uoms, setUoms] = useState([]);
+
   const [showNewPresentations, setShowNewPresentations] = useState(false);
   const [showEditPresentations, setShowEditPresentations] = useState(false);
+  //Variable edit Presentation
+  const [selectedPresentation, setSelectedPresentation] = useState(null);
+  console.log(selectedPresentation);
   //Api
   const [presentations, setPresentations] = useState([]);
   useEffect(() => {
@@ -30,7 +40,7 @@ function Presentations() {
         setPresentations(response.data.presentations);
       })
       .catch((error) => {
-        console.error("Error al obtener los categorias:", error);
+        console.error("Error al obtener las presentaciones:", error);
       });
   }, [presentations]);
   //Api delete
@@ -51,6 +61,36 @@ function Presentations() {
         console.error("Error al eliminar la presentación:", error);
       });
   };
+  //Api products
+  useEffect(() => {
+    axios
+      .get(productsUrl, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+      .then((response) => {
+        setProducts(response.data.products);
+      })
+      .catch((error) => {
+        console.error("Error al obtener los productos:", error);
+      });
+  }, [products]);
+  // Api uom
+  useEffect(() => {
+    axios
+      .get(uomUrl, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+      .then((response) => {
+        setUoms(response.data.uoms);
+      })
+      .catch((error) => {
+        console.error("Error al obtener UOMS productos:", error);
+      });
+  }, [uoms]);
   return (
     <div>
       <div className="flex justify-between p-8 pb-20 bg-primary-blue">
@@ -85,19 +125,35 @@ function Presentations() {
                 className="text-dark-blue border-b-2 border-stone-100 "
               >
                 <td className="py-4">{presentation.id}</td>
-                <td className="py-4">uom</td>
-                <td className="py-4">products</td>
+                <td className="py-4">
+                  {uoms.map((uom) =>
+                    uom.id === presentation.uoms_id ? uom.name : null
+                  )}
+                </td>
+                <td className="py-4">
+                  {products.map((product) =>
+                    product.id === presentation.products_id
+                      ? product.name
+                      : null
+                  )}
+                </td>
                 <td className="py-4">{presentation.name}</td>
                 <td className="py-4">£ {presentation.cost}</td>
                 <td className="py-4 flex justify-center">
                   <button
-                    onClick={() => setShowEditPresentations(true)}
+                    onClick={() => {
+                      setSelectedPresentation(presentation);
+                      setShowEditPresentations(true);
+                    }}
                     className="flex text-primary-blue mr-6 font-medium hover:scale-110 hover:text-green hover:border-green"
                   >
                     <PencilSquareIcon className="h-6 w-6 mr-1" />
                     Edit
                   </button>
-                  <button className="flex text-primary-blue font-medium hover:scale-110 hover:text-danger hover:border-danger">
+                  <button
+                    onClick={() => handleDeletePresentation(presentation)}
+                    className="flex text-primary-blue font-medium hover:scale-110 hover:text-danger hover:border-danger"
+                  >
                     <TrashIcon className="h-6 w-6 mr-1" />
                     Delete
                   </button>
@@ -110,10 +166,13 @@ function Presentations() {
       <EditPresentation
         isvisible={showEditPresentations}
         onClose={() => setShowEditPresentations(false)}
+        presentation={selectedPresentation}
+        setPresentations={setPresentations}
       />
       <NewPresentation
         isvisible={showNewPresentations}
         onClose={() => setShowNewPresentations(false)}
+        setPresentations={setPresentations}
       />
     </div>
   );

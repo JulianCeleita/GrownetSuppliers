@@ -36,3 +36,10 @@ export const updateSupplierUrl =
   "https://api.grownetapp.com/grownet/api/suppliers/update/";
 export const deleteSupplierUrl =
   "https://api.grownetapp.com/grownet/api/suppliers/delete/";
+
+//Families
+export const familiesUrl =
+  "https://api.grownetapp.com/grownet/api/families/all";
+
+//UOM
+export const uomUrl = "https://api.grownetapp.com/grownet/api/uom/all";

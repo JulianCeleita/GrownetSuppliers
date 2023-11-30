@@ -1,6 +1,50 @@
+import { useState, useEffect } from "react";
+import axios from "axios";
+import {
+  uomUrl,
+  productsUrl,
+  updatePresentationUrl,
+} from "../config/urls.config";
+import useTokenStore from "../store/useTokenStore";
 import { XMarkIcon, ExclamationCircleIcon } from "@heroicons/react/24/outline";
 
-function EditPresentation({ isvisible, onClose }) {
+function EditPresentation({
+  isvisible,
+  onClose,
+  presentation,
+  setPresentation,
+}) {
+  const { token } = useTokenStore();
+  const [uoms, setUoms] = useState([]);
+
+  const [editedName, setEditedName] = useState(
+    presentation ? presentation.name : ""
+  );
+  const [editedCost, setEditedCost] = useState(
+    presentation ? presentation.cost : ""
+  );
+
+  //Variables formulario
+  /*
+  const [quantityPresentation, setQuantityPresentation] = useState("");
+  const [selecteUomsStatus, setSelectedUomsStatus] = useState("unit");*/
+
+  // Api uom
+  useEffect(() => {
+    axios
+      .get(uomUrl, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+      .then((response) => {
+        setUoms(response.data.uoms);
+      })
+      .catch((error) => {
+        console.error("Error al obtener UOMS productos:", error);
+      });
+  }, []);
+
   if (!isvisible) {
     return null;
   }
@@ -18,29 +62,19 @@ function EditPresentation({ isvisible, onClose }) {
           Edit presentation
         </h1>
         <form className="text-left  flex flex-col">
-          <label for="uom">Unit of measurement: </label>
+          <label>Unit weight of the product: </label>
           <select
             id="uom"
             name="uom"
             className="border p-3 rounded-md mr-3 mt-3"
             required
+            onChange={(e) => setSelectedUomsStatus(e.target.value)}
           >
-            <option value="unit">Unit</option>
-            <option value="kilo">Kilo</option>
-            <option value="bag">Bag</option>
-          </select>
-          <label for="produvt" className="mt-2">
-            Product:
-          </label>
-          <select
-            id="produvt"
-            name="produvt"
-            className="border p-3 rounded-md mr-3 mt-3"
-            required
-          >
-            <option value="Red pepper">Red pepper</option>
-            <option value="Apple granny smith">Apple granny smith</option>
-            <option value="Apples red">Apples red</option>
+            {uoms.map((uom) => (
+              <option key={uom.id} value={uom.id}>
+                {uom.name}
+              </option>
+            ))}
           </select>
           <div>
             <label>Code: </label>
@@ -48,7 +82,6 @@ function EditPresentation({ isvisible, onClose }) {
               className="border p-3 rounded-md mr-3 mt-3"
               placeholder="Foodpoint"
               type="text"
-              required
             ></input>
             <label>Quantity: </label>
             <input
@@ -65,12 +98,14 @@ function EditPresentation({ isvisible, onClose }) {
               placeholder="Foodpoint"
               type="text"
               required
+              onChange={(e) => setEditedName(e.target.value)}
             ></input>
             <label>Value: </label>
             <input
               className="border p-3 rounded-md mr-3 mt-3  w-[40%]"
               placeholder="50"
               type="text"
+              onChange={(e) => setEditedCost(e.target.value)}
               required
             ></input>
           </div>

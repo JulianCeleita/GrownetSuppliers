@@ -19,7 +19,7 @@ function Suppliers() {
   const [selectedSupplier, setSelectedSupplier] = useState(null);
   console.log(selectedSupplier);
   //Api
-  const urlImagen = "http://127.0.0.1:8000/";
+  const urlImagen = "https://api.grownetapp.com/grownet/";
   const [suppliers, setSuppliers] = useState([]);
   useEffect(() => {
     axios
