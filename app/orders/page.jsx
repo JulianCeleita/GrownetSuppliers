@@ -42,15 +42,15 @@ function OrderView() {
           <div className="flex">
             <div className="flex flex-col w-[50%]">
               <label>Date: </label>
-              <input type="date" className="border p-3 rounded-md mr-2" />
+              <input type="date" className="border p-1.5 rounded-md mr-2" />
               <label className="mt-2">A/C: </label>
-              <input type="text" className="border p-3 rounded-md mr-2" />
+              <input type="text" className="border p-1.5 rounded-md mr-2" />
             </div>
             <div className="flex flex-col w-[50%]">
               <label>Inv. No.: </label>
-              <input type="text" className="border p-3 rounded-md mr-2" />
+              <input type="text" className="border p-1.5 rounded-md mr-2" />
               <label className="mt-2">Order No.: </label>
-              <input type="text" className="border p-3 rounded-md mr-2" />
+              <input type="text" className="border p-1.5 rounded-md mr-2" />
             </div>
           </div>
           <label>Customer: </label>
