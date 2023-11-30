@@ -1,5 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
+import useTokenStore from "@/app/store/useTokenStore";
+import useCategoryStore from "@/app/store/useCategoryStore";
 import {
   PencilSquareIcon,
   TrashIcon,
@@ -9,8 +11,7 @@ import NewCategory from "../components/NewCategory";
 import EditCategory from "../components/EditCategory";
 import axios from "axios";
 import { categoriesUrl, deleteCategoryUrl } from "@/app/config/urls.config";
-import useTokenStore from "@/app/store/useTokenStore";
-import useCategoryStore from "@/app/store/useCategoryStore";
+
 function Categories() {
   const { token } = useTokenStore();
   const [showNewCategory, setShowNewCategory] = useState(false);

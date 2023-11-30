@@ -1,13 +1,15 @@
-import { XMarkIcon } from "@heroicons/react/24/outline";
-import { useState, useEffect } from "react";
-import axios from "axios";
+import { useState } from "react";
 import useCategoryStore from "@/app/store/useCategoryStore";
+import { XMarkIcon } from "@heroicons/react/24/outline";
+import axios from "axios";
+
 function NewProduct({ isvisible, onClose, setProducts }) {
+  const { categories } = useCategoryStore();
+  const [addProduct, setAddProduct] = useState("");
+
   if (!isvisible) {
     return null;
   }
-  const { categories } = useCategoryStore();
-  const [addProduct, setAddProduct] = useState("");
   //Add product api
   const enviarData = (e) => {
     e.preventDefault();
