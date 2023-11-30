@@ -10,9 +10,11 @@ import EditPresentation from "@/app/components/EditPresentation";
 import axios from "axios";
 import { presentationsUrl } from "@/app/config/urls.config";
 import useTokenStore from "@/app/store/useTokenStore";
+import useProductStore from "../store/useProductStore";
 
 function Presentations() {
   const { token } = useTokenStore();
+  const { products } = useProductStore();
   const [showNewPresentations, setShowNewPresentations] = useState(false);
   const [showEditPresentations, setShowEditPresentations] = useState(false);
   //Api
@@ -30,7 +32,25 @@ function Presentations() {
       .catch((error) => {
         console.error("Error al obtener los categorias:", error);
       });
-  }, []);
+  }, [presentations]);
+  //Api delete
+  const [deleteResponse, setDeleteResponse] = useState(null);
+  const handleDeletePresentation = (presentation) => {
+    const { id } = presentation;
+    axios
+      .delete(`${deletePresentationUrl}${id}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+      .then((response) => {
+        setDeleteResponse(response.data);
+        console.log("Se borro con éxito");
+      })
+      .catch((error) => {
+        console.error("Error al eliminar la presentación:", error);
+      });
+  };
   return (
     <div>
       <div className="flex justify-between p-8 pb-20 bg-primary-blue">
@@ -65,10 +85,10 @@ function Presentations() {
                 className="text-dark-blue border-b-2 border-stone-100 "
               >
                 <td className="py-4">{presentation.id}</td>
+                <td className="py-4">uom</td>
+                <td className="py-4">products</td>
                 <td className="py-4">{presentation.name}</td>
-                <td className="py-4">Dry goods</td>
-                <td className="py-4">{presentation.name}</td>
-                <td className="py-4">10.5</td>
+                <td className="py-4">£ {presentation.cost}</td>
                 <td className="py-4 flex justify-center">
                   <button
                     onClick={() => setShowEditPresentations(true)}
