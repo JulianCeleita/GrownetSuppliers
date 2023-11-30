@@ -118,7 +118,7 @@ export default function Table() {
               <tr className="text-lg">
                 <th
                   scope="col"
-                  className="py-3 bg-dark-blue rounded-lg"
+                  className="py-2 bg-dark-blue rounded-lg"
                   style={{
                     boxShadow:
                       "0px 5px 5px rgba(0, 0, 0, 0.5), 0px 0px 0px rgba(0, 0, 0, 0.2)",
@@ -195,7 +195,7 @@ export default function Table() {
               {rows.map((row, rowIndex) => (
                 <tr key={rowIndex}>
                   <td
-                    className={`w-[14.2%] px-6 py-3    border-r-2 border-r-[#0c547a] border-[#808e94] ${
+                    className={`w-[14.2%] px-6 py-2    border-r-2 border-r-[#0c547a] border-[#808e94] ${
                       rowIndex === 0 ? "border-t-0" : "border-t-2"
                     }`}
                   >
@@ -215,7 +215,7 @@ export default function Table() {
                     />
                   </td>
                   <td
-                    className={` w-[14.2%] px-6 py-3  border-r-2  border-r-[#0c547a] border-[#808e94] ${
+                    className={` w-[14.2%] px-6 py-2  border-r-2  border-r-[#0c547a] border-[#808e94] ${
                       rowIndex === 0 ? "border-t-0" : "border-t-2"
                     }`}
                   >
@@ -234,7 +234,7 @@ export default function Table() {
                     />
                   </td>
                   <td
-                    className={` w-[14.2%] px-6 py-3   border-[#808e94] border-r-[#0c547a]  border-r-2 ${
+                    className={` w-[14.2%] px-6 py-2   border-[#808e94] border-r-[#0c547a]  border-r-2 ${
                       rowIndex === 0 ? "border-t-0" : "border-t-2"
                     }`}
                   >
@@ -253,7 +253,7 @@ export default function Table() {
                     />
                   </td>
                   <td
-                    className={`w-[14.2%] px-6 py-3  border-r-2 border-[#808e94] border-r-[#0c547a] ${
+                    className={`w-[14.2%] px-6 py-2  border-r-2 border-[#808e94] border-r-[#0c547a] ${
                       rowIndex === 0 ? "border-t-0" : "border-t-2"
                     }`}
                   >
@@ -270,7 +270,7 @@ export default function Table() {
                     />
                   </td>
                   <td
-                    className={` w-[14.2%] px-6 py-3  border-r-2 border-[#808e94] border-r-[#0c547a] ${
+                    className={` w-[14.2%] px-6 py-2  border-r-2 border-[#808e94] border-r-[#0c547a] ${
                       rowIndex === 0 ? "border-t-0" : "border-t-2"
                     }`}
                   >
@@ -287,7 +287,7 @@ export default function Table() {
                     />
                   </td>
                   <td
-                    className={` w-[14.2%] px-6 py-3  border-r-2 border-[#808e94] border-r-[#0c547a] ${
+                    className={` w-[14.2%] px-6 py-2  border-r-2 border-[#808e94] border-r-[#0c547a] ${
                       rowIndex === 0 ? "border-t-0" : "border-t-2"
                     }`}
                   >
@@ -304,7 +304,7 @@ export default function Table() {
                     />
                   </td>{" "}
                   <td
-                    className={`w-[14.2%] px-6 py-3   border-[#808e94]  ${
+                    className={`w-[14.2%] px-6 py-2   border-[#808e94]  ${
                       rowIndex === 0 ? "border-t-0" : "border-t-2"
                     }`}
                   >
@@ -343,7 +343,7 @@ export default function Table() {
             <input className="border p-2 rounded-md w-[200px]" />
           </div>
           <div className="w-full flex justify-end mt-5">
-            <button className="bg-primary-blue py-3 px-4 rounded-lg text-white font-medium mr-2">
+            <button className="bg-primary-blue py-2 px-4 rounded-lg text-white font-medium mr-2">
               Send order
             </button>
           </div>
