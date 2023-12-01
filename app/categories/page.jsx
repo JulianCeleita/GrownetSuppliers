@@ -12,6 +12,23 @@ import EditCategory from "../components/EditCategory";
 import axios from "axios";
 import { categoriesUrl, deleteCategoryUrl } from "@/app/config/urls.config";
 
+export const fetchCategories = async (token, setCategories) => {
+  try {
+    const response = await axios.get(categoriesUrl, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    const newCategories = Array.isArray(response.data.categories)
+      ? response.data.categories
+      : [];
+    setCategories(newCategories);
+  } catch (error) {
+    console.error("Error al obtener las categorías:", error);
+  }
+};
+
 function Categories() {
   const { token } = useTokenStore();
   const [showNewCategory, setShowNewCategory] = useState(false);
@@ -21,40 +38,28 @@ function Categories() {
 
   //Api categorias
   const { categories, setCategories } = useCategoryStore();
+
   useEffect(() => {
-    axios
-      .get(categoriesUrl, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      })
-      .then((response) => {
-        const newCategories = Array.isArray(response.data.categories)
-          ? response.data.categories
-          : [];
-        setCategories(newCategories);
-      })
-      .catch((error) => {
-        console.error("Error al obtener las categorías:", error);
-      });
-  }, [categories]);
+    fetchCategories(token, setCategories);
+  }, []);
+
   //Api delete
   const [deleteResponse, setDeleteResponse] = useState(null);
-  const handleDeleteCategory = (category) => {
+  const handleDeleteCategory = async (category) => {
     const { id } = category;
-    axios
-      .delete(`${deleteCategoryUrl}${id}`, {
+
+    try {
+      const response = await axios.delete(`${deleteCategoryUrl}${id}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
-      })
-      .then((response) => {
-        setDeleteResponse(response.data);
-        console.log("Se borro con éxito");
-      })
-      .catch((error) => {
-        console.error("Error al eliminar la categoría:", error);
       });
+
+      setDeleteResponse(response.data);
+      console.log("Se borro con éxito");
+    } catch (error) {
+      console.error("Error al eliminar la categoría:", error);
+    }
   };
   return (
     <div>

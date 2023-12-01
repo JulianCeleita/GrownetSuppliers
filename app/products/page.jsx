@@ -11,49 +11,60 @@ import { useEffect, useState } from "react";
 import NewProduct from "../components/NewProduct";
 import useProductStore from "@/app/store/useProductStore";
 import useTokenStore from "@/app/store/useTokenStore";
+import { fetchCategories } from "../categories/page";
+import useCategoryStore from "../store/useCategoryStore";
 
 function Products() {
   const { token } = useTokenStore();
+  const { setCategories } = useCategoryStore();
   const [showNewProduct, setShowNewProduct] = useState(false);
   const [showEditProduct, setShowEditProduct] = useState(false);
   //Api
   const { products, setProducts } = useProductStore();
   const urlImagen = "https://api.grownetapp.com/grownet/";
-  useEffect(() => {
-    axios
-      .get(productsUrl, {
+
+  const fetchProducts = async (token) => {
+    try {
+      const response = await axios.get(productsUrl, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
-      })
-      .then((response) => {
-        const newProducts = Array.isArray(response.data.products)
-          ? response.data.products
-          : [];
-        setProducts(newProducts);
-      })
-      .catch((error) => {
-        console.error("Error al obtener los productos:", error);
       });
-  }, [products]);
+
+      const newProducts = Array.isArray(response.data.products)
+        ? response.data.products
+        : [];
+      console.log("se ejecuto");
+      setProducts(newProducts);
+    } catch (error) {
+      console.error("Error al obtener los productos:", error);
+    }
+  };
+
+  // Efecto useEffect
+  useEffect(() => {
+    fetchProducts(token, setProducts);
+    fetchCategories(token, setCategories);
+  }, []);
+
   //Api delete
   const [deleteResponse, setDeleteResponse] = useState(null);
-  const handleDeleteProduct = (product) => {
-    const { id } = product;
-    axios
-      .post(`${deleteProductUrl}${id}`, null, {
+  const handleDeleteProduct = async (product) => {
+    try {
+      const { id } = product;
+      const response = await axios.post(`${deleteProductUrl}${id}`, null, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
-      })
-      .then((response) => {
-        setDeleteResponse(response.data);
-        console.log("Se borró con éxito el producto" + product.id);
-      })
-      .catch((error) => {
-        console.error("Error al eliminar el producto:", error);
       });
+
+      setDeleteResponse(response.data);
+      console.log("Se borró con éxito el producto" + product.id);
+    } catch (error) {
+      console.error("Error al eliminar el producto:", error);
+    }
   };
+
   return (
     <div>
       <div className="flex justify-between p-8 pb-20 bg-primary-blue">
@@ -124,7 +135,7 @@ function Products() {
       <NewProduct
         isvisible={showNewProduct}
         onClose={() => setShowNewProduct(false)}
-        setProducts={setProducts}
+        fetchProducts={fetchProducts}
       ></NewProduct>
       <EditProduct
         isvisible={showEditProduct}

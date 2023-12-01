@@ -1,15 +1,46 @@
+"use client";
+import React, { useEffect, useState } from "react";
 import Table from "@/app/components/Table";
+import { OrdersApi } from "../config/urls.config";
+import axios from "axios";
+import useTokenStore from "../store/useTokenStore";
 
-function OrderView() {
+const OrderView = () => {
+  const { token } = useTokenStore();
+  const [restaurants, setRestaurants] = useState(null);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.get(OrdersApi, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        setRestaurants(response.data);
+      } catch (error) {
+        console.error("Error fetching data", error);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  console.log("restaurantes:", restaurants);
+
   return (
     <>
       <div className="grid grid-cols-2 gap-4 p-6 shadow-lg bg-primary-blue pb-20">
         <div className="grid grid-cols-2 bg-white p-4 rounded-lg shadow-lg text-dark-blue">
           <div className="grid grid-cols-2 m-4 gap-2">
             <h3>Account Number:</h3>
-            <h3 className="underline decoration-2 decoration-green">
-              123-654-789{" "}
-            </h3>
+
+            <input
+              type="text"
+              className="underline decoration-2 decoration-green h-[30px] border pl-2"
+            />
+
             <h3>Post Code:</h3>
             <h3 className="underline decoration-2 decoration-green">
               7755225588
@@ -62,5 +93,5 @@ function OrderView() {
       </div>
     </>
   );
-}
+};
 export default OrderView;

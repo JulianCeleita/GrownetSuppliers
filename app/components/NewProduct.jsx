@@ -4,13 +4,14 @@ import {
   familiesUrl,
   uomUrl,
   presentationsUrl,
+  TaxesApi,
 } from "../config/urls.config";
 import useTokenStore from "../store/useTokenStore";
 import useCategoryStore from "@/app/store/useCategoryStore";
 import { XMarkIcon } from "@heroicons/react/24/outline";
 import axios from "axios";
 
-function NewProduct({ isvisible, onClose, setProducts }) {
+function NewProduct({ isvisible, onClose, fetchProducts }) {
   const { token } = useTokenStore();
   const { categories } = useCategoryStore();
   //Variables formulario
@@ -23,100 +24,108 @@ function NewProduct({ isvisible, onClose, setProducts }) {
   const [selectedFamiliesStatus, setSelectedFamiliesStatus] =
     useState("banana");
   const [selecteUomsStatus, setSelectedUomsStatus] = useState("unit");
-  useState("5 Kg");
   const [families, setFamilies] = useState([]);
   const [uoms, setUoms] = useState([]);
+  const [tax, setTax] = useState([]);
+  const [selectedTax, setSelectedTax] = useState("");
+
+  // Taxes
+  useEffect(() => {
+    const fetchTaxes = async () => {
+      try {
+        const response = await axios.get(TaxesApi, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        setTax(response.data.taxes);
+      } catch (error) {
+        console.error("Error al obtener Taxes productos:", error);
+      }
+    };
+
+    fetchTaxes();
+  }, []);
 
   // Api families
   useEffect(() => {
-    axios
-      .get(familiesUrl, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      })
-      .then((response) => {
+    const fetchFamilies = async () => {
+      try {
+        const response = await axios.get(familiesUrl, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
         setFamilies(response.data.families);
-      })
-      .catch((error) => {
+      } catch (error) {
         console.error("Error al obtener las familia productos:", error);
-      });
+      }
+    };
+
+    fetchFamilies();
   }, []);
 
   // Api uom
   useEffect(() => {
-    axios
-      .get(uomUrl, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      })
-      .then((response) => {
+    const fetchUoms = async () => {
+      try {
+        const response = await axios.get(uomUrl, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
         setUoms(response.data.uoms);
-      })
-      .catch((error) => {
+      } catch (error) {
         console.error("Error al obtener UOMS productos:", error);
-      });
-  }, []);
+      }
+    };
 
-  //Api presentation
-  const [presentations, setPresentations] = useState([]);
-  useEffect(() => {
-    axios
-      .get(presentationsUrl, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      })
-      .then((response) => {
-        setPresentations(response.data.presentations);
-      })
-      .catch((error) => {
-        console.error("Error al obtener las presentaciones:", error);
-      });
-  }, [presentations]);
+    fetchUoms();
+  }, []);
 
   if (!isvisible) {
     return null;
   }
-  //Estado producto
+
+  // Estado producto
   const statusMapping = {
     active: 1,
     disable: 2,
   };
-  //Add product api
-  const enviarData = (e) => {
+
+  // Add product api
+  const enviarData = async (e) => {
     e.preventDefault();
+
     const postData = {
       name: addProduct,
       code: codeProduct,
-      categories_id: selectedCategoryId,
-      quantity: quantityProduct,
-      stateProduct_id: statusMapping[selectedStatus],
+      category_id: selectedCategoryId,
       country_indicative: "44",
-      families_id: selectedFamiliesStatus,
       uom_id: selecteUomsStatus,
+      quantity: quantityProduct,
+      cost: 200,
+      // stateProduct_id: statusMapping[selectedStatus],
+      // families_id: selectedFamiliesStatus,
       presentation: presentationProduct,
-      /*
-      taxe_id:
-      */
+      // taxe_id: selectedTax,
     };
 
-    axios.post(addProductUrl, postData),
-      {
+    try {
+      const response = await axios.post(addProductUrl, postData, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
-      }
-        .then((response) => {
-          const newProduct = response.data;
-          setProducts((prevProducts) => [...prevProducts, newProduct]);
-          onClose();
-        })
-        .catch(function (error) {
-          console.error("Error al agregar la nueva categoria:", error);
-        });
+      });
+
+      onClose();
+      await fetchProducts(token);
+      console.log("response.data", response.data);
+    } catch (error) {
+      console.error("Error al agregar la nueva categoría:", error);
+    }
   };
+
   return (
     <div className="fixed inset-0 bg-black bg-opacity-25 backdrop-blur-sm flex flex-col justify-center items-center">
       <div className="bg-white p-8 rounded-2xl w-[800px] flex flex-col items-center">
@@ -148,7 +157,7 @@ function NewProduct({ isvisible, onClose, setProducts }) {
               required
             ></input>
           </div>
-          <label for="family">Family: </label>
+          <label htmlFor="family">Family: </label>
           <select
             id="family"
             name="family"
@@ -241,9 +250,14 @@ function NewProduct({ isvisible, onClose, setProducts }) {
               name="tax"
               className="border p-3 rounded-md mr-3 mt-3 w-40"
               required
+              onChange={(e) => setSelectedTax(e.target.value)}
+              value={selectedTax}
             >
-              <option value="0.2">0.2</option>
-              <option value="0.05">0.05</option>
+              {tax.map((tax) => (
+                <option key={tax.id} value={tax.id}>
+                  {tax.worth}
+                </option>
+              ))}
             </select>
           </div>
 
