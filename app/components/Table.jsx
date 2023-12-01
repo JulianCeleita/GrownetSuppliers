@@ -116,104 +116,64 @@ export default function Table() {
           <table className="w-full text-sm text-center">
             <thead className="text-white">
               <tr className="text-lg">
-                <th
-                  scope="col"
-                  className="py-2 bg-dark-blue rounded-lg"
-                  style={{
-                    boxShadow:
-                      "0px 5px 5px rgba(0, 0, 0, 0.5), 0px 0px 0px rgba(0, 0, 0, 0.2)",
-                  }}
-                >
-                  <p className="text-xl text-[#ffffff]">Product Code</p>
-                </th>
-
-                <th
-                  scope="col"
-                  className=" bg-dark-blue rounded-lg "
-                  style={{
-                    boxShadow:
-                      "0px 5px 5px rgba(0, 0, 0, 0.5), 0px 0px 0px rgba(0, 0, 0, 0.2)",
-                  }}
-                >
-                  <p className="text-xl text-[#ffffff]">Presentation</p>
-                </th>
-
-                <th
-                  scope="col"
-                  className="  bg-dark-blue  rounded-lg "
-                  style={{
-                    boxShadow:
-                      "0px 5px 5px rgba(0, 0, 0, 0.5), 0px 0px 0px rgba(0, 0, 0, 0.2)",
-                  }}
-                >
-                  <p className="text-xl text-[#ffffff]">Description</p>
-                </th>
-                <th
-                  scope="col"
-                  className=" bg-dark-blue rounded-lg   "
-                  style={{
-                    boxShadow:
-                      "0px 5px 5px rgba(0, 0, 0, 0.5), 0px 0px 0px rgba(0, 0, 0, 0.2)",
-                  }}
-                >
-                  <p className="text-[#ffffff] text-xl">UOM</p>
-                </th>
-                <th
-                  scope="col"
-                  className="  bg-dark-blue rounded-lg "
-                  style={{
-                    boxShadow:
-                      "0px 5px 5px rgba(0, 0, 0, 0.5), 0px 0px 0px rgba(0, 0, 0, 0.2)",
-                  }}
-                >
-                  <p className="text-xl text-[#ffffff]">Qty</p>
-                </th>
-
-                <th
-                  scope="col"
-                  className="  bg-dark-blue rounded-lg "
-                  style={{
-                    boxShadow:
-                      "0px 5px 5px rgba(0, 0, 0, 0.5), 0px 0px 0px rgba(0, 0, 0, 0.2)",
-                  }}
-                >
-                  <p className="text-xl text-[#ffffff]">Price</p>
-                </th>
-                <th
-                  scope="col"
-                  className="  bg-dark-blue rounded-lg "
-                  style={{
-                    boxShadow:
-                      "0px 5px 5px rgba(0, 0, 0, 0.5), 0px 0px 0px rgba(0, 0, 0, 0.2)",
-                  }}
-                >
-                  <p className="text-xl text-[#ffffff]">Total Price</p>
-                </th>
+                {[
+              "Product Code",
+              "Presentation",
+              "Description",
+              "UOM",
+              "Qty",
+              "Price",
+              "Total Price"
+            ].map((heading, index) => (
+              <th
+                key={index}
+                scope="col"
+                className="py-2 bg-dark-blue rounded-lg"
+                style={{
+                  boxShadow:
+                    "0px 5px 5px rgba(0, 0, 0, 0.5), 0px 0px 0px rgba(0, 0, 0, 0.2)"
+                }}
+              >
+                <p className="text-xl text-[#ffffff]">{heading}</p>
+              </th>
+            ))}
               </tr>
             </thead>
             <tbody className="shadow-[rgba(0,_0,_0,_0.24)_0px_3px_8px] rounded-xl ">
               {rows.map((row, rowIndex) => (
                 <tr key={rowIndex}>
+
+                  {/*  *********** CODIGO DE PRODUCTO *********** */}
                   <td
-                    className={`w-[14.2%] px-6 py-2    border-r-2 border-r-[#0c547a] border-[#808e94] ${
-                      rowIndex === 0 ? "border-t-0" : "border-t-2"
-                    }`}
-                  >
-                    <input
-                      ref={inputRefs.productCode[rowIndex]}
-                      value={row.productCode}
-                      onChange={(e) => {
-                        const updatedRows = [...rows];
-                        updatedRows[rowIndex].productCode = e.target.value;
-                        setRows(updatedRows);
-                      }}
-                      onKeyDown={(e) =>
-                        handleKeyDown(e, rowIndex, "productCode")
-                      }
-                      className="w-full outline-none"
-                      autoFocus={rowIndex === 0}
-                    />
-                  </td>
+  className={`w-[14.2%] px-6 py-2 border-r-2 border-r-[#0c547a] border-[#808e94] ${
+    rowIndex === 0 ? "border-t-0" : "border-t-2"
+  }`}
+>
+  <input
+    ref={inputRefs.productCode[rowIndex]}
+    value={row.productCode}
+    onChange={(e) => {
+      const updatedRows = [...rows];
+      const newProductCode = e.target.value;
+
+      if (newProductCode.includes("*")) {
+        updatedRows[rowIndex].presentation = "Box";
+      } else if (newProductCode.includes("/")) {
+        updatedRows[rowIndex].presentation = "Weight";
+      } else if (newProductCode.includes("+")) {
+        updatedRows[rowIndex].presentation = "Each";
+      }
+
+      updatedRows[rowIndex].productCode = newProductCode;
+      setRows(updatedRows);
+    }}
+    onKeyDown={(e) => handleKeyDown(e, rowIndex, "productCode")}
+    className="w-full outline-none"
+    autoFocus={rowIndex === 0}
+  />
+</td>
+
+                  {/*  *********** PRESENTACION *********** */}
                   <td
                     className={` w-[14.2%] px-6 py-2  border-r-2  border-r-[#0c547a] border-[#808e94] ${
                       rowIndex === 0 ? "border-t-0" : "border-t-2"
@@ -233,6 +193,9 @@ export default function Table() {
                       className="w-full outline-none"
                     />
                   </td>
+
+
+                  {/*  *********** DESCRIPCION *********** */}
                   <td
                     className={` w-[14.2%] px-6 py-2   border-[#808e94] border-r-[#0c547a]  border-r-2 ${
                       rowIndex === 0 ? "border-t-0" : "border-t-2"
@@ -252,6 +215,8 @@ export default function Table() {
                       className="w-full outline-none"
                     />
                   </td>
+
+                  {/*  *********** UOM *********** */}
                   <td
                     className={`w-[14.2%] px-6 py-2  border-r-2 border-[#808e94] border-r-[#0c547a] ${
                       rowIndex === 0 ? "border-t-0" : "border-t-2"
@@ -269,6 +234,8 @@ export default function Table() {
                       className="w-full outline-none"
                     />
                   </td>
+
+                  {/*  *********** CANTIDAD *********** */}
                   <td
                     className={` w-[14.2%] px-6 py-2  border-r-2 border-[#808e94] border-r-[#0c547a] ${
                       rowIndex === 0 ? "border-t-0" : "border-t-2"
@@ -286,6 +253,8 @@ export default function Table() {
                       className="w-full outline-none"
                     />
                   </td>
+
+                  {/*  *********** PRECIO *********** */}
                   <td
                     className={` w-[14.2%] px-6 py-2  border-r-2 border-[#808e94] border-r-[#0c547a] ${
                       rowIndex === 0 ? "border-t-0" : "border-t-2"
@@ -302,7 +271,9 @@ export default function Table() {
                       onKeyDown={(e) => handleKeyDown(e, rowIndex, "price")}
                       className="w-full outline-none"
                     />
-                  </td>{" "}
+                  </td>
+
+                  {/*  *********** PRECIO TOTAL *********** */}
                   <td
                     className={`w-[14.2%] px-6 py-2   border-[#808e94]  ${
                       rowIndex === 0 ? "border-t-0" : "border-t-2"

@@ -43,3 +43,6 @@ export const familiesUrl =
 
 //UOM
 export const uomUrl = "https://api.grownetapp.com/grownet/api/uom/all";
+
+//Orders
+export const createOrders = "https://api.grownetapp.com/grownet/api/orders/create";
