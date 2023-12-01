@@ -1,7 +1,8 @@
 // Products
 export const productsUrl =
   "https://api.grownetapp.com/grownet/api/products/all";
-export const addProductUrl = "https://api.grownetapp.com/grownet/api/products/";
+export const addProductUrl =
+  "https://api.grownetapp.com/grownet/api/products/create";
 export const updateProductUrl =
   "https://api.grownetapp.com/grownet/api/products/update/";
 export const deleteProductUrl =
@@ -43,3 +44,10 @@ export const familiesUrl =
 
 //UOM
 export const uomUrl = "https://api.grownetapp.com/grownet/api/uom/all";
+
+//Orders
+export const OrdersApi =
+  "https://api.grownetapp.com/grownet/api/customers/chef";
+
+//Taxes
+export const TaxesApi = "https://api.grownetapp.com/grownet/api/taxes/all";
