@@ -28,6 +28,7 @@ function NewProduct({ isvisible, onClose, fetchProducts }) {
   const [uoms, setUoms] = useState([]);
   const [tax, setTax] = useState([]);
   const [selectedTax, setSelectedTax] = useState("");
+  const [selectedImageName, setSelectedImageName] = useState("");
 
   // Taxes
   useEffect(() => {
@@ -92,6 +93,11 @@ function NewProduct({ isvisible, onClose, fetchProducts }) {
     active: 1,
     disable: 2,
   };
+  const urlImagen = "https://api.grownetapp.com/grownet/";
+  const handleImageChange = (e) => {
+    const fileName = e.target.files[0]?.name || "";
+    setSelectedImageName(fileName);
+  };
 
   // Add product api
   const enviarData = async (e) => {
@@ -106,11 +112,12 @@ function NewProduct({ isvisible, onClose, fetchProducts }) {
       quantity: quantityProduct,
       cost: 200,
       // stateProduct_id: statusMapping[selectedStatus],
-      // families_id: selectedFamiliesStatus,
+      families_id: selectedFamiliesStatus,
       presentation: presentationProduct,
+      image: selectedImageName,
       // taxe_id: selectedTax,
     };
-
+    console.log("imagen", postData);
     try {
       const response = await axios.post(addProductUrl, postData, {
         headers: {
@@ -230,6 +237,7 @@ function NewProduct({ isvisible, onClose, fetchProducts }) {
             className="p-3 rounded-md mr-3 mt-3 cursor-pointer"
             placeholder="Fruit"
             type="file"
+            onChange={handleImageChange}
           ></input>
           <div>
             <label>Product status: </label>
