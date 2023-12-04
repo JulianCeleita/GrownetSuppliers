@@ -28,7 +28,7 @@ function NewProduct({ isvisible, onClose, fetchProducts }) {
   const [uoms, setUoms] = useState([]);
   const [tax, setTax] = useState([]);
   const [selectedTax, setSelectedTax] = useState("");
-  const [selectedImageName, setSelectedImageName] = useState("");
+  const [selectedImageName, setSelectedImageName] = useState(null);
 
   // Taxes
   useEffect(() => {
@@ -93,35 +93,33 @@ function NewProduct({ isvisible, onClose, fetchProducts }) {
     active: 1,
     disable: 2,
   };
-  const urlImagen = "https://api.grownetapp.com/grownet/";
+
   const handleImageChange = (e) => {
-    const fileName = e.target.files[0]?.name || "";
-    setSelectedImageName(fileName);
+    const file = e.target.files[0];
+    setSelectedImageName(file);
   };
 
   // Add product api
   const enviarData = async (e) => {
     e.preventDefault();
 
-    const postData = {
-      name: addProduct,
-      code: codeProduct,
-      category_id: selectedCategoryId,
-      country_indicative: "44",
-      uom_id: selecteUomsStatus,
-      quantity: quantityProduct,
-      cost: 200,
-      // stateProduct_id: statusMapping[selectedStatus],
-      families_id: selectedFamiliesStatus,
-      presentation: presentationProduct,
-      image: selectedImageName,
-      // taxe_id: selectedTax,
-    };
-    console.log("imagen", postData);
+    const formData = new FormData();
+    formData.append("name", addProduct);
+    formData.append("code", codeProduct);
+    formData.append("category_id", selectedCategoryId);
+    formData.append("country_indicative", "44");
+    formData.append("uom_id", selecteUomsStatus);
+    formData.append("quantity", quantityProduct);
+    formData.append("cost", 200);
+    formData.append("family_id", selectedFamiliesStatus);
+    formData.append("presentation", presentationProduct);
+    formData.append("image", selectedImageName);
+
     try {
-      const response = await axios.post(addProductUrl, postData, {
+      const response = await axios.post(addProductUrl, formData, {
         headers: {
           Authorization: `Bearer ${token}`,
+          "Content-Type": "multipart/form-data",
         },
       });
 
@@ -129,7 +127,7 @@ function NewProduct({ isvisible, onClose, fetchProducts }) {
       await fetchProducts(token);
       console.log("response.data", response.data);
     } catch (error) {
-      console.error("Error al agregar la nueva categoría:", error);
+      console.error("Error al crear el producto:", error);
     }
   };
 
