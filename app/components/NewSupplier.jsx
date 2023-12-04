@@ -3,31 +3,40 @@ import axios from "axios";
 import { useState } from "react";
 import { addSupplierUrl } from "@/app/config/urls.config";
 import useTokenStore from "../store/useTokenStore";
+import { fetchSuppliers } from "../suppliers/page";
 
 function NewSupplier({ isvisible, onClose, setSuppliers }) {
   const { token } = useTokenStore();
   const [addSupplier, setAddSupplier] = useState("");
   const [emailSupplier, setEmailSupplier] = useState("");
+  const [selectedImage, setSelectedImage] = useState(null);
 
   if (!isvisible) {
     return null;
   }
-  //Add Supplier api
+
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    setSelectedImage(file);
+  };
+
   const enviarData = (e) => {
     e.preventDefault();
-    const postData = {
-      name: addSupplier,
-      email: emailSupplier,
-    };
+
+    const formData = new FormData();
+    formData.append("name", addSupplier);
+    formData.append("email", emailSupplier);
+    formData.append("image", selectedImage);
+
     axios
-      .post(addSupplierUrl, postData, {
+      .post(addSupplierUrl, formData, {
         headers: {
           Authorization: `Bearer ${token}`,
+          "Content-Type": "multipart/form-data",
         },
       })
       .then((response) => {
-        const newSupplier = response.data;
-        setSuppliers((prevSuppliers) => [...prevSuppliers, newSupplier]);
+        fetchSuppliers(token, setSuppliers);
         onClose();
       })
       .catch(function (error) {
@@ -73,6 +82,7 @@ function NewSupplier({ isvisible, onClose, setSuppliers }) {
             className="p-3 rounded-md mr-3 mt-3 cursor-pointer"
             placeholder="Fruit"
             type="file"
+            onChange={handleImageChange}
           ></input>
           <div className="mt-3 text-center">
             <button

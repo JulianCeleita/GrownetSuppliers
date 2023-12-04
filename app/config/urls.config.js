@@ -45,7 +45,6 @@ export const familiesUrl =
 //UOM
 export const uomUrl = "https://api.grownetapp.com/grownet/api/uom/all";
 
-
 //Orders api de prueba
 export const OrdersApi =
   "https://api.grownetapp.com/grownet/api/customers/chef";
@@ -53,4 +52,5 @@ export const OrdersApi =
 //Taxes
 export const TaxesApi = "https://api.grownetapp.com/grownet/api/taxes/all";
 //Orders
-export const createOrders = "https://api.grownetapp.com/grownet/api/orders/create";
+export const createOrders =
+  "https://api.grownetapp.com/grownet/api/orders/create";

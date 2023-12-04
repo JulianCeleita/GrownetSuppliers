@@ -26,7 +26,6 @@ function Presentations() {
   const [showEditPresentations, setShowEditPresentations] = useState(false);
   //Variable edit Presentation
   const [selectedPresentation, setSelectedPresentation] = useState(null);
-  console.log(selectedPresentation);
   //Api
   const [presentations, setPresentations] = useState([]);
   useEffect(() => {
@@ -42,7 +41,7 @@ function Presentations() {
       .catch((error) => {
         console.error("Error al obtener las presentaciones:", error);
       });
-  }, [presentations]);
+  }, []);
   //Api delete
   const [deleteResponse, setDeleteResponse] = useState(null);
   const handleDeletePresentation = (presentation) => {
@@ -75,7 +74,7 @@ function Presentations() {
       .catch((error) => {
         console.error("Error al obtener los productos:", error);
       });
-  }, [products]);
+  }, []);
   // Api uom
   useEffect(() => {
     axios
@@ -90,7 +89,7 @@ function Presentations() {
       .catch((error) => {
         console.error("Error al obtener UOMS productos:", error);
       });
-  }, [uoms]);
+  }, []);
   return (
     <div>
       <div className="flex justify-between p-8 pb-20 bg-primary-blue">

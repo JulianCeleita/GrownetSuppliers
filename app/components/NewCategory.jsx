@@ -3,6 +3,7 @@ import useTokenStore from "@/app/store/useTokenStore";
 import { addCategoryUrl } from "@/app/config/urls.config";
 import axios from "axios";
 import { XMarkIcon } from "@heroicons/react/24/outline";
+import { fetchCategories } from "../categories/page";
 
 function NewCategory({ isvisible, onClose, setCategories }) {
   const { token } = useTokenStore();
@@ -25,8 +26,7 @@ function NewCategory({ isvisible, onClose, setCategories }) {
         },
       })
       .then((response) => {
-        const newCategory = response.data;
-        setCategories((prevCategories) => [...prevCategories, newCategory]);
+        fetchCategories(token, setCategories);
         onClose();
       })
       .catch(function (error) {

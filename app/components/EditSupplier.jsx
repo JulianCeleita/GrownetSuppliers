@@ -3,6 +3,7 @@ import axios from "axios";
 import { useState } from "react";
 import { updateSupplierUrl } from "@/app/config/urls.config";
 import useTokenStore from "../store/useTokenStore";
+import { fetchSuppliers } from "../suppliers/page";
 
 function EditSupplier({ isvisible, onClose, supplier, setSuppliers }) {
   const { token } = useTokenStore();
@@ -10,34 +11,31 @@ function EditSupplier({ isvisible, onClose, supplier, setSuppliers }) {
   const [editedEmail, setEditedEmail] = useState(
     supplier ? supplier.email : ""
   );
+  const [selectedImage, setSelectedImage] = useState(null);
+
   if (!isvisible) {
     return null;
   }
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    setSelectedImage(file);
+  };
   const handleEditSupplier = (event) => {
     event.preventDefault();
 
+    const formData = new FormData();
+    formData.append("name", editedName);
+    formData.append("email", editedEmail);
+    formData.append("image", selectedImage);
+
     axios
-      .post(
-        `${updateSupplierUrl}${supplier.id}`,
-        {
-          name: editedName,
-          email: editedEmail,
+      .post(`${updateSupplierUrl}${supplier.id}`, formData, {
+        headers: {
+          Authorization: `Bearer ${token}`,
         },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      )
+      })
       .then((response) => {
-        const updatedSupplier = response.data;
-        setSuppliers((prevSuppliers) =>
-          prevSuppliers.map((c) =>
-            c.id === updatedSupplier.id
-              ? { ...c, name: updatedSupplier.name }
-              : c
-          )
-        );
+        fetchSuppliers(token, setSuppliers);
         onClose();
       })
       .catch((error) => {
@@ -83,6 +81,7 @@ function EditSupplier({ isvisible, onClose, supplier, setSuppliers }) {
             className="p-3 rounded-md mr-3 mt-3 cursor-pointer"
             placeholder="Fruit"
             type="file"
+            onChange={handleImageChange}
           ></input>
           <div className="mt-3 text-center">
             <button

@@ -3,6 +3,7 @@ import axios from "axios";
 import { useState } from "react";
 import { updateCategoryUrl } from "@/app/config/urls.config";
 import useTokenStore from "@/app/store/useTokenStore";
+import { fetchCategories } from "../categories/page";
 function EditCategory({ isvisible, onClose, category, setCategories }) {
   const [editedName, setEditedName] = useState(category ? category.name : "");
   const { token } = useTokenStore();
@@ -23,14 +24,7 @@ function EditCategory({ isvisible, onClose, category, setCategories }) {
         }
       )
       .then((response) => {
-        const updatedCategory = response.data;
-        setCategories((prevCategories) =>
-          prevCategories.map((c) =>
-            c.id === updatedCategory.id
-              ? { ...c, name: updatedCategory.name }
-              : c
-          )
-        );
+        fetchCategories(token, setCategories);
         onClose();
       })
       .catch((error) => {

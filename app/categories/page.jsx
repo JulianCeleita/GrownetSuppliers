@@ -56,6 +56,7 @@ function Categories() {
       });
 
       setDeleteResponse(response.data);
+      fetchCategories(token, setCategories);
       console.log("Se borro con éxito");
     } catch (error) {
       console.error("Error al eliminar la categoría:", error);

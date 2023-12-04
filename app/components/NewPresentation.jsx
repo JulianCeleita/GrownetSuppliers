@@ -31,7 +31,7 @@ function NewPresentation({ isvisible, onClose, setPresentations }) {
       .catch((error) => {
         console.error("Error al obtener UOMS productos:", error);
       });
-  }, [uoms]);
+  }, []);
 
   //Api products
   useEffect(() => {
@@ -47,7 +47,7 @@ function NewPresentation({ isvisible, onClose, setPresentations }) {
       .catch((error) => {
         console.error("Error al obtener los productos:", error);
       });
-  }, [products]);
+  }, []);
 
   if (!isvisible) {
     return null;
@@ -64,11 +64,11 @@ function NewPresentation({ isvisible, onClose, setPresentations }) {
   const enviarData = (e) => {
     e.preventDefault();
     const postData = {
-      name: namePresentation,
-      cost: costPresentation,
       uoms_id: selecteUomsStatus,
       products_id: selecteProductsStatus,
       quantity: quantityPresentation,
+      name: namePresentation,
+      cost: costPresentation,
     };
 
     axios

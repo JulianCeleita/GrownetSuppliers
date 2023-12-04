@@ -18,6 +18,8 @@ function NewProduct({ isvisible, onClose, fetchProducts }) {
   const [addProduct, setAddProduct] = useState("");
   const [codeProduct, setCodeProduct] = useState("");
   const [presentationProduct, setPresentationProduct] = useState("");
+  const [taxProduct, setTaxProduct] = useState("");
+  const [costProduct, setCostProduct] = useState("");
   const [quantityProduct, setQuantityProduct] = useState("");
   const [selectedCategoryId, setSelectedCategoryId] = useState("");
   const [selectedStatus, setSelectedStatus] = useState("active");
@@ -31,7 +33,7 @@ function NewProduct({ isvisible, onClose, fetchProducts }) {
   const [selectedImageName, setSelectedImageName] = useState("");
 
   // Taxes
-  useEffect(() => {
+  /*useEffect(() => {
     const fetchTaxes = async () => {
       try {
         const response = await axios.get(TaxesApi, {
@@ -46,7 +48,7 @@ function NewProduct({ isvisible, onClose, fetchProducts }) {
     };
 
     fetchTaxes();
-  }, []);
+  }, []);*/
 
   // Api families
   useEffect(() => {
@@ -110,12 +112,12 @@ function NewProduct({ isvisible, onClose, fetchProducts }) {
       country_indicative: "44",
       uom_id: selecteUomsStatus,
       quantity: quantityProduct,
-      cost: 200,
+      cost: costProduct,
       // stateProduct_id: statusMapping[selectedStatus],
       families_id: selectedFamiliesStatus,
       presentation: presentationProduct,
       image: selectedImageName,
-      // taxe_id: selectedTax,
+      taxe_id: taxProduct,
     };
     console.log("imagen", postData);
     try {
@@ -154,7 +156,7 @@ function NewProduct({ isvisible, onClose, fetchProducts }) {
               type="text"
               onChange={(e) => setAddProduct(e.target.value)}
               required
-            ></input>
+            />
             <label>Code: </label>
             <input
               className="border p-3 rounded-md mr-3 mt-3"
@@ -164,21 +166,32 @@ function NewProduct({ isvisible, onClose, fetchProducts }) {
               required
             ></input>
           </div>
-          <label htmlFor="family">Family: </label>
-          <select
-            id="family"
-            name="family"
-            className="border p-3 rounded-md mr-3 mt-3"
-            required
-            onChange={(e) => setSelectedFamiliesStatus(e.target.value)}
-            value={selectedFamiliesStatus}
-          >
-            {families.map((family) => (
-              <option key={family.id} value={family.id}>
-                {family.name}
-              </option>
-            ))}
-          </select>
+          <div>
+            <label htmlFor="family">Family: </label>
+            <select
+              id="family"
+              name="family"
+              className="border p-3 rounded-md mr-3 mt-3"
+              required
+              onChange={(e) => setSelectedFamiliesStatus(e.target.value)}
+              value={selectedFamiliesStatus}
+            >
+              {families.map((family) => (
+                <option key={family.id} value={family.id}>
+                  {family.name}
+                </option>
+              ))}
+            </select>
+            <label>Cost: </label>
+            <input
+              className="border p-3 rounded-md mr-3 mt-3"
+              placeholder="10"
+              type="number"
+              onChange={(e) => setCostProduct(e.target.value)}
+              required
+            />
+          </div>
+
           <div>
             <label className="mt-2">Quantity: </label>
             <input
@@ -253,20 +266,13 @@ function NewProduct({ isvisible, onClose, fetchProducts }) {
               <option value="disable">Disable</option>
             </select>
             <label>Product taxes: </label>
-            <select
-              id="tax"
-              name="tax"
-              className="border p-3 rounded-md mr-3 mt-3 w-40"
+            <input
+              className="border p-3 rounded-md mr-3 mt-3"
+              placeholder="1.2"
+              type="text"
+              onChange={(e) => setTaxProduct(e.target.value)}
               required
-              onChange={(e) => setSelectedTax(e.target.value)}
-              value={selectedTax}
-            >
-              {tax.map((tax) => (
-                <option key={tax.id} value={tax.id}>
-                  {tax.worth}
-                </option>
-              ))}
-            </select>
+            ></input>
           </div>
 
           <div className="mt-3 text-center">

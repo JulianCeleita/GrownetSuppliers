@@ -11,30 +11,35 @@ import axios from "axios";
 import { suppliersUrl, deleteSupplierUrl } from "@/app/config/urls.config";
 import useTokenStore from "../store/useTokenStore";
 
+export const fetchSuppliers = async (token, setSuppliers) => {
+  try {
+    const response = await axios.get(suppliersUrl, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    const newSuppliers = Array.isArray(response.data.suppliers)
+      ? response.data.suppliers
+      : [];
+    setSuppliers(newSuppliers);
+  } catch (error) {
+    console.error("Error al obtener las proveedores:", error);
+  }
+};
+
 function Suppliers() {
   const { token } = useTokenStore();
   const [showNewSupplier, setShowNewSupplier] = useState(false);
   const [showEditSupplier, setShowEditSupplier] = useState(false);
   //Variable edit supplier
   const [selectedSupplier, setSelectedSupplier] = useState(null);
-  console.log(selectedSupplier);
   //Api
   const urlImagen = "https://api.grownetapp.com/grownet/";
   const [suppliers, setSuppliers] = useState([]);
   useEffect(() => {
-    axios
-      .get(suppliersUrl, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      })
-      .then((response) => {
-        setSuppliers(response.data.suppliers);
-      })
-      .catch((error) => {
-        console.error("Error al obtener los proveedor:", error);
-      });
-  }, [suppliers]);
+    fetchSuppliers(token, setSuppliers);
+  }, []);
   //Api delete
   const [deleteResponse, setDeleteResponse] = useState(null);
   const handleDeleteSupplier = (supplier) => {
@@ -47,9 +52,7 @@ function Suppliers() {
       })
       .then((response) => {
         setDeleteResponse(response.data);
-        setSuppliers((prevSuppliers) =>
-          prevSuppliers.filter((s) => s.id !== id)
-        );
+        fetchSuppliers(token, setSuppliers);
         console.log("Se borró con éxito");
       })
       .catch((error) => {
