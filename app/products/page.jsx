@@ -48,7 +48,7 @@ function Products() {
   }, []);
 
   //Api delete
-  const [deleteResponse, setDeleteResponse] = useState(null);
+
   const handleDeleteProduct = async (product) => {
     try {
       const { id } = product;
@@ -58,11 +58,11 @@ function Products() {
         },
       });
 
-      setDeleteResponse(response.data);
-      console.log("Se borró con éxito el producto" + product.id);
+      console.log("Se borró con éxito el producto:", product.id);
     } catch (error) {
       console.error("Error al eliminar el producto:", error);
     }
+    fetchProducts(token, setProducts);
   };
 
   return (
@@ -114,7 +114,7 @@ function Products() {
                 <td className="py-4 flex justify-center">
                   <button
                     className="flex text-primary-blue mr-6 font-medium hover:scale-110 hover:text-green hover:border-green"
-                    onClick={() => setShowEditProduct(true)}
+                    onClick={() => setShowEditProduct(product.id)}
                   >
                     <PencilSquareIcon className="h-6 w-6 mr-1" />
                     Edit
@@ -140,6 +140,8 @@ function Products() {
       <EditProduct
         isvisible={showEditProduct}
         onClose={() => setShowEditProduct(false)}
+        fetchProducts={fetchProducts}
+        productId={showEditProduct}
       />
     </div>
   );
