@@ -17,6 +17,23 @@ import {
 import useTokenStore from "@/app/store/useTokenStore";
 import useProductStore from "../store/useProductStore";
 
+export const fetchPresentations = async (token, setPresentations) => {
+  try {
+    const response = await axios.get(presentationsUrl, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    const newPresentation = Array.isArray(response.data.presentations)
+      ? response.data.presentations
+      : [];
+    setPresentations(newPresentation);
+  } catch (error) {
+    console.error("Error al obtener las presentaciones:", error);
+  }
+};
+
 function Presentations() {
   const { token } = useTokenStore();
   const [products, setProducts] = useState([]);
@@ -24,25 +41,18 @@ function Presentations() {
 
   const [showNewPresentations, setShowNewPresentations] = useState(false);
   const [showEditPresentations, setShowEditPresentations] = useState(false);
+
   //Variable edit Presentation
   const [selectedPresentation, setSelectedPresentation] = useState(null);
+
   //Api
   const [presentations, setPresentations] = useState([]);
+
   useEffect(() => {
-    axios
-      .get(presentationsUrl, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      })
-      .then((response) => {
-        setPresentations(response.data.presentations);
-      })
-      .catch((error) => {
-        console.error("Error al obtener las presentaciones:", error);
-      });
+    fetchPresentations(token, setPresentations);
   }, []);
-  //Api delete
+
+  //Delete
   const [deleteResponse, setDeleteResponse] = useState(null);
   const handleDeletePresentation = (presentation) => {
     const { id } = presentation;
@@ -54,6 +64,7 @@ function Presentations() {
       })
       .then((response) => {
         setDeleteResponse(response.data);
+        fetchPresentations(token, setPresentations);
         console.log("Se borro con éxito");
       })
       .catch((error) => {
@@ -90,6 +101,7 @@ function Presentations() {
         console.error("Error al obtener UOMS productos:", error);
       });
   }, []);
+
   return (
     <div>
       <div className="flex justify-between p-8 pb-20 bg-primary-blue">

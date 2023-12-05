@@ -37,6 +37,7 @@ function Suppliers() {
   //Api
   const urlImagen = "https://api.grownetapp.com/grownet/";
   const [suppliers, setSuppliers] = useState([]);
+
   useEffect(() => {
     fetchSuppliers(token, setSuppliers);
   }, []);

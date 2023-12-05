@@ -3,6 +3,7 @@ import axios from "axios";
 import { addPresentationUrl, uomUrl, productsUrl } from "../config/urls.config";
 import useTokenStore from "../store/useTokenStore";
 import { XMarkIcon } from "@heroicons/react/24/outline";
+import { fetchPresentations } from "../presentations/page";
 
 function NewPresentation({ isvisible, onClose, setPresentations }) {
   const { token } = useTokenStore();
@@ -52,14 +53,6 @@ function NewPresentation({ isvisible, onClose, setPresentations }) {
   if (!isvisible) {
     return null;
   }
-  console.log(
-    "que llega:",
-    namePresentation,
-    costPresentation,
-    selecteProductsStatus,
-    selecteUomsStatus,
-    quantityPresentation
-  );
   //Add presentation api
   const enviarData = (e) => {
     e.preventDefault();
@@ -70,7 +63,7 @@ function NewPresentation({ isvisible, onClose, setPresentations }) {
       name: namePresentation,
       cost: costPresentation,
     };
-
+    console.log("este es postData: ", postData);
     axios
       .post(addPresentationUrl, postData, {
         headers: {
@@ -79,11 +72,7 @@ function NewPresentation({ isvisible, onClose, setPresentations }) {
       })
       .then((response) => {
         console.log("Respuesta del servidor:", response.data);
-        const newPresentation = response.data;
-        setPresentations((prevPresentations) => [
-          ...prevPresentations,
-          newPresentation,
-        ]);
+        fetchPresentations(token, setPresentations);
         console.log("Se creó la presentación con éxito");
         onClose();
       })

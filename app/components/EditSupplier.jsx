@@ -11,27 +11,29 @@ function EditSupplier({ isvisible, onClose, supplier, setSuppliers }) {
   const [editedEmail, setEditedEmail] = useState(
     supplier ? supplier.email : ""
   );
-  const [selectedImage, setSelectedImage] = useState(null);
+  const [image, setImage] = useState(null);
+
+  const handleImageChange = (e) => {
+    const selectedImage = e.target.files[0];
+    setImage(selectedImage);
+  };
 
   if (!isvisible) {
     return null;
   }
-  const handleImageChange = (e) => {
-    const file = e.target.files[0];
-    setSelectedImage(file);
-  };
   const handleEditSupplier = (event) => {
     event.preventDefault();
-
     const formData = new FormData();
     formData.append("name", editedName);
     formData.append("email", editedEmail);
-    formData.append("image", selectedImage);
-
+    if (image) {
+      formData.append("image", image);
+    }
     axios
       .post(`${updateSupplierUrl}${supplier.id}`, formData, {
         headers: {
           Authorization: `Bearer ${token}`,
+          "Content-Type": "multipart/form-data",
         },
       })
       .then((response) => {
