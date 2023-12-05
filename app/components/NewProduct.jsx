@@ -19,7 +19,7 @@ function NewProduct({ isvisible, onClose, fetchProducts }) {
   const [codeProduct, setCodeProduct] = useState("");
   const [presentationProduct, setPresentationProduct] = useState("");
   const [taxProduct, setTaxProduct] = useState("");
-  const [costProduct, setCostProduct] = useState("");
+  const [costProduct, setCostProduct] = useState(0);
   const [quantityProduct, setQuantityProduct] = useState("");
   const [selectedCategoryId, setSelectedCategoryId] = useState("");
   const [selectedStatus, setSelectedStatus] = useState("active");
@@ -28,8 +28,8 @@ function NewProduct({ isvisible, onClose, fetchProducts }) {
   const [selecteUomsStatus, setSelectedUomsStatus] = useState("unit");
   const [families, setFamilies] = useState([]);
   const [uoms, setUoms] = useState([]);
-  const [tax, setTax] = useState([]);
-  const [selectedTax, setSelectedTax] = useState("");
+  // const [tax, setTax] = useState([]);
+  // const [selectedTax, setSelectedTax] = useState("");
   const [selectedImageName, setSelectedImageName] = useState(null);
 
   // Taxes
