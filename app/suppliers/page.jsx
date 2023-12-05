@@ -52,7 +52,6 @@ function Suppliers() {
         },
       })
       .then((response) => {
-        setDeleteResponse(response.data);
         fetchSuppliers(token, setSuppliers);
         console.log("Se borró con éxito");
       })

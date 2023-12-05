@@ -7,27 +7,59 @@ import {
 } from "../config/urls.config";
 import useTokenStore from "../store/useTokenStore";
 import { XMarkIcon, ExclamationCircleIcon } from "@heroicons/react/24/outline";
+import { fetchPresentations } from "../presentations/page";
 
 function EditPresentation({
   isvisible,
   onClose,
   presentation,
-  setPresentation,
+  setPresentations,
 }) {
   const { token } = useTokenStore();
   const [uoms, setUoms] = useState([]);
+  const [products, setProducts] = useState([]);
 
+  //Variables formulario
   const [editedName, setEditedName] = useState(
     presentation ? presentation.name : ""
   );
   const [editedCost, setEditedCost] = useState(
     presentation ? presentation.cost : ""
   );
+  const [editedQuantity, setEditedQuantity] = useState(
+    presentation ? presentation.quantity : ""
+  );
+  const [selectedUomsStatus, setSelectedUomsStatus] = useState(
+    presentation ? presentation.uoms : ""
+  );
+  const [selectedProductsStatus, setSelectedProductsStatus] = useState(
+    presentation ? presentation.products : ""
+  );
 
-  //Variables formulario
-  /*
-  const [quantityPresentation, setQuantityPresentation] = useState("");
-  const [selecteUomsStatus, setSelectedUomsStatus] = useState("unit");*/
+  useEffect(() => {
+    console.log("Presentation Prop:", presentation);
+    setEditedName(presentation ? presentation.name : "");
+    setEditedCost(presentation ? presentation.cost : "");
+    setEditedQuantity(presentation ? presentation.quantity : "");
+    setSelectedUomsStatus(presentation ? presentation.uoms : "");
+    setSelectedProductsStatus(presentation ? presentation.products : "");
+  }, [presentation]);
+
+  //Api products
+  useEffect(() => {
+    axios
+      .get(productsUrl, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+      .then((response) => {
+        setProducts(response.data.products);
+      })
+      .catch((error) => {
+        console.error("Error al obtener los productos:", error);
+      });
+  }, []);
 
   // Api uom
   useEffect(() => {
@@ -45,6 +77,32 @@ function EditPresentation({
       });
   }, []);
 
+  //Api editar
+  const handleEditPresentation = (event) => {
+    event.preventDefault();
+    const postData = {
+      uoms_id: selectedUomsStatus,
+      quantity: editedQuantity,
+      name: editedName,
+      cost: editedCost,
+      products_id: selectedProductsStatus,
+    };
+    console.log("este es postData: ", postData);
+    axios
+      .post(`${updatePresentationUrl}${presentation.id}`, postData, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+      .then((response) => {
+        fetchPresentations(token, setPresentations);
+        onClose();
+      })
+      .catch((error) => {
+        console.error("Error editando la presentación:", error);
+      });
+  };
+
   if (!isvisible) {
     return null;
   }
@@ -61,55 +119,75 @@ function EditPresentation({
         <h1 className="text-2xl font-bold text-green mb-2">
           Edit presentation
         </h1>
-        <form className="text-left  flex flex-col">
-          <label>Unit weight of the product: </label>
-          <select
-            id="uom"
-            name="uom"
-            className="border p-3 rounded-md mr-3 mt-3"
-            required
-            onChange={(e) => setSelectedUomsStatus(e.target.value)}
-          >
-            {uoms.map((uom) => (
-              <option key={uom.id} value={uom.id}>
-                {uom.name}
-              </option>
-            ))}
-          </select>
+        <form
+          className="text-left  flex flex-col"
+          onSubmit={handleEditPresentation}
+        >
           <div>
-            <label>Code: </label>
-            <input
+            <label>Unit weight of the product: </label>
+            <select
+              id="uom"
+              name="uom"
               className="border p-3 rounded-md mr-3 mt-3"
-              placeholder="Foodpoint"
-              type="text"
-            ></input>
+              required
+              onChange={(e) => setSelectedUomsStatus(e.target.value)}
+              value={selectedUomsStatus}
+            >
+              <option> Select uom</option>
+              {uoms.map((uom) => (
+                <option key={uom.id} value={uom.id}>
+                  {uom.id} - {uom.name}
+                </option>
+              ))}
+            </select>
             <label>Quantity: </label>
             <input
               className="border p-3 rounded-md mr-3 mt-3"
               placeholder="50"
               type="text"
+              value={editedQuantity}
+              onChange={(e) => setEditedQuantity(e.target.value)}
               required
             ></input>
           </div>
           <div>
             <label>Name: </label>
             <input
-              className="border p-3 rounded-md mr-3 mt-3 w-[40%]"
+              className="border p-3 rounded-md mr-3 mt-3 w-[39.8%]"
               placeholder="Foodpoint"
               type="text"
               required
+              value={editedName}
               onChange={(e) => setEditedName(e.target.value)}
             ></input>
             <label>Value: </label>
             <input
-              className="border p-3 rounded-md mr-3 mt-3  w-[40%]"
+              className="border p-3 rounded-md mr-3 mt-3  w-[39.8%]"
               placeholder="50"
               type="text"
+              value={editedCost}
               onChange={(e) => setEditedCost(e.target.value)}
               required
             ></input>
           </div>
-
+          <label for="produvt" className="mt-2">
+            Product:
+          </label>
+          <select
+            id="produvt"
+            name="produvt"
+            className="border p-3 rounded-md mr-3 mt-3"
+            onChange={(e) => setSelectedProductsStatus(e.target.value)}
+            value={selectedProductsStatus}
+            required
+          >
+            <option> Select product</option>
+            {products.map((product) => (
+              <option key={product.id} value={product.id}>
+                {product.id} - {product.name}
+              </option>
+            ))}
+          </select>
           <div className="mt-3 text-center">
             <button
               type="submit"

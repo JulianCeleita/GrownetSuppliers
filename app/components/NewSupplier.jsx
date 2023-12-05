@@ -83,6 +83,7 @@ function NewSupplier({ isvisible, onClose, setSuppliers }) {
             placeholder="Fruit"
             type="file"
             onChange={handleImageChange}
+            required
           ></input>
           <div className="mt-3 text-center">
             <button

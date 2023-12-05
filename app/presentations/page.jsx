@@ -63,7 +63,6 @@ function Presentations() {
         },
       })
       .then((response) => {
-        setDeleteResponse(response.data);
         fetchPresentations(token, setPresentations);
         console.log("Se borro con éxito");
       })
