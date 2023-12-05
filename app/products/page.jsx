@@ -90,7 +90,9 @@ function Products() {
             </tr>
           </thead>
           <tbody>
-            {products.map((product) => (
+            {products
+            .filter(product => product.stateProduct_id !== 2)
+            .map((product) => (
               <tr
                 key={product.id}
                 className="text-dark-blue border-b-2 border-stone-100"
