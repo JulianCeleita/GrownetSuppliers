@@ -7,6 +7,7 @@ import { fetchSuppliers } from "../suppliers/page";
 
 function NewSupplier({ isvisible, onClose, setSuppliers }) {
   const { token } = useTokenStore();
+  const [isLoading, setIsLoading] = useState(false)
   const [addSupplier, setAddSupplier] = useState("");
   const [emailSupplier, setEmailSupplier] = useState("");
   const [selectedImage, setSelectedImage] = useState(null);
@@ -22,6 +23,7 @@ function NewSupplier({ isvisible, onClose, setSuppliers }) {
 
   const enviarData = (e) => {
     e.preventDefault();
+    setIsLoading(true)
 
     const formData = new FormData();
     formData.append("name", addSupplier);
@@ -38,6 +40,10 @@ function NewSupplier({ isvisible, onClose, setSuppliers }) {
       .then((response) => {
         fetchSuppliers(token, setSuppliers);
         onClose();
+        setSelectedImage(null)
+        setAddSupplier('')
+        setEmailSupplier('')
+        setIsLoading(false)
       })
       .catch(function (error) {
         console.error("Error al agregar el nuevo proveedor:", error);
@@ -88,12 +94,18 @@ function NewSupplier({ isvisible, onClose, setSuppliers }) {
             <button
               type="submit"
               value="Submit"
-              className="bg-primary-blue py-3 px-4 rounded-lg text-white font-medium mr-3 "
+              className={`bg-primary-blue py-3 px-4 rounded-lg text-white font-medium mr-3 ${isLoading === true ? 'bg-gray-500/50' : ''}`}
+            disabled={isLoading}
             >
               Add supplier
             </button>
             <button
-              onClick={() => onClose()}
+              onClick={() => {
+                onClose()
+                setSelectedImage(null)
+                setAddSupplier('')
+                setEmailSupplier('')
+              }}
               className=" py-3 px-4 rounded-lg text-primary-blue border border-primary-blue font-medium"
             >
               Close
