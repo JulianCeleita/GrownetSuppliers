@@ -134,17 +134,17 @@ function NewPresentation({ isvisible, onClose, setPresentations }) {
           ></input>
 
           <div>
-            <label>Name: </label>
+            <label>Packsize: </label>
             <input
-              className="border p-3 rounded-md mr-3 mt-3 w-[40%]"
-              placeholder="Foodpoint"
+              className="border p-3 rounded-md mr-3 mt-3 w-[35.5%]"
+              placeholder="6 Kg"
               type="text"
               onChange={(e) => setNamePresentation(e.target.value)}
               required
             ></input>
             <label>Value: </label>
             <input
-              className="border p-3 rounded-md mr-3 mt-3  w-[40%]"
+              className="border p-3 rounded-md mr-3 mt-3  w-[39.5%]"
               placeholder="50"
               type="number"
               onChange={(e) => setCostPresentation(e.target.value)}

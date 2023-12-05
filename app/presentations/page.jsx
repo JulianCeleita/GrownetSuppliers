@@ -50,6 +50,7 @@ function Presentations() {
 
   useEffect(() => {
     fetchPresentations(token, setPresentations);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   //Delete
@@ -63,7 +64,6 @@ function Presentations() {
         },
       })
       .then((response) => {
-        setDeleteResponse(response.data);
         fetchPresentations(token, setPresentations);
         console.log("Se borro con éxito");
       })
@@ -85,6 +85,7 @@ function Presentations() {
       .catch((error) => {
         console.error("Error al obtener los productos:", error);
       });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   // Api uom
   useEffect(() => {
@@ -100,6 +101,7 @@ function Presentations() {
       .catch((error) => {
         console.error("Error al obtener UOMS productos:", error);
       });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
@@ -121,11 +123,11 @@ function Presentations() {
         <table className="w-[90%] bg-white rounded-2xl text-center shadow-[0_8px_30px_rgb(0,0,0,0.12)] mb-60">
           <thead>
             <tr className="border-b-2 border-stone-100 text-dark-blue">
-              <th className="py-4 pl-4">ID</th>
-              <th className="py-4">Unit of measurement</th>
               <th className="py-4">Product</th>
-              <th className="py-4">Name</th>
-              <th className="py-4">Value</th>
+              <th className="py-4">Unit of measurement</th>
+              <th className="py-4">Packsize</th>
+              <th className="py-4">Cost</th>
+              <th className="py-4">Qty</th>
               <th className="py-4">Operate</th>
             </tr>
           </thead>
@@ -135,12 +137,6 @@ function Presentations() {
                 key={presentation.id}
                 className="text-dark-blue border-b-2 border-stone-100 "
               >
-                <td className="py-4">{presentation.id}</td>
-                <td className="py-4">
-                  {uoms.map((uom) =>
-                    uom.id === presentation.uoms_id ? uom.name : null
-                  )}
-                </td>
                 <td className="py-4">
                   {products.map((product) =>
                     product.id === presentation.products_id
@@ -148,8 +144,15 @@ function Presentations() {
                       : null
                   )}
                 </td>
+                <td className="py-4">
+                  {uoms.map((uom) =>
+                    uom.id === presentation.uoms_id ? uom.name : null
+                  )}
+                </td>
+                
                 <td className="py-4">{presentation.name}</td>
                 <td className="py-4">£ {presentation.cost}</td>
+                <td className="py-4">{presentation.quantity}</td>
                 <td className="py-4 flex justify-center">
                   <button
                     onClick={() => {

@@ -40,6 +40,7 @@ function Suppliers() {
 
   useEffect(() => {
     fetchSuppliers(token, setSuppliers);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   //Api delete
   const [deleteResponse, setDeleteResponse] = useState(null);
@@ -52,7 +53,6 @@ function Suppliers() {
         },
       })
       .then((response) => {
-        setDeleteResponse(response.data);
         fetchSuppliers(token, setSuppliers);
         console.log("Se borró con éxito");
       })
@@ -77,7 +77,6 @@ function Suppliers() {
         <table className="w-[90%] bg-white rounded-2xl text-center shadow-[0_8px_30px_rgb(0,0,0,0.12)] mb-60">
           <thead>
             <tr className="border-b-2 border-stone-100 text-dark-blue">
-              <th className="py-4 pl-4">ID</th>
               <th className="py-4">Supplier</th>
               <th className="py-4">Email</th>
               <th className="py-4">Image</th>
@@ -90,9 +89,6 @@ function Suppliers() {
                 key={supplier.id}
                 className="text-dark-blue  border-b-2 border-stone-100"
               >
-                <td style={{ textAlign: "center", padding: "1.5rem" }}>
-                  {supplier.id}
-                </td>
                 <td className="py-4">{supplier.name}</td>
                 <td className="py-4">{supplier.email}</td>
                 <td className="py-3">

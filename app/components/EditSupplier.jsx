@@ -1,6 +1,6 @@
 import { XMarkIcon, ExclamationCircleIcon } from "@heroicons/react/24/outline";
 import axios from "axios";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { updateSupplierUrl } from "@/app/config/urls.config";
 import useTokenStore from "../store/useTokenStore";
 import { fetchSuppliers } from "../suppliers/page";
@@ -17,6 +17,10 @@ function EditSupplier({ isvisible, onClose, supplier, setSuppliers }) {
     const selectedImage = e.target.files[0];
     setImage(selectedImage);
   };
+  useEffect(() => {
+    setEditedName(supplier ? supplier.name : "");
+    setEditedEmail(supplier ? supplier.email : "");
+  }, [supplier]);
 
   if (!isvisible) {
     return null;

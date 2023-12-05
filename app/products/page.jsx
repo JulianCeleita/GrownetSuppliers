@@ -45,6 +45,7 @@ function Products() {
   useEffect(() => {
     fetchProducts(token, setProducts);
     fetchCategories(token, setCategories);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   //Api delete
@@ -82,21 +83,20 @@ function Products() {
         <table className="w-[90%] bg-white rounded-2xl text-center shadow-[0_8px_30px_rgb(0,0,0,0.12)] mb-80">
           <thead>
             <tr className="border-b-2 border-stone-100 text-dark-blue">
-              <th className="py-4 pl-4">ID</th>
+              
               <th className="py-4">Product</th>
               <th className="py-4">Image</th>
               <th className="py-4">Operate</th>
             </tr>
           </thead>
           <tbody>
-            {products.map((product) => (
+            {products
+            .filter(product => product.stateProduct_id !== 2)
+            .map((product) => (
               <tr
                 key={product.id}
                 className="text-dark-blue border-b-2 border-stone-100"
               >
-                <td style={{ textAlign: "center", padding: "1.5rem" }}>
-                  {product.id}
-                </td>
                 {product.stateProduct_id === 2 ? (
                   <td className="py-3 text-danger">
                     {product.name + " - Product disabled"}

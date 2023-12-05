@@ -41,6 +41,7 @@ function Categories() {
 
   useEffect(() => {
     fetchCategories(token, setCategories);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   //Api delete
@@ -79,7 +80,6 @@ function Categories() {
         <table className="w-[90%] bg-white rounded-2xl text-center shadow-[0_8px_30px_rgb(0,0,0,0.12)] mb-20">
           <thead>
             <tr className="border-b-2 border-stone-100 text-dark-blue">
-              <th className="py-4 pl-4">ID</th>
               <th className="py-4">Category</th>
               <th className="py-4">Operate</th>
             </tr>
@@ -90,7 +90,6 @@ function Categories() {
                 key={category.id}
                 className="text-dark-blue border-b-2 border-stone-100"
               >
-                <td className="py-4">{category.id}</td>
                 <td className="py-4">{category.name}</td>
                 <td className="py-4 flex justify-center">
                   <button
