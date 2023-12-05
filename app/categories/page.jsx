@@ -12,7 +12,7 @@ import EditCategory from "../components/EditCategory";
 import axios from "axios";
 import { categoriesUrl, deleteCategoryUrl } from "@/app/config/urls.config";
 
-export const fetchCategories = async (token, setCategories) => {
+export const fetchCategories = async (token, setCategories, setIsLoading) => {
   try {
     const response = await axios.get(categoriesUrl, {
       headers: {
@@ -23,11 +23,13 @@ export const fetchCategories = async (token, setCategories) => {
     const newCategories = Array.isArray(response.data.categories)
       ? response.data.categories
       : [];
+
     const sortedCategories = newCategories.sort((a, b) =>
       a.name.localeCompare(b.name)
     );
 
     setCategories(sortedCategories);
+
   } catch (error) {
     console.error("Error al obtener las categorías:", error);
   }
@@ -37,14 +39,14 @@ function Categories() {
   const { token } = useTokenStore();
   const [showNewCategory, setShowNewCategory] = useState(false);
   const [showEditCategory, setShowEditCategory] = useState(false);
-  //Variable edit category
   const [selectedCategory, setSelectedCategory] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   //Api categorias
   const { categories, setCategories } = useCategoryStore();
 
   useEffect(() => {
-    fetchCategories(token, setCategories);
+    fetchCategories(token, setCategories, setIsLoading);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -130,6 +132,11 @@ function Categories() {
         onClose={() => setShowNewCategory(false)}
         setCategories={setCategories}
       />
+      {isLoading && (
+        <div className="flex justify-center items-center mb-20">
+          <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-primary-blue"></div>
+        </div>
+      )}
     </div>
   );
 }

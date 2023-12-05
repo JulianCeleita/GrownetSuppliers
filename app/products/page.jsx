@@ -19,6 +19,7 @@ function Products() {
   const { setCategories } = useCategoryStore();
   const [showNewProduct, setShowNewProduct] = useState(false);
   const [showEditProduct, setShowEditProduct] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   //Api
   const { products, setProducts } = useProductStore();
   const urlImagen = "https://api.grownetapp.com/grownet/";
@@ -34,11 +35,16 @@ function Products() {
       const newProducts = Array.isArray(response.data.products)
         ? response.data.products
         : [];
+
       const sortedProducts = newProducts.sort((a, b) =>
         a.name.localeCompare(b.name)
       );
 
       setProducts(sortedProducts);
+
+      
+      setIsLoading(false);
+
     } catch (error) {
       console.error("Error al obtener los productos:", error);
     }
@@ -83,7 +89,7 @@ function Products() {
         </button>
       </div>
       <div className="flex items-center justify-center mb-6 -mt-14">
-        <table className="w-[90%] bg-white rounded-2xl text-center shadow-[0_8px_30px_rgb(0,0,0,0.12)] mb-80">
+        <table className="w-[90%] bg-white rounded-2xl text-center shadow-[0_8px_30px_rgb(0,0,0,0.12)] mb-8">
           <thead>
             <tr className="border-b-2 border-stone-100 text-dark-blue">
               <th className="py-4">Product</th>
@@ -145,6 +151,11 @@ function Products() {
         fetchProducts={fetchProducts}
         productId={showEditProduct}
       />
+      {isLoading && (
+        <div className="flex justify-center items-center mb-20">
+          <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-primary-blue"></div>
+        </div>
+      )}
     </div>
   );
 }

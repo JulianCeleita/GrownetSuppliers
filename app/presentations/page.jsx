@@ -17,7 +17,7 @@ import {
 import useTokenStore from "@/app/store/useTokenStore";
 import useProductStore from "../store/useProductStore";
 
-export const fetchPresentations = async (token, setPresentations) => {
+export const fetchPresentations = async (token, setPresentations, setIsLoading) => {
   try {
     const response = await axios.get(presentationsUrl, {
       headers: {
@@ -30,6 +30,7 @@ export const fetchPresentations = async (token, setPresentations) => {
       : [];
 
     setPresentations(newPresentation);
+    setIsLoading(false);
   } catch (error) {
     console.error("Error al obtener las presentaciones:", error);
   }
@@ -39,6 +40,7 @@ function Presentations() {
   const { token } = useTokenStore();
   const [products, setProducts] = useState([]);
   const [uoms, setUoms] = useState([]);
+const [isLoading, setIsLoading] = useState(true);
 
   const [showNewPresentations, setShowNewPresentations] = useState(false);
   const [showEditPresentations, setShowEditPresentations] = useState(false);
@@ -50,7 +52,7 @@ function Presentations() {
   const [presentations, setPresentations] = useState([]);
 
   useEffect(() => {
-    fetchPresentations(token, setPresentations);
+    fetchPresentations(token, setPresentations, setIsLoading);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -121,7 +123,7 @@ function Presentations() {
         </button>
       </div>
       <div className="flex items-center justify-center mb-6 -mt-14">
-        <table className="w-[90%] bg-white rounded-2xl text-center shadow-[0_8px_30px_rgb(0,0,0,0.12)] mb-60">
+        <table className="w-[90%] bg-white rounded-2xl text-center shadow-[0_8px_30px_rgb(0,0,0,0.12)] mb-6">
           <thead>
             <tr className="border-b-2 border-stone-100 text-dark-blue">
               <th className="py-4">Product</th>
@@ -189,6 +191,11 @@ function Presentations() {
         onClose={() => setShowNewPresentations(false)}
         setPresentations={setPresentations}
       />
+      {isLoading && (
+        <div className="flex justify-center items-center mb-20">
+          <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-primary-blue"></div>
+        </div>
+      )}
     </div>
   );
 }

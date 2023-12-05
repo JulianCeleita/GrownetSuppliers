@@ -11,7 +11,7 @@ import axios from "axios";
 import { suppliersUrl, deleteSupplierUrl } from "@/app/config/urls.config";
 import useTokenStore from "../store/useTokenStore";
 
-export const fetchSuppliers = async (token, setSuppliers) => {
+export const fetchSuppliers = async (token, setSuppliers, setIsLoading) => {
   try {
     const response = await axios.get(suppliersUrl, {
       headers: {
@@ -23,11 +23,16 @@ export const fetchSuppliers = async (token, setSuppliers) => {
       ? response.data.suppliers
       : [];
 
+
     const sortedSuppliers = newSuppliers.sort((a, b) =>
       a.name.localeCompare(b.name)
     );
 
     setSuppliers(sortedSuppliers);
+
+   
+    setIsLoading(false);
+
   } catch (error) {
     console.error("Error al obtener las proveedores:", error);
   }
@@ -42,9 +47,10 @@ function Suppliers() {
   //Api
   const urlImagen = "https://api.grownetapp.com/grownet/";
   const [suppliers, setSuppliers] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    fetchSuppliers(token, setSuppliers);
+    fetchSuppliers(token, setSuppliers, setIsLoading);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   //Api delete
@@ -79,7 +85,7 @@ function Suppliers() {
         </button>
       </div>
       <div className="flex items-center justify-center mb-6 -mt-14">
-        <table className="w-[90%] bg-white rounded-2xl text-center shadow-[0_8px_30px_rgb(0,0,0,0.12)] mb-60">
+        <table className="w-[90%] bg-white rounded-2xl text-center shadow-[0_8px_30px_rgb(0,0,0,0.12)] mb-6">
           <thead>
             <tr className="border-b-2 border-stone-100 text-dark-blue">
               <th className="py-4">Supplier</th>
@@ -138,6 +144,11 @@ function Suppliers() {
         supplier={selectedSupplier}
         setSuppliers={setSuppliers}
       />
+      {isLoading && (
+        <div className="flex justify-center items-center mb-20">
+          <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-primary-blue"></div>
+        </div>
+      )}
     </div>
   );
 }
