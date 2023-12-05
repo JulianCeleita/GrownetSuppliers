@@ -7,7 +7,7 @@ import { fetchSuppliers } from "../suppliers/page";
 
 function NewSupplier({ isvisible, onClose, setSuppliers }) {
   const { token } = useTokenStore();
-  const [isLoading, setIsLoading] = useState(false)
+  const [isLoading, setIsLoading] = useState(false);
   const [addSupplier, setAddSupplier] = useState("");
   const [emailSupplier, setEmailSupplier] = useState("");
   const [selectedImage, setSelectedImage] = useState(null);
@@ -23,7 +23,7 @@ function NewSupplier({ isvisible, onClose, setSuppliers }) {
 
   const enviarData = (e) => {
     e.preventDefault();
-    setIsLoading(true)
+    setIsLoading(true);
 
     const formData = new FormData();
     formData.append("name", addSupplier);
@@ -40,13 +40,14 @@ function NewSupplier({ isvisible, onClose, setSuppliers }) {
       .then((response) => {
         fetchSuppliers(token, setSuppliers);
         onClose();
-        setSelectedImage(null)
-        setAddSupplier('')
-        setEmailSupplier('')
-        setIsLoading(false)
+        setSelectedImage(null);
+        setAddSupplier("");
+        setEmailSupplier("");
+        setIsLoading(false);
       })
       .catch(function (error) {
         console.error("Error al agregar el nuevo proveedor:", error);
+        setIsLoading(false);
       });
   };
   return (
@@ -54,7 +55,12 @@ function NewSupplier({ isvisible, onClose, setSuppliers }) {
       <div className="bg-white p-8 rounded-2xl w-[750px] flex flex-col items-center">
         <button
           className="text-dark-blue place-self-end "
-          onClick={() => onClose()}
+          onClick={() => {
+            setSelectedImage(null);
+            setAddSupplier("");
+            setEmailSupplier("");
+            onClose();
+          }}
         >
           <XMarkIcon className="h-6 w-6 text-gray-500" />
         </button>
@@ -89,22 +95,25 @@ function NewSupplier({ isvisible, onClose, setSuppliers }) {
             placeholder="Fruit"
             type="file"
             onChange={handleImageChange}
+            required
           ></input>
           <div className="mt-3 text-center">
             <button
               type="submit"
               value="Submit"
-              className={`bg-primary-blue py-3 px-4 rounded-lg text-white font-medium mr-3 ${isLoading === true ? 'bg-gray-500/50' : ''}`}
-            disabled={isLoading}
+              className={`bg-primary-blue py-3 px-4 rounded-lg text-white font-medium mr-3 ${
+                isLoading === true ? "bg-gray-500/50" : ""
+              }`}
+              disabled={isLoading}
             >
               Add supplier
             </button>
             <button
               onClick={() => {
-                onClose()
-                setSelectedImage(null)
-                setAddSupplier('')
-                setEmailSupplier('')
+                onClose();
+                setSelectedImage(null);
+                setAddSupplier("");
+                setEmailSupplier("");
               }}
               className=" py-3 px-4 rounded-lg text-primary-blue border border-primary-blue font-medium"
             >
