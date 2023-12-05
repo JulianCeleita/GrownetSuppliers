@@ -21,7 +21,9 @@ function NewProduct({ isvisible, onClose, fetchProducts }) {
   const [taxProduct, setTaxProduct] = useState("");
   const [costProduct, setCostProduct] = useState(0);
   const [quantityProduct, setQuantityProduct] = useState("");
-  const [selectedCategoryId, setSelectedCategoryId] = useState("");
+  const [selectedCategoryId, setSelectedCategoryId] = useState(
+    categories.length > 0 ? categories[0].id : ""
+  );
   const [selectedStatus, setSelectedStatus] = useState("active");
   const [selectedFamiliesStatus, setSelectedFamiliesStatus] =
     useState("banana");
@@ -60,6 +62,7 @@ function NewProduct({ isvisible, onClose, fetchProducts }) {
           },
         });
         setFamilies(response.data.families);
+        setSelectedFamiliesStatus(response.data.families[0]?.id || "");
       } catch (error) {
         console.error("Error al obtener las familia productos:", error);
       }
@@ -78,6 +81,7 @@ function NewProduct({ isvisible, onClose, fetchProducts }) {
           },
         });
         setUoms(response.data.uoms);
+        setSelectedUomsStatus(response.data.uoms[0]?.id || "");
       } catch (error) {
         console.error("Error al obtener UOMS productos:", error);
       }
@@ -117,6 +121,13 @@ function NewProduct({ isvisible, onClose, fetchProducts }) {
     formData.append("presentation", presentationProduct);
     formData.append("image", selectedImageName);
     formData.append("tax", taxProduct);
+
+    const formDataObject = {};
+    formData.forEach((value, key) => {
+      formDataObject[key] = value;
+    });
+
+    console.log("formDataObject", formDataObject);
 
     try {
       const response = await axios.post(addProductUrl, formData, {
