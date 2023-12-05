@@ -20,7 +20,9 @@ function EditProduct({ isvisible, onClose, fetchProducts, productId }) {
     useState("banana");
   const [costProduct, setCostProduct] = useState(0);
   const [selecteUomsStatus, setSelectedUomsStatus] = useState("unit");
-  const [selectedCategoryId, setSelectedCategoryId] = useState("");
+  const [selectedCategoryId, setSelectedCategoryId] = useState(
+    categories.length > 0 ? categories[0].id : ""
+  );
   const [selectedStatus, setSelectedStatus] = useState("active");
   const [taxProduct, setTaxProduct] = useState("");
   const [quantityProduct, setQuantityProduct] = useState("");
@@ -37,6 +39,7 @@ function EditProduct({ isvisible, onClose, fetchProducts, productId }) {
           },
         });
         setFamilies(response.data.families);
+        setSelectedFamiliesStatus(response.data.families[0]?.id || "");
       } catch (error) {
         console.error("Error al obtener las familia productos:", error);
       }
@@ -55,6 +58,7 @@ function EditProduct({ isvisible, onClose, fetchProducts, productId }) {
           },
         });
         setUoms(response.data.uoms);
+        setSelectedUomsStatus(response.data.uoms[0]?.id || "");
       } catch (error) {
         console.error("Error al obtener UOMS productos:", error);
       }

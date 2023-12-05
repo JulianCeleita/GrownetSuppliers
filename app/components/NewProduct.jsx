@@ -22,7 +22,7 @@ function NewProduct({ isvisible, onClose, fetchProducts }) {
   const [costProduct, setCostProduct] = useState(0);
   const [quantityProduct, setQuantityProduct] = useState("");
   const [selectedCategoryId, setSelectedCategoryId] = useState(
-    categories.length > 0 ? categories[0] : ""
+    categories.length > 0 ? categories[0].id : ""
   );
   const [selectedStatus, setSelectedStatus] = useState("active");
   const [selectedFamiliesStatus, setSelectedFamiliesStatus] =
