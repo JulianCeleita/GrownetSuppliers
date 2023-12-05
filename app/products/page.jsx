@@ -35,9 +35,16 @@ function Products() {
       const newProducts = Array.isArray(response.data.products)
         ? response.data.products
         : [];
-      console.log("se ejecuto");
-      setProducts(newProducts);
+
+      const sortedProducts = newProducts.sort((a, b) =>
+        a.name.localeCompare(b.name)
+      );
+
+      setProducts(sortedProducts);
+
+      
       setIsLoading(false);
+
     } catch (error) {
       console.error("Error al obtener los productos:", error);
     }
@@ -85,7 +92,6 @@ function Products() {
         <table className="w-[90%] bg-white rounded-2xl text-center shadow-[0_8px_30px_rgb(0,0,0,0.12)] mb-8">
           <thead>
             <tr className="border-b-2 border-stone-100 text-dark-blue">
-              
               <th className="py-4">Product</th>
               <th className="py-4">Image</th>
               <th className="py-4">Operate</th>
@@ -93,44 +99,44 @@ function Products() {
           </thead>
           <tbody>
             {products
-            .filter(product => product.stateProduct_id !== 2)
-            .map((product) => (
-              <tr
-                key={product.id}
-                className="text-dark-blue border-b-2 border-stone-100"
-              >
-                {product.stateProduct_id === 2 ? (
-                  <td className="py-3 text-danger">
-                    {product.name + " - Product disabled"}
+              .filter((product) => product.stateProduct_id !== 2)
+              .map((product) => (
+                <tr
+                  key={product.id}
+                  className="text-dark-blue border-b-2 border-stone-100"
+                >
+                  {product.stateProduct_id === 2 ? (
+                    <td className="py-3 text-danger">
+                      {product.name + " - Product disabled"}
+                    </td>
+                  ) : (
+                    <td className="py-3">{product.name}</td>
+                  )}
+                  <td className="py-3">
+                    <img
+                      className="w-[40px] mx-auto"
+                      src={urlImagen + product.image}
+                      alt={product.name}
+                    />
                   </td>
-                ) : (
-                  <td className="py-3">{product.name}</td>
-                )}
-                <td className="py-3">
-                  <img
-                    className="w-[40px] mx-auto"
-                    src={urlImagen + product.image}
-                    alt={product.name}
-                  />
-                </td>
-                <td className="py-4 flex justify-center">
-                  <button
-                    className="flex text-primary-blue mr-6 font-medium hover:scale-110 hover:text-green hover:border-green"
-                    onClick={() => setShowEditProduct(product.id)}
-                  >
-                    <PencilSquareIcon className="h-6 w-6 mr-1" />
-                    Edit
-                  </button>
-                  <button
-                    className="flex text-primary-blue font-medium hover:scale-110 hover:text-danger hover:border-danger"
-                    onClick={() => handleDeleteProduct(product)}
-                  >
-                    <TrashIcon className="h-6 w-6 mr-1" />
-                    Delete
-                  </button>
-                </td>
-              </tr>
-            ))}
+                  <td className="py-4 flex justify-center">
+                    <button
+                      className="flex text-primary-blue mr-6 font-medium hover:scale-110 hover:text-green hover:border-green"
+                      onClick={() => setShowEditProduct(product.id)}
+                    >
+                      <PencilSquareIcon className="h-6 w-6 mr-1" />
+                      Edit
+                    </button>
+                    <button
+                      className="flex text-primary-blue font-medium hover:scale-110 hover:text-danger hover:border-danger"
+                      onClick={() => handleDeleteProduct(product)}
+                    >
+                      <TrashIcon className="h-6 w-6 mr-1" />
+                      Delete
+                    </button>
+                  </td>
+                </tr>
+              ))}
           </tbody>
         </table>
       </div>

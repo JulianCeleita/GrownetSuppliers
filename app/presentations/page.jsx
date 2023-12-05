@@ -28,6 +28,7 @@ export const fetchPresentations = async (token, setPresentations, setIsLoading) 
     const newPresentation = Array.isArray(response.data.presentations)
       ? response.data.presentations
       : [];
+
     setPresentations(newPresentation);
     setIsLoading(false);
   } catch (error) {
@@ -151,7 +152,7 @@ const [isLoading, setIsLoading] = useState(true);
                     uom.id === presentation.uoms_id ? uom.name : null
                   )}
                 </td>
-                
+
                 <td className="py-4">{presentation.name}</td>
                 <td className="py-4">£ {presentation.cost}</td>
                 <td className="py-4">{presentation.quantity}</td>
