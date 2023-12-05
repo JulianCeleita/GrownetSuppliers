@@ -23,7 +23,11 @@ export const fetchCategories = async (token, setCategories) => {
     const newCategories = Array.isArray(response.data.categories)
       ? response.data.categories
       : [];
-    setCategories(newCategories);
+    const sortedCategories = newCategories.sort((a, b) =>
+      a.name.localeCompare(b.name)
+    );
+
+    setCategories(sortedCategories);
   } catch (error) {
     console.error("Error al obtener las categorías:", error);
   }

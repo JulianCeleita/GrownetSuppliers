@@ -22,7 +22,12 @@ export const fetchSuppliers = async (token, setSuppliers) => {
     const newSuppliers = Array.isArray(response.data.suppliers)
       ? response.data.suppliers
       : [];
-    setSuppliers(newSuppliers);
+
+    const sortedSuppliers = newSuppliers.sort((a, b) =>
+      a.name.localeCompare(b.name)
+    );
+
+    setSuppliers(sortedSuppliers);
   } catch (error) {
     console.error("Error al obtener las proveedores:", error);
   }

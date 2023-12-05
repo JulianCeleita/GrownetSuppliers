@@ -28,6 +28,7 @@ export const fetchPresentations = async (token, setPresentations) => {
     const newPresentation = Array.isArray(response.data.presentations)
       ? response.data.presentations
       : [];
+
     setPresentations(newPresentation);
   } catch (error) {
     console.error("Error al obtener las presentaciones:", error);
@@ -149,7 +150,7 @@ function Presentations() {
                     uom.id === presentation.uoms_id ? uom.name : null
                   )}
                 </td>
-                
+
                 <td className="py-4">{presentation.name}</td>
                 <td className="py-4">£ {presentation.cost}</td>
                 <td className="py-4">{presentation.quantity}</td>
