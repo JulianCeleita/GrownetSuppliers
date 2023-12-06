@@ -111,6 +111,14 @@ function Presentations() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  const sortedPresentations = presentations.slice().sort((a, b) => {
+    const productNameA =
+      products.find((product) => product.id === a.products_id)?.name || "";
+    const productNameB =
+      products.find((product) => product.id === b.products_id)?.name || "";
+    return productNameA.localeCompare(productNameB);
+  });
+
   return (
     <div>
       <div className="flex justify-between p-8 pb-20 bg-primary-blue">
@@ -139,17 +147,15 @@ function Presentations() {
             </tr>
           </thead>
           <tbody>
-            {presentations.map((presentation) => (
+            {sortedPresentations.map((presentation) => (
               <tr
                 key={presentation.id}
                 className="text-dark-blue border-b-2 border-stone-100 "
               >
                 <td className="py-4">
-                  {products.map((product) =>
-                    product.id === presentation.products_id
-                      ? product.name
-                      : null
-                  )}
+                  {products.find(
+                    (product) => product.id === presentation.products_id
+                  )?.name || ""}
                 </td>
                 <td className="py-4">
                   {uoms.map((uom) =>
