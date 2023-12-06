@@ -37,7 +37,6 @@ function EditPresentation({
   );
 
   useEffect(() => {
-    console.log("Presentation Prop:", presentation);
     setEditedName(presentation ? presentation.name : "");
     setEditedCost(presentation ? presentation.cost : "");
     setEditedQuantity(presentation ? presentation.quantity : "");

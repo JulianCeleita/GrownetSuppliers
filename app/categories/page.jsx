@@ -29,6 +29,7 @@ export const fetchCategories = async (token, setCategories, setIsLoading) => {
     );
 
     setCategories(sortedCategories);
+    setIsLoading(false);
 
   } catch (error) {
     console.error("Error al obtener las categorías:", error);

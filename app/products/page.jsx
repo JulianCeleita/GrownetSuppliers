@@ -21,6 +21,7 @@ function Products() {
   const [showEditProduct, setShowEditProduct] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [selectedProduct, setSelectedProduct] = useState(null);
   //Api
   const { products, setProducts } = useProductStore();
   const urlImagen = "https://api.grownetapp.com/grownet/";
@@ -122,8 +123,10 @@ function Products() {
                     <button
                       className="flex text-primary-blue mr-6 font-medium hover:scale-110 hover:text-green hover:border-green"
                       onClick={() => {
+
                         setShowEditProduct(true);
                         setSelectedProduct(product);
+
                       }}
                     >
                       <PencilSquareIcon className="h-6 w-6 mr-1" />
@@ -151,6 +154,7 @@ function Products() {
         isvisible={showEditProduct}
         onClose={() => setShowEditProduct(false)}
         fetchProducts={fetchProducts}
+
         product={selectedProduct}
       />
       {isLoading && (

@@ -5,7 +5,9 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import useCategoryStore from "../store/useCategoryStore";
 
+
 function EditProduct({ isvisible, onClose, fetchProducts, product }) {
+
   const { token } = useTokenStore();
   const { categories } = useCategoryStore();
 
@@ -26,6 +28,7 @@ function EditProduct({ isvisible, onClose, fetchProducts, product }) {
   const [presentationProduct, setPresentationProduct] = useState("");
   const [selectedImageName, setSelectedImageName] = useState(null);
 
+
   useEffect(() => {
     if (product) {
       console.log("product", product);
@@ -45,6 +48,7 @@ function EditProduct({ isvisible, onClose, fetchProducts, product }) {
       setCategoriesLoaded(true);
     }
   }, [categories, categoriesLoaded]);
+
 
   // Api families
   useEffect(() => {
@@ -165,6 +169,7 @@ function EditProduct({ isvisible, onClose, fetchProducts, product }) {
               type="text"
               value={addProduct}
               onChange={(e) => setAddProduct(e.target.value)}
+              value={addProduct}
               required
             ></input>
             <label>Code: </label>
@@ -184,9 +189,9 @@ function EditProduct({ isvisible, onClose, fetchProducts, product }) {
               name="family"
               className="border p-3 rounded-md mr-3 mt-3"
               onChange={(e) => setSelectedFamiliesStatus(e.target.value)}
-              value={selectedFamiliesStatus}
               required
             >
+              <option> Select family</option>
               {families.map((family) => (
                 <option key={family.id} value={family.id}>
                   {family.name}
@@ -234,6 +239,7 @@ function EditProduct({ isvisible, onClose, fetchProducts, product }) {
                 onChange={(e) => setSelectedUomsStatus(e.target.value)}
                 required
               >
+                <option> Select uom</option>
                 {uoms.map((uom) => (
                   <option key={uom.id} value={uom.id}>
                     {uom.name}
@@ -248,9 +254,9 @@ function EditProduct({ isvisible, onClose, fetchProducts, product }) {
                 name="category"
                 className="border p-3 rounded-md mr-3 mt-3"
                 onChange={(e) => setSelectedCategoryId(e.target.value)}
-                value={selectedCategoryId}
                 required
               >
+                <option> Select category</option>
                 {categories.map((category) => (
                   <option key={category.id} value={category.id}>
                     {category.name}

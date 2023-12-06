@@ -101,6 +101,7 @@ function NewPresentation({ isvisible, onClose, setPresentations }) {
             required
             onChange={(e) => setSelectedUomsStatus(e.target.value)}
           >
+            <option> Select uom</option>
             {uoms.map((uom) => (
               <option key={uom.id} value={uom.id}>
                 {uom.name}
@@ -117,6 +118,7 @@ function NewPresentation({ isvisible, onClose, setPresentations }) {
             onChange={(e) => setSelectedProductsStatus(e.target.value)}
             required
           >
+            <option> Select product</option>
             {products.map((product) => (
               <option key={product.id} value={product.id}>
                 {product.name}
