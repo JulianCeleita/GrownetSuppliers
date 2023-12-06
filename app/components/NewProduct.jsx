@@ -21,10 +21,9 @@ function NewProduct({ isvisible, onClose, fetchProducts }) {
   const [taxProduct, setTaxProduct] = useState("");
   const [costProduct, setCostProduct] = useState(0);
   const [quantityProduct, setQuantityProduct] = useState("");
-  const [selectedCategoryId, setSelectedCategoryId] = useState(
-    categories.length > 0 ? categories[0].id : ""
-  );
-  const [selectedStatus, setSelectedStatus] = useState("active");
+  const [categoriesLoaded, setCategoriesLoaded] = useState(false);
+  const [selectedCategoryId, setSelectedCategoryId] = useState("");
+  // const [selectedStatus, setSelectedStatus] = useState("active");
   const [selectedFamiliesStatus, setSelectedFamiliesStatus] =
     useState("banana");
   const [selecteUomsStatus, setSelectedUomsStatus] = useState("unit");
@@ -51,6 +50,12 @@ function NewProduct({ isvisible, onClose, fetchProducts }) {
 
     fetchTaxes();
   }, []);*/
+  useEffect(() => {
+    if (categories.length > 0 && !categoriesLoaded) {
+      setSelectedCategoryId(categories[0].id);
+      setCategoriesLoaded(true);
+    }
+  }, [categories, categoriesLoaded]);
 
   // Api families
   useEffect(() => {
@@ -264,7 +269,7 @@ function NewProduct({ isvisible, onClose, fetchProducts }) {
             onChange={handleImageChange}
           ></input>
           <div>
-            <label>Product status: </label>
+            {/* <label>Product status: </label>
             <select
               id="status"
               name="status"
@@ -275,10 +280,10 @@ function NewProduct({ isvisible, onClose, fetchProducts }) {
             >
               <option value="active">Active</option>
               <option value="disable">Disable</option>
-            </select>
+            </select> */}
             <label>Product taxes: </label>
             <input
-              className="border p-3 rounded-md mr-3 mt-3"
+              className="border p-3 rounded-md mr-3 mt-3 w-[50px]"
               placeholder="1.2"
               type="text"
               onChange={(e) => setTaxProduct(e.target.value)}
