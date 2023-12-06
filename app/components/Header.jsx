@@ -4,7 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 
 function Header() {
-  const [activeLink, setActiveLink] = useState("orders");
+  const [activeLink, setActiveLink] = useState("");
 
   useEffect(() => {
     const currentPath = window.location.pathname;
