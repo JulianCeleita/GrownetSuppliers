@@ -1,10 +1,16 @@
+import { updateCategoryUrl } from "@/app/config/urls.config";
+import useTokenStore from "@/app/store/useTokenStore";
 import { ExclamationCircleIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import axios from "axios";
 import { useState } from "react";
-import { updateCategoryUrl } from "@/app/config/urls.config";
-import useTokenStore from "@/app/store/useTokenStore";
 import { fetchCategories } from "../categories/page";
-function EditCategory({ isvisible, onClose, category, setCategories }) {
+function EditCategory({
+  isvisible,
+  onClose,
+  category,
+  setCategories,
+  setIsLoading,
+}) {
   const [editedName, setEditedName] = useState(category ? category.name : "");
   const { token } = useTokenStore();
 
@@ -24,7 +30,7 @@ function EditCategory({ isvisible, onClose, category, setCategories }) {
         }
       )
       .then((response) => {
-        fetchCategories(token, setCategories);
+        fetchCategories(token, setCategories, setIsLoading);
         onClose();
       })
       .catch((error) => {
