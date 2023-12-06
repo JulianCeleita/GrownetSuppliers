@@ -192,6 +192,9 @@ function NewProduct({ isvisible, onClose, fetchProducts }) {
               required
               onChange={(e) => setSelectedFamiliesStatus(e.target.value)}
             >
+              <option value="" disabled selected>
+                Select family
+              </option>
               {families.map((family) => (
                 <option key={family.id} value={family.id}>
                   {family.name}
@@ -236,6 +239,9 @@ function NewProduct({ isvisible, onClose, fetchProducts }) {
                 required
                 onChange={(e) => setSelectedUomsStatus(e.target.value)}
               >
+                <option value="" disabled selected>
+                  Select uom
+                </option>
                 {uoms.map((uom) => (
                   <option key={uom.id} value={uom.id}>
                     {uom.name}
@@ -252,6 +258,9 @@ function NewProduct({ isvisible, onClose, fetchProducts }) {
                 required
                 onChange={(e) => setSelectedCategoryId(e.target.value)}
               >
+                <option value="" disabled selected>
+                  Select category
+                </option>
                 {categories.map((category) => (
                   <option key={category.id} value={category.id}>
                     {category.name}
@@ -265,6 +274,7 @@ function NewProduct({ isvisible, onClose, fetchProducts }) {
             className="p-3 rounded-md mr-3 mt-3 cursor-pointer"
             placeholder="Fruit"
             type="file"
+            required
             onChange={handleImageChange}
           ></input>
           <div>

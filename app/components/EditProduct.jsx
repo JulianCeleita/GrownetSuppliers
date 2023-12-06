@@ -184,6 +184,9 @@ function EditProduct({ isvisible, onClose, fetchProducts, product, setIsLoading 
               onChange={(e) => setSelectedFamiliesStatus(e.target.value)}
               required
             >
+              <option value="" disabled selected>
+                Select family
+              </option>
               {families.map((family) => (
                 <option key={family.id} value={family.id}>
                   {family.name}
@@ -231,6 +234,9 @@ function EditProduct({ isvisible, onClose, fetchProducts, product, setIsLoading 
                 onChange={(e) => setSelectedUomsStatus(e.target.value)}
                 required
               >
+                <option value="" disabled selected>
+                  Select uom
+                </option>
                 {uoms.map((uom) => (
                   <option key={uom.id} value={uom.id}>
                     {uom.name}
@@ -247,6 +253,9 @@ function EditProduct({ isvisible, onClose, fetchProducts, product, setIsLoading 
                 onChange={(e) => setSelectedCategoryId(e.target.value)}
                 required
               >
+                <option value="" disabled selected>
+                  Select category
+                </option>
                 {categories.map((category) => (
                   <option key={category.id} value={category.id}>
                     {category.name}
