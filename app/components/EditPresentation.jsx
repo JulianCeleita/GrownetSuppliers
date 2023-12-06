@@ -79,6 +79,7 @@ function EditPresentation({
   //Api editar
   const handleEditPresentation = (event) => {
     event.preventDefault();
+
     const postData = {
       uoms_id: selectedUomsStatus,
       quantity: editedQuantity,
@@ -132,7 +133,9 @@ function EditPresentation({
               onChange={(e) => setSelectedUomsStatus(e.target.value)}
               value={selectedUomsStatus}
             >
-              <option> Select uom</option>
+              <option value="" disabled selected>
+                Select uom
+              </option>
               {uoms.map((uom) => (
                 <option key={uom.id} value={uom.id}>
                   {uom.id} - {uom.name}
@@ -180,7 +183,9 @@ function EditPresentation({
             value={selectedProductsStatus}
             required
           >
-            <option> Select product</option>
+            <option value="" disabled selected>
+              Select product
+            </option>
             {products.map((product) => (
               <option key={product.id} value={product.id}>
                 {product.id} - {product.name}

@@ -126,8 +126,8 @@ function Presentations() {
           New Presentations
         </button>
       </div>
-      <div className="flex items-center justify-center mb-6 -mt-14">
-        <table className="w-[90%] bg-white rounded-2xl text-center shadow-[0_8px_30px_rgb(0,0,0,0.12)] mb-6">
+      <div className="flex items-center justify-center mb-40 -mt-14">
+        <table className="w-[90%] bg-white rounded-2xl text-center shadow-[0_8px_30px_rgb(0,0,0,0.12)] mb-10">
           <thead>
             <tr className="border-b-2 border-stone-100 text-dark-blue">
               <th className="py-4">Product</th>
