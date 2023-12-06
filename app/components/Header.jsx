@@ -7,8 +7,10 @@ function Header() {
   const [activeLink, setActiveLink] = useState("");
 
   useEffect(() => {
-    const currentHash = window.location.hash;
-    setActiveLink(currentHash);
+    const currentPath = window.location.pathname;
+    const page = currentPath.replace(/\//g, "");
+
+    setActiveLink(page);
   }, []);
   return (
     <div className="flex justify-between items-center bg-primary-blue p-4">
@@ -27,12 +29,18 @@ function Header() {
           href="/orders"
           className="relative group text-white rounded m-2 py-2 hover:text-light-green hover:scale-110"
         >
-          <h3 className="block" onClick={() => setActiveLink("orders")}>
+          <h3
+            className={activeLink === "orders" ? "active" : ""}
+            onClick={() => setActiveLink("orders")}
+          >
             Orders
           </h3>
-          {activeLink === "orders" ? (
-            <span className="absolute bottom-0 left-0  h-0.5 bg-light-green w-full transition-all duration-300 ease-in-out"></span>
-          ) : (
+
+          {activeLink === "orders" && (
+            <span className="absolute bottom-0 left-0 h-0.5 bg-light-green w-full transition-all duration-300 ease-in-out"></span>
+          )}
+
+          {activeLink !== "orders" && (
             <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-white group-hover:w-full transition-all duration-300 ease-in-out"></span>
           )}
         </Link>
@@ -40,12 +48,18 @@ function Header() {
           href="/products"
           className="relative group text-white rounded m-2 py-2 hover:text-light-green hover:scale-110"
         >
-          <h3 className="block" onClick={() => setActiveLink("products")}>
+          <div
+            className={activeLink === "products" ? "active" : ""}
+            onClick={() => setActiveLink("products")}
+          >
             Products
-          </h3>
-          {activeLink === "products" ? (
-            <span className="absolute bottom-0 left-0  h-0.5 bg-light-green w-full transition-all duration-300 ease-in-out"></span>
-          ) : (
+          </div>
+
+          {activeLink === "products" && (
+            <span className="absolute bottom-0 left-0 h-0.5 bg-light-green w-full transition-all duration-300 ease-in-out"></span>
+          )}
+
+          {activeLink !== "products" && (
             <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-white group-hover:w-full transition-all duration-300 ease-in-out"></span>
           )}
         </Link>
@@ -53,9 +67,12 @@ function Header() {
           href="/presentations"
           className="relative group text-white rounded m-2 py-2 hover:text-light-green hover:scale-110"
         >
-          <h3 className="block" onClick={() => setActiveLink("presentations")}>
+          <div
+            className={activeLink === "presentations" ? "active" : ""}
+            onClick={() => setActiveLink("presentations")}
+          >
             Presentations
-          </h3>
+          </div>
           {activeLink === "presentations" ? (
             <span className="absolute bottom-0 left-0  h-0.5 bg-light-green w-full transition-all duration-300 ease-in-out"></span>
           ) : (
@@ -66,9 +83,12 @@ function Header() {
           href="/categories"
           className="relative group text-white rounded m-2 py-2 hover:text-light-green hover:scale-110"
         >
-          <h3 className="block" onClick={() => setActiveLink("categories")}>
+          <div
+            className={activeLink === "categories" ? "active" : ""}
+            onClick={() => setActiveLink("categories")}
+          >
             Categories
-          </h3>
+          </div>
           {activeLink === "categories" ? (
             <span className="absolute bottom-0 left-0  h-0.5 bg-light-green w-full transition-all duration-300 ease-in-out"></span>
           ) : (
@@ -79,9 +99,12 @@ function Header() {
           href="/suppliers"
           className="relative group text-white rounded m-2 py-2 hover:text-light-green hover:scale-110"
         >
-          <h3 className="block" onClick={() => setActiveLink("suppliers")}>
+          <div
+            className={activeLink === "suppliers" ? "active" : ""}
+            onClick={() => setActiveLink("suppliers")}
+          >
             Suppliers
-          </h3>
+          </div>
           {activeLink === "suppliers" ? (
             <span className="absolute bottom-0 left-0  h-0.5 bg-light-green w-full transition-all duration-300 ease-in-out"></span>
           ) : (
