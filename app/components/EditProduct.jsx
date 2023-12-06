@@ -165,7 +165,6 @@ function EditProduct({ isvisible, onClose, fetchProducts, product }) {
               type="text"
               value={addProduct}
               onChange={(e) => setAddProduct(e.target.value)}
-              value={addProduct}
               required
             ></input>
             <label>Code: </label>
