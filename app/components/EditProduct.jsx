@@ -5,9 +5,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import useCategoryStore from "../store/useCategoryStore";
 
-
 function EditProduct({ isvisible, onClose, fetchProducts, product }) {
-
   const { token } = useTokenStore();
   const { categories } = useCategoryStore();
 
@@ -28,7 +26,6 @@ function EditProduct({ isvisible, onClose, fetchProducts, product }) {
   const [presentationProduct, setPresentationProduct] = useState("");
   const [selectedImageName, setSelectedImageName] = useState(null);
 
-
   useEffect(() => {
     if (product) {
       console.log("product", product);
@@ -48,7 +45,6 @@ function EditProduct({ isvisible, onClose, fetchProducts, product }) {
       setCategoriesLoaded(true);
     }
   }, [categories, categoriesLoaded]);
-
 
   // Api families
   useEffect(() => {
