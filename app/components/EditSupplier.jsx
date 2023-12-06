@@ -1,11 +1,17 @@
-import { XMarkIcon, ExclamationCircleIcon } from "@heroicons/react/24/outline";
-import axios from "axios";
-import { useState, useEffect } from "react";
 import { updateSupplierUrl } from "@/app/config/urls.config";
+import { ExclamationCircleIcon, XMarkIcon } from "@heroicons/react/24/outline";
+import axios from "axios";
+import { useEffect, useState } from "react";
 import useTokenStore from "../store/useTokenStore";
 import { fetchSuppliers } from "../suppliers/page";
 
-function EditSupplier({ isvisible, onClose, supplier, setSuppliers }) {
+function EditSupplier({
+  isvisible,
+  onClose,
+  supplier,
+  setSuppliers,
+  setIsLoading,
+}) {
   const { token } = useTokenStore();
   const [editedName, setEditedName] = useState(supplier ? supplier.name : "");
   const [editedEmail, setEditedEmail] = useState(
@@ -41,7 +47,7 @@ function EditSupplier({ isvisible, onClose, supplier, setSuppliers }) {
         },
       })
       .then((response) => {
-        fetchSuppliers(token, setSuppliers);
+        fetchSuppliers(token, setSuppliers, setIsLoading);
         onClose();
       })
       .catch((error) => {

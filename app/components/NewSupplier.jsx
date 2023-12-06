@@ -1,7 +1,7 @@
+import { addSupplierUrl } from "@/app/config/urls.config";
 import { XMarkIcon } from "@heroicons/react/24/outline";
 import axios from "axios";
 import { useState } from "react";
-import { addSupplierUrl } from "@/app/config/urls.config";
 import useTokenStore from "../store/useTokenStore";
 import { fetchSuppliers } from "../suppliers/page";
 
@@ -38,7 +38,7 @@ function NewSupplier({ isvisible, onClose, setSuppliers }) {
         },
       })
       .then((response) => {
-        fetchSuppliers(token, setSuppliers);
+        fetchSuppliers(token, setSuppliers, setIsLoading);
         onClose();
         setSelectedImage(null);
         setAddSupplier("");

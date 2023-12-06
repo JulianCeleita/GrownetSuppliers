@@ -58,6 +58,7 @@ function EditPresentation({
       .catch((error) => {
         console.error("Error al obtener los productos:", error);
       });
+      // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Api uom
@@ -74,6 +75,7 @@ function EditPresentation({
       .catch((error) => {
         console.error("Error al obtener UOMS productos:", error);
       });
+      // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   //Api editar

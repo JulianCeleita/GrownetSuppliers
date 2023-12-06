@@ -32,6 +32,7 @@ function NewPresentation({ isvisible, onClose, setPresentations }) {
       .catch((error) => {
         console.error("Error al obtener UOMS productos:", error);
       });
+      // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   //Api products
@@ -48,6 +49,7 @@ function NewPresentation({ isvisible, onClose, setPresentations }) {
       .catch((error) => {
         console.error("Error al obtener los productos:", error);
       });
+      // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   if (!isvisible) {
@@ -93,7 +95,7 @@ function NewPresentation({ isvisible, onClose, setPresentations }) {
           Add <span className="text-primary-blue">new presentation</span>
         </h1>
         <form className="text-left  flex flex-col" onSubmit={enviarData}>
-          <label>Unit weight of the product: </label>
+          <label>Unit of measurement of the product: </label>
           <select
             id="uom"
             name="uom"
