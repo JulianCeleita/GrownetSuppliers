@@ -190,7 +190,6 @@ function NewProduct({ isvisible, onClose, fetchProducts }) {
               required
               onChange={(e) => setSelectedFamiliesStatus(e.target.value)}
             >
-              <option> Select family</option>
               {families.map((family) => (
                 <option key={family.id} value={family.id}>
                   {family.name}
@@ -235,7 +234,6 @@ function NewProduct({ isvisible, onClose, fetchProducts }) {
                 required
                 onChange={(e) => setSelectedUomsStatus(e.target.value)}
               >
-                <option> Select uom</option>
                 {uoms.map((uom) => (
                   <option key={uom.id} value={uom.id}>
                     {uom.name}
@@ -252,7 +250,6 @@ function NewProduct({ isvisible, onClose, fetchProducts }) {
                 required
                 onChange={(e) => setSelectedCategoryId(e.target.value)}
               >
-                <option> Select category</option>
                 {categories.map((category) => (
                   <option key={category.id} value={category.id}>
                     {category.name}
