@@ -1,14 +1,14 @@
 "use client";
-import { useState, useEffect } from "react";
+import { deleteSupplierUrl, suppliersUrl } from "@/app/config/urls.config";
 import {
   PencilSquareIcon,
-  TrashIcon,
   PlusCircleIcon,
+  TrashIcon,
 } from "@heroicons/react/24/outline";
-import NewSupplier from "../components/NewSupplier";
-import EditSupplier from "../components/EditSupplier";
 import axios from "axios";
-import { suppliersUrl, deleteSupplierUrl } from "@/app/config/urls.config";
+import { useEffect, useState } from "react";
+import EditSupplier from "../components/EditSupplier";
+import NewSupplier from "../components/NewSupplier";
 import useTokenStore from "../store/useTokenStore";
 
 export const fetchSuppliers = async (token, setSuppliers, setIsLoading) => {
@@ -23,16 +23,12 @@ export const fetchSuppliers = async (token, setSuppliers, setIsLoading) => {
       ? response.data.suppliers
       : [];
 
-
     const sortedSuppliers = newSuppliers.sort((a, b) =>
       a.name.localeCompare(b.name)
     );
 
     setSuppliers(sortedSuppliers);
-
-   
     setIsLoading(false);
-
   } catch (error) {
     console.error("Error al obtener las proveedores:", error);
   }
@@ -42,9 +38,7 @@ function Suppliers() {
   const { token } = useTokenStore();
   const [showNewSupplier, setShowNewSupplier] = useState(false);
   const [showEditSupplier, setShowEditSupplier] = useState(false);
-  //Variable edit supplier
   const [selectedSupplier, setSelectedSupplier] = useState(null);
-  //Api
   const urlImagen = "https://api.grownetapp.com/grownet/";
   const [suppliers, setSuppliers] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -53,8 +47,8 @@ function Suppliers() {
     fetchSuppliers(token, setSuppliers, setIsLoading);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
   //Api delete
-  const [deleteResponse, setDeleteResponse] = useState(null);
   const handleDeleteSupplier = (supplier) => {
     const { id } = supplier;
     axios
@@ -64,8 +58,7 @@ function Suppliers() {
         },
       })
       .then((response) => {
-        fetchSuppliers(token, setSuppliers);
-        console.log("Se borró con éxito");
+        fetchSuppliers(token, setSuppliers, setIsLoading);
       })
       .catch((error) => {
         console.error("Error al eliminar el proveedor:", error);
@@ -143,6 +136,7 @@ function Suppliers() {
         onClose={() => setShowEditSupplier(false)}
         supplier={selectedSupplier}
         setSuppliers={setSuppliers}
+        setIsLoading={setIsLoading}
       />
       {isLoading && (
         <div className="flex justify-center items-center mb-20">
