@@ -1,11 +1,11 @@
-import { useState } from "react";
-import useTokenStore from "@/app/store/useTokenStore";
 import { addCategoryUrl } from "@/app/config/urls.config";
-import axios from "axios";
+import useTokenStore from "@/app/store/useTokenStore";
 import { XMarkIcon } from "@heroicons/react/24/outline";
+import axios from "axios";
+import { useState } from "react";
 import { fetchCategories } from "../categories/page";
 
-function NewCategory({ isvisible, onClose, setCategories }) {
+function NewCategory({ isvisible, onClose, setCategories, setIsLoading }) {
   const { token } = useTokenStore();
   const [addCategory, setAddCategory] = useState("");
   if (!isvisible) {
@@ -26,7 +26,7 @@ function NewCategory({ isvisible, onClose, setCategories }) {
         },
       })
       .then((response) => {
-        fetchCategories(token, setCategories);
+        fetchCategories(token, setCategories, setIsLoading);
         onClose();
       })
       .catch(function (error) {

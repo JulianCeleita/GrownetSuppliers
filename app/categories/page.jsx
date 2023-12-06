@@ -1,16 +1,16 @@
 "use client";
-import { useState, useEffect } from "react";
-import useTokenStore from "@/app/store/useTokenStore";
+import { categoriesUrl, deleteCategoryUrl } from "@/app/config/urls.config";
 import useCategoryStore from "@/app/store/useCategoryStore";
+import useTokenStore from "@/app/store/useTokenStore";
 import {
   PencilSquareIcon,
-  TrashIcon,
   PlusCircleIcon,
+  TrashIcon,
 } from "@heroicons/react/24/outline";
-import NewCategory from "../components/NewCategory";
-import EditCategory from "../components/EditCategory";
 import axios from "axios";
-import { categoriesUrl, deleteCategoryUrl } from "@/app/config/urls.config";
+import { useEffect, useState } from "react";
+import EditCategory from "../components/EditCategory";
+import NewCategory from "../components/NewCategory";
 
 export const fetchCategories = async (token, setCategories, setIsLoading) => {
   try {
@@ -27,10 +27,8 @@ export const fetchCategories = async (token, setCategories, setIsLoading) => {
     const sortedCategories = newCategories.sort((a, b) =>
       a.name.localeCompare(b.name)
     );
-
     setCategories(sortedCategories);
     setIsLoading(false);
-
   } catch (error) {
     console.error("Error al obtener las categorías:", error);
   }
@@ -64,8 +62,7 @@ function Categories() {
       });
 
       setDeleteResponse(response.data);
-      fetchCategories(token, setCategories);
-      console.log("Se borro con éxito");
+      fetchCategories(token, setCategories, setIsLoading);
     } catch (error) {
       console.error("Error al eliminar la categoría:", error);
     }
@@ -127,11 +124,13 @@ function Categories() {
         onClose={() => setShowEditCategory(false)}
         category={selectedCategory}
         setCategories={setCategories}
+        setIsLoading={setIsLoading}
       />
       <NewCategory
         isvisible={showNewCategory}
         onClose={() => setShowNewCategory(false)}
         setCategories={setCategories}
+        setIsLoading={setIsLoading}
       />
       {isLoading && (
         <div className="flex justify-center items-center mb-20">
