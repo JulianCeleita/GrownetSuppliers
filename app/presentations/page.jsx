@@ -17,7 +17,11 @@ import {
 import useTokenStore from "@/app/store/useTokenStore";
 import useProductStore from "../store/useProductStore";
 
-export const fetchPresentations = async (token, setPresentations, setIsLoading) => {
+export const fetchPresentations = async (
+  token,
+  setPresentations,
+  setIsLoading
+) => {
   try {
     const response = await axios.get(presentationsUrl, {
       headers: {
@@ -40,7 +44,7 @@ function Presentations() {
   const { token } = useTokenStore();
   const [products, setProducts] = useState([]);
   const [uoms, setUoms] = useState([]);
-const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(true);
 
   const [showNewPresentations, setShowNewPresentations] = useState(false);
   const [showEditPresentations, setShowEditPresentations] = useState(false);

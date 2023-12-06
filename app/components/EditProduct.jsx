@@ -4,9 +4,8 @@ import useTokenStore from "../store/useTokenStore";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import useCategoryStore from "../store/useCategoryStore";
-import useProductStore from "../store/useProductStore";
 
-function EditProduct({ isvisible, onClose, fetchProducts, productId }) {
+function EditProduct({ isvisible, onClose, fetchProducts, product }) {
   const { token } = useTokenStore();
   const { categories } = useCategoryStore();
 
@@ -16,18 +15,36 @@ function EditProduct({ isvisible, onClose, fetchProducts, productId }) {
   //
   const [addProduct, setAddProduct] = useState("");
   const [codeProduct, setCodeProduct] = useState("");
-  const [selectedFamiliesStatus, setSelectedFamiliesStatus] =
-    useState("banana");
+  const [selectedFamiliesStatus, setSelectedFamiliesStatus] = useState("");
   const [costProduct, setCostProduct] = useState(0);
   const [selecteUomsStatus, setSelectedUomsStatus] = useState("unit");
-  const [selectedCategoryId, setSelectedCategoryId] = useState(
-    categories.length > 0 ? categories[0].id : ""
-  );
+  const [selectedCategoryId, setSelectedCategoryId] = useState("");
+  const [categoriesLoaded, setCategoriesLoaded] = useState(false);
   const [selectedStatus, setSelectedStatus] = useState("active");
   const [taxProduct, setTaxProduct] = useState("");
   const [quantityProduct, setQuantityProduct] = useState("");
   const [presentationProduct, setPresentationProduct] = useState("");
   const [selectedImageName, setSelectedImageName] = useState(null);
+
+  useEffect(() => {
+    if (product) {
+      console.log("product", product);
+      setAddProduct(product.name || "");
+      setCodeProduct(product.code || "");
+      setCostProduct(product.prices.map((e) => e.cost) || 0);
+      setTaxProduct(
+        product.tax && Object.keys(product.tax).length !== 0 ? product.tax : ""
+      );
+      setQuantityProduct(product.prices.map((e) => e.quantity) || "");
+    }
+  }, [product]);
+
+  useEffect(() => {
+    if (categories.length > 0 && !categoriesLoaded) {
+      setSelectedCategoryId(categories[0].id);
+      setCategoriesLoaded(true);
+    }
+  }, [categories, categoriesLoaded]);
 
   // Api families
   useEffect(() => {
@@ -104,10 +121,10 @@ function EditProduct({ isvisible, onClose, fetchProducts, productId }) {
     });
 
     console.log("formDataObject", formDataObject);
-    console.log("formDataObject", productId);
+    console.log("formDataObject", product);
     try {
       const response = await axios.post(
-        `${updateProductUrl}${productId}`,
+        `${updateProductUrl}${product.id}`,
         formData,
         {
           headers: {
@@ -124,12 +141,16 @@ function EditProduct({ isvisible, onClose, fetchProducts, productId }) {
       console.error("Error al editar el producto:", error);
     }
   };
+
   return (
     <div className="fixed inset-0 bg-black bg-opacity-25 backdrop-blur-sm flex flex-col justify-center items-center">
       <div className="bg-white p-8 rounded-2xl w-[800px] flex flex-col items-center">
         <button
           className="text-dark-blue place-self-end "
-          onClick={() => onClose()}
+          onClick={() => {
+            onClose();
+            setPresentationProduct("");
+          }}
         >
           <XMarkIcon className="h-6 w-6 text-gray-500" />
         </button>
@@ -142,6 +163,7 @@ function EditProduct({ isvisible, onClose, fetchProducts, productId }) {
               className="border p-3 rounded-md mr-3 mt-3"
               placeholder="Foodpoint"
               type="text"
+              value={addProduct}
               onChange={(e) => setAddProduct(e.target.value)}
               required
             ></input>
@@ -151,11 +173,12 @@ function EditProduct({ isvisible, onClose, fetchProducts, productId }) {
               placeholder="50"
               onChange={(e) => setCodeProduct(e.target.value)}
               type="text"
+              value={codeProduct}
               required
             ></input>
           </div>
           <div>
-            <label for="family">Family: </label>
+            <label htmlFor="family">Family: </label>
             <select
               id="family"
               name="family"
@@ -176,6 +199,7 @@ function EditProduct({ isvisible, onClose, fetchProducts, productId }) {
               placeholder="10"
               type="number"
               onChange={(e) => setCostProduct(e.target.value)}
+              value={costProduct}
               required
             />
           </div>
@@ -186,6 +210,7 @@ function EditProduct({ isvisible, onClose, fetchProducts, productId }) {
               placeholder="50"
               type="number"
               onChange={(e) => setQuantityProduct(e.target.value)}
+              value={quantityProduct}
               required
             ></input>
             <label>Presentation: </label>
@@ -194,6 +219,7 @@ function EditProduct({ isvisible, onClose, fetchProducts, productId }) {
               placeholder="5 Kg"
               type="text"
               onChange={(e) => setPresentationProduct(e.target.value)}
+              value={presentationProduct}
               required
             ></input>
           </div>
@@ -261,6 +287,7 @@ function EditProduct({ isvisible, onClose, fetchProducts, productId }) {
               placeholder="1.2"
               className="border p-3 rounded-md mr-3 mt-3 w-40"
               onChange={(e) => setTaxProduct(e.target.value)}
+              value={taxProduct}
               required
             ></input>
           </div>
