@@ -5,7 +5,13 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import useCategoryStore from "../store/useCategoryStore";
 
-function EditProduct({ isvisible, onClose, fetchProducts, product, setIsLoading }) {
+function EditProduct({
+  isvisible,
+  onClose,
+  fetchProducts,
+  product,
+  setIsLoading,
+}) {
   const { token } = useTokenStore();
   const { categories } = useCategoryStore();
   const [uoms, setUoms] = useState([]);
@@ -29,10 +35,8 @@ function EditProduct({ isvisible, onClose, fetchProducts, product, setIsLoading 
       setAddProduct(product.name || "");
       setCodeProduct(product.code || "");
       setCostProduct(product.prices.map((e) => e.cost) || 0);
-      setTaxProduct(
-        product.tax && product.tax.length !== 0 ? product.tax : 0
-      );
-      setPresentationProduct(product.prices.map((e)=> e.name) || "");
+      setTaxProduct(product.tax && product.tax.length !== 0 ? product.tax : 0);
+      setPresentationProduct(product.prices.map((e) => e.name) || "");
       setQuantityProduct(product.prices.map((e) => e.quantity) || "");
     }
   }, [product]);
@@ -271,7 +275,6 @@ function EditProduct({ isvisible, onClose, fetchProducts, product, setIsLoading 
             placeholder="Fruit"
             type="file"
             onChange={handleImageChange}
-            required
           ></input>
           <div>
             <label>Product status: </label>
