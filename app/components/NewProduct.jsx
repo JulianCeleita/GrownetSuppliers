@@ -1,15 +1,9 @@
-import { useState, useEffect } from "react";
-import {
-  addProductUrl,
-  familiesUrl,
-  uomUrl,
-  presentationsUrl,
-  TaxesApi,
-} from "../config/urls.config";
-import useTokenStore from "../store/useTokenStore";
 import useCategoryStore from "@/app/store/useCategoryStore";
 import { XMarkIcon } from "@heroicons/react/24/outline";
 import axios from "axios";
+import { useEffect, useState } from "react";
+import { addProductUrl, familiesUrl, uomUrl } from "../config/urls.config";
+import useTokenStore from "../store/useTokenStore";
 
 function NewProduct({ isvisible, onClose, fetchProducts }) {
   const { token } = useTokenStore();
@@ -126,15 +120,15 @@ function NewProduct({ isvisible, onClose, fetchProducts }) {
     formData.append("cost", costProduct);
     formData.append("family_id", selectedFamiliesStatus);
     formData.append("presentation", presentationProduct);
-    formData.append("image", selectedImageName);
+    if (selectedImageName !== null) {
+      formData.append("image", selectedImageName);
+    }
     formData.append("tax", taxProduct);
 
     const formDataObject = {};
     formData.forEach((value, key) => {
       formDataObject[key] = value;
     });
-
-    console.log("formDataObject", formDataObject);
 
     try {
       const response = await axios.post(addProductUrl, formData, {
@@ -143,10 +137,8 @@ function NewProduct({ isvisible, onClose, fetchProducts }) {
           "Content-Type": "multipart/form-data",
         },
       });
-
       onClose();
       await fetchProducts(token);
-      console.log("response.data", response.data);
     } catch (error) {
       console.error("Error al crear el producto:", error);
     }
@@ -274,7 +266,6 @@ function NewProduct({ isvisible, onClose, fetchProducts }) {
             className="p-3 rounded-md mr-3 mt-3 cursor-pointer"
             placeholder="Fruit"
             type="file"
-            required
             onChange={handleImageChange}
           ></input>
           <div>

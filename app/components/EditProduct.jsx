@@ -1,9 +1,9 @@
-import { XMarkIcon, ExclamationCircleIcon } from "@heroicons/react/24/outline";
-import { familiesUrl, uomUrl, updateProductUrl } from "../config/urls.config";
-import useTokenStore from "../store/useTokenStore";
-import { useEffect, useState } from "react";
+import { ExclamationCircleIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import axios from "axios";
+import { useEffect, useState } from "react";
+import { familiesUrl, uomUrl, updateProductUrl } from "../config/urls.config";
 import useCategoryStore from "../store/useCategoryStore";
+import useTokenStore from "../store/useTokenStore";
 
 function EditProduct({
   isvisible,
@@ -31,13 +31,11 @@ function EditProduct({
 
   useEffect(() => {
     if (product) {
-      console.log("product", product);
       setAddProduct(product.name || "");
       setCodeProduct(product.code || "");
       setCostProduct(product.prices.map((e) => e.cost) || 0);
-      setTaxProduct(
-        product.tax && Object.keys(product.tax).length !== 0 ? product.tax : ""
-      );
+      setTaxProduct(product.tax && product.tax.length !== 0 ? product.tax : 0);
+      setPresentationProduct(product.prices.map((e) => e.name) || "");
       setQuantityProduct(product.prices.map((e) => e.quantity) || "");
     }
   }, [product]);
@@ -117,16 +115,17 @@ function EditProduct({
     formData.append("cost", costProduct);
     formData.append("family_id", selectedFamiliesStatus);
     formData.append("presentation", presentationProduct);
-    formData.append("image", selectedImageName);
     formData.append("tax", taxProduct);
     formData.append("state", statusMapping[selectedStatus]);
+    if (selectedImageName !== null) {
+      formData.append("image", selectedImageName);
+    }
+
     const formDataObject = {};
     formData.forEach((value, key) => {
       formDataObject[key] = value;
     });
 
-    console.log("formDataObject", formDataObject);
-    console.log("formDataObject", product);
     try {
       const response = await axios.post(
         `${updateProductUrl}${product.id}`,
@@ -140,7 +139,6 @@ function EditProduct({
       );
       onClose();
       await fetchProducts(token);
-      console.log("response.data", response.data);
     } catch (error) {
       console.error("Error al editar el producto:", error);
     }
@@ -190,9 +188,6 @@ function EditProduct({
               onChange={(e) => setSelectedFamiliesStatus(e.target.value)}
               required
             >
-              <option value="" disabled selected>
-                Select family
-              </option>
               {families.map((family) => (
                 <option key={family.id} value={family.id}>
                   {family.name}
@@ -240,9 +235,6 @@ function EditProduct({
                 onChange={(e) => setSelectedUomsStatus(e.target.value)}
                 required
               >
-                <option value="" disabled selected>
-                  Select uom
-                </option>
                 {uoms.map((uom) => (
                   <option key={uom.id} value={uom.id}>
                     {uom.name}
@@ -259,9 +251,6 @@ function EditProduct({
                 onChange={(e) => setSelectedCategoryId(e.target.value)}
                 required
               >
-                <option value="" disabled selected>
-                  Select category
-                </option>
                 {categories.map((category) => (
                   <option key={category.id} value={category.id}>
                     {category.name}

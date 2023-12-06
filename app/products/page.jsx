@@ -1,6 +1,8 @@
 "use client";
 import EditProduct from "@/app/components/EditProduct";
 import { deleteProductUrl, productsUrl } from "@/app/config/urls.config";
+import useProductStore from "@/app/store/useProductStore";
+import useTokenStore from "@/app/store/useTokenStore";
 import {
   PencilSquareIcon,
   PlusCircleIcon,
@@ -8,10 +10,8 @@ import {
 } from "@heroicons/react/24/outline";
 import axios from "axios";
 import { useEffect, useState } from "react";
-import NewProduct from "../components/NewProduct";
-import useProductStore from "@/app/store/useProductStore";
-import useTokenStore from "@/app/store/useTokenStore";
 import { fetchCategories } from "../categories/page";
+import NewProduct from "../components/NewProduct";
 import useCategoryStore from "../store/useCategoryStore";
 
 function Products() {
@@ -21,6 +21,7 @@ function Products() {
   const [showEditProduct, setShowEditProduct] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [country, setCountry] = useState(44);
 
   //Api
   const { products, setProducts } = useProductStore();
@@ -28,7 +29,7 @@ function Products() {
 
   const fetchProducts = async (token) => {
     try {
-      const response = await axios.get(productsUrl, {
+      const response = await axios.get(`${productsUrl}?country=${country}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -56,7 +57,6 @@ function Products() {
   }, []);
 
   //Api delete
-
   const handleDeleteProduct = async (product) => {
     try {
       const { id } = product;
@@ -65,8 +65,6 @@ function Products() {
           Authorization: `Bearer ${token}`,
         },
       });
-
-      console.log("Se borró con éxito el producto:", product.id);
     } catch (error) {
       console.error("Error al eliminar el producto:", error);
     }
