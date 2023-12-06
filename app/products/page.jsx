@@ -20,6 +20,7 @@ function Products() {
   const [showNewProduct, setShowNewProduct] = useState(false);
   const [showEditProduct, setShowEditProduct] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [selectedProduct, setSelectedProduct] = useState(null);
   //Api
   const { products, setProducts } = useProductStore();
   const urlImagen = "https://api.grownetapp.com/grownet/";
@@ -42,9 +43,7 @@ function Products() {
 
       setProducts(sortedProducts);
 
-      
       setIsLoading(false);
-
     } catch (error) {
       console.error("Error al obtener los productos:", error);
     }
@@ -122,7 +121,10 @@ function Products() {
                   <td className="py-4 flex justify-center">
                     <button
                       className="flex text-primary-blue mr-6 font-medium hover:scale-110 hover:text-green hover:border-green"
-                      onClick={() => setShowEditProduct(product.id)}
+                      onClick={() => {
+                        setSelectedProduct(product);
+                        setShowEditProduct(product.id);
+                      }}
                     >
                       <PencilSquareIcon className="h-6 w-6 mr-1" />
                       Edit
@@ -150,6 +152,7 @@ function Products() {
         onClose={() => setShowEditProduct(false)}
         fetchProducts={fetchProducts}
         productId={showEditProduct}
+        product={selectedProduct}
       />
       {isLoading && (
         <div className="flex justify-center items-center mb-20">

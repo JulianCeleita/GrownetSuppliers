@@ -6,7 +6,13 @@ import axios from "axios";
 import useCategoryStore from "../store/useCategoryStore";
 import useProductStore from "../store/useProductStore";
 
-function EditProduct({ isvisible, onClose, fetchProducts, productId }) {
+function EditProduct({
+  isvisible,
+  onClose,
+  fetchProducts,
+  productId,
+  product,
+}) {
   const { token } = useTokenStore();
   const { categories } = useCategoryStore();
 
@@ -28,7 +34,14 @@ function EditProduct({ isvisible, onClose, fetchProducts, productId }) {
   const [quantityProduct, setQuantityProduct] = useState("");
   const [presentationProduct, setPresentationProduct] = useState("");
   const [selectedImageName, setSelectedImageName] = useState(null);
-
+  console.log(productId);
+  useEffect(() => {
+    setAddProduct(product ? product.name : "");
+    setCodeProduct(product ? product.code : "");
+    setCostProduct(product ? product.cost : "");
+    setQuantityProduct(product ? product.quantity : "");
+    //setPresentationProduct(product ? product.presentation : "");
+  }, [product]);
   // Api families
   useEffect(() => {
     const fetchFamilies = async () => {
@@ -143,6 +156,7 @@ function EditProduct({ isvisible, onClose, fetchProducts, productId }) {
               placeholder="Foodpoint"
               type="text"
               onChange={(e) => setAddProduct(e.target.value)}
+              value={addProduct}
               required
             ></input>
             <label>Code: </label>
@@ -151,6 +165,7 @@ function EditProduct({ isvisible, onClose, fetchProducts, productId }) {
               placeholder="50"
               onChange={(e) => setCodeProduct(e.target.value)}
               type="text"
+              value={codeProduct}
               required
             ></input>
           </div>
@@ -161,9 +176,9 @@ function EditProduct({ isvisible, onClose, fetchProducts, productId }) {
               name="family"
               className="border p-3 rounded-md mr-3 mt-3"
               onChange={(e) => setSelectedFamiliesStatus(e.target.value)}
-              value={selectedFamiliesStatus}
               required
             >
+              <option> Select family</option>
               {families.map((family) => (
                 <option key={family.id} value={family.id}>
                   {family.name}
@@ -176,6 +191,7 @@ function EditProduct({ isvisible, onClose, fetchProducts, productId }) {
               placeholder="10"
               type="number"
               onChange={(e) => setCostProduct(e.target.value)}
+              value={costProduct}
               required
             />
           </div>
@@ -186,6 +202,7 @@ function EditProduct({ isvisible, onClose, fetchProducts, productId }) {
               placeholder="50"
               type="number"
               onChange={(e) => setQuantityProduct(e.target.value)}
+              value={quantityProduct}
               required
             ></input>
             <label>Presentation: </label>
@@ -208,6 +225,7 @@ function EditProduct({ isvisible, onClose, fetchProducts, productId }) {
                 onChange={(e) => setSelectedUomsStatus(e.target.value)}
                 required
               >
+                <option> Select uom</option>
                 {uoms.map((uom) => (
                   <option key={uom.id} value={uom.id}>
                     {uom.name}
@@ -222,9 +240,9 @@ function EditProduct({ isvisible, onClose, fetchProducts, productId }) {
                 name="category"
                 className="border p-3 rounded-md mr-3 mt-3"
                 onChange={(e) => setSelectedCategoryId(e.target.value)}
-                value={selectedCategoryId}
                 required
               >
+                <option> Select category</option>
                 {categories.map((category) => (
                   <option key={category.id} value={category.id}>
                     {category.name}
