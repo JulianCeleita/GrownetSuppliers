@@ -8,10 +8,11 @@ function Header() {
 
   useEffect(() => {
     const currentPath = window.location.pathname;
-    const page = currentPath.replace(/\//g, "");
-
-    setActiveLink(page);
+    setActiveLink(
+      currentPath === "/" ? "orders" : currentPath.replace(/\//g, "")
+    );
   }, []);
+
   return (
     <div className="flex justify-between items-center bg-primary-blue p-4">
       <div className="mx-5">
