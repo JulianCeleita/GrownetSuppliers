@@ -41,9 +41,7 @@ function Products() {
       const sortedProducts = newProducts.sort((a, b) =>
         a.name.localeCompare(b.name)
       );
-
       setProducts(sortedProducts);
-
       setIsLoading(false);
     } catch (error) {
       console.error("Error al obtener los productos:", error);
@@ -53,7 +51,7 @@ function Products() {
   // Efecto useEffect
   useEffect(() => {
     fetchProducts(token, setProducts);
-    fetchCategories(token, setCategories);
+    fetchCategories(token, setCategories, setIsLoading);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -72,7 +70,7 @@ function Products() {
     } catch (error) {
       console.error("Error al eliminar el producto:", error);
     }
-    fetchProducts(token, setProducts);
+    fetchProducts(token, setProducts, setIsLoading);
   };
 
   return (
@@ -147,12 +145,14 @@ function Products() {
         isvisible={showNewProduct}
         onClose={() => setShowNewProduct(false)}
         fetchProducts={fetchProducts}
-      ></NewProduct>
+        setIsLoading={setIsLoading}
+      />
       <EditProduct
         isvisible={showEditProduct}
         onClose={() => setShowEditProduct(false)}
         fetchProducts={fetchProducts}
         product={selectedProduct}
+        setIsLoading={setIsLoading}
       />
       {isLoading && (
         <div className="flex justify-center items-center mb-20">

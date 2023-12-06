@@ -74,6 +74,7 @@ function NewProduct({ isvisible, onClose, fetchProducts }) {
     };
 
     fetchFamilies();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Api uom
@@ -93,6 +94,7 @@ function NewProduct({ isvisible, onClose, fetchProducts }) {
     };
 
     fetchUoms();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   if (!isvisible) {
@@ -215,7 +217,7 @@ function NewProduct({ isvisible, onClose, fetchProducts }) {
               onChange={(e) => setQuantityProduct(e.target.value)}
               required
             ></input>
-            <label>Presentation: </label>
+            <label>Packsize: </label>
             <input
               className="border p-3 rounded-md mr-3 mt-3"
               placeholder="5 Kg"
@@ -226,7 +228,7 @@ function NewProduct({ isvisible, onClose, fetchProducts }) {
           </div>
           <div className="flex ">
             <div>
-              <label>Unit weight of the product: </label>
+              <label>Unit of measurement: </label>
               <select
                 id="uom"
                 name="uom"

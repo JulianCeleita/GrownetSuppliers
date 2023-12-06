@@ -5,14 +5,11 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import useCategoryStore from "../store/useCategoryStore";
 
-function EditProduct({ isvisible, onClose, fetchProducts, product }) {
+function EditProduct({ isvisible, onClose, fetchProducts, product, setIsLoading }) {
   const { token } = useTokenStore();
   const { categories } = useCategoryStore();
-
-  //
   const [uoms, setUoms] = useState([]);
   const [families, setFamilies] = useState([]);
-  //
   const [addProduct, setAddProduct] = useState("");
   const [codeProduct, setCodeProduct] = useState("");
   const [selectedFamiliesStatus, setSelectedFamiliesStatus] = useState("");
@@ -63,6 +60,7 @@ function EditProduct({ isvisible, onClose, fetchProducts, product }) {
     };
 
     fetchFamilies();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Api uom
@@ -82,6 +80,7 @@ function EditProduct({ isvisible, onClose, fetchProducts, product }) {
     };
 
     fetchUoms();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   if (!isvisible) {
@@ -133,7 +132,6 @@ function EditProduct({ isvisible, onClose, fetchProducts, product }) {
           },
         }
       );
-
       onClose();
       await fetchProducts(token);
       console.log("response.data", response.data);
@@ -212,7 +210,7 @@ function EditProduct({ isvisible, onClose, fetchProducts, product }) {
               value={quantityProduct}
               required
             ></input>
-            <label>Presentation: </label>
+            <label>Packsize: </label>
             <input
               className="border p-3 rounded-md mr-3 mt-3"
               placeholder="5 Kg"
@@ -224,7 +222,7 @@ function EditProduct({ isvisible, onClose, fetchProducts, product }) {
           </div>
           <div className="flex ">
             <div>
-              <label>Unit weight of the product: </label>
+              <label>Unit of measurement: </label>
 
               <select
                 id="weight"
