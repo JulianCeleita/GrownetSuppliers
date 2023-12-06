@@ -30,7 +30,7 @@ function EditProduct({ isvisible, onClose, fetchProducts, product, setIsLoading 
       setCodeProduct(product.code || "");
       setCostProduct(product.prices.map((e) => e.cost) || 0);
       setTaxProduct(
-        product.tax && Object.keys(product.tax).length !== 0 ? product.tax : ""
+        product.tax && product.tax.length !== 0 ? product.tax : 0
       );
       setQuantityProduct(product.prices.map((e) => e.quantity) || "");
     }

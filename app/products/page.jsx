@@ -21,6 +21,7 @@ function Products() {
   const [showEditProduct, setShowEditProduct] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [country, setCountry] = useState(44);
 
   //Api
   const { products, setProducts } = useProductStore();
@@ -28,7 +29,7 @@ function Products() {
 
   const fetchProducts = async (token) => {
     try {
-      const response = await axios.get(productsUrl, {
+      const response = await axios.get(`${productsUrl}?country=${country}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -41,7 +42,9 @@ function Products() {
       const sortedProducts = newProducts.sort((a, b) =>
         a.name.localeCompare(b.name)
       );
+      console.log(`${productsUrl}?${country}`)
       setProducts(sortedProducts);
+      console.log("Productos:", sortedProducts);
       setIsLoading(false);
     } catch (error) {
       console.error("Error al obtener los productos:", error);
@@ -56,7 +59,6 @@ function Products() {
   }, []);
 
   //Api delete
-
   const handleDeleteProduct = async (product) => {
     try {
       const { id } = product;
