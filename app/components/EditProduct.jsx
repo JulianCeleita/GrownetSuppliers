@@ -32,6 +32,7 @@ function EditProduct({ isvisible, onClose, fetchProducts, product, setIsLoading 
       setTaxProduct(
         product.tax && product.tax.length !== 0 ? product.tax : 0
       );
+      setPresentationProduct(product.prices.map((e)=> e.name) || "");
       setQuantityProduct(product.prices.map((e) => e.quantity) || "");
     }
   }, [product]);
