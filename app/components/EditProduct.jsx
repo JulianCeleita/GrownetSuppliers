@@ -1,9 +1,9 @@
-import { XMarkIcon, ExclamationCircleIcon } from "@heroicons/react/24/outline";
-import { familiesUrl, uomUrl, updateProductUrl } from "../config/urls.config";
-import useTokenStore from "../store/useTokenStore";
-import { useEffect, useState } from "react";
+import { ExclamationCircleIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import axios from "axios";
+import { useEffect, useState } from "react";
+import { familiesUrl, uomUrl, updateProductUrl } from "../config/urls.config";
 import useCategoryStore from "../store/useCategoryStore";
+import useTokenStore from "../store/useTokenStore";
 
 function EditProduct({
   isvisible,
@@ -31,7 +31,6 @@ function EditProduct({
 
   useEffect(() => {
     if (product) {
-      console.log("product", product);
       setAddProduct(product.name || "");
       setCodeProduct(product.code || "");
       setCostProduct(product.prices.map((e) => e.cost) || 0);
@@ -127,8 +126,6 @@ function EditProduct({
       formDataObject[key] = value;
     });
 
-    console.log("formDataObject", formDataObject);
-    console.log("formDataObject", product);
     try {
       const response = await axios.post(
         `${updateProductUrl}${product.id}`,
@@ -142,7 +139,6 @@ function EditProduct({
       );
       onClose();
       await fetchProducts(token);
-      console.log("response.data", response.data);
     } catch (error) {
       console.error("Error al editar el producto:", error);
     }

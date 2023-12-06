@@ -1,6 +1,8 @@
 "use client";
 import EditProduct from "@/app/components/EditProduct";
 import { deleteProductUrl, productsUrl } from "@/app/config/urls.config";
+import useProductStore from "@/app/store/useProductStore";
+import useTokenStore from "@/app/store/useTokenStore";
 import {
   PencilSquareIcon,
   PlusCircleIcon,
@@ -8,10 +10,8 @@ import {
 } from "@heroicons/react/24/outline";
 import axios from "axios";
 import { useEffect, useState } from "react";
-import NewProduct from "../components/NewProduct";
-import useProductStore from "@/app/store/useProductStore";
-import useTokenStore from "@/app/store/useTokenStore";
 import { fetchCategories } from "../categories/page";
+import NewProduct from "../components/NewProduct";
 import useCategoryStore from "../store/useCategoryStore";
 
 function Products() {
@@ -42,9 +42,7 @@ function Products() {
       const sortedProducts = newProducts.sort((a, b) =>
         a.name.localeCompare(b.name)
       );
-      console.log(`${productsUrl}?${country}`)
       setProducts(sortedProducts);
-      console.log("Productos:", sortedProducts);
       setIsLoading(false);
     } catch (error) {
       console.error("Error al obtener los productos:", error);
@@ -67,8 +65,6 @@ function Products() {
           Authorization: `Bearer ${token}`,
         },
       });
-
-      console.log("Se borró con éxito el producto:", product.id);
     } catch (error) {
       console.error("Error al eliminar el producto:", error);
     }
