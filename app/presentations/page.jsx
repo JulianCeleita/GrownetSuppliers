@@ -1,21 +1,20 @@
 "use client";
-import { useState, useEffect } from "react";
-import {
-  PencilSquareIcon,
-  TrashIcon,
-  PlusCircleIcon,
-} from "@heroicons/react/24/outline";
-import NewPresentation from "@/app/components/NewPresentation";
 import EditPresentation from "@/app/components/EditPresentation";
-import axios from "axios";
+import NewPresentation from "@/app/components/NewPresentation";
 import {
+  deletePresentationUrl,
   presentationsUrl,
   productsUrl,
   uomUrl,
-  deletePresentationUrl,
 } from "@/app/config/urls.config";
 import useTokenStore from "@/app/store/useTokenStore";
-import useProductStore from "../store/useProductStore";
+import {
+  PencilSquareIcon,
+  PlusCircleIcon,
+  TrashIcon,
+} from "@heroicons/react/24/outline";
+import axios from "axios";
+import { useEffect, useState } from "react";
 
 export const fetchPresentations = async (
   token,
@@ -45,11 +44,8 @@ function Presentations() {
   const [products, setProducts] = useState([]);
   const [uoms, setUoms] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
-
   const [showNewPresentations, setShowNewPresentations] = useState(false);
   const [showEditPresentations, setShowEditPresentations] = useState(false);
-
-  //Variable edit Presentation
   const [selectedPresentation, setSelectedPresentation] = useState(null);
 
   //Api
@@ -71,8 +67,7 @@ function Presentations() {
         },
       })
       .then((response) => {
-        fetchPresentations(token, setPresentations);
-        console.log("Se borro con éxito");
+        fetchPresentations(token, setPresentations, setIsLoading);
       })
       .catch((error) => {
         console.error("Error al eliminar la presentación:", error);
@@ -189,11 +184,13 @@ function Presentations() {
         onClose={() => setShowEditPresentations(false)}
         presentation={selectedPresentation}
         setPresentations={setPresentations}
+        setIsLoading={setIsLoading}
       />
       <NewPresentation
         isvisible={showNewPresentations}
         onClose={() => setShowNewPresentations(false)}
         setPresentations={setPresentations}
+        setIsLoading={setIsLoading}
       />
       {isLoading && (
         <div className="flex justify-center items-center mb-20">

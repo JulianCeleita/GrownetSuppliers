@@ -14,6 +14,7 @@ function EditPresentation({
   onClose,
   presentation,
   setPresentations,
+  setIsLoading
 }) {
   const { token } = useTokenStore();
   const [uoms, setUoms] = useState([]);
@@ -88,7 +89,6 @@ function EditPresentation({
       cost: editedCost,
       products_id: selectedProductsStatus,
     };
-    console.log("este es postData: ", postData);
     axios
       .post(`${updatePresentationUrl}${presentation.id}`, postData, {
         headers: {
@@ -96,7 +96,7 @@ function EditPresentation({
         },
       })
       .then((response) => {
-        fetchPresentations(token, setPresentations);
+        fetchPresentations(token, setPresentations, setIsLoading);
         onClose();
       })
       .catch((error) => {

@@ -1,23 +1,26 @@
-import { useState, useEffect } from "react";
-import axios from "axios";
-import { addPresentationUrl, uomUrl, productsUrl } from "../config/urls.config";
-import useTokenStore from "../store/useTokenStore";
 import { XMarkIcon } from "@heroicons/react/24/outline";
+import axios from "axios";
+import { useEffect, useState } from "react";
+import { addPresentationUrl, productsUrl, uomUrl } from "../config/urls.config";
 import { fetchPresentations } from "../presentations/page";
+import useTokenStore from "../store/useTokenStore";
 
-function NewPresentation({ isvisible, onClose, setPresentations }) {
+function NewPresentation({
+  isvisible,
+  onClose,
+  setPresentations,
+  setIsLoading,
+}) {
   const { token } = useTokenStore();
-
   const [uoms, setUoms] = useState([]);
   const [products, setProducts] = useState([]);
-
-  //Variables formulario
   const [namePresentation, setNamePresentation] = useState("");
   const [costPresentation, setCostPresentation] = useState("");
   const [quantityPresentation, setQuantityPresentation] = useState("");
   const [selecteUomsStatus, setSelectedUomsStatus] = useState("unit");
   const [selecteProductsStatus, setSelectedProductsStatus] =
     useState("Red pepper");
+
   // Api uom
   useEffect(() => {
     axios
@@ -32,7 +35,7 @@ function NewPresentation({ isvisible, onClose, setPresentations }) {
       .catch((error) => {
         console.error("Error al obtener UOMS productos:", error);
       });
-      // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   //Api products
@@ -49,12 +52,13 @@ function NewPresentation({ isvisible, onClose, setPresentations }) {
       .catch((error) => {
         console.error("Error al obtener los productos:", error);
       });
-      // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   if (!isvisible) {
     return null;
   }
+
   //Add presentation api
   const enviarData = (e) => {
     e.preventDefault();
@@ -65,7 +69,6 @@ function NewPresentation({ isvisible, onClose, setPresentations }) {
       name: namePresentation,
       cost: costPresentation,
     };
-    console.log("este es postData: ", postData);
     axios
       .post(addPresentationUrl, postData, {
         headers: {
@@ -73,9 +76,7 @@ function NewPresentation({ isvisible, onClose, setPresentations }) {
         },
       })
       .then((response) => {
-        console.log("Respuesta del servidor:", response.data);
-        fetchPresentations(token, setPresentations);
-        console.log("Se creó la presentación con éxito");
+        fetchPresentations(token, setPresentations, setIsLoading);
         onClose();
       })
       .catch((error) => {
