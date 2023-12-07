@@ -14,7 +14,7 @@ function EditPresentation({
   onClose,
   presentation,
   setPresentations,
-  setIsLoading
+  setIsLoading,
 }) {
   const { token } = useTokenStore();
   const [uoms, setUoms] = useState([]);
@@ -47,36 +47,50 @@ function EditPresentation({
 
   //Api products
   useEffect(() => {
-    axios
-      .get(productsUrl, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      })
-      .then((response) => {
-        setProducts(response.data.products);
-      })
-      .catch((error) => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.get(productsUrl, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        const sortedProducts = response.data.products.sort((a, b) =>
+          a.name.localeCompare(b.name)
+        );
+
+        setProducts(sortedProducts);
+      } catch (error) {
         console.error("Error al obtener los productos:", error);
-      });
-      // eslint-disable-next-line react-hooks/exhaustive-deps
+      }
+    };
+
+    fetchData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Api uom
   useEffect(() => {
-    axios
-      .get(uomUrl, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      })
-      .then((response) => {
-        setUoms(response.data.uoms);
-      })
-      .catch((error) => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.get(uomUrl, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        const sortedUoms = response.data.uoms.sort((a, b) =>
+          a.name.localeCompare(b.name)
+        );
+
+        setUoms(sortedUoms);
+      } catch (error) {
         console.error("Error al obtener UOMS productos:", error);
-      });
-      // eslint-disable-next-line react-hooks/exhaustive-deps
+      }
+    };
+
+    fetchData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   //Api editar
@@ -98,6 +112,8 @@ function EditPresentation({
       })
       .then((response) => {
         fetchPresentations(token, setPresentations, setIsLoading);
+        setSelectedUomsStatus("");
+        setSelectedProductsStatus("");
         onClose();
       })
       .catch((error) => {
@@ -133,7 +149,6 @@ function EditPresentation({
               className="border p-3 rounded-md mr-3 mt-3"
               required
               onChange={(e) => setSelectedUomsStatus(e.target.value)}
-              value={selectedUomsStatus}
             >
               <option value="" disabled selected>
                 Select uom

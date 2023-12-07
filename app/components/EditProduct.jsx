@@ -156,6 +156,9 @@ function EditProduct({ isvisible, onClose, fetchProducts, product }) {
               onChange={(e) => setSelectedFamiliesStatus(e.target.value)}
               required
             >
+              <option value="" disabled selected>
+                Select family
+              </option>
               {families.map((family) => (
                 <option key={family.id} value={family.id}>
                   {family.name}
@@ -173,6 +176,9 @@ function EditProduct({ isvisible, onClose, fetchProducts, product }) {
                 onChange={(e) => setSelectedCategoryId(e.target.value)}
                 required
               >
+                <option value="" disabled selected>
+                  Select category
+                </option>
                 {categories.map((category) => (
                   <option key={category.id} value={category.id}>
                     {category.name}

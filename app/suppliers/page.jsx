@@ -10,6 +10,7 @@ import { useEffect, useState } from "react";
 import EditSupplier from "../components/EditSupplier";
 import NewSupplier from "../components/NewSupplier";
 import useTokenStore from "../store/useTokenStore";
+import ModalDelete from "../components/ModalDelete";
 
 export const fetchSuppliers = async (token, setSuppliers, setIsLoading) => {
   try {
@@ -49,6 +50,7 @@ function Suppliers() {
   }, []);
 
   //Api delete
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
   const handleDeleteSupplier = (supplier) => {
     const { id } = supplier;
     axios
@@ -58,6 +60,7 @@ function Suppliers() {
         },
       })
       .then((response) => {
+        setShowDeleteModal(false);
         fetchSuppliers(token, setSuppliers, setIsLoading);
       })
       .catch((error) => {
@@ -115,7 +118,10 @@ function Suppliers() {
                   </button>
                   <button
                     className="flex text-primary-blue font-medium hover:scale-110 hover:text-danger hover:border-danger"
-                    onClick={() => handleDeleteSupplier(supplier)}
+                    onClick={() => {
+                      setSelectedSupplier(supplier);
+                      setShowDeleteModal(true);
+                    }}
                   >
                     <TrashIcon className="h-6 w-6 mr-1" />
                     Delete
@@ -126,6 +132,11 @@ function Suppliers() {
           </tbody>
         </table>
       </div>
+      <ModalDelete
+        isvisible={showDeleteModal}
+        onClose={() => setShowDeleteModal(false)}
+        onConfirm={() => handleDeleteSupplier(selectedSupplier)}
+      />
       <NewSupplier
         isvisible={showNewSupplier}
         onClose={() => setShowNewSupplier(false)}
