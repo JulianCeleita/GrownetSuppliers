@@ -20,6 +20,7 @@ function NewPresentation({
   const [selecteUomsStatus, setSelectedUomsStatus] = useState("unit");
   const [selecteProductsStatus, setSelectedProductsStatus] =
     useState("Red pepper");
+  const [codePresentation, setCodePresentation] = useState("");
 
   // Api uom
   useEffect(() => {
@@ -162,6 +163,15 @@ function NewPresentation({
               required
             ></input>
           </div>
+          <label>Code: </label>
+          <input
+            className="border p-3 rounded-md mr-3 mt-3"
+            placeholder="50"
+            onChange={(e) => setCodePresentation(e.target.value)}
+            type="text"
+            value={codePresentation}
+            required
+          ></input>
 
           <div className="mt-3 text-center">
             <button

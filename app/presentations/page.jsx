@@ -135,14 +135,14 @@ function Presentations() {
       </div>
       <div className="flex items-center justify-center mb-40 -mt-14">
         <table className="w-[90%] bg-white rounded-2xl text-center shadow-[0_8px_30px_rgb(0,0,0,0.12)] mb-10">
-          <thead>
+          <thead className="sticky top-0 bg-white shadow-[0px_11px_15px_-3px_#edf2f7] ">
             <tr className="border-b-2 border-stone-100 text-dark-blue">
-              <th className="py-4">Product</th>
+              <th className="py-4 rounded-tl-lg">Product</th>
               <th className="py-4">Unit of measurement</th>
               <th className="py-4">Packsize</th>
               <th className="py-4">Cost</th>
               <th className="py-4">Qty</th>
-              <th className="py-4">Operate</th>
+              <th className="py-4 rounded-tr-lg">Operate</th>
             </tr>
           </thead>
           <tbody>

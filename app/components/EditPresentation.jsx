@@ -36,6 +36,7 @@ function EditPresentation({
   const [selectedProductsStatus, setSelectedProductsStatus] = useState(
     presentation ? presentation.products : ""
   );
+  const [codeProduct, setCodeProduct] = useState("");
 
   useEffect(() => {
     setEditedName(presentation ? presentation.name : "");
@@ -195,6 +196,15 @@ function EditPresentation({
               </option>
             ))}
           </select>
+          <label>Code: </label>
+          <input
+            className="border p-3 rounded-md mr-3 mt-3"
+            placeholder="50"
+            onChange={(e) => setCodeProduct(e.target.value)}
+            type="text"
+            value={codeProduct}
+            required
+          ></input>
           <div className="mt-3 text-center">
             <button
               type="submit"
