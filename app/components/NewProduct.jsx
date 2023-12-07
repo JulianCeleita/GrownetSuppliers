@@ -52,10 +52,15 @@ function NewProduct({ isvisible, onClose, fetchProducts }) {
             Authorization: `Bearer ${token}`,
           },
         });
-        setFamilies(response.data.families);
-        setSelectedFamiliesStatus(response.data.families[0]?.id || "");
+
+        const sortedFamilies = response.data.families.sort((a, b) =>
+          a.name.localeCompare(b.name)
+        );
+
+        setFamilies(sortedFamilies);
+        setSelectedFamiliesStatus(sortedFamilies[0]?.id || "");
       } catch (error) {
-        console.error("Error al obtener las familia productos:", error);
+        console.error("Error al obtener las familias de productos:", error);
       }
     };
 
