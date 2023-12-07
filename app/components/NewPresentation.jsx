@@ -184,7 +184,6 @@ function NewPresentation({
             onChange={(e) => setCodePresentation(e.target.value)}
             type="text"
             value={codePresentation}
-            required
           ></input>
 
           <div className="mt-3 text-center">

@@ -217,7 +217,6 @@ function EditPresentation({
             onChange={(e) => setCodeProduct(e.target.value)}
             type="text"
             value={codeProduct}
-            required
           ></input>
           <div className="mt-3 text-center">
             <button
