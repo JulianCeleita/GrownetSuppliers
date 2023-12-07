@@ -18,7 +18,7 @@ function ModalDelete({ isvisible, onClose, onConfirm }) {
           Are you sure?
         </h1>
         <p className="text-dark-blue text-lg">
-          You won't be able to revert this
+          You won&apos;t be able to revert this
         </p>
         <div className="mt-3 text-center">
           <button

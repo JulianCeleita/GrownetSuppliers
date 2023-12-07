@@ -21,35 +21,44 @@ function NewSupplier({ isvisible, onClose, setSuppliers }) {
     setSelectedImage(file);
   };
 
-  const enviarData = (e) => {
+  const enviarData = async (e) => {
     e.preventDefault();
     setIsLoading(true);
 
     const formData = new FormData();
     formData.append("name", addSupplier);
     formData.append("email", emailSupplier);
-    formData.append("image", selectedImage);
+    if (selectedImage !== null) {
+      formData.append("image", selectedImage);
+    }
 
-    axios
-      .post(addSupplierUrl, formData, {
+    const formDataObject = {};
+    formData.forEach((value, key) => {
+      formDataObject[key] = value;
+    });
+
+    console.log("FormData:", formDataObject);
+
+    try {
+      const response = await axios.post(addSupplierUrl, formData, {
         headers: {
           Authorization: `Bearer ${token}`,
           "Content-Type": "multipart/form-data",
         },
-      })
-      .then((response) => {
-        fetchSuppliers(token, setSuppliers, setIsLoading);
-        onClose();
-        setSelectedImage(null);
-        setAddSupplier("");
-        setEmailSupplier("");
-        setIsLoading(false);
-      })
-      .catch(function (error) {
-        console.error("Error al agregar el nuevo proveedor:", error);
-        setIsLoading(false);
       });
+
+      fetchSuppliers(token, setSuppliers, setIsLoading);
+      onClose();
+      setSelectedImage(null);
+      setAddSupplier("");
+      setEmailSupplier("");
+      setIsLoading(false);
+    } catch (error) {
+      console.error("Error al agregar el nuevo proveedor:", error);
+      setIsLoading(false);
+    }
   };
+
   return (
     <div className="fixed inset-0 bg-black bg-opacity-25 backdrop-blur-sm flex flex-col justify-center items-center">
       <div className="bg-white p-8 rounded-2xl w-[750px] flex flex-col items-center">
@@ -95,7 +104,6 @@ function NewSupplier({ isvisible, onClose, setSuppliers }) {
             placeholder="Fruit"
             type="file"
             onChange={handleImageChange}
-            required
           ></input>
           <div className="mt-3 text-center">
             <button

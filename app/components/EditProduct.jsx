@@ -5,38 +5,22 @@ import { familiesUrl, uomUrl, updateProductUrl } from "../config/urls.config";
 import useCategoryStore from "../store/useCategoryStore";
 import useTokenStore from "../store/useTokenStore";
 
-function EditProduct({
-  isvisible,
-  onClose,
-  fetchProducts,
-  product,
-  setIsLoading,
-}) {
+function EditProduct({ isvisible, onClose, fetchProducts, product }) {
   const { token } = useTokenStore();
   const { categories } = useCategoryStore();
-  const [uoms, setUoms] = useState([]);
   const [families, setFamilies] = useState([]);
   const [addProduct, setAddProduct] = useState("");
-  const [codeProduct, setCodeProduct] = useState("");
   const [selectedFamiliesStatus, setSelectedFamiliesStatus] = useState("");
-  const [costProduct, setCostProduct] = useState(0);
-  const [selecteUomsStatus, setSelectedUomsStatus] = useState("unit");
   const [selectedCategoryId, setSelectedCategoryId] = useState("");
   const [categoriesLoaded, setCategoriesLoaded] = useState(false);
   const [selectedStatus, setSelectedStatus] = useState("active");
   const [taxProduct, setTaxProduct] = useState("");
-  const [quantityProduct, setQuantityProduct] = useState("");
-  const [presentationProduct, setPresentationProduct] = useState("");
   const [selectedImageName, setSelectedImageName] = useState(null);
 
   useEffect(() => {
     if (product) {
       setAddProduct(product.name || "");
-      setCodeProduct(product.code || "");
-      setCostProduct(product.prices.map((e) => e.cost) || 0);
       setTaxProduct(product.tax && product.tax.length !== 0 ? product.tax : 0);
-      setPresentationProduct(product.prices.map((e) => e.name) || "");
-      setQuantityProduct(product.prices.map((e) => e.quantity) || "");
     }
   }, [product]);
 
@@ -107,14 +91,9 @@ function EditProduct({
 
     const formData = new FormData();
     formData.append("name", addProduct);
-    formData.append("code", codeProduct);
     formData.append("category_id", selectedCategoryId);
     formData.append("country_indicative", "44");
-    formData.append("uom_id", selecteUomsStatus);
-    formData.append("quantity", quantityProduct);
-    formData.append("cost", costProduct);
     formData.append("family_id", selectedFamiliesStatus);
-    formData.append("presentation", presentationProduct);
     formData.append("tax", taxProduct);
     formData.append("state", statusMapping[selectedStatus]);
     if (selectedImageName !== null) {
@@ -169,17 +148,6 @@ function EditProduct({
               onChange={(e) => setAddProduct(e.target.value)}
               required
             ></input>
-            <label>Code: </label>
-            <input
-              className="border p-3 rounded-md mr-3 mt-3"
-              placeholder="50"
-              onChange={(e) => setCodeProduct(e.target.value)}
-              type="text"
-              value={codeProduct}
-              required
-            ></input>
-          </div>
-          <div>
             <label htmlFor="family">Family: </label>
             <select
               id="family"
@@ -197,57 +165,8 @@ function EditProduct({
                 </option>
               ))}
             </select>
-            <label>Cost: </label>
-            <input
-              className="border p-3 rounded-md mr-3 mt-3"
-              placeholder="10"
-              type="number"
-              onChange={(e) => setCostProduct(e.target.value)}
-              value={costProduct}
-              required
-            />
-          </div>
-          <div>
-            <label className="mt-2">Quantity: </label>
-            <input
-              className="border p-3 rounded-md mr-3 mt-3"
-              placeholder="50"
-              type="number"
-              onChange={(e) => setQuantityProduct(e.target.value)}
-              value={quantityProduct}
-              required
-            ></input>
-            <label>Packsize: </label>
-            <input
-              className="border p-3 rounded-md mr-3 mt-3"
-              placeholder="5 Kg"
-              type="text"
-              onChange={(e) => setPresentationProduct(e.target.value)}
-              value={presentationProduct}
-              required
-            ></input>
           </div>
           <div className="flex ">
-            <div>
-              <label>Unit of measurement: </label>
-
-              <select
-                id="weight"
-                name="weight"
-                className="border p-3 rounded-md mr-3 mt-3"
-                onChange={(e) => setSelectedUomsStatus(e.target.value)}
-                required
-              >
-                <option value="" disabled selected>
-                  Select uom
-                </option>
-                {uoms.map((uom) => (
-                  <option key={uom.id} value={uom.id}>
-                    {uom.name}
-                  </option>
-                ))}
-              </select>
-            </div>
             <div>
               <label>Category: </label>
               <select
@@ -266,9 +185,19 @@ function EditProduct({
                   </option>
                 ))}
               </select>
+              <label>Product taxes: </label>
+              <input
+                id="tax"
+                name="tax"
+                placeholder="1.2"
+                className="border p-3 rounded-md mr-3 mt-3 w-40"
+                onChange={(e) => setTaxProduct(e.target.value)}
+                value={taxProduct}
+                required
+              ></input>
             </div>
           </div>
-          <label>Attach the product&apos;s photo: </label>
+          <label className="mt-4">Attach the product&apos;s photo: </label>
           <input
             className="p-3 rounded-md mr-3 mt-3 cursor-pointer"
             placeholder="Fruit"
@@ -288,16 +217,6 @@ function EditProduct({
               <option value="active">Active</option>
               <option value="disable">Disable</option>
             </select>
-            <label>Product taxes: </label>
-            <input
-              id="tax"
-              name="tax"
-              placeholder="1.2"
-              className="border p-3 rounded-md mr-3 mt-3 w-40"
-              onChange={(e) => setTaxProduct(e.target.value)}
-              value={taxProduct}
-              required
-            ></input>
           </div>
 
           <div className="mt-3 text-center">
