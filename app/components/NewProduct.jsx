@@ -8,21 +8,13 @@ import useTokenStore from "../store/useTokenStore";
 function NewProduct({ isvisible, onClose, fetchProducts }) {
   const { token } = useTokenStore();
   const { categories } = useCategoryStore();
-  //Variables formulario
   const [addProduct, setAddProduct] = useState("");
-  const [codeProduct, setCodeProduct] = useState("");
-  const [presentationProduct, setPresentationProduct] = useState("");
   const [taxProduct, setTaxProduct] = useState("");
-  const [costProduct, setCostProduct] = useState(0);
-  const [quantityProduct, setQuantityProduct] = useState("");
   const [categoriesLoaded, setCategoriesLoaded] = useState(false);
   const [selectedCategoryId, setSelectedCategoryId] = useState("");
-  // const [selectedStatus, setSelectedStatus] = useState("active");
   const [selectedFamiliesStatus, setSelectedFamiliesStatus] =
     useState("banana");
-  const [selecteUomsStatus, setSelectedUomsStatus] = useState("unit");
   const [families, setFamilies] = useState([]);
-  const [uoms, setUoms] = useState([]);
   // const [tax, setTax] = useState([]);
   // const [selectedTax, setSelectedTax] = useState("");
   const [selectedImageName, setSelectedImageName] = useState(null);
@@ -86,7 +78,6 @@ function NewProduct({ isvisible, onClose, fetchProducts }) {
         console.error("Error al obtener UOMS productos:", error);
       }
     };
-
     fetchUoms();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -94,12 +85,6 @@ function NewProduct({ isvisible, onClose, fetchProducts }) {
   if (!isvisible) {
     return null;
   }
-
-  // Estado producto
-  const statusMapping = {
-    active: 1,
-    disable: 2,
-  };
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
@@ -112,14 +97,9 @@ function NewProduct({ isvisible, onClose, fetchProducts }) {
 
     const formData = new FormData();
     formData.append("name", addProduct);
-    formData.append("code", codeProduct);
     formData.append("category_id", selectedCategoryId);
     formData.append("country_indicative", "44");
-    formData.append("uom_id", selecteUomsStatus);
-    formData.append("quantity", quantityProduct);
-    formData.append("cost", costProduct);
     formData.append("family_id", selectedFamiliesStatus);
-    formData.append("presentation", presentationProduct);
     if (selectedImageName !== null) {
       formData.append("image", selectedImageName);
     }
@@ -166,16 +146,6 @@ function NewProduct({ isvisible, onClose, fetchProducts }) {
               onChange={(e) => setAddProduct(e.target.value)}
               required
             />
-            <label>Code: </label>
-            <input
-              className="border p-3 rounded-md mr-3 mt-3"
-              placeholder="50"
-              type="text"
-              onChange={(e) => setCodeProduct(e.target.value)}
-              required
-            ></input>
-          </div>
-          <div>
             <label htmlFor="family">Family: </label>
             <select
               id="family"
@@ -193,54 +163,9 @@ function NewProduct({ isvisible, onClose, fetchProducts }) {
                 </option>
               ))}
             </select>
-            <label>Cost: </label>
-            <input
-              className="border p-3 rounded-md mr-3 mt-3"
-              placeholder="10"
-              type="number"
-              onChange={(e) => setCostProduct(e.target.value)}
-              required
-            />
           </div>
 
-          <div>
-            <label className="mt-2">Quantity: </label>
-            <input
-              className="border p-3 rounded-md mr-3 mt-3"
-              placeholder="50"
-              type="number"
-              onChange={(e) => setQuantityProduct(e.target.value)}
-              required
-            ></input>
-            <label>Packsize: </label>
-            <input
-              className="border p-3 rounded-md mr-3 mt-3"
-              placeholder="5 Kg"
-              type="text"
-              onChange={(e) => setPresentationProduct(e.target.value)}
-              required
-            ></input>
-          </div>
           <div className="flex ">
-            <div>
-              <label>Unit of measurement: </label>
-              <select
-                id="uom"
-                name="uom"
-                className="border p-3 rounded-md mr-3 mt-3"
-                required
-                onChange={(e) => setSelectedUomsStatus(e.target.value)}
-              >
-                <option value="" disabled selected>
-                  Select uom
-                </option>
-                {uoms.map((uom) => (
-                  <option key={uom.id} value={uom.id}>
-                    {uom.name}
-                  </option>
-                ))}
-              </select>
-            </div>
             <div>
               <label>Category: </label>
               <select
@@ -260,36 +185,24 @@ function NewProduct({ isvisible, onClose, fetchProducts }) {
                 ))}
               </select>
             </div>
+            <div>
+              <label>Product taxes: </label>
+              <input
+                className="border p-3 rounded-md mr-3 mt-3 w-[50px]"
+                placeholder="1.2"
+                type="text"
+                onChange={(e) => setTaxProduct(e.target.value)}
+                required
+              ></input>
+            </div>
           </div>
-          <label>Attach the product&apos;s photo: </label>
+          <label className="mt-4">Attach the product&apos;s photo: </label>
           <input
             className="p-3 rounded-md mr-3 mt-3 cursor-pointer"
             placeholder="Fruit"
             type="file"
             onChange={handleImageChange}
           ></input>
-          <div>
-            {/* <label>Product status: </label>
-            <select
-              id="status"
-              name="status"
-              className="border p-3 rounded-md mr-3 mt-3 w-40"
-              onChange={(e) => setSelectedStatus(e.target.value)}
-              value={selectedStatus}
-              required
-            >
-              <option value="active">Active</option>
-              <option value="disable">Disable</option>
-            </select> */}
-            <label>Product taxes: </label>
-            <input
-              className="border p-3 rounded-md mr-3 mt-3 w-[50px]"
-              placeholder="1.2"
-              type="text"
-              onChange={(e) => setTaxProduct(e.target.value)}
-              required
-            ></input>
-          </div>
 
           <div className="mt-3 text-center">
             <button

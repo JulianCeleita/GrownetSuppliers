@@ -34,6 +34,7 @@ export const fetchPresentations = async (
 
     setPresentations(newPresentation);
     setIsLoading(false);
+    console.log("response.data.presentations", response.data.presentations)
   } catch (error) {
     console.error("Error al obtener las presentaciones:", error);
   }
@@ -50,6 +51,7 @@ function Presentations() {
 
   //Api
   const [presentations, setPresentations] = useState([]);
+
 
   useEffect(() => {
     fetchPresentations(token, setPresentations, setIsLoading);
@@ -83,6 +85,7 @@ function Presentations() {
       })
       .then((response) => {
         setProducts(response.data.products);
+        console.log("response.data.products", response.data.products)
       })
       .catch((error) => {
         console.error("Error al obtener los productos:", error);
