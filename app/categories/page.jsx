@@ -11,6 +11,7 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import EditCategory from "../components/EditCategory";
 import NewCategory from "../components/NewCategory";
+import ModalDelete from "../components/ModalDelete";
 
 export const fetchCategories = async (token, setCategories, setIsLoading) => {
   try {
@@ -51,6 +52,7 @@ function Categories() {
 
   //Api delete
   const [deleteResponse, setDeleteResponse] = useState(null);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
   const handleDeleteCategory = async (category) => {
     const { id } = category;
 
@@ -62,6 +64,7 @@ function Categories() {
       });
 
       setDeleteResponse(response.data);
+      setShowDeleteModal(false);
       fetchCategories(token, setCategories, setIsLoading);
     } catch (error) {
       console.error("Error al eliminar la categoría:", error);
@@ -108,7 +111,10 @@ function Categories() {
                   </button>
                   <button
                     className="flex text-primary-blue font-medium hover:scale-110 hover:text-danger hover:border-danger"
-                    onClick={() => handleDeleteCategory(category)}
+                    onClick={() => {
+                      setSelectedCategory(category);
+                      setShowDeleteModal(true);
+                    }}
                   >
                     <TrashIcon className="h-6 w-6 mr-1" />
                     Delete
@@ -119,6 +125,12 @@ function Categories() {
           </tbody>
         </table>
       </div>
+      <ModalDelete
+        isvisible={showDeleteModal}
+        onClose={() => setShowDeleteModal(false)}
+        onConfirm={() => handleDeleteCategory(selectedCategory)}
+      />
+
       <EditCategory
         isvisible={showEditCategory}
         onClose={() => setShowEditCategory(false)}

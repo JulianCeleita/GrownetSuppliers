@@ -13,6 +13,7 @@ import { useEffect, useState } from "react";
 import { fetchCategories } from "../categories/page";
 import NewProduct from "../components/NewProduct";
 import useCategoryStore from "../store/useCategoryStore";
+import ModalDelete from "../components/ModalDelete";
 
 function Products() {
   const { token } = useTokenStore();
@@ -57,6 +58,8 @@ function Products() {
   }, []);
 
   //Api delete
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+
   const handleDeleteProduct = async (product) => {
     try {
       const { id } = product;
@@ -68,6 +71,7 @@ function Products() {
     } catch (error) {
       console.error("Error al eliminar el producto:", error);
     }
+    setShowDeleteModal(false);
     fetchProducts(token, setProducts, setIsLoading);
   };
 
@@ -128,7 +132,10 @@ function Products() {
                     </button>
                     <button
                       className="flex text-primary-blue font-medium hover:scale-110 hover:text-danger hover:border-danger"
-                      onClick={() => handleDeleteProduct(product)}
+                      onClick={() => {
+                        setSelectedProduct(product);
+                        setShowDeleteModal(true);
+                      }}
                     >
                       <TrashIcon className="h-6 w-6 mr-1" />
                       Delete
@@ -139,6 +146,11 @@ function Products() {
           </tbody>
         </table>
       </div>
+      <ModalDelete
+        isvisible={showDeleteModal}
+        onClose={() => setShowDeleteModal(false)}
+        onConfirm={() => handleDeleteProduct(selectedProduct)}
+      />
       <NewProduct
         isvisible={showNewProduct}
         onClose={() => setShowNewProduct(false)}

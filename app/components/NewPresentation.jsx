@@ -77,6 +77,8 @@ function NewPresentation({
       })
       .then((response) => {
         fetchPresentations(token, setPresentations, setIsLoading);
+        setSelectedUomsStatus("");
+        setSelectedProductsStatus("");
         onClose();
       })
       .catch((error) => {

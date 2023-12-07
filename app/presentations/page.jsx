@@ -15,6 +15,7 @@ import {
 } from "@heroicons/react/24/outline";
 import axios from "axios";
 import { useEffect, useState } from "react";
+import ModalDelete from "../components/ModalDelete";
 
 export const fetchPresentations = async (
   token,
@@ -58,6 +59,8 @@ function Presentations() {
 
   //Delete
   const [deleteResponse, setDeleteResponse] = useState(null);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+
   const handleDeletePresentation = (presentation) => {
     const { id } = presentation;
     axios
@@ -67,6 +70,7 @@ function Presentations() {
         },
       })
       .then((response) => {
+        setShowDeleteModal(false);
         fetchPresentations(token, setPresentations, setIsLoading);
       })
       .catch((error) => {
@@ -173,7 +177,10 @@ function Presentations() {
                     Edit
                   </button>
                   <button
-                    onClick={() => handleDeletePresentation(presentation)}
+                    onClick={() => {
+                      setSelectedPresentation(presentation);
+                      setShowDeleteModal(true);
+                    }}
                     className="flex text-primary-blue font-medium hover:scale-110 hover:text-danger hover:border-danger"
                   >
                     <TrashIcon className="h-6 w-6 mr-1" />
@@ -185,6 +192,11 @@ function Presentations() {
           </tbody>
         </table>
       </div>
+      <ModalDelete
+        isvisible={showDeleteModal}
+        onClose={() => setShowDeleteModal(false)}
+        onConfirm={() => handleDeletePresentation(selectedPresentation)}
+      />
       <EditPresentation
         isvisible={showEditPresentations}
         onClose={() => setShowEditPresentations(false)}
