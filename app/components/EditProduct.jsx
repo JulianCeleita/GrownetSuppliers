@@ -136,7 +136,6 @@ function EditProduct({ isvisible, onClose, fetchProducts, product }) {
           className="text-dark-blue place-self-end "
           onClick={() => {
             onClose();
-            setPresentationProduct("");
           }}
         >
           <XMarkIcon className="h-6 w-6 text-gray-500" />
