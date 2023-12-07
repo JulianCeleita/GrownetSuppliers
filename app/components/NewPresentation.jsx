@@ -83,7 +83,9 @@ function NewPresentation({
       quantity: quantityPresentation,
       name: namePresentation,
       cost: costPresentation,
+      code: codePresentation,
     };
+    console.log("se envio: ", postData);
     axios
       .post(addPresentationUrl, postData, {
         headers: {

@@ -36,7 +36,7 @@ function EditPresentation({
   const [selectedProductsStatus, setSelectedProductsStatus] = useState(
     presentation ? presentation.products : ""
   );
-  const [codeProduct, setCodeProduct] = useState("");
+  const [codePresentation, setCodePresecodePresentation] = useState("");
 
   useEffect(() => {
     setEditedName(presentation ? presentation.name : "");
@@ -104,6 +104,7 @@ function EditPresentation({
       name: editedName,
       cost: editedCost,
       products_id: selectedProductsStatus,
+      code: codePresentation,
     };
     axios
       .post(`${updatePresentationUrl}${presentation.id}`, postData, {
@@ -214,9 +215,9 @@ function EditPresentation({
           <input
             className="border p-3 rounded-md mr-3 mt-3"
             placeholder="50"
-            onChange={(e) => setCodeProduct(e.target.value)}
+            onChange={(e) => setcodePresentation(e.target.value)}
             type="text"
-            value={codeProduct}
+            value={codePresentation}
           ></input>
           <div className="mt-3 text-center">
             <button
