@@ -47,35 +47,49 @@ function EditPresentation({
 
   //Api products
   useEffect(() => {
-    axios
-      .get(productsUrl, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      })
-      .then((response) => {
-        setProducts(response.data.products);
-      })
-      .catch((error) => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.get(productsUrl, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        const sortedProducts = response.data.products.sort((a, b) =>
+          a.name.localeCompare(b.name)
+        );
+
+        setProducts(sortedProducts);
+      } catch (error) {
         console.error("Error al obtener los productos:", error);
-      });
+      }
+    };
+
+    fetchData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Api uom
   useEffect(() => {
-    axios
-      .get(uomUrl, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      })
-      .then((response) => {
-        setUoms(response.data.uoms);
-      })
-      .catch((error) => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.get(uomUrl, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        const sortedUoms = response.data.uoms.sort((a, b) =>
+          a.name.localeCompare(b.name)
+        );
+
+        setUoms(sortedUoms);
+      } catch (error) {
         console.error("Error al obtener UOMS productos:", error);
-      });
+      }
+    };
+
+    fetchData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
