@@ -2,16 +2,23 @@
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 function Header() {
   const [activeLink, setActiveLink] = useState("");
 
+  const pathname = usePathname();
+
   useEffect(() => {
-    const currentPath = window.location.pathname;
-    setActiveLink(
-      currentPath === "/" ? "orders" : currentPath.replace(/\//g, "")
-    );
-  }, []);
+    const handleRouteChange = () => {
+      const currentPath = pathname;
+      setActiveLink(
+        currentPath === "/" ? "orders" : currentPath.replace(/\//g, "")
+      );
+    };
+
+    handleRouteChange();
+  }, [pathname]);
 
   return (
     <div className="flex justify-between items-center bg-primary-blue p-4">
