@@ -170,7 +170,7 @@ function NewPresentation({
               onChange={(e) => setNamePresentation(e.target.value)}
               required
             ></input>
-            <label>Value: </label>
+            <label>Cost: </label>
             <input
               className="border p-3 rounded-md mr-3 mt-3  w-[39.5%]"
               placeholder="50"

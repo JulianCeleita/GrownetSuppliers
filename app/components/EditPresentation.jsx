@@ -181,7 +181,7 @@ function EditPresentation({
               value={editedName}
               onChange={(e) => setEditedName(e.target.value)}
             ></input>
-            <label>Value: </label>
+            <label>Cost: </label>
             <input
               className="border p-3 rounded-md mr-3 mt-3  w-[39.8%]"
               placeholder="50"
