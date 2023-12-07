@@ -103,6 +103,7 @@ function EditProduct({ isvisible, onClose, fetchProducts, product }) {
     if (selectedImageName !== null) {
       formData.append("image", selectedImageName);
     }
+    formData.append("code", "Y100");
 
     const formDataObject = {};
     formData.forEach((value, key) => {
@@ -122,6 +123,7 @@ function EditProduct({ isvisible, onClose, fetchProducts, product }) {
       );
       onClose();
       await fetchProducts(token);
+      console.log("ESTO ENVIA:", formDataObject)
     } catch (error) {
       console.error("Error al editar el producto:", error);
     }

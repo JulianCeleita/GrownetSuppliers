@@ -108,6 +108,7 @@ function NewProduct({ isvisible, onClose, fetchProducts }) {
     if (selectedImageName !== null) {
       formData.append("image", selectedImageName);
     }
+    formData.append("code", "Y100");
     formData.append("tax", taxProduct);
 
     const formDataObject = {};
@@ -126,6 +127,7 @@ function NewProduct({ isvisible, onClose, fetchProducts }) {
       await fetchProducts(token);
     } catch (error) {
       console.error("Error al crear el producto:", error);
+    console.log('ESTO ENVIA:', formData);
     }
   };
 

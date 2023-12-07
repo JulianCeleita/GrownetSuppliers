@@ -142,9 +142,8 @@ function EditPresentation({
         <form
           className="text-left  flex flex-col"
           onSubmit={handleEditPresentation}
-        >
-          <div>
-            <label>Unit weight of the product: </label>
+        >         
+            <label>Unit of measurement of the product: </label>
             <select
               id="uom"
               name="uom"
@@ -160,37 +159,7 @@ function EditPresentation({
                   {uom.id} - {uom.name}
                 </option>
               ))}
-            </select>
-            <label>Quantity: </label>
-            <input
-              className="border p-3 rounded-md mr-3 mt-3"
-              placeholder="50"
-              type="text"
-              value={editedQuantity}
-              onChange={(e) => setEditedQuantity(e.target.value)}
-              required
-            ></input>
-          </div>
-          <div>
-            <label>Name: </label>
-            <input
-              className="border p-3 rounded-md mr-3 mt-3 w-[39.8%]"
-              placeholder="Foodpoint"
-              type="text"
-              required
-              value={editedName}
-              onChange={(e) => setEditedName(e.target.value)}
-            ></input>
-            <label>Cost: </label>
-            <input
-              className="border p-3 rounded-md mr-3 mt-3  w-[39.8%]"
-              placeholder="50"
-              type="text"
-              value={editedCost}
-              onChange={(e) => setEditedCost(e.target.value)}
-              required
-            ></input>
-          </div>
+            </select>  
           <label for="produvt" className="mt-2">
             Product:
           </label>
@@ -210,7 +179,8 @@ function EditPresentation({
                 {product.id} - {product.name}
               </option>
             ))}
-          </select>
+          </select> 
+          <div>
           <label>Code: </label>
           <input
             className="border p-3 rounded-md mr-3 mt-3"
@@ -218,7 +188,39 @@ function EditPresentation({
             onChange={(e) => setcodePresentation(e.target.value)}
             type="text"
             value={codePresentation}
-          ></input>
+          ></input> 
+            <label>Packsize: </label>
+            <input
+              className="border p-3 rounded-md mr-3 mt-3 w-[35.5%]"
+              placeholder="Foodpoint"
+              type="text"
+              required
+              value={editedName}
+              onChange={(e) => setEditedName(e.target.value)}
+            ></input>  
+            </div>
+          <div>
+          <label>Cost: </label>
+            <input
+              className="border p-3 rounded-md mr-3 mt-3  w-[35.5%]"
+              placeholder="50"
+              type="text"
+              value={editedCost}
+              onChange={(e) => setEditedCost(e.target.value)}
+              required
+            ></input>
+
+            <label>Quantity: </label>
+            <input
+              className="border p-3 rounded-md mr-3 mt-3"
+              placeholder="50"
+              type="text"
+              value={editedQuantity}
+              onChange={(e) => setEditedQuantity(e.target.value)}
+              required
+            ></input>  
+          </div>
+            
           <div className="mt-3 text-center">
             <button
               type="submit"

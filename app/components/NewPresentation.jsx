@@ -151,34 +151,7 @@ function NewPresentation({
               </option>
             ))}
           </select>
-
-          <label>Quantity: </label>
-          <input
-            className="border p-3 rounded-md mr-3 mt-3"
-            placeholder="50"
-            type="text"
-            onChange={(e) => setQuantityPresentation(e.target.value)}
-            required
-          ></input>
-
           <div>
-            <label>Packsize: </label>
-            <input
-              className="border p-3 rounded-md mr-3 mt-3 w-[35.5%]"
-              placeholder="6 Kg"
-              type="text"
-              onChange={(e) => setNamePresentation(e.target.value)}
-              required
-            ></input>
-            <label>Cost: </label>
-            <input
-              className="border p-3 rounded-md mr-3 mt-3  w-[39.5%]"
-              placeholder="50"
-              type="number"
-              onChange={(e) => setCostPresentation(e.target.value)}
-              required
-            ></input>
-          </div>
           <label>Code: </label>
           <input
             className="border p-3 rounded-md mr-3 mt-3"
@@ -187,7 +160,33 @@ function NewPresentation({
             type="text"
             value={codePresentation}
           ></input>
-
+            <label>Packsize: </label>
+            <input
+              className="border p-3 rounded-md mr-3 mt-3 w-[35.5%]"
+              placeholder="6 Kg"
+              type="text"
+              onChange={(e) => setNamePresentation(e.target.value)}
+              required
+            ></input>   
+            </div>       
+          <div>
+            <label>Cost: </label>
+            <input
+              className="border p-3 rounded-md mr-3 mt-3  w-[35.5%]"
+              placeholder="50"
+              type="number"
+              onChange={(e) => setCostPresentation(e.target.value)}
+              required
+            ></input>
+            <label>Quantity: </label>
+          <input
+            className="border p-3 rounded-md mr-3 mt-3"
+            placeholder="50"
+            type="text"
+            onChange={(e) => setQuantityPresentation(e.target.value)}
+            required
+          ></input>
+          </div>
           <div className="mt-3 text-center">
             <button
               type="submit"
