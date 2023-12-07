@@ -2,11 +2,11 @@
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { useRouter, usePathname } from "next/navigation";
+import { usePathname } from "next/navigation";
 
 function Header() {
   const [activeLink, setActiveLink] = useState("");
-  const router = useRouter();
+
   const pathname = usePathname();
 
   useEffect(() => {
