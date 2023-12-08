@@ -31,19 +31,22 @@ function EditPresentation({
     presentation ? presentation.quantity : ""
   );
   const [selectedUomsStatus, setSelectedUomsStatus] = useState(
-    presentation ? presentation.uoms : ""
+    presentation ? presentation.uoms_id : ""
   );
   const [selectedProductsStatus, setSelectedProductsStatus] = useState(
-    presentation ? presentation.products : ""
+    presentation ? presentation.products_id : ""
   );
-  const [codePresentation, setCodePresecodePresentation] = useState("");
+  const [codePresentation, setCodePresentation] = useState(
+    presentation ? presentation.code : ""
+  );
 
   useEffect(() => {
     setEditedName(presentation ? presentation.name : "");
     setEditedCost(presentation ? presentation.cost : "");
     setEditedQuantity(presentation ? presentation.quantity : "");
-    setSelectedUomsStatus(presentation ? presentation.uoms : "");
-    setSelectedProductsStatus(presentation ? presentation.products : "");
+    setSelectedUomsStatus(presentation ? presentation.uoms_id : "");
+    setSelectedProductsStatus(presentation ? presentation.products_id : "");
+    setCodePresentation(presentation ? presentation.code : "");
   }, [presentation]);
 
   //Api products
@@ -150,6 +153,7 @@ function EditPresentation({
               className="border p-3 rounded-md mr-3 mt-3"
               required
               onChange={(e) => setSelectedUomsStatus(e.target.value)}
+              value={selectedUomsStatus}
             >
               <option value="" disabled selected>
                 Select uom
@@ -185,7 +189,7 @@ function EditPresentation({
           <input
             className="border p-3 rounded-md mr-3 mt-3"
             placeholder="50"
-            onChange={(e) => setcodePresentation(e.target.value)}
+            onChange={(e) => setCodePresentation(e.target.value)}
             type="text"
             value={codePresentation}
           ></input> 

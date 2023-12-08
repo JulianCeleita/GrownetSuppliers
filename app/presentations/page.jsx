@@ -32,7 +32,6 @@ export const fetchPresentations = async (
     const newPresentation = Array.isArray(response.data.presentations)
       ? response.data.presentations
       : [];
-
     setPresentations(newPresentation);
     setIsLoading(false);
     console.log("response.data.presentations", response.data.presentations)
@@ -140,7 +139,8 @@ function Presentations() {
         <table className="w-[90%] bg-white rounded-2xl text-center shadow-[0_8px_30px_rgb(0,0,0,0.12)] mb-10">
           <thead className="sticky top-0 bg-white shadow-[0px_11px_15px_-3px_#edf2f7] ">
             <tr className="border-b-2 border-stone-100 text-dark-blue">
-              <th className="py-4 rounded-tl-lg">Product</th>
+              <th className="py-4 rounded-tl-lg">Code</th>  
+              <th className="py-4">Product</th>
               <th className="py-4">Unit of measurement</th>
               <th className="py-4">Packsize</th>
               <th className="py-4">Cost</th>
@@ -154,6 +154,7 @@ function Presentations() {
                 key={presentation.id}
                 className="text-dark-blue border-b-2 border-stone-100 "
               >
+                <td className="py-4">{presentation.code}</td>
                 <td className="py-4">
                   {products.find(
                     (product) => product.id === presentation.products_id

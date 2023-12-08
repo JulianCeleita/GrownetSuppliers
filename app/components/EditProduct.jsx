@@ -21,6 +21,9 @@ function EditProduct({ isvisible, onClose, fetchProducts, product }) {
     if (product) {
       setAddProduct(product.name || "");
       setTaxProduct(product.tax && product.tax.length !== 0 ? product.tax : 0);
+      setSelectedStatus(product.state || "active");
+      setSelectedFamiliesStatus(product.families_id || "");
+      setSelectedCategoryId(product.categories_id || "");      
     }
   }, [product]);
 
@@ -65,7 +68,6 @@ function EditProduct({ isvisible, onClose, fetchProducts, product }) {
           },
         });
         setUoms(response.data.uoms);
-        setSelectedUomsStatus(response.data.uoms[0]?.id || "");
       } catch (error) {
         console.error("Error al obtener UOMS productos:", error);
       }
@@ -159,6 +161,7 @@ function EditProduct({ isvisible, onClose, fetchProducts, product }) {
               name="family"
               className="border p-3 rounded-md mr-3 mt-3"
               onChange={(e) => setSelectedFamiliesStatus(e.target.value)}
+              value={selectedFamiliesStatus}
               required
             >
               <option value="" disabled selected>
@@ -179,6 +182,7 @@ function EditProduct({ isvisible, onClose, fetchProducts, product }) {
                 name="category"
                 className="border p-3 rounded-md mr-3 mt-3"
                 onChange={(e) => setSelectedCategoryId(e.target.value)}
+                value={selectedCategoryId}
                 required
               >
                 <option value="" disabled selected>

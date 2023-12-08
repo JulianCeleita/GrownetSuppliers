@@ -44,6 +44,7 @@ function Products() {
         a.name.localeCompare(b.name)
       );
       setProducts(sortedProducts);
+      console.log("response.data.products", response.data.products);
       setIsLoading(false);
     } catch (error) {
       console.error("Error al obtener los productos:", error);
