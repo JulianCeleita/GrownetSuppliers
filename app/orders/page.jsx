@@ -4,13 +4,13 @@ import Table from "@/app/components/Table";
 import { AccNumber, Restaurants } from "../config/urls.config";
 import axios from "axios";
 import useTokenStore from "../store/useTokenStore";
+import Select from "react-select";
 
 const OrderView = () => {
   const { token } = useTokenStore();
   const [AccoNumber, setAccoNumber] = useState(null);
   const [restaurants, setRestaurants] = useState(null);
   const [selectedAccNumber, setSelectedAccNumber] = useState("");
-  const [selectedAccName, setSelectedAccName] = useState("");
   const [isDropdownVisible, setIsDropdownVisible] = useState(false);
   const [isNameDropdownVisible, setIsNameDropdownVisible] = useState(false);
 
@@ -36,9 +36,21 @@ const OrderView = () => {
     }
   }, [token, selectedAccNumber]);
 
+  //click en la pantalla
   useEffect(() => {
     console.log("AccNumber:", AccoNumber);
-  }, [AccoNumber]);
+
+    const handleClickOutside = () => {
+      setIsDropdownVisible(false);
+      setIsNameDropdownVisible(false);
+    };
+
+    document.addEventListener("click", handleClickOutside);
+
+    return () => {
+      document.removeEventListener("click", handleClickOutside);
+    };
+  }, [isDropdownVisible, isNameDropdownVisible, AccoNumber]);
 
   const fetchDataAccNumber = async () => {
     try {
@@ -70,33 +82,24 @@ const OrderView = () => {
             <h3>Account Number:</h3>
 
             <div className="relative">
-              <input
-                type="text"
-                className="underline decoration-2 decoration-green h-[30px] border pl-2 w-full"
-                value={selectedAccNumber || ""}
-                onClick={() => setIsDropdownVisible(!isDropdownVisible)}
-                onChange={(e) => {
-                  const typedValue = e.target.value;
-                  setSelectedAccNumber(typedValue);
-                  fetchDataAccNumber(typedValue);
+              <Select
+                options={restaurantList.map((restaurant) => ({
+                  value: restaurant.accountNumber,
+                  label: restaurant.accountNumber,
+                }))}
+                onChange={(selectedOption) => {
+                  setSelectedAccNumber(selectedOption.value);
+                  setIsDropdownVisible(false);
                 }}
+                value={{
+                  value: selectedAccNumber,
+                  label:
+                    AccoNumber && AccoNumber.length > 0
+                      ? AccoNumber[0].accountNumber
+                      : "Search...",
+                }}
+                isSearchable
               />
-              {isDropdownVisible && restaurantList.length > 0 && (
-                <ul className="absolute  bg-white border rounded-md mt-1 w-full ">
-                  {restaurantList.map((restaurant) => (
-                    <li
-                      key={restaurant.accountNumber}
-                      onClick={() => {
-                        setSelectedAccNumber(restaurant.accountNumber);
-                        setIsDropdownVisible(false);
-                      }}
-                      className="cursor-pointer z-20 text-black  p-2 hover:bg-gray-200 "
-                    >
-                      {restaurant.accountNumber}
-                    </li>
-                  ))}
-                </ul>
-              )}
             </div>
 
             <h3>Post Code:</h3>
@@ -118,37 +121,24 @@ const OrderView = () => {
           <div className="grid grid-cols-2 m-4 gap-2">
             <h3>Account Name:</h3>
             <div className="relative">
-              <input
-                type="text"
-                className="underline decoration-2 decoration-green h-[30px] border pl-2 w-full"
-                value={
-                  AccoNumber && AccoNumber.length > 0
-                    ? AccoNumber[0].accountName
-                    : ""
-                }
-                onClick={() => setIsNameDropdownVisible(!isNameDropdownVisible)}
-                onChange={(e) => {
-                  const typedValue = e.target.value;
-                  setSelectedAccNumber(typedValue);
-                  fetchDataAccNumber(typedValue);
+              <Select
+                options={restaurantList.map((restaurant) => ({
+                  value: restaurant.accountNumber,
+                  label: restaurant.accountName,
+                }))}
+                onChange={(selectedOption) => {
+                  setSelectedAccNumber(selectedOption.value);
+                  setIsDropdownVisible(false);
                 }}
+                value={{
+                  value: selectedAccNumber,
+                  label:
+                    AccoNumber && AccoNumber.length > 0
+                      ? AccoNumber[0].accountName
+                      : "Search...",
+                }}
+                isSearchable
               />
-              {isNameDropdownVisible && restaurantList.length > 0 && (
-                <ul className="absolute  bg-white border rounded-md mt-1 w-full ">
-                  {restaurantList.map((restaurant) => (
-                    <li
-                      key={restaurant.accountNumber}
-                      onClick={() => {
-                        setSelectedAccNumber(restaurant.accountNumber);
-                        setIsNameDropdownVisible(false);
-                      }}
-                      className="cursor-pointer z-20 text-black  p-2 hover:bg-gray-200 "
-                    >
-                      {restaurant.accountName}
-                    </li>
-                  ))}
-                </ul>
-              )}
             </div>
             <h3>Address:</h3>
             <h3 className="underline decoration-2 decoration-green">
