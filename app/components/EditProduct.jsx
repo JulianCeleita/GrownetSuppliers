@@ -1,7 +1,16 @@
-import { ExclamationCircleIcon, XMarkIcon } from "@heroicons/react/24/outline";
+import {
+  ExclamationCircleIcon,
+  XMarkIcon
+} from "@heroicons/react/24/outline";
 import axios from "axios";
 import { useEffect, useState } from "react";
-import { familiesUrl, uomUrl, updateProductUrl } from "../config/urls.config";
+import ReactCountryFlag from "react-country-flag";
+import {
+  familiesUrl,
+  taxexUrl,
+  uomUrl,
+  updateProductUrl,
+} from "../config/urls.config";
 import useCategoryStore from "../store/useCategoryStore";
 import useTokenStore from "../store/useTokenStore";
 
@@ -14,16 +23,17 @@ function EditProduct({ isvisible, onClose, fetchProducts, product }) {
   const [selectedCategoryId, setSelectedCategoryId] = useState("");
   const [categoriesLoaded, setCategoriesLoaded] = useState(false);
   const [selectedStatus, setSelectedStatus] = useState("active");
-  const [taxProduct, setTaxProduct] = useState("");
   const [selectedImageName, setSelectedImageName] = useState(null);
+  const [tax, setTax] = useState([]);
+  const [selectedTax, setSelectedTax] = useState("");
 
   useEffect(() => {
     if (product) {
       setAddProduct(product.name || "");
-      setTaxProduct(product.tax && product.tax.length !== 0 ? product.tax : 0);
       setSelectedStatus(product.state || "active");
       setSelectedFamiliesStatus(product.families_id || "");
-      setSelectedCategoryId(product.categories_id || "");      
+      setSelectedCategoryId(product.categories_id || "");
+      setSelectedTax(product.tax || "");
     }
   }, [product]);
 
@@ -33,6 +43,29 @@ function EditProduct({ isvisible, onClose, fetchProducts, product }) {
       setCategoriesLoaded(true);
     }
   }, [categories, categoriesLoaded]);
+
+  // Taxes
+  useEffect(() => {
+    const fetchTaxes = async () => {
+      try {
+        const response = await axios.get(taxexUrl, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        const sortedTaxes = response.data.taxes.sort(
+          (a, b) => a.worth - b.worth
+        );
+        setTax(sortedTaxes);
+        console.log(sortedTaxes);
+        setSelectedTax(sortedTaxes[0].id || "");
+      } catch (error) {
+        console.error("Error al obtener Taxes productos:", error);
+      }
+    };
+    fetchTaxes();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // Api families
   useEffect(() => {
@@ -100,7 +133,7 @@ function EditProduct({ isvisible, onClose, fetchProducts, product }) {
     formData.append("category_id", selectedCategoryId);
     formData.append("country_indicative", "44");
     formData.append("family_id", selectedFamiliesStatus);
-    formData.append("tax", taxProduct);
+    formData.append("tax", selectedTax);
     formData.append("state", statusMapping[selectedStatus]);
     if (selectedImageName !== null) {
       formData.append("image", selectedImageName);
@@ -111,6 +144,7 @@ function EditProduct({ isvisible, onClose, fetchProducts, product }) {
     formData.forEach((value, key) => {
       formDataObject[key] = value;
     });
+    console.log("ESTO ENVIA:", formDataObject);
 
     try {
       const response = await axios.post(
@@ -125,7 +159,7 @@ function EditProduct({ isvisible, onClose, fetchProducts, product }) {
       );
       onClose();
       await fetchProducts(token);
-      console.log("ESTO ENVIA:", formDataObject)
+      console.log("ESTO ENVIA:", formDataObject);
     } catch (error) {
       console.error("Error al editar el producto:", error);
     }
@@ -194,16 +228,32 @@ function EditProduct({ isvisible, onClose, fetchProducts, product }) {
                   </option>
                 ))}
               </select>
-              <label>Product taxes: </label>
-              <input
-                id="tax"
-                name="tax"
-                placeholder="1.2"
-                className="border p-3 rounded-md mr-3 mt-3 w-40"
-                onChange={(e) => setTaxProduct(e.target.value)}
-                value={taxProduct}
+              <label htmlFor="taxes">Product taxes: </label>
+              <select
+                id="taxes"
+                name="taxes"
+                className="border p-3 rounded-md mr-3 mt-3"
                 required
-              ></input>
+                onChange={(e) => setSelectedTax(e.target.value)}
+              >
+                <option value="" disabled selected>
+                  Select tax
+                </option>
+                {tax.map((tax) => (
+                  <option key={tax.id} value={tax.worth}>
+                    {tax.countries_indicative === 44 ? (
+                      <ReactCountryFlag countryCode="GB" />
+                    ) : tax.countries_indicative === 57 ? (
+                      <ReactCountryFlag countryCode="CO" />
+                    ) : tax.countries_indicative === 351 ? (
+                      <ReactCountryFlag countryCode="PT" />
+                    ) : tax.countries_indicative === 34 ? (
+                      <ReactCountryFlag countryCode="ES" />
+                    ) : null}{" "}
+                    {tax.name}
+                  </option>
+                ))}
+              </select>
             </div>
           </div>
           <label className="mt-4">Attach the product&apos;s photo: </label>

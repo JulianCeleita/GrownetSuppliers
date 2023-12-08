@@ -2,40 +2,51 @@ import useCategoryStore from "@/app/store/useCategoryStore";
 import { XMarkIcon } from "@heroicons/react/24/outline";
 import axios from "axios";
 import { useEffect, useState } from "react";
-import { addProductUrl, familiesUrl, uomUrl } from "../config/urls.config";
+import ReactCountryFlag from "react-country-flag";
+import {
+  addProductUrl,
+  familiesUrl,
+  taxexUrl,
+  uomUrl,
+} from "../config/urls.config";
 import useTokenStore from "../store/useTokenStore";
 
 function NewProduct({ isvisible, onClose, fetchProducts }) {
   const { token } = useTokenStore();
   const { categories } = useCategoryStore();
   const [addProduct, setAddProduct] = useState("");
-  const [taxProduct, setTaxProduct] = useState("");
   const [categoriesLoaded, setCategoriesLoaded] = useState(false);
   const [selectedCategoryId, setSelectedCategoryId] = useState("");
   const [selectedFamiliesStatus, setSelectedFamiliesStatus] =
     useState("banana");
   const [families, setFamilies] = useState([]);
-  // const [tax, setTax] = useState([]);
-  // const [selectedTax, setSelectedTax] = useState("");
+  const [tax, setTax] = useState([]);
+  const [selectedTax, setSelectedTax] = useState("");
   const [selectedImageName, setSelectedImageName] = useState(null);
 
   // Taxes
-  /*useEffect(() => {
+  useEffect(() => {
     const fetchTaxes = async () => {
       try {
-        const response = await axios.get(TaxesApi, {
+        const response = await axios.get(taxexUrl, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         });
-        setTax(response.data.taxes);
+        const sortedTaxes = response.data.taxes.sort(
+          (a, b) => a.worth - b.worth
+        );
+        setTax(sortedTaxes);
+        console.log(sortedTaxes);
+        setSelectedTax(sortedTaxes[0].id || "");
       } catch (error) {
         console.error("Error al obtener Taxes productos:", error);
       }
     };
-
     fetchTaxes();
-  }, []);*/
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   useEffect(() => {
     if (categories.length > 0 && !categoriesLoaded) {
       setSelectedCategoryId(categories[0].id);
@@ -78,7 +89,6 @@ function NewProduct({ isvisible, onClose, fetchProducts }) {
           },
         });
         setUoms(response.data.uoms);
-        setSelectedUomsStatus(response.data.uoms[0]?.id || "");
       } catch (error) {
         console.error("Error al obtener UOMS productos:", error);
       }
@@ -109,12 +119,13 @@ function NewProduct({ isvisible, onClose, fetchProducts }) {
       formData.append("image", selectedImageName);
     }
     formData.append("code", "Y100");
-    formData.append("tax", taxProduct);
+    formData.append("tax", selectedTax);
 
     const formDataObject = {};
     formData.forEach((value, key) => {
       formDataObject[key] = value;
     });
+    console.log("formDataObject", formDataObject);
 
     try {
       const response = await axios.post(addProductUrl, formData, {
@@ -127,7 +138,7 @@ function NewProduct({ isvisible, onClose, fetchProducts }) {
       await fetchProducts(token);
     } catch (error) {
       console.error("Error al crear el producto:", error);
-    console.log('ESTO ENVIA:', formData);
+      console.log("ESTO ENVIA:", formData);
     }
   };
 
@@ -193,14 +204,32 @@ function NewProduct({ isvisible, onClose, fetchProducts }) {
               </select>
             </div>
             <div>
-              <label>Product taxes: </label>
-              <input
-                className="border p-3 rounded-md mr-3 mt-3 w-[50px]"
-                placeholder="1.2"
-                type="text"
-                onChange={(e) => setTaxProduct(e.target.value)}
+              <label htmlFor="taxes">Product taxes: </label>
+              <select
+                id="taxes"
+                name="taxes"
+                className="border p-3 rounded-md mr-3 mt-3"
                 required
-              ></input>
+                onChange={(e) => setSelectedTax(e.target.value)}
+              >
+                <option value="" disabled selected>
+                  Select tax
+                </option>
+                {tax.map((tax) => (
+                  <option key={tax.id} value={tax.worth}>
+                    {tax.countries_indicative === 44 ? (
+                      <ReactCountryFlag countryCode="GB" />
+                    ) : tax.countries_indicative === 57 ? (
+                      <ReactCountryFlag countryCode="CO" />
+                    ) : tax.countries_indicative === 351 ? (
+                      <ReactCountryFlag countryCode="PT" />
+                    ) : tax.countries_indicative === 34 ? (
+                      <ReactCountryFlag countryCode="ES" />
+                    ) : null}{" "}
+                    {tax.name}
+                  </option>
+                ))}
+              </select>
             </div>
           </div>
           <label className="mt-4">Attach the product&apos;s photo: </label>

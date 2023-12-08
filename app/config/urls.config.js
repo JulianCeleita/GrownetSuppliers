@@ -46,7 +46,8 @@ export const familiesUrl =
 export const uomUrl = "https://api.grownetapp.com/grownet/api/uom/all";
 
 //Taxes
-export const TaxesApi = "https://api.grownetapp.com/grownet/api/taxes/all";
+export const taxexUrl = "https://api.grownetapp.com/grownet/api/taxes/all";
+
 //Orders
 export const Restaurants =
   "https://api.grownetapp.com/grownet/api/customers/chef";

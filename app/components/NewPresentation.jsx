@@ -115,6 +115,25 @@ function NewPresentation({
           Add <span className="text-primary-blue">new presentation</span>
         </h1>
         <form className="text-left  flex flex-col" onSubmit={enviarData}>
+          <label for="produvt" className="mt-2">
+            Product:
+          </label>
+          <select
+            id="produvt"
+            name="produvt"
+            className="border p-3 rounded-md mr-3 my-3"
+            onChange={(e) => setSelectedProductsStatus(e.target.value)}
+            required
+          >
+            <option value="" disabled selected>
+              Select product
+            </option>
+            {products.map((product) => (
+              <option key={product.id} value={product.id}>
+                {product.name}
+              </option>
+            ))}
+          </select>
           <label>Unit of measurement of the product: </label>
           <select
             id="uom"
@@ -132,34 +151,15 @@ function NewPresentation({
               </option>
             ))}
           </select>
-          <label for="produvt" className="mt-2">
-            Product:
-          </label>
-          <select
-            id="produvt"
-            name="produvt"
-            className="border p-3 rounded-md mr-3 mt-3"
-            onChange={(e) => setSelectedProductsStatus(e.target.value)}
-            required
-          >
-            <option value="" disabled selected>
-              Select product
-            </option>
-            {products.map((product) => (
-              <option key={product.id} value={product.id}>
-                {product.name}
-              </option>
-            ))}
-          </select>
           <div>
-          <label>Code: </label>
-          <input
-            className="border p-3 rounded-md mr-3 mt-3"
-            placeholder="50"
-            onChange={(e) => setCodePresentation(e.target.value)}
-            type="text"
-            value={codePresentation}
-          ></input>
+            <label>Code: </label>
+            <input
+              className="border p-3 rounded-md mr-3 mt-3"
+              placeholder="50"
+              onChange={(e) => setCodePresentation(e.target.value)}
+              type="text"
+              value={codePresentation}
+            ></input>
             <label>Packsize: </label>
             <input
               className="border p-3 rounded-md mr-3 mt-3 w-[35.5%]"
@@ -167,25 +167,26 @@ function NewPresentation({
               type="text"
               onChange={(e) => setNamePresentation(e.target.value)}
               required
-            ></input>   
-            </div>       
+            ></input>
+          </div>
           <div>
             <label>Cost: </label>
             <input
               className="border p-3 rounded-md mr-3 mt-3  w-[35.5%]"
               placeholder="50"
               type="number"
+              step="0.01"
               onChange={(e) => setCostPresentation(e.target.value)}
               required
             ></input>
             <label>Quantity: </label>
-          <input
-            className="border p-3 rounded-md mr-3 mt-3"
-            placeholder="50"
-            type="text"
-            onChange={(e) => setQuantityPresentation(e.target.value)}
-            required
-          ></input>
+            <input
+              className="border p-3 rounded-md mr-3 mt-3"
+              placeholder="50"
+              type="text"
+              onChange={(e) => setQuantityPresentation(e.target.value)}
+              required
+            ></input>
           </div>
           <div className="mt-3 text-center">
             <button

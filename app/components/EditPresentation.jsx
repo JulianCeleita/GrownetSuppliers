@@ -1,13 +1,13 @@
-import { useState, useEffect } from "react";
+import { ExclamationCircleIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import axios from "axios";
+import { useEffect, useState } from "react";
 import {
-  uomUrl,
   productsUrl,
+  uomUrl,
   updatePresentationUrl,
 } from "../config/urls.config";
-import useTokenStore from "../store/useTokenStore";
-import { XMarkIcon, ExclamationCircleIcon } from "@heroicons/react/24/outline";
 import { fetchPresentations } from "../presentations/page";
+import useTokenStore from "../store/useTokenStore";
 
 function EditPresentation({
   isvisible,
@@ -145,32 +145,14 @@ function EditPresentation({
         <form
           className="text-left  flex flex-col"
           onSubmit={handleEditPresentation}
-        >         
-            <label>Unit of measurement of the product: </label>
-            <select
-              id="uom"
-              name="uom"
-              className="border p-3 rounded-md mr-3 mt-3"
-              required
-              onChange={(e) => setSelectedUomsStatus(e.target.value)}
-              value={selectedUomsStatus}
-            >
-              <option value="" disabled selected>
-                Select uom
-              </option>
-              {uoms.map((uom) => (
-                <option key={uom.id} value={uom.id}>
-                  {uom.id} - {uom.name}
-                </option>
-              ))}
-            </select>  
+        >
           <label for="produvt" className="mt-2">
             Product:
           </label>
           <select
             id="produvt"
             name="produvt"
-            className="border p-3 rounded-md mr-3 mt-3"
+            className="border p-3 rounded-md mr-3 my-3"
             onChange={(e) => setSelectedProductsStatus(e.target.value)}
             value={selectedProductsStatus}
             required
@@ -183,16 +165,35 @@ function EditPresentation({
                 {product.id} - {product.name}
               </option>
             ))}
-          </select> 
-          <div>
-          <label>Code: </label>
-          <input
+          </select>
+          <label>Unit of measurement of the product: </label>
+          <select
+            id="uom"
+            name="uom"
             className="border p-3 rounded-md mr-3 mt-3"
-            placeholder="50"
-            onChange={(e) => setCodePresentation(e.target.value)}
-            type="text"
-            value={codePresentation}
-          ></input> 
+            required
+            onChange={(e) => setSelectedUomsStatus(e.target.value)}
+            value={selectedUomsStatus}
+          >
+            <option value="" disabled selected>
+              Select uom
+            </option>
+            {uoms.map((uom) => (
+              <option key={uom.id} value={uom.id}>
+                {uom.id} - {uom.name}
+              </option>
+            ))}
+          </select>
+
+          <div>
+            <label>Code: </label>
+            <input
+              className="border p-3 rounded-md mr-3 mt-3"
+              placeholder="50"
+              onChange={(e) => setCodePresentation(e.target.value)}
+              type="text"
+              value={codePresentation}
+            ></input>
             <label>Packsize: </label>
             <input
               className="border p-3 rounded-md mr-3 mt-3 w-[35.5%]"
@@ -201,14 +202,15 @@ function EditPresentation({
               required
               value={editedName}
               onChange={(e) => setEditedName(e.target.value)}
-            ></input>  
-            </div>
+            ></input>
+          </div>
           <div>
-          <label>Cost: </label>
+            <label>Cost: </label>
             <input
               className="border p-3 rounded-md mr-3 mt-3  w-[35.5%]"
               placeholder="50"
-              type="text"
+              type="number"
+              step="0.01"
               value={editedCost}
               onChange={(e) => setEditedCost(e.target.value)}
               required
@@ -222,9 +224,9 @@ function EditPresentation({
               value={editedQuantity}
               onChange={(e) => setEditedQuantity(e.target.value)}
               required
-            ></input>  
+            ></input>
           </div>
-            
+
           <div className="mt-3 text-center">
             <button
               type="submit"
