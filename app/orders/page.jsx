@@ -1,33 +1,66 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import Table from "@/app/components/Table";
-import { OrdersApi } from "../config/urls.config";
+import { AccNumber, Restaurants } from "../config/urls.config";
 import axios from "axios";
 import useTokenStore from "../store/useTokenStore";
 
 const OrderView = () => {
   const { token } = useTokenStore();
+  const [AccoNumber, setAccoNumber] = useState(null);
   const [restaurants, setRestaurants] = useState(null);
+  const [selectedAccNumber, setSelectedAccNumber] = useState("");
+  const [selectedAccName, setSelectedAccName] = useState("");
+  const [isDropdownVisible, setIsDropdownVisible] = useState(false);
+  const [isNameDropdownVisible, setIsNameDropdownVisible] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get(OrdersApi, {
+        const responseRestaurants = await axios.get(Restaurants, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         });
 
-        setRestaurants(response.data);
+        setRestaurants(responseRestaurants.data.customersChef);
       } catch (error) {
-        console.error("Error fetching data", error);
+        console.error("Error fetching restaurants data", error);
       }
     };
 
     fetchData();
-  }, []);
 
-  console.log("restaurantes:", restaurants);
+    if (selectedAccNumber) {
+      fetchDataAccNumber();
+    }
+  }, [token, selectedAccNumber]);
+
+  useEffect(() => {
+    console.log("AccNumber:", AccoNumber);
+  }, [AccoNumber]);
+
+  const fetchDataAccNumber = async () => {
+    try {
+      const responseAccNumber = await axios.get(
+        `${AccNumber}${selectedAccNumber}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      setAccoNumber(responseAccNumber.data.data);
+    } catch (error) {
+      console.error("Error fetching AccNumber data", error);
+    }
+  };
+
+  console.log("AccNumber:", AccoNumber);
+  console.log("restaurants:", restaurants);
+  const restaurantList = Array.isArray(restaurants) ? restaurants : [];
+  console.log("selectedAccNumber:", selectedAccNumber);
 
   return (
     <>
@@ -36,37 +69,97 @@ const OrderView = () => {
           <div className="grid grid-cols-2 m-4 gap-2">
             <h3>Account Number:</h3>
 
-            <input
-              type="text"
-              className="underline decoration-2 decoration-green h-[30px] border pl-2"
-            />
+            <div className="relative">
+              <input
+                type="text"
+                className="underline decoration-2 decoration-green h-[30px] border pl-2 w-full"
+                value={selectedAccNumber || ""}
+                onClick={() => setIsDropdownVisible(!isDropdownVisible)}
+                onChange={(e) => {
+                  const typedValue = e.target.value;
+                  setSelectedAccNumber(typedValue);
+                  fetchDataAccNumber(typedValue);
+                }}
+              />
+              {isDropdownVisible && restaurantList.length > 0 && (
+                <ul className="absolute  bg-white border rounded-md mt-1 w-full ">
+                  {restaurantList.map((restaurant) => (
+                    <li
+                      key={restaurant.accountNumber}
+                      onClick={() => {
+                        setSelectedAccNumber(restaurant.accountNumber);
+                        setIsDropdownVisible(false);
+                      }}
+                      className="cursor-pointer z-20 text-black  p-2 hover:bg-gray-200 "
+                    >
+                      {restaurant.accountNumber}
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
 
             <h3>Post Code:</h3>
             <h3 className="underline decoration-2 decoration-green">
-              7755225588
+              {AccoNumber && AccoNumber.length > 0
+                ? AccoNumber[0].postCode
+                : ""}
             </h3>
             <h3>Telephone:</h3>
             <h3 className="underline decoration-2 decoration-green">
-              123-654-789
+              {" "}
+              {AccoNumber && AccoNumber.length > 0
+                ? AccoNumber[0].telephone
+                : ""}
             </h3>
             <h3>Round:</h3>
-            <h3 className="underline decoration-2 decoration-green">R1</h3>
+            <h3 className="underline decoration-2 decoration-green">{""}</h3>
           </div>
           <div className="grid grid-cols-2 m-4 gap-2">
             <h3>Account Name:</h3>
-            <h3 className="underline decoration-2 decoration-green">
-              LETOBAKERY LTDA{" "}
-            </h3>
+            <div className="relative">
+              <input
+                type="text"
+                className="underline decoration-2 decoration-green h-[30px] border pl-2 w-full"
+                value={
+                  AccoNumber && AccoNumber.length > 0
+                    ? AccoNumber[0].accountName
+                    : ""
+                }
+                onClick={() => setIsNameDropdownVisible(!isNameDropdownVisible)}
+                onChange={(e) => {
+                  const typedValue = e.target.value;
+                  setSelectedAccNumber(typedValue);
+                  fetchDataAccNumber(typedValue);
+                }}
+              />
+              {isNameDropdownVisible && restaurantList.length > 0 && (
+                <ul className="absolute  bg-white border rounded-md mt-1 w-full ">
+                  {restaurantList.map((restaurant) => (
+                    <li
+                      key={restaurant.accountNumber}
+                      onClick={() => {
+                        setSelectedAccNumber(restaurant.accountNumber);
+                        setIsNameDropdownVisible(false);
+                      }}
+                      className="cursor-pointer z-20 text-black  p-2 hover:bg-gray-200 "
+                    >
+                      {restaurant.accountName}
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
             <h3>Address:</h3>
             <h3 className="underline decoration-2 decoration-green">
-              155 WARDOUR STREET
+              {AccoNumber && AccoNumber.length > 0 ? AccoNumber[0].address : ""}
             </h3>
             <h3>Contact:</h3>
             <h3 className="underline decoration-2 decoration-green">
-              Kevin Pinzón
+              {AccoNumber && AccoNumber.length > 0 ? AccoNumber[0].email : ""}
             </h3>
             <h3>Drop:</h3>
-            <h3 className="underline decoration-2 decoration-green">12</h3>
+            <h3 className="underline decoration-2 decoration-green">{""}</h3>
           </div>
         </div>
         <div className="bg-white p-5 pr-9 pl-9 rounded-lg">
