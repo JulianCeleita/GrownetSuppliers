@@ -56,3 +56,5 @@ export const createOrders =
 
 export const AccNumber =
   "https://api.grownetapp.com/grownet/api/customers/accountNumber/";
+export const AccName =
+  "https://api.grownetapp.com/grownet/api/customers/accountName/";
