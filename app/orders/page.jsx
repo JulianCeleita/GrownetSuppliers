@@ -1,16 +1,18 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import Table from "@/app/components/Table";
-import { AccNumber, Restaurants } from "../config/urls.config";
+import { AccName, AccNumber, Restaurants } from "../config/urls.config";
 import axios from "axios";
 import useTokenStore from "../store/useTokenStore";
 import Select from "react-select";
 
 const OrderView = () => {
   const { token } = useTokenStore();
-  const [AccoNumber, setAccoNumber] = useState(null);
+  const [customers, setCustomers] = useState(null);
+
   const [restaurants, setRestaurants] = useState(null);
   const [selectedAccNumber, setSelectedAccNumber] = useState("");
+  const [selectedAccName, setSelectedAccName] = useState("");
   const [isDropdownVisible, setIsDropdownVisible] = useState(false);
   const [isNameDropdownVisible, setIsNameDropdownVisible] = useState(false);
 
@@ -33,12 +35,14 @@ const OrderView = () => {
 
     if (selectedAccNumber) {
       fetchDataAccNumber();
+    } else if (selectedAccName) {
+      fetchDataAccName();
     }
-  }, [token, selectedAccNumber]);
+  }, [token, selectedAccNumber, selectedAccName]);
 
   //click en la pantalla
   useEffect(() => {
-    console.log("AccNumber:", AccoNumber);
+    console.log("AccNumber:", customers);
 
     const handleClickOutside = () => {
       setIsDropdownVisible(false);
@@ -50,7 +54,7 @@ const OrderView = () => {
     return () => {
       document.removeEventListener("click", handleClickOutside);
     };
-  }, [isDropdownVisible, isNameDropdownVisible, AccoNumber]);
+  }, [isDropdownVisible, isNameDropdownVisible, customers]);
 
   const fetchDataAccNumber = async () => {
     try {
@@ -63,15 +67,33 @@ const OrderView = () => {
         }
       );
 
-      setAccoNumber(responseAccNumber.data.data);
+      setCustomers(responseAccNumber.data.data);
+    } catch (error) {
+      console.error("Error fetching AccNumber data", error);
+    }
+  };
+  const fetchDataAccName = async () => {
+    try {
+      const responseAccNumber = await axios.get(
+        `${AccName}${selectedAccName}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      setCustomers(responseAccNumber.data.data);
+      console.log("se ejecuto AccName:");
     } catch (error) {
       console.error("Error fetching AccNumber data", error);
     }
   };
 
-  console.log("AccNumber:", AccoNumber);
+  console.log("customers:", customers);
   console.log("restaurants:", restaurants);
   const restaurantList = Array.isArray(restaurants) ? restaurants : [];
+  console.log("selectedAccName:", selectedAccName);
   console.log("selectedAccNumber:", selectedAccNumber);
 
   return (
@@ -94,8 +116,8 @@ const OrderView = () => {
                 value={{
                   value: selectedAccNumber,
                   label:
-                    AccoNumber && AccoNumber.length > 0
-                      ? AccoNumber[0].accountNumber
+                    customers && customers.length > 0
+                      ? customers[0].accountNumber
                       : "Search...",
                 }}
                 isSearchable
@@ -104,16 +126,12 @@ const OrderView = () => {
 
             <h3>Post Code:</h3>
             <h3 className="underline decoration-2 decoration-green">
-              {AccoNumber && AccoNumber.length > 0
-                ? AccoNumber[0].postCode
-                : ""}
+              {customers && customers.length > 0 ? customers[0].postCode : ""}
             </h3>
             <h3>Telephone:</h3>
             <h3 className="underline decoration-2 decoration-green">
               {" "}
-              {AccoNumber && AccoNumber.length > 0
-                ? AccoNumber[0].telephone
-                : ""}
+              {customers && customers.length > 0 ? customers[0].telephone : ""}
             </h3>
             <h3>Round:</h3>
             <h3 className="underline decoration-2 decoration-green">{""}</h3>
@@ -123,18 +141,18 @@ const OrderView = () => {
             <div className="relative">
               <Select
                 options={restaurantList.map((restaurant) => ({
-                  value: restaurant.accountNumber,
+                  value: restaurant.accountName,
                   label: restaurant.accountName,
                 }))}
                 onChange={(selectedOption) => {
-                  setSelectedAccNumber(selectedOption.value);
+                  setSelectedAccName(selectedOption.value);
                   setIsDropdownVisible(false);
                 }}
                 value={{
                   value: selectedAccNumber,
                   label:
-                    AccoNumber && AccoNumber.length > 0
-                      ? AccoNumber[0].accountName
+                    customers && customers.length > 0
+                      ? customers[0].accountName
                       : "Search...",
                 }}
                 isSearchable
@@ -142,11 +160,11 @@ const OrderView = () => {
             </div>
             <h3>Address:</h3>
             <h3 className="underline decoration-2 decoration-green">
-              {AccoNumber && AccoNumber.length > 0 ? AccoNumber[0].address : ""}
+              {customers && customers.length > 0 ? customers[0].address : ""}
             </h3>
             <h3>Contact:</h3>
             <h3 className="underline decoration-2 decoration-green">
-              {AccoNumber && AccoNumber.length > 0 ? AccoNumber[0].email : ""}
+              {customers && customers.length > 0 ? customers[0].email : ""}
             </h3>
             <h3>Drop:</h3>
             <h3 className="underline decoration-2 decoration-green">{""}</h3>
