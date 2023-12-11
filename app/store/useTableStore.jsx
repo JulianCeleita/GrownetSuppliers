@@ -17,6 +17,14 @@ export const useTableStore = create((set) => ({
     "Tax Calculation",
   ],
 
+  initialTotalRows: JSON.parse(localStorage.getItem("initialTotalRows")) || [
+    "Net Invoice",
+    "Total VAT",
+    "Total Invoice",
+    "Profit (£)",
+    "Profit (%)",
+  ],
+
   toggleColumnVisibility: (columnName) =>
     set((state) => {
       const newInitialColumns = state.initialColumns.includes(columnName)
@@ -28,4 +36,19 @@ export const useTableStore = create((set) => ({
         initialColumns: newInitialColumns,
       };
     }),
+
+  toggleTotalRowVisibility: (rowName) =>
+    set((state) => {
+      const newInitialTotalRows = state.initialTotalRows.includes(rowName)
+        ? state.initialTotalRows.filter((row) => row !== rowName)
+        : [...state.initialTotalRows, rowName];
+      localStorage.setItem(
+        "initialTotalRows",
+        JSON.stringify(newInitialTotalRows)
+      );
+
+      return {
+        initialTotalRows: newInitialTotalRows,
+      };
+    }),    
 }));
