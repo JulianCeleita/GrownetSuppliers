@@ -216,7 +216,7 @@ function NewProduct({ isvisible, onClose, fetchProducts }) {
                   Select tax
                 </option>
                 {tax.map((tax) => (
-                  <option key={tax.id} value={tax.worth}>
+                  <option key={tax.id} value={tax.id}>
                     {tax.countries_indicative === 44 ? (
                       <ReactCountryFlag countryCode="GB" />
                     ) : tax.countries_indicative === 57 ? (

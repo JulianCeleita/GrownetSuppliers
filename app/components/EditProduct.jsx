@@ -35,7 +35,7 @@ function EditProduct({ isvisible, onClose, fetchProducts, product }) {
       setSelectedFamiliesStatus(product.families_id || "");
       setSelectedCategoryId(product.categories_id || "");
       setSelectedTax(product.tax || "");
-      console.log('Tax apenas carga vista', product.tax)
+      console.log('Tax que recibo:', product.tax)
     }
   }, [product]);
 
@@ -60,7 +60,6 @@ function EditProduct({ isvisible, onClose, fetchProducts, product }) {
         );
         setTax(sortedTaxes);
         console.log(sortedTaxes);
-        setSelectedTax(sortedTaxes[0]?.id || "");
       } catch (error) {
         console.error("Error al obtener Taxes productos:", error);
       }
