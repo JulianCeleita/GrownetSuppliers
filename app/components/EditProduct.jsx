@@ -235,6 +235,7 @@ function EditProduct({ isvisible, onClose, fetchProducts, product }) {
                 className="border p-3 rounded-md mr-3 mt-3"
                 required
                 onChange={(e) => setSelectedTax(e.target.value)}
+                value={selectedTax}
               >
                 <option value="" disabled selected>
                   Select tax
