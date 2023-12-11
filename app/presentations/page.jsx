@@ -80,8 +80,11 @@ function Presentations() {
   };
   //Api products
   useEffect(() => {
+    const bodyProducts = {
+      country: 44,
+    };
     axios
-      .get(productsUrl, {
+      .post(productsUrl, bodyProducts, {
         headers: {
           Authorization: `Bearer ${token}`,
         },

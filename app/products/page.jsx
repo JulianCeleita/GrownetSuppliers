@@ -30,7 +30,10 @@ function Products() {
 
   const fetchProducts = async (token) => {
     try {
-      const response = await axios.get(`${productsUrl}?country=${country}`, {
+      const bodyProducts = {
+        country: country,
+      };
+      const response = await axios.post(productsUrl, bodyProducts, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
