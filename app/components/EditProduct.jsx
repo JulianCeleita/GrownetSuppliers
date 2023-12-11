@@ -26,6 +26,7 @@ function EditProduct({ isvisible, onClose, fetchProducts, product }) {
   const [selectedImageName, setSelectedImageName] = useState(null);
   const [tax, setTax] = useState([]);
   const [selectedTax, setSelectedTax] = useState("");
+  console.log('selectedTax', selectedTax);
 
   useEffect(() => {
     if (product) {
@@ -34,6 +35,7 @@ function EditProduct({ isvisible, onClose, fetchProducts, product }) {
       setSelectedFamiliesStatus(product.families_id || "");
       setSelectedCategoryId(product.categories_id || "");
       setSelectedTax(product.tax || "");
+      console.log('Tax apenas carga vista', product.tax)
     }
   }, [product]);
 
@@ -58,7 +60,7 @@ function EditProduct({ isvisible, onClose, fetchProducts, product }) {
         );
         setTax(sortedTaxes);
         console.log(sortedTaxes);
-        setSelectedTax(sortedTaxes[0].id || "");
+        setSelectedTax(sortedTaxes[0]?.id || "");
       } catch (error) {
         console.error("Error al obtener Taxes productos:", error);
       }
@@ -241,7 +243,7 @@ function EditProduct({ isvisible, onClose, fetchProducts, product }) {
                   Select tax
                 </option>
                 {tax.map((tax) => (
-                  <option key={tax.id} value={tax.worth}>
+                  <option key={tax.id} value={tax.id}>
                     {tax.countries_indicative === 44 ? (
                       <ReactCountryFlag countryCode="GB" />
                     ) : tax.countries_indicative === 57 ? (
