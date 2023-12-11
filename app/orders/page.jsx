@@ -58,7 +58,7 @@ function OrderView() {
         </div>
       </div>
       <div className="-mt-20">
-        <Table />
+        <Table/>
       </div>
     </>
   );

@@ -31,11 +31,14 @@ function Products() {
           ? response.data.products
           : [];
         setProducts(newProducts);
+        console.log('Productos', newProducts)
       })
       .catch((error) => {
         console.error("Error al obtener los productos:", error);
       });
+      // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [products]);
+  
   //Api delete
   const [deleteResponse, setDeleteResponse] = useState(null);
   const handleDeleteProduct = (product) => {

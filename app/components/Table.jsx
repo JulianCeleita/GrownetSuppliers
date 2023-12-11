@@ -1,5 +1,10 @@
-"use client";
-import React, { useRef, useState } from "react";
+'use client';
+import React, { useRef, useState, useEffect } from "react";
+import Select from "react-select";
+import axios from "axios";
+import { productsUrl } from "@/app/config/urls.config";
+import useTokenStore from "@/app/store/useTokenStore";
+import { useTableStore } from "@/app/store/useTableStore";
 
 const initialRowsState = {
   productCode: "",
@@ -46,17 +51,88 @@ const useFocusOnEnter = (formRef) => {
   return { onEnterKey };
 };
 
+const AutocompleteInput = ({ options, value, onChange }) => {
+  return (
+    <Select
+      options={options}
+      value={options.find((option) => option.value === value)}
+      onChange={(selectedOption) => onChange(selectedOption.value)}
+      isSearchable
+    />
+  );
+};
+
 export default function Table() {
   const [rows, setRows] = useState(
     Array.from({ length: 5 }, () => ({ ...initialRowsState }))
   );
   const form = useRef();
   const { onEnterKey } = useFocusOnEnter(form);
+  const { token } = useTokenStore();
+  const [products, setProducts] = useState([]);
+  const { initialColumns, toggleColumnVisibility } = useTableStore();
+  const [showCheckboxColumn, setShowCheckboxColumn] = useState(false)
+  const menuRef = useRef(null);
+  const data = [
+    { 'Product Code': 'Dato1', Presentation: 'Dato2', Description: 'Dato3', UOM: 'Dato4', Qty: 'Dato5', Price: 'Dato6', 'Total Price': 'Dato7', 'Unit Cost': 'Dato8', Profit: 'Dato9', 'Price Band': 'Dato10', 'Total Cost': 'Dato11', Tax: 'Dato12', 'Text Calculation': 'Dato13' },
+    { 'Product Code': 'Dato1', Presentation: 'Dato2', Description: 'Dato3', UOM: 'Dato4', Qty: 'Dato5', Price: 'Dato6', 'Total Price': 'Dato7', 'Unit Cost': 'Dato8', Profit: 'Dato9', 'Price Band': 'Dato10', 'Total Cost': 'Dato11', Tax: 'Dato12', 'Text Calculation': 'Dato13' },
+    { 'Product Code': 'Dato1', Presentation: 'Dato2', Description: 'Dato3', UOM: 'Dato4', Qty: 'Dato5', Price: 'Dato6', 'Total Price': 'Dato7', 'Unit Cost': 'Dato8', Profit: 'Dato9', 'Price Band': 'Dato10', 'Total Cost': 'Dato11', Tax: 'Dato12', 'Text Calculation': 'Dato13' },
+    { 'Product Code': 'Dato1', Presentation: 'Dato2', Description: 'Dato3', UOM: 'Dato4', Qty: 'Dato5', Price: 'Dato6', 'Total Price': 'Dato7', 'Unit Cost': 'Dato8', Profit: 'Dato9', 'Price Band': 'Dato10', 'Total Cost': 'Dato11', Tax: 'Dato12', 'Text Calculation': 'Dato13' },
+  ];
+  const columns = ['Product Code', 'Presentation', 'Description', 'UOM', 'Qty', 'Price', 'Total Price', 'Unit Cost', 'Profit', 'Price Band', 'Total Cost', 'Tax', 'Text Calculation'];
 
+
+  const handleContextMenu = (e) => {
+    e.preventDefault();
+    setShowCheckboxColumn(!showCheckboxColumn)
+  };
+
+  const handleCheckboxChange = (columnName) => {
+    toggleColumnVisibility(columnName);
+  };
+
+  const handleClickOutside = (e) => {
+    if (menuRef.current && !menuRef.current.contains(e.target)) {
+        setShowCheckboxColumn(false)
+    }
+  };
+  console.log('initialColumns:', initialColumns)
+  useEffect(() => {
+    document.addEventListener('click', handleClickOutside);
+    return () => {
+      document.removeEventListener('click', handleClickOutside);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
+    axios
+      .get(productsUrl, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+      .then((response) => {
+        setProducts(
+          response.data.products.map((product) => ({
+            value: product.code,
+            label: product.code,
+          }))
+        );
+        console.log("Productos:", response.data.products);
+      })
+      .catch((error) => {
+        console.error("Error al obtener los productos:", error);
+      });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // AGREGAR NUEVA FILA
   const addNewRow = () => {
     setRows((prevRows) => [...prevRows, { ...initialRowsState }]);
   };
 
+  // OBTENER NOMBRE DEL CAMPO SIGUIENTE
   const getNextFieldName = (currentFieldName) => {
     const fieldNames = [
       "productCode",
@@ -73,6 +149,8 @@ export default function Table() {
     return nextIndex < fieldNames.length ? fieldNames[nextIndex] : null;
   };
 
+
+  // FUNCIONALIDAD TECLA ENTER
   const handleKeyDown = (e, rowIndex, fieldName) => {
     if (e.key === "Enter") {
       e.preventDefault();
@@ -111,67 +189,81 @@ export default function Table() {
 
   return (
     <div className="flex flex-col p-8">
-      <div className="overflow-x-auto  ">
+      <div className="overflow-x-auto">
         <form ref={form} onKeyUp={(event) => onEnterKey(event)} className="m-1">
           <table className="w-full text-sm text-center">
             <thead className="text-white">
               <tr className="text-lg">
-                {[
-              "Product Code",
-              "Presentation",
-              "Description",
-              "UOM",
-              "Qty",
-              "Price",
-              "Total Price"
-            ].map((heading, index) => (
-              <th
-                key={index}
-                scope="col"
-                className="py-2 bg-dark-blue rounded-lg"
-                style={{
-                  boxShadow:
-                    "0px 5px 5px rgba(0, 0, 0, 0.5), 0px 0px 0px rgba(0, 0, 0, 0.2)"
-                }}
-              >
-                <p className="text-xl text-[#ffffff]">{heading}</p>
-              </th>
-            ))}
+                {columns.map((column, index) => 
+                initialColumns.includes(column) &&(
+                  <th
+                    key={index}
+                    scope="col"
+                    className="py-2 bg-dark-blue rounded-lg"
+                    onContextMenu={(e) => handleContextMenu(e)}
+                    style={{
+                      boxShadow:
+                        "0px 5px 5px rgba(0, 0, 0, 0.5), 0px 0px 0px rgba(0, 0, 0, 0.2)",
+                    }}
+                  >
+                    <p className="text-xl text-[#ffffff]">{column}</p>
+                  </th>
+                ))}
               </tr>
             </thead>
-            <tbody className="shadow-[rgba(0,_0,_0,_0.24)_0px_3px_8px] rounded-xl ">
-              {rows.map((row, rowIndex) => (
+            <tbody className="shadow-[rgba(0,_0,_0,_0.24)_0px_3px_8px] rounded-xl">
+              
+            {data.map((row, rowIndex) => (
+            <tr key={rowIndex}>
+              {columns.map(
+                (column) =>
+                  initialColumns.includes(column) && (
+                    <td className={`px-2 py-2 border-r-2 border-r-[#0c547a] border-[#808e94] ${
+                      rowIndex === 0 ? "border-t-0" : "border-t-2"
+                    }`}
+                    key={column}>{row[column]}</td>
+                  )
+              )}
+            </tr>
+          ))}
+              {data.map((row, rowIndex) => (
                 <tr key={rowIndex}>
+                  {/* CODIGO DE PRODUCTO */}
+                  {columns.map(
+                    (column, columnIndex) =>
+                    initialColumns.includes((column, columnIndex) && (
+                    <>
+                  <td className={` w-[14.2%] px-6 py-2  border-r-2  border-r-[#0c547a] border-[#808e94] ${
+                      rowIndex === 0 ? "border-t-0" : "border-t-2"
+                    }`}
+                    key={columnIndex}>
+                      {row[column]}
+                      </td>
 
-                  {/*  *********** CODIGO DE PRODUCTO *********** */}
                   <td
-  className={`w-[14.2%] px-6 py-2 border-r-2 border-r-[#0c547a] border-[#808e94] ${
-    rowIndex === 0 ? "border-t-0" : "border-t-2"
-  }`}
->
-  <input
-    ref={inputRefs.productCode[rowIndex]}
-    value={row.productCode}
-    onChange={(e) => {
-      const updatedRows = [...rows];
-      const newProductCode = e.target.value;
+                    className={`w-[14.2%] px-6 py-2 border-r-2 border-r-[#0c547a] border-[#808e94] ${
+                      rowIndex === 0 ? "border-t-0" : "border-t-2"
+                    }`}
+                  >
+                    <AutocompleteInput
+                      options={products}
+                      value={row.productCode}
+                      onChange={(selectedProductCode) => {
+                        const updatedRows = [...rows];
+                        const selectedProduct = products.find(
+                          (product) => product.value === selectedProductCode
+                        );
 
-      if (newProductCode.includes("*")) {
-        updatedRows[rowIndex].presentation = "Box";
-      } else if (newProductCode.includes("/")) {
-        updatedRows[rowIndex].presentation = "Weight";
-      } else if (newProductCode.includes("+")) {
-        updatedRows[rowIndex].presentation = "Each";
-      }
-
-      updatedRows[rowIndex].productCode = newProductCode;
-      setRows(updatedRows);
-    }}
-    onKeyDown={(e) => handleKeyDown(e, rowIndex, "productCode")}
-    className="w-full outline-none"
-    autoFocus={rowIndex === 0}
-  />
-</td>
+                        if (selectedProduct) {
+                          updatedRows[rowIndex].presentation =
+                            selectedProduct.label;
+                          updatedRows[rowIndex].productCode =
+                            selectedProductCode;
+                          setRows(updatedRows);
+                        }
+                      }}
+                    />
+                  </td>
 
                   {/*  *********** PRESENTACION *********** */}
                   <td
@@ -293,10 +385,35 @@ export default function Table() {
                       className="w-full outline-none"
                     />
                   </td>
-                </tr>
+                  </>
+                  ))
+                  )}
+                  
+                  </tr>
               ))}
             </tbody>
           </table>
+          {showCheckboxColumn === true && (
+        <div ref={menuRef} className="absolute bg-white p-2 border rounded">
+          <h4 className="font-bold mb-2">Mostrar/Ocultar Columnas</h4>
+          {columns.map((column) => (
+            <div key={column} className="flex items-center">
+              <input
+                type="checkbox"
+                id={column}
+                checked={initialColumns.includes(column)}
+                onChange={() => handleCheckboxChange(column)}
+              />
+              <label htmlFor={column} className="ml-2">
+                {column}
+              </label>
+            </div>
+          ))}
+          <button className="mt-2" onClick={()=>setShowCheckboxColumn(false)}>
+            Cerrar
+          </button>
+        </div>
+      )}
         </form>
       </div>
       <div className="w-ful flex justify-end items-center mb-60">
