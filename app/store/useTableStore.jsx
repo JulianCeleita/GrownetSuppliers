@@ -50,5 +50,5 @@ export const useTableStore = create((set) => ({
       return {
         initialTotalRows: newInitialTotalRows,
       };
-    }),    
+    }),
 }));
