@@ -1,7 +1,6 @@
-<tbody className="shadow-[rgba(0,_0,_0,_0.24)_0px_3px_8px] rounded-xl">
+{/* <tbody className="shadow-[rgba(0,_0,_0,_0.24)_0px_3px_8px] rounded-xl">
               {data.map((row, rowIndex) => (
                 <tr key={rowIndex}>
-                  {/* CODIGO DE PRODUCTO */}
                   {columns.map(
                     (column, columnIndex) =>
                     initialColumns.includes((column, columnIndex) && (
@@ -33,7 +32,6 @@
                     />
                   </td>
 
-                  {/*  *********** PRESENTACION *********** */}
                   <td
                     className={` w-[14.2%] px-6 py-2  border-r-2  border-r-[#0c547a] border-[#808e94] ${
                       rowIndex === 0 ? "border-t-0" : "border-t-2"
@@ -55,7 +53,6 @@
                   </td>
 
 
-                  {/*  *********** DESCRIPCION *********** */}
                   <td
                     className={` w-[14.2%] px-6 py-2   border-[#808e94] border-r-[#0c547a]  border-r-2 ${
                       rowIndex === 0 ? "border-t-0" : "border-t-2"
@@ -76,7 +73,6 @@
                     />
                   </td>
 
-                  {/*  *********** UOM *********** */}
                   <td
                     className={`w-[14.2%] px-6 py-2  border-r-2 border-[#808e94] border-r-[#0c547a] ${
                       rowIndex === 0 ? "border-t-0" : "border-t-2"
@@ -95,7 +91,6 @@
                     />
                   </td>
 
-                  {/*  *********** CANTIDAD *********** */}
                   <td
                     className={` w-[14.2%] px-6 py-2  border-r-2 border-[#808e94] border-r-[#0c547a] ${
                       rowIndex === 0 ? "border-t-0" : "border-t-2"
@@ -114,7 +109,6 @@
                     />
                   </td>
 
-                  {/*  *********** PRECIO *********** */}
                   <td
                     className={` w-[14.2%] px-6 py-2  border-r-2 border-[#808e94] border-r-[#0c547a] ${
                       rowIndex === 0 ? "border-t-0" : "border-t-2"
@@ -133,7 +127,6 @@
                     />
                   </td>
 
-                  {/*  *********** PRECIO TOTAL *********** */}
                   <td
                     className={`w-[14.2%] px-6 py-2   border-[#808e94]  ${
                       rowIndex === 0 ? "border-t-0" : "border-t-2"
@@ -159,4 +152,4 @@
                   
                   </tr>
               ))}
-            </tbody>
+            </tbody> */}

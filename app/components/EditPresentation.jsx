@@ -65,8 +65,10 @@ function EditPresentation({
         const sortedProducts = response.data.products.sort((a, b) =>
           a.name.localeCompare(b.name)
         );
-
-        setProducts(sortedProducts);
+        const filteredProducts = sortedProducts.filter(
+          (product) => product.stateProduct_id !== 2
+        );
+        setProducts(filteredProducts);
       } catch (error) {
         console.error("Error al obtener los productos:", error);
       }
