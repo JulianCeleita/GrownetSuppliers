@@ -6,7 +6,6 @@ import ReactCountryFlag from "react-country-flag";
 import {
   addProductUrl,
   familiesUrl,
-  taxexUrl,
   uomUrl,
 } from "../config/urls.config";
 import useTokenStore from "../store/useTokenStore";
@@ -20,32 +19,7 @@ function NewProduct({ isvisible, onClose, fetchProducts }) {
   const [selectedFamiliesStatus, setSelectedFamiliesStatus] =
     useState("banana");
   const [families, setFamilies] = useState([]);
-  const [tax, setTax] = useState([]);
-  const [selectedTax, setSelectedTax] = useState("");
   const [selectedImageName, setSelectedImageName] = useState(null);
-
-  // Taxes
-  useEffect(() => {
-    const fetchTaxes = async () => {
-      try {
-        const response = await axios.get(taxexUrl, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-        const sortedTaxes = response.data.taxes.sort(
-          (a, b) => a.worth - b.worth
-        );
-        setTax(sortedTaxes);
-        console.log(sortedTaxes);
-        setSelectedTax(sortedTaxes[0].id || "");
-      } catch (error) {
-        console.error("Error al obtener Taxes productos:", error);
-      }
-    };
-    fetchTaxes();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
   useEffect(() => {
     if (categories.length > 0 && !categoriesLoaded) {
@@ -119,7 +93,6 @@ function NewProduct({ isvisible, onClose, fetchProducts }) {
       formData.append("image", selectedImageName);
     }
     formData.append("code", "Y100");
-    formData.append("tax", selectedTax);
 
     const formDataObject = {};
     formData.forEach((value, key) => {
@@ -203,33 +176,7 @@ function NewProduct({ isvisible, onClose, fetchProducts }) {
                 ))}
               </select>
             </div>
-            <div>
-              <label htmlFor="taxes">Product taxes: </label>
-              <select
-                id="taxes"
-                name="taxes"
-                className="border p-3 rounded-md mr-3 mt-3"
-                required
-                onChange={(e) => setSelectedTax(e.target.value)}
-              >
-                <option value="" disabled selected>
-                  Select tax
-                </option>
-                {tax.map((tax) => (
-                  <option key={tax.id} value={tax.id}>
-                    {tax.countries_indicative === 44 ? (
-                      <ReactCountryFlag countryCode="GB" />
-                    ) : tax.countries_indicative === 57 ? (
-                      <ReactCountryFlag countryCode="CO" />
-                    ) : tax.countries_indicative === 351 ? (
-                      <ReactCountryFlag countryCode="PT" />
-                    ) : tax.countries_indicative === 34 ? (
-                      <ReactCountryFlag countryCode="ES" />
-                    ) : null}{" "}
-                    {tax.name}
-                  </option>
-                ))}
-              </select>
+            <div>              
             </div>
           </div>
           <label className="mt-4">Attach the product&apos;s photo: </label>

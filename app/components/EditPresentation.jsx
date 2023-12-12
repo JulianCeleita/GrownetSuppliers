@@ -5,9 +5,11 @@ import {
   productsUrl,
   uomUrl,
   updatePresentationUrl,
+  taxexUrl,
 } from "../config/urls.config";
 import { fetchPresentations } from "../presentations/page";
 import useTokenStore from "../store/useTokenStore";
+import ReactCountryFlag from "react-country-flag";
 
 function EditPresentation({
   isvisible,
@@ -19,6 +21,7 @@ function EditPresentation({
   const { token } = useTokenStore();
   const [uoms, setUoms] = useState([]);
   const [products, setProducts] = useState([]);
+  const [tax, setTax] = useState([]);
 
   //Variables formulario
   const [editedName, setEditedName] = useState(
@@ -39,6 +42,9 @@ function EditPresentation({
   const [codePresentation, setCodePresentation] = useState(
     presentation ? presentation.code : ""
   );
+  const [selectedTax, setSelectedTax] = useState(
+    presentation ? presentation.tax : ""
+  );
 
   useEffect(() => {
     setEditedName(presentation ? presentation.name : "");
@@ -47,6 +53,8 @@ function EditPresentation({
     setSelectedUomsStatus(presentation ? presentation.uoms_id : "");
     setSelectedProductsStatus(presentation ? presentation.products_id : "");
     setCodePresentation(presentation ? presentation.code : "");
+    setSelectedTax(presentation ? presentation.taxes_id : "");
+    console.log('Tax que recibo:', presentation);
   }, [presentation]);
 
   //Api products
@@ -75,6 +83,28 @@ function EditPresentation({
     };
 
     fetchData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // Taxes
+  useEffect(() => {
+    const fetchTaxes = async () => {
+      try {
+        const response = await axios.get(taxexUrl, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        const sortedTaxes = response.data.taxes.sort(
+          (a, b) => a.worth - b.worth
+        );
+        setTax(sortedTaxes);
+        console.log(sortedTaxes);
+      } catch (error) {
+        console.error("Error al obtener Taxes productos:", error);
+      }
+    };
+    fetchTaxes();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -113,7 +143,9 @@ function EditPresentation({
       cost: editedCost,
       products_id: selectedProductsStatus,
       code: codePresentation,
+      tax: selectedTax,
     };
+    console.log('Esto es lo que envio:', postData)
     axios
       .post(`${updatePresentationUrl}${presentation.id}`, postData, {
         headers: {
@@ -125,6 +157,7 @@ function EditPresentation({
         setSelectedUomsStatus("");
         setSelectedProductsStatus("");
         onClose();
+        console.log("Respuesta de editar presentación:", response.data)
       })
       .catch((error) => {
         console.error("Error editando la presentación:", error);
@@ -171,7 +204,8 @@ function EditPresentation({
               </option>
             ))}
           </select>
-          <label>Unit of measurement of the product: </label>
+          <div>
+          <label>Unit of measurement: </label>
           <select
             id="uom"
             name="uom"
@@ -189,7 +223,34 @@ function EditPresentation({
               </option>
             ))}
           </select>
-
+          <label htmlFor="taxes">Product taxes: </label>
+              <select
+                id="taxes"
+                name="taxes"
+                className="border p-3 rounded-md mr-3 mt-3"
+                required
+                onChange={(e) => setSelectedTax(e.target.value)}
+                value={selectedTax}
+              >
+                <option value="" disabled selected>
+                  Select tax
+                </option>
+                {tax.map((tax) => (
+                  <option key={tax.id} value={tax.id}>
+                    {tax.countries_indicative === 44 ? (
+                      <ReactCountryFlag countryCode="GB" />
+                    ) : tax.countries_indicative === 57 ? (
+                      <ReactCountryFlag countryCode="CO" />
+                    ) : tax.countries_indicative === 351 ? (
+                      <ReactCountryFlag countryCode="PT" />
+                    ) : tax.countries_indicative === 34 ? (
+                      <ReactCountryFlag countryCode="ES" />
+                    ) : null}{" "}
+                    {tax.name}
+                  </option>
+                ))}
+              </select>
+              </div>
           <div>
             <label>Code: </label>
             <input
