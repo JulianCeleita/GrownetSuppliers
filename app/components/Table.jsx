@@ -2,7 +2,7 @@
 import React, { useRef, useState, useEffect } from "react";
 import Select from "react-select";
 import axios from "axios";
-import { productsUrl } from "@/app/config/urls.config";
+import { presentationsCode, productsUrl } from "@/app/config/urls.config";
 import useTokenStore from "@/app/store/useTokenStore";
 import { useTableStore } from "@/app/store/useTableStore";
 
@@ -92,6 +92,7 @@ export default function Table() {
   const menuRef = useRef(null);
   const menuRefTotal = useRef(null);
   const [showCheckboxColumn, setShowCheckboxColumn] = useState(false);
+  const [currentValues, setCurrentValues] = useState({});
   const lastActiveColumn = initialColumns[initialColumns.length - 1];
 
   const columns = [
@@ -109,6 +110,21 @@ export default function Table() {
     "Tax",
     "Taxt Calculation",
   ];
+  const inputTypes = {
+    "Product Code": "text",
+    Presentation: "text",
+    Description: "text",
+    UOM: "text",
+    Qty: "number",
+    Price: "number",
+    "Total Price": "number",
+    "Unit Cost": "number",
+    Profit: "number",
+    "Price Band": "text",
+    "Total Cost": "number",
+    Tax: "number",
+    "Taxt Calculation": "text",
+  };
 
   const handleContextMenu = (e) => {
     e.preventDefault();
@@ -212,6 +228,14 @@ export default function Table() {
     if (e.key === "Enter" && e.target.tagName.toLowerCase() !== "textarea") {
       e.preventDefault();
 
+      if (
+        fieldName === "Product Code" &&
+        currentValues["Product Code"].trim() !== ""
+      ) {
+        fetchPrductCOde();
+        console.log("Entro fetchPrductCOde");
+      }
+
       const nextFieldName = getNextFieldName(fieldName, rowIndex);
 
       if (nextFieldName != null) {
@@ -238,6 +262,28 @@ export default function Table() {
     }
   };
 
+  const fetchPrductCOde = async () => {
+    try {
+      // Obtener el valor del input de "Product Code" desde currentValues
+      const currentProductCode = currentValues["Product Code"];
+      console.log("currentProductCode", currentProductCode);
+      const response = await axios.get(
+        `${presentationsCode}${currentProductCode}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      console.log("respuesta code", response.data);
+    } catch (error) {
+      // Manejar errores aquí
+      console.error("Error al hacer la solicitud:", error.message);
+    }
+  };
+
+  console.log("currentValues", currentValues);
   return (
     <div className="flex flex-col p-8">
       <div className="overflow-x-auto">
@@ -278,25 +324,28 @@ export default function Table() {
                             }`}
                             tabIndex={0}
                           >
-                            {column !== "Product Code" &&
-                            column !== "Presentation" ? (
-                              <input
-                                type="text"
-                                ref={inputRefs[column][rowIndex]}
-                                className="pl-2 h-[30px]"
-                                value={row[column]}
-                                onChange={(e) => {
-                                  const updatedRows = [...rows];
-                                  updatedRows[rowIndex][column] =
-                                    e.target.value;
-                                  setRows(updatedRows);
-                                }}
-                                onKeyDown={(e) =>
-                                  handleKeyDown(e, rowIndex, column)
-                                }
-                              />
-                            ) : (
-                              <AutocompleteInput
+                            {/* {column !== "Product Code" &&
+                            column !== "Presentation" ? ( */}
+                            <input
+                              type={inputTypes[column]}
+                              ref={inputRefs[column][rowIndex]}
+                              className="pl-2 h-[30px] outline-none"
+                              value={row[column]}
+                              onChange={(e) => {
+                                setCurrentValues((prevValues) => ({
+                                  ...prevValues,
+                                  [column]: e.target.value,
+                                }));
+                                const updatedRows = [...rows];
+                                updatedRows[rowIndex][column] = e.target.value;
+                                setRows(updatedRows);
+                              }}
+                              onKeyDown={(e) =>
+                                handleKeyDown(e, rowIndex, column)
+                              }
+                            />
+                            {/* ) : ( */}
+                            {/* <AutocompleteInput
                                 options={products}
                                 value={row.productCode}
                                 onChange={(selectedProductCode) => {
@@ -314,8 +363,8 @@ export default function Table() {
                                     setRows(updatedRows);
                                   }
                                 }}
-                              />
-                            )}
+                              // /> */}
+                            {/* )} */}
                           </td>
                         </React.Fragment>
                       )
