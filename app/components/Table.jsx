@@ -7,23 +7,35 @@ import useTokenStore from "@/app/store/useTokenStore";
 import { useTableStore } from "@/app/store/useTableStore";
 
 const initialRowsState = {
-  productCode: "",
-  presentation: "",
-  description: "",
+  "Product Code": "",
+  Presentation: "",
+  Description: "",
   UOM: "",
   Qty: "",
-  price: "",
-  totalPrice: "",
+  Price: "",
+  "Total Price": "",
+  "Unit Cost": "",
+  Profit: "",
+  "Price Band": "",
+  "Total Cost": "",
+  Tax: "",
+  "Taxt Calculation": "",
 };
 
 const inputRefs = {
-  productCode: [],
-  presentation: [],
-  description: [],
+  "Product Code": [],
+  Presentation: [],
+  Description: [],
   UOM: [],
   Qty: [],
-  price: [],
-  totalPrice: [],
+  Price: [],
+  "Total Price": [],
+  "Unit Cost": [],
+  Profit: [],
+  "Price Band": [],
+  "Total Cost": [],
+  Tax: [],
+  "Taxt Calculation": [],
 };
 
 const useFocusOnEnter = (formRef) => {
@@ -76,73 +88,12 @@ export default function Table() {
     initialTotalRows,
     toggleTotalRowVisibility,
   } = useTableStore();
-
-  const [showCheckboxColumn, setShowCheckboxColumn] = useState(false);
   const [showCheckboxColumnTotal, setShowCheckboxColumnTotal] = useState(false);
   const menuRef = useRef(null);
   const menuRefTotal = useRef(null);
-  const data = [
-    {
-      "Product Code": "Dato1",
-      Presentation: "Dato2",
-      Description: "Dato3",
-      UOM: "Dato4",
-      Qty: "Dato5",
-      Price: "Dato6",
-      "Total Price": "Dato7",
-      "Unit Cost": "Dato8",
-      Profit: "Dato9",
-      "Price Band": "Dato10",
-      "Total Cost": "Dato11",
-      Tax: "Dato12",
-      "Tax Calculation": "Dato13",
-    },
-    {
-      "Product Code": "Dato1",
-      Presentation: "Dato2",
-      Description: "Dato3",
-      UOM: "Dato4",
-      Qty: "Dato5",
-      Price: "Dato6",
-      "Total Price": "Dato7",
-      "Unit Cost": "Dato8",
-      Profit: "Dato9",
-      "Price Band": "Dato10",
-      "Total Cost": "Dato11",
-      Tax: "Dato12",
-      "Tax Calculation": "Dato13",
-    },
-    {
-      "Product Code": "Dato1",
-      Presentation: "Dato2",
-      Description: "Dato3",
-      UOM: "Dato4",
-      Qty: "Dato5",
-      Price: "Dato6",
-      "Total Price": "Dato7",
-      "Unit Cost": "Dato8",
-      Profit: "Dato9",
-      "Price Band": "Dato10",
-      "Total Cost": "Dato11",
-      Tax: "Dato12",
-      "Tax Calculation": "Dato13",
-    },
-    {
-      "Product Code": "Dato1",
-      Presentation: "Dato2",
-      Description: "Dato3",
-      UOM: "Dato4",
-      Qty: "Dato5",
-      Price: "Dato6",
-      "Total Price": "Dato7",
-      "Unit Cost": "Dato8",
-      Profit: "Dato9",
-      "Price Band": "Dato10",
-      "Total Cost": "Dato11",
-      Tax: "Dato12",
-      "Tax Calculation": "Dato13",
-    },
-  ];
+  const [showCheckboxColumn, setShowCheckboxColumn] = useState(false);
+  const lastActiveColumn = initialColumns[initialColumns.length - 1];
+
   const columns = [
     "Product Code",
     "Presentation",
@@ -156,7 +107,7 @@ export default function Table() {
     "Price Band",
     "Total Cost",
     "Tax",
-    "Tax Calculation",
+    "Taxt Calculation",
   ];
 
   const handleContextMenu = (e) => {
@@ -183,13 +134,7 @@ export default function Table() {
   }, []);
 
   //Ventana Total:
-  const columnsTotal2 = [
-    "Net invoice:",
-    "Total VAT:",
-    "Total Invoice:",
-    "Profit (£):",
-    "Profit (%):",
-  ];
+
   const columnsTotal = [
     { name: "Net invoice:", price: "£ 100" },
     { name: "Total VAT:", price: "£ 200" },
@@ -197,7 +142,7 @@ export default function Table() {
     { name: "Profit (£):", price: "£ 100" },
     { name: "Profit (%):", price: "10.60%" },
   ];
-  const valueTotal = ["100", "200", "300", "10", "20"];
+
   const handleContextMenuTotal = (e) => {
     e.preventDefault();
     setShowCheckboxColumnTotal(!showCheckboxColumnTotal);
@@ -247,53 +192,47 @@ export default function Table() {
   };
 
   // OBTENER NOMBRE DEL CAMPO SIGUIENTE
-  const getNextFieldName = (currentFieldName) => {
-    const fieldNames = [
-      "productCode",
-      "presentation",
-      "description",
-      "UOM",
-      "Qty",
-      "price",
-      "totalPrice",
-    ];
-    const currentIndex = fieldNames.indexOf(currentFieldName);
-    const nextIndex = currentIndex + 1;
+  const getNextFieldName = (currentFieldName, rowIndex) => {
+    const currentIndex = initialColumns.indexOf(currentFieldName);
 
-    return nextIndex < fieldNames.length ? fieldNames[nextIndex] : null;
+    if (currentIndex !== -1) {
+      const nextIndex = currentIndex + 1;
+      if (nextIndex < initialColumns.length) {
+        return initialColumns[nextIndex];
+      } else {
+        return rowIndex === rows.length - 1 ? null : initialColumns[0];
+      }
+    }
+
+    return null;
   };
 
   // FUNCIONALIDAD TECLA ENTER
+
   const handleKeyDown = (e, rowIndex, fieldName) => {
-    if (e.key === "Enter") {
+    if (e.key === "Enter" && e.target.tagName.toLowerCase() !== "textarea") {
       e.preventDefault();
 
-      const nextFieldName = getNextFieldName(fieldName);
+      const nextFieldName = getNextFieldName(fieldName, rowIndex);
 
-      if (nextFieldName) {
+      if (nextFieldName != null) {
         const nextFieldRefs = inputRefs[nextFieldName];
         if (nextFieldRefs && nextFieldRefs[rowIndex]) {
           nextFieldRefs[rowIndex].current.focus();
         }
       } else {
-        const newRowIndex = rowIndex + 1;
+        const isLastCell =
+          rowIndex === rows.length - 1 &&
+          initialColumns.indexOf(fieldName) === initialColumns.length - 1;
 
-        if (newRowIndex === rows.length) {
+        if (isLastCell) {
+          console.log("Entro addNewRow");
           addNewRow();
-
-          setTimeout(() => {
-            inputRefs.productCode[newRowIndex]?.current.focus();
-          }, 0);
         } else {
-          const currentFieldIndex = Object.keys(inputRefs).indexOf(fieldName);
-          const fieldNames = Object.keys(inputRefs);
-          const nextFieldInSameRow = fieldNames[currentFieldIndex + 1];
-
-          if (nextFieldInSameRow) {
-            const nextFieldRefs = inputRefs[nextFieldInSameRow];
-            if (nextFieldRefs && nextFieldRefs[rowIndex]) {
-              nextFieldRefs[rowIndex].current.focus();
-            }
+          const nextRowIndex = rowIndex + 1;
+          const nextFieldRefs = inputRefs[lastActiveColumn][nextRowIndex];
+          if (nextFieldRefs && nextFieldRefs.current) {
+            nextFieldRefs.current.focus();
           }
         }
       }
@@ -327,196 +266,60 @@ export default function Table() {
               </tr>
             </thead>
             <tbody className="shadow-[rgba(0,_0,_0,_0.24)_0px_3px_8px] rounded-xl">
-              {data.map((row, rowIndex) => (
-                <tr key={rowIndex}>
-                  {columns.map(
-                    (column) =>
-                      initialColumns.includes(column) && (
-                        <td
-                          className={`px-2 py-2 border-r-2 border-r-[#0c547a] border-[#808e94] ${
-                            rowIndex === 0 ? "border-t-0" : "border-t-2"
-                          }`}
-                          key={column}
-                        >
-                          {row[column]}
-                        </td>
-                      )
-                  )}
-                </tr>
-              ))}
-              {data.map((row, rowIndex) => (
+              {rows.map((row, rowIndex) => (
                 <tr key={rowIndex}>
                   {/* CODIGO DE PRODUCTO */}
-                  {columns.map((column, columnIndex) =>
-                    initialColumns.includes(
-                      (column, columnIndex) && (
-                        <>
-                          <td
-                            className={` w-[14.2%] px-6 py-2  border-r-2  border-r-[#0c547a] border-[#808e94] ${
-                              rowIndex === 0 ? "border-t-0" : "border-t-2"
-                            }`}
-                            key={columnIndex}
-                          >
-                            {row[column]}
-                          </td>
-
+                  {columns.map(
+                    (column, columnIndex) =>
+                      initialColumns.includes(column) && (
+                        <React.Fragment key={columnIndex}>
                           <td
                             className={`w-[14.2%] px-6 py-2 border-r-2 border-r-[#0c547a] border-[#808e94] ${
                               rowIndex === 0 ? "border-t-0" : "border-t-2"
                             }`}
+                            tabIndex={0}
                           >
-                            <AutocompleteInput
-                              options={products}
-                              value={row.productCode}
-                              onChange={(selectedProductCode) => {
-                                const updatedRows = [...rows];
-                                const selectedProduct = products.find(
-                                  (product) =>
-                                    product.value === selectedProductCode
-                                );
-
-                                if (selectedProduct) {
-                                  updatedRows[rowIndex].presentation =
-                                    selectedProduct.label;
-                                  updatedRows[rowIndex].productCode =
-                                    selectedProductCode;
+                            {column !== "Product Code" &&
+                            column !== "Presentation" ? (
+                              <input
+                                type="text"
+                                ref={inputRefs[column][rowIndex]}
+                                className="pl-2 h-[30px]"
+                                value={row[column]}
+                                onChange={(e) => {
+                                  const updatedRows = [...rows];
+                                  updatedRows[rowIndex][column] =
+                                    e.target.value;
                                   setRows(updatedRows);
+                                }}
+                                onKeyDown={(e) =>
+                                  handleKeyDown(e, rowIndex, column)
                                 }
-                              }}
-                            />
-                          </td>
+                              />
+                            ) : (
+                              <AutocompleteInput
+                                options={products}
+                                value={row.productCode}
+                                onChange={(selectedProductCode) => {
+                                  const updatedRows = [...rows];
+                                  const selectedProduct = products.find(
+                                    (product) =>
+                                      product.value === selectedProductCode
+                                  );
 
-                          {/*  *********** PRESENTACION *********** */}
-                          <td
-                            className={` w-[14.2%] px-6 py-2  border-r-2  border-r-[#0c547a] border-[#808e94] ${
-                              rowIndex === 0 ? "border-t-0" : "border-t-2"
-                            }`}
-                          >
-                            <input
-                              ref={inputRefs.presentation[rowIndex]}
-                              value={row.presentation}
-                              onChange={(e) => {
-                                const updatedRows = [...rows];
-                                updatedRows[rowIndex].presentation =
-                                  e.target.value;
-                                setRows(updatedRows);
-                              }}
-                              onKeyDown={(e) =>
-                                handleKeyDown(e, rowIndex, "presentation")
-                              }
-                              className="w-full outline-none"
-                            />
+                                  if (selectedProduct) {
+                                    updatedRows[rowIndex].presentation =
+                                      selectedProduct.label;
+                                    updatedRows[rowIndex].productCode =
+                                      selectedProductCode;
+                                    setRows(updatedRows);
+                                  }
+                                }}
+                              />
+                            )}
                           </td>
-
-                          {/*  *********** DESCRIPCION *********** */}
-                          <td
-                            className={` w-[14.2%] px-6 py-2   border-[#808e94] border-r-[#0c547a]  border-r-2 ${
-                              rowIndex === 0 ? "border-t-0" : "border-t-2"
-                            }`}
-                          >
-                            <input
-                              ref={inputRefs.description[rowIndex]}
-                              value={row.description}
-                              onChange={(e) => {
-                                const updatedRows = [...rows];
-                                updatedRows[rowIndex].description =
-                                  e.target.value;
-                                setRows(updatedRows);
-                              }}
-                              onKeyDown={(e) =>
-                                handleKeyDown(e, rowIndex, "description")
-                              }
-                              className="w-full outline-none"
-                            />
-                          </td>
-
-                          {/*  *********** UOM *********** */}
-                          <td
-                            className={`w-[14.2%] px-6 py-2  border-r-2 border-[#808e94] border-r-[#0c547a] ${
-                              rowIndex === 0 ? "border-t-0" : "border-t-2"
-                            }`}
-                          >
-                            <input
-                              ref={inputRefs.UOM[rowIndex]}
-                              value={row.UOM}
-                              onChange={(e) => {
-                                const updatedRows = [...rows];
-                                updatedRows[rowIndex].UOM = e.target.value;
-                                setRows(updatedRows);
-                              }}
-                              onKeyDown={(e) =>
-                                handleKeyDown(e, rowIndex, "UOM")
-                              }
-                              className="w-full outline-none"
-                            />
-                          </td>
-
-                          {/*  *********** CANTIDAD *********** */}
-                          <td
-                            className={` w-[14.2%] px-6 py-2  border-r-2 border-[#808e94] border-r-[#0c547a] ${
-                              rowIndex === 0 ? "border-t-0" : "border-t-2"
-                            }`}
-                          >
-                            <input
-                              ref={inputRefs.Qty[rowIndex]}
-                              value={row.Qty}
-                              onChange={(e) => {
-                                const updatedRows = [...rows];
-                                updatedRows[rowIndex].Qty = e.target.value;
-                                setRows(updatedRows);
-                              }}
-                              onKeyDown={(e) =>
-                                handleKeyDown(e, rowIndex, "Qty")
-                              }
-                              className="w-full outline-none"
-                            />
-                          </td>
-
-                          {/*  *********** PRECIO *********** */}
-                          <td
-                            className={` w-[14.2%] px-6 py-2  border-r-2 border-[#808e94] border-r-[#0c547a] ${
-                              rowIndex === 0 ? "border-t-0" : "border-t-2"
-                            }`}
-                          >
-                            <input
-                              ref={inputRefs.price[rowIndex]}
-                              value={row.price}
-                              onChange={(e) => {
-                                const updatedRows = [...rows];
-                                updatedRows[rowIndex].price = e.target.value;
-                                setRows(updatedRows);
-                              }}
-                              onKeyDown={(e) =>
-                                handleKeyDown(e, rowIndex, "price")
-                              }
-                              className="w-full outline-none"
-                            />
-                          </td>
-
-                          {/*  *********** PRECIO TOTAL *********** */}
-                          <td
-                            className={`w-[14.2%] px-6 py-2   border-[#808e94]  ${
-                              rowIndex === 0 ? "border-t-0" : "border-t-2"
-                            }`}
-                          >
-                            <input
-                              ref={inputRefs.totalPrice[rowIndex]}
-                              value={row.totalPrice}
-                              onChange={(e) => {
-                                const updatedRows = [...rows];
-                                updatedRows[rowIndex].totalPrice =
-                                  e.target.value;
-                                setRows(updatedRows);
-                              }}
-                              onKeyDown={(e) =>
-                                handleKeyDown(e, rowIndex, "totalPrice")
-                              }
-                              className="w-full outline-none"
-                            />
-                          </td>
-                        </>
+                        </React.Fragment>
                       )
-                    )
                   )}
                 </tr>
               ))}
@@ -524,7 +327,7 @@ export default function Table() {
           </table>
           {showCheckboxColumn === true && (
             <div ref={menuRef} className="absolute bg-white p-2 border rounded">
-              <h4 className="font-bold mb-2">Mostrar/Ocultar Columnas</h4>
+              <h4 className="font-bold mb-2">Show/Hide Columns</h4>
               {columns.map((column) => (
                 <div key={column} className="flex items-center">
                   <input
@@ -539,10 +342,10 @@ export default function Table() {
                 </div>
               ))}
               <button
-                className="mt-2"
+                className="mt-2 text-danger"
                 onClick={() => setShowCheckboxColumn(false)}
               >
-                Cerrar
+                Close
               </button>
             </div>
           )}
@@ -580,9 +383,7 @@ export default function Table() {
             ref={menuRefTotal}
             className="w-[20%] bg-white p-3 border rounded-xl"
           >
-            <h4 className="font-bold mb-2 text-dark-blue">
-              Mostrar/Ocultar Columnas Precio
-            </h4>
+            <h4 className="font-bold mb-2 text-dark-blue">Show/Hide Columns</h4>
             {columnsTotal.map((column) => (
               <div
                 key={column.name}
