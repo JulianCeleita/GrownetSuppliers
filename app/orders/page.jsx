@@ -16,6 +16,15 @@ const OrderView = () => {
   const [isDropdownVisible, setIsDropdownVisible] = useState(false);
   const [isNameDropdownVisible, setIsNameDropdownVisible] = useState(false);
 
+  //Fecha input
+  function getCurrentDate() {
+    const today = new Date();
+    const year = today.getFullYear();
+    const month = String(today.getMonth() + 1).padStart(2, "0");
+    const day = String(today.getDate()).padStart(2, "0");
+    return `${year}-${month}-${day}`;
+  }
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -38,9 +47,10 @@ const OrderView = () => {
     } else if (selectedAccName) {
       fetchDataAccName();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [token, selectedAccNumber, selectedAccName]);
 
-  //click en la pantalla
+  // Click en la pantalla
   useEffect(() => {
     console.log("AccNumber:", customers);
 
@@ -170,13 +180,14 @@ const OrderView = () => {
             <h3 className="underline decoration-2 decoration-green">{""}</h3>
           </div>
         </div>
-        <div className="bg-white p-5 pr-9 pl-9 rounded-lg">
+        <div className="bg-white p-5 pr-9 pl-9 rounded-lg flex flex-col justify-center">
           <div className="flex flex-col">
             <div className="flex items-center mb-3  w-[100%]">
               <label>Date: </label>
               <input
                 type="date"
-                className="border ml-2 p-1.5 mr-2 rounded-md w-[100%]"
+                className="border ml-2 p-1.5 mr-2 rounded-md w-[100%] "
+                min={getCurrentDate()}
               />
               <label>Inv. No.: </label>
               <input
@@ -184,27 +195,15 @@ const OrderView = () => {
                 className="border ml-2 p-1.5 rounded-md w-[100%]"
               />
             </div>
-            <div className="flex items-center mb-3  w-[100%]">
-              <label>A/C: </label>
-              <input
-                type="text"
-                className="border ml-2 mr-2 p-1.5 rounded-md w-[100%]"
-              />
-              <label>Order No.: </label>
-              <input
-                type="text"
-                className="border ml-2 p-1.5 rounded-md w-[100%]"
-              />
-            </div>
           </div>
           <div className="flex items-center ">
-            <label>Customer: </label>
-            <input type="text" className="border p-2 rounded-md ml-5 w-full" />
+            <label>Purchase Order: </label>
+            <input type="text" className="border p-2 rounded-md ml-5 w-[82%]" />
           </div>
         </div>
       </div>
       <div className="-mt-20">
-        <Table/>
+        <Table />
       </div>
     </>
   );

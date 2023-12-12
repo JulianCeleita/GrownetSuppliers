@@ -58,3 +58,6 @@ export const AccNumber =
   "https://api.grownetapp.com/grownet/api/customers/accountNumber/";
 export const AccName =
   "https://api.grownetapp.com/grownet/api/customers/accountName/";
+
+export const presentationsCode =
+  "https://api.grownetapp.com/grownet/api/presentations/search/";

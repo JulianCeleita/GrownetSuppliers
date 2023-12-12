@@ -24,7 +24,7 @@ export const useTableStore = create((set) => ({
       return {
         initialTotalRows: newInitialTotalRows,
       };
-    }),    
+    }),
 }));
 
 function getInitialColumns() {
@@ -35,7 +35,7 @@ function getInitialColumns() {
         : "[]"
     ) || [
       "Product Code",
-      "Presentation",
+      "Packsize",
       "Description",
       "UOM",
       "Qty",
@@ -57,13 +57,7 @@ function getInitialTotalRows() {
       typeof window !== "undefined"
         ? window.localStorage.getItem("initialTotalRows")
         : "[]"
-    ) || [
-      "Net Invoice",
-      "Total VAT",
-      "Total Invoice",
-      "Profit (£)",
-      "Profit (%)",
-    ]
+    ) || ["Net Invoice", "Total VAT", "Total Invoice"]
   );
 }
 
