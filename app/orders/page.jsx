@@ -16,6 +16,15 @@ const OrderView = () => {
   const [isDropdownVisible, setIsDropdownVisible] = useState(false);
   const [isNameDropdownVisible, setIsNameDropdownVisible] = useState(false);
 
+  //Fecha input
+  function getCurrentDate() {
+    const today = new Date();
+    const year = today.getFullYear();
+    const month = String(today.getMonth() + 1).padStart(2, "0");
+    const day = String(today.getDate()).padStart(2, "0");
+    return `${year}-${month}-${day}`;
+  }
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -176,7 +185,8 @@ const OrderView = () => {
               <label>Date: </label>
               <input
                 type="date"
-                className="border ml-2 p-1.5 mr-2 rounded-md w-[100%]"
+                className="border ml-2 p-1.5 mr-2 rounded-md w-[100%] "
+                min={getCurrentDate()}
               />
               <label>Inv. No.: </label>
               <input
