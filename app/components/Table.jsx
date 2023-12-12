@@ -93,6 +93,7 @@ export default function Table() {
   const menuRefTotal = useRef(null);
   const [showCheckboxColumn, setShowCheckboxColumn] = useState(false);
   const [currentValues, setCurrentValues] = useState({});
+  const [productByCode, setProductByCode] = useState("");
   const lastActiveColumn = initialColumns[initialColumns.length - 1];
 
   const columns = [
@@ -180,27 +181,49 @@ export default function Table() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   //Product api
+  // useEffect(() => {
+  //   axios
+  //     .get(productsUrl, {
+  //       headers: {
+  //         Authorization: `Bearer ${token}`,
+  //       },
+  //     })
+  //     .then((response) => {
+  //       setProducts(
+  //         response.data.products.map((product) => ({
+  //           value: product.code,
+  //           label: product.code,
+  //         }))
+  //       );
+  //       console.log("Productos:", response.data.products);
+  //     })
+  //     .catch((error) => {
+  //       console.error("Error al obtener los productos:", error);
+  //     });
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, []);
+
   useEffect(() => {
-    axios
-      .get(productsUrl, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      })
-      .then((response) => {
-        setProducts(
-          response.data.products.map((product) => ({
-            value: product.code,
-            label: product.code,
-          }))
-        );
-        console.log("Productos:", response.data.products);
-      })
-      .catch((error) => {
-        console.error("Error al obtener los productos:", error);
+    if (productByCode) {
+      const updatedRows = rows.map((row, index) => {
+        if (row["Product Code"] === currentValues["Product Code"]) {
+          return {
+            ...row,
+            Presentation: productByCode.name,
+            "Product Code": productByCode.code,
+            UOM: productByCode.uoms_id,
+            Qty: productByCode.quantity,
+            "Unit Cost": productByCode.cost,
+            Tax: productByCode.taxes_id,
+            "Taxt Calculation": "",
+            //AQUI AÑADIR LAS PROPIEDADES QUE SEAN NECESARIAS
+          };
+        }
+        return row;
       });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+      setRows(updatedRows);
+    }
+  }, [productByCode]);
 
   // AGREGAR NUEVA FILA
   const addNewRow = () => {
@@ -276,8 +299,7 @@ export default function Table() {
           },
         }
       );
-
-      console.log("respuesta code", response.data);
+      setProductByCode(response.data.data[0]);
     } catch (error) {
       // Manejar errores aquí
       console.error("Error al hacer la solicitud:", error.message);
@@ -285,6 +307,7 @@ export default function Table() {
   };
 
   console.log("currentValues", currentValues);
+  console.log("productByCode", productByCode);
   return (
     <div className="flex flex-col p-8">
       <div className="overflow-x-auto">
