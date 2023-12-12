@@ -170,7 +170,7 @@ const OrderView = () => {
             <h3 className="underline decoration-2 decoration-green">{""}</h3>
           </div>
         </div>
-        <div className="bg-white p-5 pr-9 pl-9 rounded-lg">
+        <div className="bg-white p-5 pr-9 pl-9 rounded-lg flex flex-col justify-center">
           <div className="flex flex-col">
             <div className="flex items-center mb-3  w-[100%]">
               <label>Date: </label>
@@ -184,27 +184,15 @@ const OrderView = () => {
                 className="border ml-2 p-1.5 rounded-md w-[100%]"
               />
             </div>
-            <div className="flex items-center mb-3  w-[100%]">
-              <label>A/C: </label>
-              <input
-                type="text"
-                className="border ml-2 mr-2 p-1.5 rounded-md w-[100%]"
-              />
-              <label>Order No.: </label>
-              <input
-                type="text"
-                className="border ml-2 p-1.5 rounded-md w-[100%]"
-              />
-            </div>
           </div>
           <div className="flex items-center ">
-            <label>Customer: </label>
-            <input type="text" className="border p-2 rounded-md ml-5 w-full" />
+            <label>Purchase Order: </label>
+            <input type="text" className="border p-2 rounded-md ml-5 w-[82%]" />
           </div>
         </div>
       </div>
       <div className="-mt-20">
-        <Table/>
+        <Table />
       </div>
     </>
   );

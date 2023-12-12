@@ -134,13 +134,12 @@ export default function Table() {
   }, []);
 
   //Ventana Total:
-
   const columnsTotal = [
-    { name: "Net invoice:", price: "£ 100" },
-    { name: "Total VAT:", price: "£ 200" },
-    { name: "Total Invoice:", price: "£ 300" },
-    { name: "Profit (£):", price: "£ 100" },
-    { name: "Profit (%):", price: "10.60%" },
+    { name: "Net Invoice", price: "£ 100" },
+    { name: "Total VAT", price: "£ 200" },
+    { name: "Total Invoice", price: "£ 300" },
+    { name: "Profit (£)", price: "£ 100" },
+    { name: "Profit (%)", price: "10.60%" },
   ];
 
   const handleContextMenuTotal = (e) => {
@@ -155,7 +154,7 @@ export default function Table() {
       setShowCheckboxColumnTotal(false);
     }
   };
-  console.log("initialTotal:", initialTotalRows);
+  console.log("initialTotalsi:", initialTotalRows);
   useEffect(() => {
     document.addEventListener("click", handleClickOutsideTotal);
     return () => {
@@ -352,7 +351,10 @@ export default function Table() {
         </form>
       </div>
       <div className="flex flex-col items-end justify-end mb-40">
-        <div className="w-[20%] p-5 mt-10 bg-white rounded-2xl shadow-[0_3px_10px_rgb(0,0,0,0.2)] mb-5">
+        <div
+          className="w-[20%] p-5 mt-10 bg-white rounded-2xl shadow-[0_3px_10px_rgb(0,0,0,0.2)] mb-5"
+          onContextMenu={(e) => handleContextMenuTotal(e)}
+        >
           {columnsTotal.map(
             (column) =>
               initialTotalRows.includes(column.name) && (
@@ -366,12 +368,6 @@ export default function Table() {
                 </div>
               )
           )}
-          <button
-            className=" text-lg text-center text-green ml-5"
-            onContextMenu={(e) => handleContextMenuTotal(e)}
-          >
-            Show more
-          </button>
           <div className="w-full flex justify-center mt-3">
             <button className="bg-primary-blue py-2 px-4 rounded-lg text-white font-medium mr-2">
               Send order

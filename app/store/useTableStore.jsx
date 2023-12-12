@@ -57,13 +57,7 @@ function getInitialTotalRows() {
       typeof window !== "undefined"
         ? window.localStorage.getItem("initialTotalRows")
         : "[]"
-    ) || [
-      "Net Invoice",
-      "Total VAT",
-      "Total Invoice",
-      "Profit (£)",
-      "Profit (%)",
-    ]
+    ) || ["Net Invoice", "Total VAT", "Total Invoice"]
   );
 }
 
