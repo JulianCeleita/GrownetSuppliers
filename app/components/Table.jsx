@@ -5,6 +5,7 @@ import axios from "axios";
 import { presentationsCode, productsUrl } from "@/app/config/urls.config";
 import useTokenStore from "@/app/store/useTokenStore";
 import { useTableStore } from "@/app/store/useTableStore";
+import { fetchPresentations } from "../presentations/page";
 
 const initialRowsState = {
   Code: "",
@@ -63,17 +64,6 @@ const useFocusOnEnter = (formRef) => {
   return { onEnterKey };
 };
 
-const AutocompleteInput = ({ options, value, onChange }) => {
-  return (
-    <Select
-      options={options}
-      value={options.find((option) => option.value === value)}
-      onChange={(selectedOption) => onChange(selectedOption.value)}
-      isSearchable
-    />
-  );
-};
-
 export default function Table() {
   const [rows, setRows] = useState(
     Array.from({ length: 5 }, () => ({ ...initialRowsState }))
@@ -94,6 +84,7 @@ export default function Table() {
   const [showCheckboxColumn, setShowCheckboxColumn] = useState(false);
   const [currentValues, setCurrentValues] = useState({});
   const [productByCode, setProductByCode] = useState("");
+  const [Packsize, setPacksize] = useState(null);
   const lastActiveColumn = initialColumns[initialColumns.length - 1];
 
   const columns = [
@@ -142,7 +133,9 @@ export default function Table() {
     }
   };
   console.log("initialColumns:", initialColumns);
+
   useEffect(() => {
+    fetchPresentations(token, setPacksize);
     document.addEventListener("click", handleClickOutside);
     return () => {
       document.removeEventListener("click", handleClickOutside);
@@ -172,6 +165,7 @@ export default function Table() {
     }
   };
   console.log("initialTotalsi:", initialTotalRows);
+
   useEffect(() => {
     document.addEventListener("click", handleClickOutsideTotal);
     return () => {
@@ -212,12 +206,15 @@ export default function Table() {
             Description: productByCode.product_name,
             Packsize: productByCode.presentation_name,
             UOM: productByCode.uom,
-            Qty: productByCode.quantity,
-            Price: productByCode.price,
+            Qty: "",
             "Unit Cost": productByCode.cost,
             Tax: productByCode.tax,
+            Price: productByCode.price,
+            "Total Price": "",
+            Profit: "",
+            "Price Band": "",
+            "Total Cost": "",
             "Taxt Calculation": "",
-            //AQUI AÑADIR LAS PROPIEDADES QUE SEAN NECESARIAS
           };
         }
         return row;
@@ -305,7 +302,9 @@ export default function Table() {
   };
 
   console.log("currentValues", currentValues);
-  console.log("productByCode", productByCode);
+
+  console.log("Packsize:", Packsize);
+
   return (
     <div className="flex flex-col p-8">
       <div className="overflow-x-auto">
@@ -350,47 +349,49 @@ export default function Table() {
                             }`}
                             tabIndex={0}
                           >
-                            {/* {column !== "Code" &&
-                            column !== "Packsize" ? ( */}
-                            <input
-                              type={inputTypes[column]}
-                              ref={inputRefs[column][rowIndex]}
-                              className="h-[30px] outline-none w-full"
-                              value={row[column]}
-                              onChange={(e) => {
-                                setCurrentValues((prevValues) => ({
-                                  ...prevValues,
-                                  [column]: e.target.value,
-                                }));
-                                const updatedRows = [...rows];
-                                updatedRows[rowIndex][column] = e.target.value;
-                                setRows(updatedRows);
-                              }}
-                              onKeyDown={(e) =>
-                                handleKeyDown(e, rowIndex, column)
-                              }
-                            />
-                            {/* ) : ( */}
-                            {/* <AutocompleteInput
-                                options={products}
-                                value={row.productCode}
-                                onChange={(selectedProductCode) => {
+                            {column !== "Description" ? (
+                              <input
+                                type={inputTypes[column]}
+                                ref={inputRefs[column][rowIndex]}
+                                className="pl-2 h-[30px] outline-none w-full"
+                                value={row[column]}
+                                onChange={(e) => {
+                                  setCurrentValues((prevValues) => ({
+                                    ...prevValues,
+                                    [column]: e.target.value,
+                                  }));
                                   const updatedRows = [...rows];
-                                  const selectedProduct = products.find(
-                                    (product) =>
-                                      product.value === selectedProductCode
-                                  );
-
-                                  if (selectedProduct) {
-                                    updatedRows[rowIndex].presentation =
-                                      selectedProduct.label;
-                                    updatedRows[rowIndex].productCode =
-                                      selectedProductCode;
-                                    setRows(updatedRows);
-                                  }
+                                  updatedRows[rowIndex][column] =
+                                    e.target.value;
+                                  setRows(updatedRows);
                                 }}
-                              // /> */}
-                            {/* )} */}
+                                onKeyDown={(e) =>
+                                  handleKeyDown(e, rowIndex, column)
+                                }
+                              />
+                            ) : (
+                              <Select
+                                className="w-[300px]"
+                                options={
+                                  Packsize
+                                    ? Packsize.map((item) => ({
+                                        value: item.name,
+                                        label: item.name,
+                                      }))
+                                    : []
+                                }
+                                value={{
+                                  label: row.Description,
+                                  value: row.Description,
+                                }}
+                                onChange={(selectedDescription) => {
+                                  const updatedRows = [...rows];
+                                  updatedRows[rowIndex].Description =
+                                    selectedDescription.label;
+                                  setRows(updatedRows);
+                                }}
+                              />
+                            )}
                           </td>
                         </React.Fragment>
                       )
@@ -431,7 +432,7 @@ export default function Table() {
           onContextMenu={(e) => handleContextMenuTotal(e)}
         >
           {columnsTotal.map(
-            (column) =>
+            (column, index) =>
               initialTotalRows.includes(column.name) && (
                 <div className=" flex items-center mt-2" key={column.name}>
                   <h1 className="text-lg text-dark-blue font-semibold w-[80%] ml-5">
