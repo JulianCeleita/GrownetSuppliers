@@ -313,7 +313,7 @@ export default function Table() {
   };
 
   console.log("currentValues", currentValues);
-  console.log("productByCode", productByCode);
+
   return (
     <div className="flex flex-col p-8">
       <div className="overflow-x-auto">
@@ -435,9 +435,9 @@ export default function Table() {
           onContextMenu={(e) => handleContextMenuTotal(e)}
         >
           {columnsTotal.map(
-            (column) =>
+            (column, index) =>
               initialTotalRows.includes(column.name) && (
-                <div className=" flex items-center mt-2">
+                <div key={index} className=" flex items-center mt-2">
                   <h1 className="text-lg text-dark-blue font-semibold w-[80%] ml-5">
                     {column.name}
                   </h1>
