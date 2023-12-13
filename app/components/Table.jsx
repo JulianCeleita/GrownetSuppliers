@@ -142,6 +142,7 @@ export default function Table() {
     }
   };
   console.log("initialColumns:", initialColumns);
+  
   useEffect(() => {
     document.addEventListener("click", handleClickOutside);
     return () => {
@@ -149,6 +150,34 @@ export default function Table() {
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  // TOTAL PRICE
+    const calculateTotalPrice = (row) => {
+    const qty = parseFloat(row.Qty) || 0;
+    const price = parseFloat(row.Price) || 0;
+    return qty * price;
+  };
+
+  // TAX CALCULATION
+  const calculateTaxCalculation = (row) => {
+    const tax = parseFloat(row.Tax) || 0;
+    const price = parseFloat(row.Price) || 0;
+    return tax * price;
+  };
+  
+  // TOTAL COST
+  const calculateTotalCost = (row) => {
+    const qty = parseFloat(row.Qty) || 0;
+    const cost = parseFloat(row["Unit Cost"]) || 0;
+    return qty * cost;
+  };
+  
+  // PROFIT
+  const calculateProfit = (row) => {
+    const price = parseFloat(row.Price) || 0;
+    const cost = parseFloat(row["Unit Cost"]) || 0;
+    return price - cost;
+  };
 
   //Ventana Total:
   const columnsTotal = [
@@ -202,6 +231,8 @@ export default function Table() {
   //   // eslint-disable-next-line react-hooks/exhaustive-deps
   // }, []);
 
+  
+  // VALORES INICIALES DE LA TABLA
   useEffect(() => {
     if (productByCode) {
       const updatedRows = rows.map((row, index) => {
@@ -212,8 +243,8 @@ export default function Table() {
             Description: productByCode.product_name,
             Packsize: productByCode.presentation_name,
             UOM: productByCode.uom,
-            Qty: productByCode.quantity,
-            Price: productByCode.price,
+            Qty: "",
+            Price: productByCode.price / (1 - productByCode.tax),
             "Unit Cost": productByCode.cost,
             Tax: productByCode.tax,
             "Taxt Calculation": "",
@@ -224,6 +255,7 @@ export default function Table() {
       });
       setRows(updatedRows);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [productByCode]);
 
   // AGREGAR NUEVA FILA
@@ -344,31 +376,38 @@ export default function Table() {
                       initialColumns.includes(column) && (
                         <React.Fragment key={columnIndex}>
                           <td
-                            className={`w-[14.2%] px-6 py-2 border-r-2 border-r-[#0c547a] border-[#808e94] ${
+                            className={`w-[14.2%] text-2xl px-6 py-2 border-r-2 border-r-[#0c547a] border-[#808e94] ${
                               rowIndex === 0 ? "border-t-0" : "border-t-2"
                             }`}
                             tabIndex={0}
                           >
-                            {/* {column !== "Product Code" &&
-                            column !== "Packsize" ? ( */}
-                            <input
-                              type={inputTypes[column]}
-                              ref={inputRefs[column][rowIndex]}
-                              className="pl-2 h-[30px] outline-none"
-                              value={row[column]}
-                              onChange={(e) => {
-                                setCurrentValues((prevValues) => ({
-                                  ...prevValues,
-                                  [column]: e.target.value,
-                                }));
-                                const updatedRows = [...rows];
-                                updatedRows[rowIndex][column] = e.target.value;
-                                setRows(updatedRows);
-                              }}
-                              onKeyDown={(e) =>
-                                handleKeyDown(e, rowIndex, column)
-                              }
-                            />
+                            {["Total Price", "Taxt Calculation", "Total Cost", "Profit"].includes(column) ? (
+                              <span>
+                                {column === "Total Price" && calculateTotalPrice(row)}
+                                {column === "Taxt Calculation" && calculateTaxCalculation(row)}
+                                {column === "Total Cost" && calculateTotalCost(row)}
+                                {column === "Profit" && calculateProfit(row)}
+                              </span>
+                            ) : (
+                              <input
+                                type={inputTypes[column]}
+                                ref={inputRefs[column][rowIndex]}
+                                className="pl-2 h-[30px] outline-none"
+                                value={row[column]}
+                                onChange={(e) => {
+                                  setCurrentValues((prevValues) => ({
+                                    ...prevValues,
+                                    [column]: e.target.value,
+                                  }));
+                                  const updatedRows = [...rows];
+                                  updatedRows[rowIndex][column] = e.target.value;
+                                  setRows(updatedRows);
+                                }}
+                                onKeyDown={(e) =>
+                                  handleKeyDown(e, rowIndex, column)
+                                }
+                              />
+                            )}
                             {/* ) : ( */}
                             {/* <AutocompleteInput
                                 options={products}
