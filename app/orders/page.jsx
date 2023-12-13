@@ -47,9 +47,10 @@ const OrderView = () => {
     } else if (selectedAccName) {
       fetchDataAccName();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [token, selectedAccNumber, selectedAccName]);
 
-  //click en la pantalla
+  // Click en la pantalla
   useEffect(() => {
     console.log("AccNumber:", customers);
 

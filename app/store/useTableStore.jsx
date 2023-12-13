@@ -35,7 +35,7 @@ function getInitialColumns() {
         : "[]"
     ) || [
       "Product Code",
-      "Presentation",
+      "Packsize",
       "Description",
       "UOM",
       "Qty",

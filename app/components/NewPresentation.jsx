@@ -1,9 +1,10 @@
 import { XMarkIcon } from "@heroicons/react/24/outline";
 import axios from "axios";
 import { useEffect, useState } from "react";
-import { addPresentationUrl, productsUrl, uomUrl } from "../config/urls.config";
+import { addPresentationUrl, productsUrl, uomUrl, taxexUrl } from "../config/urls.config";
 import { fetchPresentations } from "../presentations/page";
 import useTokenStore from "../store/useTokenStore";
+import ReactCountryFlag from "react-country-flag";
 
 function NewPresentation({
   isvisible,
@@ -21,6 +22,31 @@ function NewPresentation({
   const [selecteProductsStatus, setSelectedProductsStatus] =
     useState("Red pepper");
   const [codePresentation, setCodePresentation] = useState("");
+  const [tax, setTax] = useState([]);
+  const [selectedTax, setSelectedTax] = useState("");
+
+  // Taxes
+  useEffect(() => {
+    const fetchTaxes = async () => {
+      try {
+        const response = await axios.get(taxexUrl, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        const sortedTaxes = response.data.taxes.sort(
+          (a, b) => a.worth - b.worth
+        );
+        setTax(sortedTaxes);
+        console.log(sortedTaxes);
+        setSelectedTax(sortedTaxes[0].id || "");
+      } catch (error) {
+        console.error("Error al obtener Taxes productos:", error);
+      }
+    };
+    fetchTaxes();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // Api uom
   useEffect(() => {
@@ -90,6 +116,7 @@ function NewPresentation({
       name: namePresentation,
       cost: costPresentation,
       code: codePresentation,
+      tax: selectedTax,
     };
     console.log("se envio: ", postData);
     axios
@@ -140,7 +167,8 @@ function NewPresentation({
               </option>
             ))}
           </select>
-          <label>Unit of measurement of the product: </label>
+          <div>
+          <label>Unit of measurement: </label>
           <select
             id="uom"
             name="uom"
@@ -157,6 +185,33 @@ function NewPresentation({
               </option>
             ))}
           </select>
+              <label htmlFor="taxes">Product taxes: </label>
+              <select
+                id="taxes"
+                name="taxes"
+                className="border p-3 rounded-md mr-3 mt-3"
+                required
+                onChange={(e) => setSelectedTax(e.target.value)}
+              >
+                <option value="" disabled selected>
+                  Select tax
+                </option>
+                {tax.map((tax) => (
+                  <option key={tax.id} value={tax.id}>
+                    {tax.countries_indicative === 44 ? (
+                      <ReactCountryFlag countryCode="GB" />
+                    ) : tax.countries_indicative === 57 ? (
+                      <ReactCountryFlag countryCode="CO" />
+                    ) : tax.countries_indicative === 351 ? (
+                      <ReactCountryFlag countryCode="PT" />
+                    ) : tax.countries_indicative === 34 ? (
+                      <ReactCountryFlag countryCode="ES" />
+                    ) : null}{" "}
+                    {tax.name}
+                  </option>
+                ))}
+              </select>
+            </div>          
           <div>
             <label>Code: </label>
             <input

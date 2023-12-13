@@ -8,8 +8,8 @@ import { useTableStore } from "@/app/store/useTableStore";
 
 const initialRowsState = {
   "Product Code": "",
-  Presentation: "",
   Description: "",
+  Packsize: "",
   UOM: "",
   Qty: "",
   Price: "",
@@ -24,8 +24,8 @@ const initialRowsState = {
 
 const inputRefs = {
   "Product Code": [],
-  Presentation: [],
   Description: [],
+  Packsize: [],
   UOM: [],
   Qty: [],
   Price: [],
@@ -98,8 +98,8 @@ export default function Table() {
 
   const columns = [
     "Product Code",
-    "Presentation",
     "Description",
+    "Packsize",
     "UOM",
     "Qty",
     "Price",
@@ -113,8 +113,8 @@ export default function Table() {
   ];
   const inputTypes = {
     "Product Code": "text",
-    Presentation: "text",
     Description: "text",
+    Packsize: "text",
     UOM: "text",
     Qty: "number",
     Price: "number",
@@ -208,6 +208,7 @@ export default function Table() {
         if (row["Product Code"] === currentValues["Product Code"]) {
           return {
             ...row,
+
             "Product Code": productByCode.product_code,
             Presentation: productByCode.presentation_name,
             Description: "",
@@ -220,6 +221,7 @@ export default function Table() {
             Profit: "",
             "Price Band": "",
             "Total Cost": "",
+
             "Taxt Calculation": "",
           };
         }
@@ -353,7 +355,7 @@ export default function Table() {
                             tabIndex={0}
                           >
                             {/* {column !== "Product Code" &&
-                            column !== "Presentation" ? ( */}
+                            column !== "Packsize" ? ( */}
                             <input
                               type={inputTypes[column]}
                               ref={inputRefs[column][rowIndex]}
@@ -435,7 +437,7 @@ export default function Table() {
           {columnsTotal.map(
             (column) =>
               initialTotalRows.includes(column.name) && (
-                <div className=" flex items-center mt-2 ">
+                <div className=" flex items-center mt-2">
                   <h1 className="text-lg text-dark-blue font-semibold w-[80%] ml-5">
                     {column.name}
                   </h1>
