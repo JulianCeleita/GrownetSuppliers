@@ -437,7 +437,7 @@ export default function Table() {
           {columnsTotal.map(
             (column, index) =>
               initialTotalRows.includes(column.name) && (
-                <div key={index} className=" flex items-center mt-2">
+                <div className=" flex items-center mt-2" key={column.name}>
                   <h1 className="text-lg text-dark-blue font-semibold w-[80%] ml-5">
                     {column.name}
                   </h1>

@@ -57,14 +57,11 @@ function EditPresentation({
     console.log('Tax que recibo:', presentation);
   }, [presentation]);
 
-  //Api products
+  // Api products
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const bodyProducts = {
-          country: 44,
-        };
-        const response = await axios.post(productsUrl, bodyProducts, {
+        const response = await axios.get(productsUrl, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
