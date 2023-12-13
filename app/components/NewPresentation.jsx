@@ -76,10 +76,7 @@ function NewPresentation({
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const bodyProducts = {
-          country: 44,
-        };
-        const response = await axios.post(productsUrl, bodyProducts, {
+        const response = await axios.get(productsUrl, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
