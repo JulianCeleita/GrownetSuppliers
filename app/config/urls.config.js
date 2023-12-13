@@ -60,4 +60,4 @@ export const AccName =
   "https://api.grownetapp.com/grownet/api/customers/accountName/";
 
 export const presentationsCode =
-  "https://api.grownetapp.com/grownet/api/presentations/code/";
+  "https://api.grownetapp.com/grownet/api/presentations/search/";

@@ -208,14 +208,19 @@ export default function Table() {
         if (row["Product Code"] === currentValues["Product Code"]) {
           return {
             ...row,
-            Presentation: productByCode.name,
-            "Product Code": productByCode.code,
-            UOM: productByCode.uoms_id,
-            Qty: productByCode.quantity,
+            "Product Code": productByCode.product_code,
+            Presentation: productByCode.presentation_name,
+            Description: "",
+            UOM: productByCode.uom,
+            Qty: "",
             "Unit Cost": productByCode.cost,
-            Tax: productByCode.taxes_id,
+            Tax: productByCode.tax,
+            Price: productByCode.price,
+            "Total Price": "",
+            Profit: "",
+            "Price Band": "",
+            "Total Cost": "",
             "Taxt Calculation": "",
-            //AQUI AÑADIR LAS PROPIEDADES QUE SEAN NECESARIAS
           };
         }
         return row;
