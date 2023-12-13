@@ -7,7 +7,7 @@ import useTokenStore from "@/app/store/useTokenStore";
 import { useTableStore } from "@/app/store/useTableStore";
 
 const initialRowsState = {
-  "Product Code": "",
+  Code: "",
   Description: "",
   Packsize: "",
   UOM: "",
@@ -23,7 +23,7 @@ const initialRowsState = {
 };
 
 const inputRefs = {
-  "Product Code": [],
+  Code: [],
   Description: [],
   Packsize: [],
   UOM: [],
@@ -97,7 +97,7 @@ export default function Table() {
   const lastActiveColumn = initialColumns[initialColumns.length - 1];
 
   const columns = [
-    "Product Code",
+    "Code",
     "Description",
     "Packsize",
     "UOM",
@@ -112,7 +112,7 @@ export default function Table() {
     "Taxt Calculation",
   ];
   const inputTypes = {
-    "Product Code": "text",
+    Code: "text",
     Description: "text",
     Packsize: "text",
     UOM: "text",
@@ -205,10 +205,10 @@ export default function Table() {
   useEffect(() => {
     if (productByCode) {
       const updatedRows = rows.map((row, index) => {
-        if (row["Product Code"] === currentValues["Product Code"]) {
+        if (row["Code"] === currentValues["Code"]) {
           return {
             ...row,
-            "Product Code": productByCode.code,
+            Code: productByCode.code,
             Description: productByCode.product_name,
             Packsize: productByCode.presentation_name,
             UOM: productByCode.uom,
@@ -253,10 +253,7 @@ export default function Table() {
     if (e.key === "Enter" && e.target.tagName.toLowerCase() !== "textarea") {
       e.preventDefault();
 
-      if (
-        fieldName === "Product Code" &&
-        currentValues["Product Code"].trim() !== ""
-      ) {
+      if (fieldName === "Code" && currentValues["Code"].trim() !== "") {
         fetchPrductCOde();
         console.log("Entro fetchPrductCOde");
       }
@@ -289,8 +286,8 @@ export default function Table() {
 
   const fetchPrductCOde = async () => {
     try {
-      // Obtener el valor del input de "Product Code" desde currentValues
-      const currentProductCode = currentValues["Product Code"];
+      // Obtener el valor del input de "Code" desde currentValues
+      const currentProductCode = currentValues["Code"];
       console.log("currentProductCode", currentProductCode);
       const response = await axios.get(
         `${presentationsCode}${currentProductCode}`,
@@ -312,10 +309,14 @@ export default function Table() {
   return (
     <div className="flex flex-col p-8">
       <div className="overflow-x-auto">
-        <form ref={form} onKeyUp={(event) => onEnterKey(event)} className="m-1">
-          <table className="w-full text-sm text-center">
+        <form
+          ref={form}
+          onKeyUp={(event) => onEnterKey(event)}
+          className="m-1 whitespace-nowrap"
+        >
+          <table className="w-full text-sm text-center table-auto">
             <thead className="text-white">
-              <tr className="text-lg">
+              <tr>
                 {columns.map(
                   (column, index) =>
                     initialColumns.includes(column) && (
@@ -329,7 +330,7 @@ export default function Table() {
                             "0px 5px 5px rgba(0, 0, 0, 0.5), 0px 0px 0px rgba(0, 0, 0, 0.2)",
                         }}
                       >
-                        <p className="text-xl text-white">{column}</p>
+                        <p className="text-lg text-white">{column}</p>
                       </th>
                     )
                 )}
@@ -344,17 +345,17 @@ export default function Table() {
                       initialColumns.includes(column) && (
                         <React.Fragment key={columnIndex}>
                           <td
-                            className={`w-[14.2%] px-6 py-2 border-r-2 border-r-[#0c547a] border-[#808e94] ${
+                            className={`px-3 py-2 border-r-2 border-r-[#0c547a] border-[#808e94] ${
                               rowIndex === 0 ? "border-t-0" : "border-t-2"
                             }`}
                             tabIndex={0}
                           >
-                            {/* {column !== "Product Code" &&
+                            {/* {column !== "Code" &&
                             column !== "Packsize" ? ( */}
                             <input
                               type={inputTypes[column]}
                               ref={inputRefs[column][rowIndex]}
-                              className="pl-2 h-[30px] outline-none"
+                              className="h-[30px] outline-none w-full"
                               value={row[column]}
                               onChange={(e) => {
                                 setCurrentValues((prevValues) => ({
