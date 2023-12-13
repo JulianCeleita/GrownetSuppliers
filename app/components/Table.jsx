@@ -143,7 +143,7 @@ export default function Table() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // TOTAL PRICE
+  //  TOTAL PRICE
     const calculateTotalPrice = (row) => {
     const qty = parseFloat(row.Qty) || 0;
     const price = parseFloat(row.Price) || 0;
