@@ -5,9 +5,10 @@ import axios from "axios";
 import { presentationsCode, productsUrl } from "@/app/config/urls.config";
 import useTokenStore from "@/app/store/useTokenStore";
 import { useTableStore } from "@/app/store/useTableStore";
+import { fetchPresentations } from "../presentations/page";
 
 const initialRowsState = {
-  "Product Code": "",
+  Code: "",
   Description: "",
   Packsize: "",
   UOM: "",
@@ -23,7 +24,7 @@ const initialRowsState = {
 };
 
 const inputRefs = {
-  "Product Code": [],
+  Code: [],
   Description: [],
   Packsize: [],
   UOM: [],
@@ -63,17 +64,6 @@ const useFocusOnEnter = (formRef) => {
   return { onEnterKey };
 };
 
-const AutocompleteInput = ({ options, value, onChange }) => {
-  return (
-    <Select
-      options={options}
-      value={options.find((option) => option.value === value)}
-      onChange={(selectedOption) => onChange(selectedOption.value)}
-      isSearchable
-    />
-  );
-};
-
 export default function Table() {
   const [rows, setRows] = useState(
     Array.from({ length: 5 }, () => ({ ...initialRowsState }))
@@ -94,10 +84,11 @@ export default function Table() {
   const [showCheckboxColumn, setShowCheckboxColumn] = useState(false);
   const [currentValues, setCurrentValues] = useState({});
   const [productByCode, setProductByCode] = useState("");
+  const [Packsize, setPacksize] = useState(null);
   const lastActiveColumn = initialColumns[initialColumns.length - 1];
 
   const columns = [
-    "Product Code",
+    "Code",
     "Description",
     "Packsize",
     "UOM",
@@ -112,7 +103,7 @@ export default function Table() {
     "Taxt Calculation",
   ];
   const inputTypes = {
-    "Product Code": "text",
+    Code: "text",
     Description: "text",
     Packsize: "text",
     UOM: "text",
@@ -144,6 +135,7 @@ export default function Table() {
   console.log("initialColumns:", initialColumns);
   
   useEffect(() => {
+    fetchPresentations(token, setPacksize);
     document.addEventListener("click", handleClickOutside);
     return () => {
       document.removeEventListener("click", handleClickOutside);
@@ -162,7 +154,8 @@ export default function Table() {
   const calculateTaxCalculation = (row) => {
     const tax = parseFloat(row.Tax) || 0;
     const price = parseFloat(row.Price) || 0;
-    return tax * price;
+    const qty = parseFloat(row.Qty) || 0;
+    return tax * price * qty;
   };
   
   // TOTAL COST
@@ -174,9 +167,11 @@ export default function Table() {
   
   // PROFIT
   const calculateProfit = (row) => {
-    const price = parseFloat(row.Price) || 0;
-    const cost = parseFloat(row["Unit Cost"]) || 0;
-    return price - cost;
+    const totalCost = calculateTotalCost(row);
+    const totalPrice = calculateTotalPrice(row);
+    const taxCalculation = calculateTaxCalculation(row);
+    const total = (totalPrice - totalCost - taxCalculation);
+    return (total / totalPrice) * 100 || 0;
   };
 
   //Ventana Total:
@@ -201,6 +196,7 @@ export default function Table() {
     }
   };
   console.log("initialTotalsi:", initialTotalRows);
+
   useEffect(() => {
     document.addEventListener("click", handleClickOutsideTotal);
     return () => {
@@ -236,10 +232,10 @@ export default function Table() {
   useEffect(() => {
     if (productByCode) {
       const updatedRows = rows.map((row, index) => {
-        if (row["Product Code"] === currentValues["Product Code"]) {
+        if (row["Code"] === currentValues["Code"]) {
           return {
             ...row,
-            "Product Code": productByCode.code,
+            Code: productByCode.code,
             Description: productByCode.product_name,
             Packsize: productByCode.presentation_name,
             UOM: productByCode.uom,
@@ -247,8 +243,12 @@ export default function Table() {
             Price: productByCode.price / (1 - productByCode.tax),
             "Unit Cost": productByCode.cost,
             Tax: productByCode.tax,
+            Price: productByCode.price,
+            "Total Price": "",
+            Profit: "",
+            "Price Band": "",
+            "Total Cost": "",
             "Taxt Calculation": "",
-            //AQUI AÑADIR LAS PROPIEDADES QUE SEAN NECESARIAS
           };
         }
         return row;
@@ -285,10 +285,7 @@ export default function Table() {
     if (e.key === "Enter" && e.target.tagName.toLowerCase() !== "textarea") {
       e.preventDefault();
 
-      if (
-        fieldName === "Product Code" &&
-        currentValues["Product Code"].trim() !== ""
-      ) {
+      if (fieldName === "Code" && currentValues["Code"].trim() !== "") {
         fetchPrductCOde();
         console.log("Entro fetchPrductCOde");
       }
@@ -321,8 +318,8 @@ export default function Table() {
 
   const fetchPrductCOde = async () => {
     try {
-      // Obtener el valor del input de "Product Code" desde currentValues
-      const currentProductCode = currentValues["Product Code"];
+      // Obtener el valor del input de "Code" desde currentValues
+      const currentProductCode = currentValues["Code"];
       console.log("currentProductCode", currentProductCode);
       const response = await axios.get(
         `${presentationsCode}${currentProductCode}`,
@@ -340,14 +337,20 @@ export default function Table() {
   };
 
   console.log("currentValues", currentValues);
-  console.log("productByCode", productByCode);
+
+  console.log("Packsize:", Packsize);
+
   return (
     <div className="flex flex-col p-8">
       <div className="overflow-x-auto">
-        <form ref={form} onKeyUp={(event) => onEnterKey(event)} className="m-1">
-          <table className="w-full text-sm text-center">
+        <form
+          ref={form}
+          onKeyUp={(event) => onEnterKey(event)}
+          className="m-1 whitespace-nowrap"
+        >
+          <table className="w-full text-sm text-center table-auto">
             <thead className="text-white">
-              <tr className="text-lg">
+              <tr>
                 {columns.map(
                   (column, index) =>
                     initialColumns.includes(column) && (
@@ -361,7 +364,7 @@ export default function Table() {
                             "0px 5px 5px rgba(0, 0, 0, 0.5), 0px 0px 0px rgba(0, 0, 0, 0.2)",
                         }}
                       >
-                        <p className="text-xl text-white">{column}</p>
+                        <p className="text-lg text-white">{column}</p>
                       </th>
                     )
                 )}
@@ -376,7 +379,7 @@ export default function Table() {
                       initialColumns.includes(column) && (
                         <React.Fragment key={columnIndex}>
                           <td
-                            className={`w-[14.2%] text-2xl px-6 py-2 border-r-2 border-r-[#0c547a] border-[#808e94] ${
+                            className={`px-3 py-2 border-r-2 border-r-[#0c547a] border-[#808e94] ${
                               rowIndex === 0 ? "border-t-0" : "border-t-2"
                             }`}
                             tabIndex={0}
@@ -386,7 +389,7 @@ export default function Table() {
                                 {column === "Total Price" && calculateTotalPrice(row)}
                                 {column === "Taxt Calculation" && calculateTaxCalculation(row)}
                                 {column === "Total Cost" && calculateTotalCost(row)}
-                                {column === "Profit" && calculateProfit(row)}
+                                {column === "Profit" && `${calculateProfit(row)}%`}
                               </span>
                             ) : (
                               <input
@@ -408,27 +411,7 @@ export default function Table() {
                                 }
                               />
                             )}
-                            {/* ) : ( */}
-                            {/* <AutocompleteInput
-                                options={products}
-                                value={row.productCode}
-                                onChange={(selectedProductCode) => {
-                                  const updatedRows = [...rows];
-                                  const selectedProduct = products.find(
-                                    (product) =>
-                                      product.value === selectedProductCode
-                                  );
-
-                                  if (selectedProduct) {
-                                    updatedRows[rowIndex].presentation =
-                                      selectedProduct.label;
-                                    updatedRows[rowIndex].productCode =
-                                      selectedProductCode;
-                                    setRows(updatedRows);
-                                  }
-                                }}
-                              // /> */}
-                            {/* )} */}
+                           
                           </td>
                         </React.Fragment>
                       )
@@ -469,7 +452,7 @@ export default function Table() {
           onContextMenu={(e) => handleContextMenuTotal(e)}
         >
           {columnsTotal.map(
-            (column) =>
+            (column, index) =>
               initialTotalRows.includes(column.name) && (
                 <div className=" flex items-center mt-2" key={column.name}>
                   <h1 className="text-lg text-dark-blue font-semibold w-[80%] ml-5">
