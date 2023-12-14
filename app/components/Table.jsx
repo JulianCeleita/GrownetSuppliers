@@ -480,60 +480,18 @@ export default function Table() {
           )}
         </form>
       </div>
-      <div className="flex flex-col items-end justify-end mb-40">
-        <div
-          className="w-[20%] p-5 mt-10 bg-white rounded-2xl shadow-[0_3px_10px_rgb(0,0,0,0.2)] mb-5"
-          onContextMenu={(e) => handleContextMenuTotal(e)}
-        >
-          {columnsTotal.map(
-            (column, index) =>
-              initialTotalRows.includes(column.name) && (
-                <div className=" flex items-center mt-2" key={column.name}>
-                  <h1 className="text-lg text-dark-blue font-semibold w-[80%] ml-5">
-                    {column.name}
-                  </h1>
-                  <p className="text-dark-blue text-lg w-[40%]">
-                    {column.price}
-                  </p>
-                </div>
-              )
-          )}
-          <div className="w-full flex justify-center mt-3">
-            <button className="bg-primary-blue py-2 px-4 rounded-lg text-white font-medium mr-2">
-              Send order
-            </button>
-          </div>
-        </div>
-        {showCheckboxColumnTotal === true && (
-          <div
-            ref={menuRefTotal}
-            className="w-[20%] bg-white p-3 border rounded-xl"
-          >
-            <h4 className="font-bold mb-2 text-dark-blue">Show/Hide Columns</h4>
-            {columnsTotal.map((column) => (
-              <div
-                key={column.name}
-                className="flex items-center text-dark-blue"
-              >
-                <input
-                  type="checkbox"
-                  id={column.name}
-                  checked={initialTotalRows.includes(column.name)}
-                  onChange={() => handleCheckboxChangeTotal(column.name)}
-                />
-                <label htmlFor={column.name} className="ml-2">
-                  {column.name}
-                </label>
-              </div>
-            ))}
-            <button
-              className="mt-2 text-danger"
-              onClick={() => setShowCheckboxColumnTotal(false)}
-            >
-              Close
-            </button>
-          </div>
-        )}
+      <div className="flex justify-center mb-40 w-full mt-5">
+        <h1 className="bg-dark-blue text-white font-semibold p-3 rounded-tl-lg rounded-bl-lg w-[30%] items-center text-center flex justify-center">
+          Special requirements
+        </h1>
+        <input
+          type="text"
+          className="p-3 border border-dark-blue rounded-tr-lg rounded-br-lg w-full mr-5"
+          placeholder="Write your comments here"
+        />
+        <button className="bg-primary-blue py-2 px-4 rounded-lg text-white font-medium mr-2 w-[15%]">
+          Send order
+        </button>
       </div>
     </div>
   );
