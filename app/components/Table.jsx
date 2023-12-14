@@ -143,6 +143,37 @@ export default function Table() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  //  TOTAL PRICE
+  const calculateTotalPrice = (row) => {
+    const qty = parseFloat(row.Qty) || 0;
+    const price = parseFloat(row.Price) || 0;
+    return qty * price;
+  };
+
+  // TAX CALCULATION
+  const calculateTaxCalculation = (row) => {
+    const tax = parseFloat(row.Tax) || 0;
+    const price = parseFloat(row.Price) || 0;
+    const qty = parseFloat(row.Qty) || 0;
+    return tax * price * qty;
+  };
+
+  // TOTAL COST
+  const calculateTotalCost = (row) => {
+    const qty = parseFloat(row.Qty) || 0;
+    const cost = parseFloat(row["Unit Cost"]) || 0;
+    return qty * cost;
+  };
+
+  // PROFIT
+  const calculateProfit = (row) => {
+    const totalCost = calculateTotalCost(row);
+    const totalPrice = calculateTotalPrice(row);
+    const taxCalculation = calculateTaxCalculation(row);
+    const total = totalPrice - totalCost - taxCalculation;
+    return (total / totalPrice) * 100 || 0;
+  };
+
   //Ventana Total:
   const columnsTotal = [
     { name: "Net Invoice", price: "£ 100" },
@@ -196,6 +227,7 @@ export default function Table() {
   //   // eslint-disable-next-line react-hooks/exhaustive-deps
   // }, []);
 
+  // VALORES INICIALES DE LA TABLA
   useEffect(() => {
     if (productByCode) {
       const updatedRows = rows.map((row, index) => {
@@ -207,6 +239,7 @@ export default function Table() {
             Packsize: productByCode.presentation_name,
             UOM: productByCode.uom,
             Qty: "",
+            Price: productByCode.price / (1 - productByCode.tax),
             "Unit Cost": productByCode.cost,
             Tax: productByCode.tax,
             Price: productByCode.price,
@@ -221,6 +254,7 @@ export default function Table() {
       });
       setRows(updatedRows);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [productByCode]);
 
   // AGREGAR NUEVA FILA
@@ -350,7 +384,48 @@ export default function Table() {
                             tabIndex={0}
                             style={{ overflow: "visible" }}
                           >
-                            {column !== "Description" ? (
+                            {[
+                              "Total Price",
+                              "Taxt Calculation",
+                              "Total Cost",
+                              "Profit",
+                              "Description",
+                            ].includes(column) ? (
+                              <span>
+                                {column === "Total Price" &&
+                                  calculateTotalPrice(row)}
+                                {column === "Taxt Calculation" &&
+                                  calculateTaxCalculation(row)}
+                                {column === "Total Cost" &&
+                                  calculateTotalCost(row)}
+                                {column === "Profit" &&
+                                  `${calculateProfit(row)}%`}
+                                {column === "Description" && (
+                                  <Select
+                                    className="w-[240px] whitespace-nowrap"
+                                    menuPortalTarget={document.body}
+                                    options={
+                                      Packsize
+                                        ? Packsize.map((item) => ({
+                                            value: item.name,
+                                            label: item.name,
+                                          }))
+                                        : []
+                                    }
+                                    value={{
+                                      label: row.Description,
+                                      value: row.Description,
+                                    }}
+                                    onChange={(selectedDescription) => {
+                                      const updatedRows = [...rows];
+                                      updatedRows[rowIndex].Description =
+                                        selectedDescription.label;
+                                      setRows(updatedRows);
+                                    }}
+                                  />
+                                )}
+                              </span>
+                            ) : (
                               <input
                                 type={inputTypes[column]}
                                 ref={inputRefs[column][rowIndex]}
@@ -369,29 +444,6 @@ export default function Table() {
                                 onKeyDown={(e) =>
                                   handleKeyDown(e, rowIndex, column)
                                 }
-                              />
-                            ) : (
-                              <Select
-                                className="w-[240px]"
-                                menuPortalTarget={document.body}
-                                options={
-                                  Packsize
-                                    ? Packsize.map((item) => ({
-                                        value: item.name,
-                                        label: item.name,
-                                      }))
-                                    : []
-                                }
-                                value={{
-                                  label: row.Description,
-                                  value: row.Description,
-                                }}
-                                onChange={(selectedDescription) => {
-                                  const updatedRows = [...rows];
-                                  updatedRows[rowIndex].Description =
-                                    selectedDescription.label;
-                                  setRows(updatedRows);
-                                }}
                               />
                             )}
                           </td>
