@@ -25,6 +25,24 @@ const OrderView = () => {
     const day = String(today.getDate()).padStart(2, "0");
     return `${year}-${month}-${day}`;
   }
+  const [totalPriceSum, setTotalPriceSum] = useState(0);
+  const [totalTaxSum, setTotalTaxSum] = useState(0);
+  const [totalNetSum, setTotalNetSum] = useState(0);
+
+  //SUMA NET INVOICE
+  const updateTotalPriceSum = (sum) => {
+    setTotalPriceSum(sum);
+  };
+
+  //SUMA TOTAL VAT
+  const updateTotalTaxSum = (sum) => {
+    setTotalTaxSum(sum);
+  };
+
+  //SUMA TOTAL VAT
+  const updateTotalNetSum = (sum) => {
+    setTotalNetSum(sum);
+  };
 
   useEffect(() => {
     const fetchData = async () => {
@@ -112,9 +130,9 @@ const OrderView = () => {
   const menuRefTotal = useRef(null);
   const { initialTotalRows, toggleTotalRowVisibility } = useTableStore();
   const columnsTotal = [
-    { name: "Net Invoice", price: "£ 100" },
-    { name: "Total VAT", price: "£ 200" },
-    { name: "Total Invoice", price: "£ 300" },
+    { name: "Net Invoice", price: "£ " + totalNetSum },
+    { name: "Total VAT", price: "£ " + totalTaxSum },
+    { name: "Total Invoice", price: "£ " + totalPriceSum },
     { name: "Profit (£)", price: "£ 100" },
     { name: "Profit (%)", price: "10.60%" },
   ];
@@ -288,7 +306,11 @@ const OrderView = () => {
         )}
       </div>
       <div className="-mt-20">
-        <Table />
+        <Table
+          updateTotalPriceSum={updateTotalPriceSum}
+          updateTotalTaxSum={updateTotalTaxSum}
+          updateTotalNetSum={updateTotalNetSum}
+        />
       </div>
     </>
   );

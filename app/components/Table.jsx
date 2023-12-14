@@ -68,7 +68,11 @@ const useFocusOnEnter = (formRef) => {
   return { onEnterKey };
 };
 
-export default function Table() {
+export default function Table({
+  updateTotalPriceSum,
+  updateTotalTaxSum,
+  updateTotalNetSum,
+}) {
   const [rows, setRows] = useState(
     Array.from({ length: 5 }, () => ({ ...initialRowsState }))
   );
@@ -166,7 +170,6 @@ export default function Table() {
   const calculateTotalPrice = (row) => {
     const qty = parseFloat(row.Qty) || 0;
     const price = parseFloat(row.Price) || 0;
-    console.log("hola:", qty, price);
     return qty * price;
   };
 
@@ -193,6 +196,33 @@ export default function Table() {
     const total = totalPrice - totalCost - taxCalculation;
     return (total / totalPrice) * 100 || 0;
   };
+
+  //SUMA TOTAL INVOICE
+  useEffect(() => {
+    const totalSum = rows.reduce(
+      (sum, row) => sum + calculateTotalPrice(row),
+      0
+    );
+    updateTotalPriceSum(totalSum);
+  }, [rows, updateTotalPriceSum]);
+
+  //SUMA TOTAL VAT
+  useEffect(() => {
+    const totalSum = rows.reduce(
+      (sum, row) => sum + calculateTaxCalculation(row),
+      0
+    );
+    updateTotalTaxSum(totalSum);
+  }, [rows, updateTotalTaxSum]);
+
+  //SUMA NET INVOICE
+  const calculateTotalNetSum = (rows) => {
+    return rows.reduce((sum, row) => sum + (parseFloat(row.Price) || 0), 0);
+  };
+  useEffect(() => {
+    const totalNetSum = calculateTotalNetSum(rows);
+    updateTotalNetSum(totalNetSum);
+  }, [rows, updateTotalNetSum]);
 
   //Ventana Total:
   /* const columnsTotal = [
@@ -485,11 +515,6 @@ export default function Table() {
                                 }
                               />
                             )}
-                            {column === "Total Price" &&
-                              console.log(
-                                "Valor de Total Price:",
-                                calculateTotalPrice(row)
-                              )}
                           </td>
                         </React.Fragment>
                       )
@@ -498,6 +523,7 @@ export default function Table() {
               ))}
             </tbody>
           </table>
+
           {showCheckboxColumn === true && (
             <div ref={menuRef} className="absolute bg-white p-2 border rounded">
               <h4 className="font-bold mb-2">Show/Hide Columns</h4>
