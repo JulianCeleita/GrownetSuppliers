@@ -2,7 +2,11 @@
 import React, { useRef, useState, useEffect } from "react";
 import Select from "react-select";
 import axios from "axios";
-import { presentationsCode, productsUrl } from "@/app/config/urls.config";
+import {
+  PresentationsData,
+  presentationsCode,
+  productsUrl,
+} from "@/app/config/urls.config";
 import useTokenStore from "@/app/store/useTokenStore";
 import { useTableStore } from "@/app/store/useTableStore";
 
@@ -63,17 +67,6 @@ const useFocusOnEnter = (formRef) => {
   return { onEnterKey };
 };
 
-const AutocompleteInput = ({ options, value, onChange }) => {
-  return (
-    <Select
-      options={options}
-      value={options.find((option) => option.value === value)}
-      onChange={(selectedOption) => onChange(selectedOption.value)}
-      isSearchable
-    />
-  );
-};
-
 export default function Table() {
   const [rows, setRows] = useState(
     Array.from({ length: 5 }, () => ({ ...initialRowsState }))
@@ -95,6 +88,7 @@ export default function Table() {
   const [currentValues, setCurrentValues] = useState({});
   const [productByCode, setProductByCode] = useState("");
   const lastActiveColumn = initialColumns[initialColumns.length - 1];
+  const [DescriptionData, setDescriptionData] = useState(null);
 
   const columns = [
     "Product Code",
@@ -126,6 +120,29 @@ export default function Table() {
     Tax: "number",
     "Taxt Calculation": "text",
   };
+  useEffect(() => {
+    const presentationData = async () => {
+      try {
+        const response = await axios.get(PresentationsData, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        const concatenatedData = response.data.presentations.map((item) => ({
+          ...item,
+          concatenatedProperty: `${item.productName} - ${item.presentationName}`,
+        }));
+
+        setDescriptionData(concatenatedData);
+        console.log("se llamó presentaciones con concatenación");
+      } catch (error) {
+        console.error("Error en la solicitud:", error.message);
+      }
+    };
+
+    presentationData();
+  }, []);
 
   const handleContextMenu = (e) => {
     e.preventDefault();
@@ -141,14 +158,6 @@ export default function Table() {
       setShowCheckboxColumn(false);
     }
   };
-  console.log("initialColumns:", initialColumns);
-  useEffect(() => {
-    document.addEventListener("click", handleClickOutside);
-    return () => {
-      document.removeEventListener("click", handleClickOutside);
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
   //Ventana Total:
   const columnsTotal = [
@@ -205,13 +214,16 @@ export default function Table() {
   useEffect(() => {
     if (productByCode) {
       const updatedRows = rows.map((row, index) => {
-        if (row["Product Code"] === currentValues["Product Code"]) {
+        if (
+          row["Description"] === currentValues["Description"] ||
+          row["Product Code"] === currentValues["Product Code"]
+        ) {
           return {
             ...row,
 
             "Product Code": productByCode.product_code,
-            Presentation: productByCode.presentation_name,
-            Description: "",
+            Description: productByCode.product_name,
+            Packsize: productByCode.presentation_name,
             UOM: productByCode.uom,
             Qty: "",
             "Unit Cost": productByCode.cost,
@@ -221,7 +233,6 @@ export default function Table() {
             Profit: "",
             "Price Band": "",
             "Total Cost": "",
-
             "Taxt Calculation": "",
           };
         }
@@ -259,11 +270,15 @@ export default function Table() {
       e.preventDefault();
 
       if (
-        fieldName === "Product Code" &&
-        currentValues["Product Code"].trim() !== ""
+        (fieldName === "Description" &&
+          currentValues["Description"] &&
+          currentValues["Description"].trim() !== "") ||
+        (fieldName === "Product Code" &&
+          currentValues["Product Code"] &&
+          currentValues["Product Code"].trim() !== "")
       ) {
         fetchPrductCOde();
-        console.log("Entro fetchPrductCOde");
+        console.log("Entro fetchProductCode");
       }
 
       const nextFieldName = getNextFieldName(fieldName, rowIndex);
@@ -295,7 +310,8 @@ export default function Table() {
   const fetchPrductCOde = async () => {
     try {
       // Obtener el valor del input de "Product Code" desde currentValues
-      const currentProductCode = currentValues["Product Code"];
+      const currentProductCode =
+        currentValues["Product Code"] || currentValues["Description"];
       console.log("currentProductCode", currentProductCode);
       const response = await axios.get(
         `${presentationsCode}${currentProductCode}`,
@@ -313,6 +329,7 @@ export default function Table() {
   };
 
   console.log("currentValues", currentValues);
+  console.log("productByCode", productByCode);
 
   return (
     <div className="flex flex-col p-8">
@@ -354,47 +371,55 @@ export default function Table() {
                             }`}
                             tabIndex={0}
                           >
-                            {/* {column !== "Product Code" &&
-                            column !== "Packsize" ? ( */}
-                            <input
-                              type={inputTypes[column]}
-                              ref={inputRefs[column][rowIndex]}
-                              className="pl-2 h-[30px] outline-none"
-                              value={row[column]}
-                              onChange={(e) => {
-                                setCurrentValues((prevValues) => ({
-                                  ...prevValues,
-                                  [column]: e.target.value,
-                                }));
-                                const updatedRows = [...rows];
-                                updatedRows[rowIndex][column] = e.target.value;
-                                setRows(updatedRows);
-                              }}
-                              onKeyDown={(e) =>
-                                handleKeyDown(e, rowIndex, column)
-                              }
-                            />
-                            {/* ) : ( */}
-                            {/* <AutocompleteInput
-                                options={products}
-                                value={row.productCode}
-                                onChange={(selectedProductCode) => {
+                            {column !== "Description" ? (
+                              <input
+                                type={inputTypes[column]}
+                                ref={inputRefs[column][rowIndex]}
+                                className="pl-2 h-[30px] outline-none"
+                                value={row[column] !== null ? row[column] : ""}
+                                onChange={(e) => {
+                                  setCurrentValues((prevValues) => ({
+                                    ...prevValues,
+                                    [column]:
+                                      e.target.value !== null
+                                        ? e.target.value
+                                        : "",
+                                  }));
                                   const updatedRows = [...rows];
-                                  const selectedProduct = products.find(
-                                    (product) =>
-                                      product.value === selectedProductCode
-                                  );
-
-                                  if (selectedProduct) {
-                                    updatedRows[rowIndex].presentation =
-                                      selectedProduct.label;
-                                    updatedRows[rowIndex].productCode =
-                                      selectedProductCode;
-                                    setRows(updatedRows);
-                                  }
+                                  updatedRows[rowIndex][column] =
+                                    e.target.value !== null
+                                      ? e.target.value
+                                      : "";
+                                  setRows(updatedRows);
                                 }}
-                              // /> */}
-                            {/* )} */}
+                                onKeyDown={(e) =>
+                                  handleKeyDown(e, rowIndex, column)
+                                }
+                              />
+                            ) : (
+                              <Select
+                                options={DescriptionData?.map((option) => ({
+                                  value: option.code,
+                                  label: option.concatenatedProperty,
+                                }))}
+                                value={{
+                                  label: row[column],
+                                  value: row[column],
+                                }}
+                                onChange={(e) => {
+                                  setCurrentValues((prevValues) => ({
+                                    ...prevValues,
+                                    [column]: e.value,
+                                  }));
+                                  const updatedRows = [...rows];
+                                  updatedRows[rowIndex][column] = e.value;
+                                  setRows(updatedRows);
+                                }}
+                                onKeyDown={(e) => {
+                                  handleKeyDown(e, rowIndex, column);
+                                }}
+                              />
+                            )}
                           </td>
                         </React.Fragment>
                       )
