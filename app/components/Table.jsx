@@ -14,13 +14,13 @@ const initialRowsState = {
   UOM: "",
   Qty: "",
   Price: "",
+  Net: "",
+  "Tax Calculation": "",
   "Total Price": "",
   "Unit Cost": "",
+  "Total Cost": "",
   Profit: "",
   "Price Band": "",
-  "Total Cost": "",
-  Tax: "",
-  "Taxt Calculation": "",
 };
 
 const inputRefs = {
@@ -30,13 +30,13 @@ const inputRefs = {
   UOM: [],
   Qty: [],
   Price: [],
+  Net: [],
+  "Tax Calculation": [],
   "Total Price": [],
   "Unit Cost": [],
+  "Total Cost": [],
   Profit: [],
   "Price Band": [],
-  "Total Cost": [],
-  Tax: [],
-  "Taxt Calculation": [],
 };
 
 const useFocusOnEnter = (formRef) => {
@@ -94,13 +94,13 @@ export default function Table() {
     "UOM",
     "Qty",
     "Price",
+    "Net",
+    "Tax Calculation",
     "Total Price",
     "Unit Cost",
+    "Total Cost",
     "Profit",
     "Price Band",
-    "Total Cost",
-    "Tax",
-    "Taxt Calculation",
   ];
   const inputTypes = {
     Code: "text",
@@ -109,13 +109,13 @@ export default function Table() {
     UOM: "text",
     Qty: "number",
     Price: "number",
+    Net: "number",
+    "Tax Calculation": "text",
     "Total Price": "number",
     "Unit Cost": "number",
+    "Total Cost": "number",
     Profit: "number",
     "Price Band": "text",
-    "Total Cost": "number",
-    Tax: "number",
-    "Taxt Calculation": "text",
   };
 
   const handleContextMenu = (e) => {
@@ -143,19 +143,34 @@ export default function Table() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  // PRICE
+  const calculatePrice = (row) => {
+    const net = calculateNet(row) || 0;
+    const tax = calculateTaxCalculation(row) || 0;
+    const qty = parseFloat(row.Qty) || 0;
+    return (net + tax)/ qty || 0;
+  };
+
   //  TOTAL PRICE
   const calculateTotalPrice = (row) => {
+    const totalPrice = calculatePrice(row);
     const qty = parseFloat(row.Qty) || 0;
-    const price = parseFloat(row.Price) || 0;
-    return qty * price;
+    return totalPrice * qty;
+  };
+
+  // NET
+  const calculateNet = (row) => {
+    const price = productByCode.price || 0;
+    const qty = parseFloat(row.Qty) || 0;
+    return price * qty;
   };
 
   // TAX CALCULATION
   const calculateTaxCalculation = (row) => {
-    const tax = parseFloat(row.Tax) || 0;
-    const price = parseFloat(row.Price) || 0;
+    const tax = productByCode.tax || 0;
+    const price = productByCode.price || 0;
     const qty = parseFloat(row.Qty) || 0;
-    return tax * price * qty;
+    return (tax * price) * qty;
   };
 
   // TOTAL COST
@@ -171,7 +186,7 @@ export default function Table() {
     const totalPrice = calculateTotalPrice(row);
     const taxCalculation = calculateTaxCalculation(row);
     const total = totalPrice - totalCost - taxCalculation;
-    return (total / totalPrice) * 100 || 0;
+    return (total / productByCode.price) * 100 || 0;
   };
 
   //Ventana Total:
@@ -239,15 +254,14 @@ export default function Table() {
             Packsize: productByCode.presentation_name,
             UOM: productByCode.uom,
             Qty: "",
-            Price: productByCode.price / (1 - productByCode.tax),
-            "Unit Cost": productByCode.cost,
-            Tax: productByCode.tax,
-            Price: productByCode.price,
+            Price: productByCode.price + productByCode.price * productByCode.tax,
+            Net: "",
+            "Tax Calculation": "",
             "Total Price": "",
+            "Unit Cost": productByCode.cost,
+            "Total Cost": "",
             Profit: "",
             "Price Band": "",
-            "Total Cost": "",
-            "Taxt Calculation": "",
           };
         }
         return row;
@@ -386,20 +400,26 @@ export default function Table() {
                           >
                             {[
                               "Total Price",
-                              "Taxt Calculation",
+                              "Tax Calculation",
                               "Total Cost",
                               "Profit",
                               "Description",
+                              "Price",
+                              "Net",
                             ].includes(column) ? (
                               <span>
                                 {column === "Total Price" &&
                                   calculateTotalPrice(row)}
-                                {column === "Taxt Calculation" &&
+                                {column === "Tax Calculation" &&
                                   calculateTaxCalculation(row)}
                                 {column === "Total Cost" &&
                                   calculateTotalCost(row)}
                                 {column === "Profit" &&
                                   `${calculateProfit(row)}%`}
+                                  {column === "Price" &&
+                                  calculatePrice(row)}
+                                  {column === "Net" &&
+                                  calculateNet(row)}
                                 {column === "Description" && (
                                   <Select
                                     className="w-[240px] whitespace-nowrap"
