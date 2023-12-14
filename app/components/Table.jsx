@@ -9,9 +9,10 @@ import {
 } from "@/app/config/urls.config";
 import useTokenStore from "@/app/store/useTokenStore";
 import { useTableStore } from "@/app/store/useTableStore";
+import { fetchPresentations } from "../presentations/page";
 
 const initialRowsState = {
-  "Product Code": "",
+  Code: "",
   Description: "",
   Packsize: "",
   UOM: "",
@@ -27,7 +28,7 @@ const initialRowsState = {
 };
 
 const inputRefs = {
-  "Product Code": [],
+  Code: [],
   Description: [],
   Packsize: [],
   UOM: [],
@@ -87,11 +88,12 @@ export default function Table() {
   const [showCheckboxColumn, setShowCheckboxColumn] = useState(false);
   const [currentValues, setCurrentValues] = useState({});
   const [productByCode, setProductByCode] = useState("");
+  const [Packsize, setPacksize] = useState(null);
   const lastActiveColumn = initialColumns[initialColumns.length - 1];
   const [DescriptionData, setDescriptionData] = useState(null);
 
   const columns = [
-    "Product Code",
+    "Code",
     "Description",
     "Packsize",
     "UOM",
@@ -106,7 +108,7 @@ export default function Table() {
     "Taxt Calculation",
   ];
   const inputTypes = {
-    "Product Code": "text",
+    Code: "text",
     Description: "text",
     Packsize: "text",
     UOM: "text",
@@ -181,6 +183,7 @@ export default function Table() {
     }
   };
   console.log("initialTotalsi:", initialTotalRows);
+
   useEffect(() => {
     document.addEventListener("click", handleClickOutsideTotal);
     return () => {
@@ -216,12 +219,12 @@ export default function Table() {
       const updatedRows = rows.map((row, index) => {
         if (
           row["Description"] === currentValues["Description"] ||
-          row["Product Code"] === currentValues["Product Code"]
+          row["Code"] === currentValues["Code"]
         ) {
           return {
             ...row,
 
-            "Product Code": productByCode.product_code,
+            Code: productByCode.product_code,
             Description: productByCode.product_name,
             Packsize: productByCode.presentation_name,
             UOM: productByCode.uom,
@@ -273,9 +276,9 @@ export default function Table() {
         (fieldName === "Description" &&
           currentValues["Description"] &&
           currentValues["Description"].trim() !== "") ||
-        (fieldName === "Product Code" &&
-          currentValues["Product Code"] &&
-          currentValues["Product Code"].trim() !== "")
+        (fieldName === "Code" &&
+          currentValues["Code"] &&
+          currentValues["Code"].trim() !== "")
       ) {
         fetchPrductCOde();
         console.log("Entro fetchProductCode");
@@ -311,7 +314,7 @@ export default function Table() {
     try {
       // Obtener el valor del input de "Product Code" desde currentValues
       const currentProductCode =
-        currentValues["Product Code"] || currentValues["Description"];
+        currentValues["Code"] || currentValues["Description"];
       console.log("currentProductCode", currentProductCode);
       const response = await axios.get(
         `${presentationsCode}${currentProductCode}`,
@@ -331,13 +334,19 @@ export default function Table() {
   console.log("currentValues", currentValues);
   console.log("productByCode", productByCode);
 
+  console.log("Packsize:", Packsize);
+
   return (
     <div className="flex flex-col p-8">
       <div className="overflow-x-auto">
-        <form ref={form} onKeyUp={(event) => onEnterKey(event)} className="m-1">
-          <table className="w-full text-sm text-center">
+        <form
+          ref={form}
+          onKeyUp={(event) => onEnterKey(event)}
+          className="m-1 whitespace-nowrap"
+        >
+          <table className="w-full text-sm text-center table-auto">
             <thead className="text-white">
-              <tr className="text-lg">
+              <tr>
                 {columns.map(
                   (column, index) =>
                     initialColumns.includes(column) && (
@@ -351,7 +360,7 @@ export default function Table() {
                             "0px 5px 5px rgba(0, 0, 0, 0.5), 0px 0px 0px rgba(0, 0, 0, 0.2)",
                         }}
                       >
-                        <p className="text-xl text-white">{column}</p>
+                        <p className="text-lg text-white">{column}</p>
                       </th>
                     )
                 )}
@@ -366,10 +375,11 @@ export default function Table() {
                       initialColumns.includes(column) && (
                         <React.Fragment key={columnIndex}>
                           <td
-                            className={`w-[14.2%] px-6 py-2 border-r-2 border-r-[#0c547a] border-[#808e94] ${
+                            className={`px-3 py-2 border-r-2 border-r-[#0c547a] border-[#808e94] ${
                               rowIndex === 0 ? "border-t-0" : "border-t-2"
                             }`}
                             tabIndex={0}
+                            style={{ overflow: "visible" }}
                           >
                             {column !== "Description" ? (
                               <input

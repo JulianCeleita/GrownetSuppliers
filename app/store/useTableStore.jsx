@@ -34,7 +34,7 @@ function getInitialColumns() {
         ? window.localStorage.getItem("initialColumns")
         : "[]"
     ) || [
-      "Product Code",
+      "Code",
       "Packsize",
       "Description",
       "UOM",
