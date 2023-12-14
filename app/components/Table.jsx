@@ -166,6 +166,7 @@ export default function Table() {
   const calculateTotalPrice = (row) => {
     const qty = parseFloat(row.Qty) || 0;
     const price = parseFloat(row.Price) || 0;
+    console.log("hola:", qty, price);
     return qty * price;
   };
 
@@ -194,7 +195,7 @@ export default function Table() {
   };
 
   //Ventana Total:
-  const columnsTotal = [
+  /* const columnsTotal = [
     { name: "Net Invoice", price: "£ 100" },
     { name: "Total VAT", price: "£ 200" },
     { name: "Total Invoice", price: "£ 300" },
@@ -222,7 +223,8 @@ export default function Table() {
       document.removeEventListener("click", handleClickOutsideTotal);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, []);*/
+
   //Product api
   // useEffect(() => {
   //   axios
@@ -483,6 +485,11 @@ export default function Table() {
                                 }
                               />
                             )}
+                            {column === "Total Price" &&
+                              console.log(
+                                "Valor de Total Price:",
+                                calculateTotalPrice(row)
+                              )}
                           </td>
                         </React.Fragment>
                       )
