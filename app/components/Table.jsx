@@ -273,12 +273,12 @@ export default function Table() {
       e.preventDefault();
 
       if (
-        (fieldName === "Description" &&
-          currentValues["Description"] &&
-          currentValues["Description"].trim() !== "") ||
         (fieldName === "Code" &&
           currentValues["Code"] &&
-          currentValues["Code"].trim() !== "")
+          currentValues["Code"].trim() !== "") ||
+        (fieldName === "Description" &&
+          currentValues["Description"] &&
+          currentValues["Description"].trim() !== "")
       ) {
         fetchPrductCOde();
         console.log("Entro fetchProductCode");
