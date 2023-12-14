@@ -2,7 +2,11 @@
 import React, { useRef, useState, useEffect } from "react";
 import Select from "react-select";
 import axios from "axios";
-import { presentationsCode, productsUrl } from "@/app/config/urls.config";
+import {
+  PresentationsData,
+  presentationsCode,
+  productsUrl,
+} from "@/app/config/urls.config";
 import useTokenStore from "@/app/store/useTokenStore";
 import { useTableStore } from "@/app/store/useTableStore";
 import { fetchPresentations } from "../presentations/page";
@@ -86,6 +90,7 @@ export default function Table() {
   const [productByCode, setProductByCode] = useState("");
   const [Packsize, setPacksize] = useState(null);
   const lastActiveColumn = initialColumns[initialColumns.length - 1];
+  const [DescriptionData, setDescriptionData] = useState(null);
 
   const columns = [
     "Code",
@@ -117,6 +122,29 @@ export default function Table() {
     Tax: "number",
     "Taxt Calculation": "text",
   };
+  useEffect(() => {
+    const presentationData = async () => {
+      try {
+        const response = await axios.get(PresentationsData, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        const concatenatedData = response.data.presentations.map((item) => ({
+          ...item,
+          concatenatedProperty: `${item.productName} - ${item.presentationName}`,
+        }));
+
+        setDescriptionData(concatenatedData);
+        console.log("se llamó presentaciones con concatenación");
+      } catch (error) {
+        console.error("Error en la solicitud:", error.message);
+      }
+    };
+
+    presentationData();
+  }, []);
 
   const handleContextMenu = (e) => {
     e.preventDefault();
@@ -132,16 +160,6 @@ export default function Table() {
       setShowCheckboxColumn(false);
     }
   };
-  console.log("initialColumns:", initialColumns);
-
-  useEffect(() => {
-    fetchPresentations(token, setPacksize);
-    document.addEventListener("click", handleClickOutside);
-    return () => {
-      document.removeEventListener("click", handleClickOutside);
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
   //Ventana Total:
   const columnsTotal = [
@@ -199,10 +217,14 @@ export default function Table() {
   useEffect(() => {
     if (productByCode) {
       const updatedRows = rows.map((row, index) => {
-        if (row["Code"] === currentValues["Code"]) {
+        if (
+          row["Description"] === currentValues["Description"] ||
+          row["Code"] === currentValues["Code"]
+        ) {
           return {
             ...row,
-            Code: productByCode.code,
+
+            Code: productByCode.product_code,
             Description: productByCode.product_name,
             Packsize: productByCode.presentation_name,
             UOM: productByCode.uom,
@@ -250,9 +272,16 @@ export default function Table() {
     if (e.key === "Enter" && e.target.tagName.toLowerCase() !== "textarea") {
       e.preventDefault();
 
-      if (fieldName === "Code" && currentValues["Code"].trim() !== "") {
+      if (
+        (fieldName === "Code" &&
+          currentValues["Code"] &&
+          currentValues["Code"].trim() !== "") ||
+        (fieldName === "Description" &&
+          currentValues["Description"] &&
+          currentValues["Description"].trim() !== "")
+      ) {
         fetchPrductCOde();
-        console.log("Entro fetchPrductCOde");
+        console.log("Entro fetchProductCode");
       }
 
       const nextFieldName = getNextFieldName(fieldName, rowIndex);
@@ -283,8 +312,9 @@ export default function Table() {
 
   const fetchPrductCOde = async () => {
     try {
-      // Obtener el valor del input de "Code" desde currentValues
-      const currentProductCode = currentValues["Code"];
+      // Obtener el valor del input de "Product Code" desde currentValues
+      const currentProductCode =
+        currentValues["Code"] || currentValues["Description"];
       console.log("currentProductCode", currentProductCode);
       const response = await axios.get(
         `${presentationsCode}${currentProductCode}`,
@@ -302,6 +332,7 @@ export default function Table() {
   };
 
   console.log("currentValues", currentValues);
+  console.log("productByCode", productByCode);
 
   console.log("Packsize:", Packsize);
 
@@ -354,16 +385,21 @@ export default function Table() {
                               <input
                                 type={inputTypes[column]}
                                 ref={inputRefs[column][rowIndex]}
-                                className="pl-2 h-[30px] outline-none w-full"
-                                value={row[column]}
+                                className="pl-2 h-[30px] outline-none"
+                                value={row[column] !== null ? row[column] : ""}
                                 onChange={(e) => {
                                   setCurrentValues((prevValues) => ({
                                     ...prevValues,
-                                    [column]: e.target.value,
+                                    [column]:
+                                      e.target.value !== null
+                                        ? e.target.value
+                                        : "",
                                   }));
                                   const updatedRows = [...rows];
                                   updatedRows[rowIndex][column] =
-                                    e.target.value;
+                                    e.target.value !== null
+                                      ? e.target.value
+                                      : "";
                                   setRows(updatedRows);
                                 }}
                                 onKeyDown={(e) =>
@@ -372,25 +408,25 @@ export default function Table() {
                               />
                             ) : (
                               <Select
-                                className="w-[240px]"
-                                menuPortalTarget={document.body}
-                                options={
-                                  Packsize
-                                    ? Packsize.map((item) => ({
-                                        value: item.name,
-                                        label: item.name,
-                                      }))
-                                    : []
-                                }
+                                options={DescriptionData?.map((option) => ({
+                                  value: option.code,
+                                  label: option.concatenatedProperty,
+                                }))}
                                 value={{
-                                  label: row.Description,
-                                  value: row.Description,
+                                  label: row[column],
+                                  value: row[column],
                                 }}
-                                onChange={(selectedDescription) => {
+                                onChange={(e) => {
+                                  setCurrentValues((prevValues) => ({
+                                    ...prevValues,
+                                    [column]: e.value,
+                                  }));
                                   const updatedRows = [...rows];
-                                  updatedRows[rowIndex].Description =
-                                    selectedDescription.label;
+                                  updatedRows[rowIndex][column] = e.value;
                                   setRows(updatedRows);
+                                }}
+                                onKeyDown={(e) => {
+                                  handleKeyDown(e, rowIndex, column);
                                 }}
                               />
                             )}
