@@ -4,12 +4,12 @@ import Select from "react-select";
 import axios from "axios";
 import {
   PresentationData,
+  createStorageOrder,
   presentationsCode,
   productsUrl,
 } from "@/app/config/urls.config";
 import useTokenStore from "@/app/store/useTokenStore";
 import { useTableStore } from "@/app/store/useTableStore";
-import { fetchPresentations } from "../presentations/page";
 
 const initialRowsState = {
   Code: "",
@@ -81,6 +81,7 @@ export default function Table() {
     toggleColumnVisibility,
     initialTotalRows,
     toggleTotalRowVisibility,
+    customers,
   } = useTableStore();
   const [showCheckboxColumnTotal, setShowCheckboxColumnTotal] = useState(false);
   const menuRef = useRef(null);
@@ -136,7 +137,8 @@ export default function Table() {
           .map((item) => ({
             ...item,
             concatenatedName: `${item.productName} - ${item.presentationName}`,
-          }));
+          }))
+          .sort((a, b) => a.concatenatedName.localeCompare(b.concatenatedName));
 
         setDescriptionData(modifiedData);
       } catch (error) {
@@ -363,9 +365,38 @@ export default function Table() {
   };
 
   console.log("currentValues", currentValues);
-  console.log("DescriptionData", DescriptionData);
-
+  console.log("data A enviar :", rows);
   console.log("productByCode:", productByCode);
+
+  const createOrder = async () => {
+    try {
+      const filteredProducts = rows
+        .filter((row) => parseFloat(row.Qty) > 0)
+        .map(({ Qty, Packsize, Price }) => ({ Qty, Packsize, Price }));
+
+      const jsonOrderData = {
+        accountNumber_customers: customers.accountNumber,
+        address_delivery: customers.address,
+        date_delivery: customers.orderDate,
+        id_suppliers: 1,
+        net: 19.76,
+        observation: "Test Heiner desde app suppliers",
+        total: 78.5,
+        total_tax: 58.76,
+        products: filteredProducts,
+      };
+      console.log("jsonOrderData", jsonOrderData);
+      const response = await axios.post(createStorageOrder, jsonOrderData, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      console.log("se creo la ordern", response);
+    } catch (error) {
+      console.log("Error al crear la orden", error);
+    }
+  };
 
   return (
     <div className="flex flex-col p-8">
@@ -536,7 +567,10 @@ export default function Table() {
               )
           )}
           <div className="w-full flex justify-center mt-3">
-            <button className="bg-primary-blue py-2 px-4 rounded-lg text-white font-medium mr-2">
+            <button
+              onClick={createOrder}
+              className="bg-primary-blue py-2 px-4 rounded-lg text-white font-medium mr-2"
+            >
               Send order
             </button>
           </div>
