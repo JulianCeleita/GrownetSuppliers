@@ -385,7 +385,7 @@ export default function Table() {
                             tabIndex={0}
                             style={{ overflow: "visible" }}
                           >
-                            {["Total Price", "Taxt Calculation", "Total Cost", "Profit"].includes(column) ? (
+                            {["Total Price", "Taxt Calculation", "Total Cost", "Profit", "Description"].includes(column) ? (
                               <span>
                                 {column === "Total Price" && calculateTotalPrice(row)}
                                 {column === "Taxt Calculation" && calculateTaxCalculation(row)}
