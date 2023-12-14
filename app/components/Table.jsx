@@ -348,6 +348,7 @@ export default function Table() {
                               rowIndex === 0 ? "border-t-0" : "border-t-2"
                             }`}
                             tabIndex={0}
+                            style={{ overflow: "visible" }}
                           >
                             {column !== "Description" ? (
                               <input
@@ -371,7 +372,8 @@ export default function Table() {
                               />
                             ) : (
                               <Select
-                                className="w-[300px]"
+                                className="w-[240px]"
+                                menuPortalTarget={document.body}
                                 options={
                                   Packsize
                                     ? Packsize.map((item) => ({
