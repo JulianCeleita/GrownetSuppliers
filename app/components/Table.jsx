@@ -133,7 +133,7 @@ export default function Table() {
     }
   };
   console.log("initialColumns:", initialColumns);
-
+  
   useEffect(() => {
     fetchPresentations(token, setPacksize);
     document.addEventListener("click", handleClickOutside);
@@ -142,6 +142,37 @@ export default function Table() {
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  //  TOTAL PRICE
+    const calculateTotalPrice = (row) => {
+    const qty = parseFloat(row.Qty) || 0;
+    const price = parseFloat(row.Price) || 0;
+    return qty * price;
+  };
+
+  // TAX CALCULATION
+  const calculateTaxCalculation = (row) => {
+    const tax = parseFloat(row.Tax) || 0;
+    const price = parseFloat(row.Price) || 0;
+    const qty = parseFloat(row.Qty) || 0;
+    return tax * price * qty;
+  };
+  
+  // TOTAL COST
+  const calculateTotalCost = (row) => {
+    const qty = parseFloat(row.Qty) || 0;
+    const cost = parseFloat(row["Unit Cost"]) || 0;
+    return qty * cost;
+  };
+  
+  // PROFIT
+  const calculateProfit = (row) => {
+    const totalCost = calculateTotalCost(row);
+    const totalPrice = calculateTotalPrice(row);
+    const taxCalculation = calculateTaxCalculation(row);
+    const total = (totalPrice - totalCost - taxCalculation);
+    return (total / totalPrice) * 100 || 0;
+  };
 
   //Ventana Total:
   const columnsTotal = [
@@ -196,6 +227,8 @@ export default function Table() {
   //   // eslint-disable-next-line react-hooks/exhaustive-deps
   // }, []);
 
+  
+  // VALORES INICIALES DE LA TABLA
   useEffect(() => {
     if (productByCode) {
       const updatedRows = rows.map((row, index) => {
@@ -207,6 +240,7 @@ export default function Table() {
             Packsize: productByCode.presentation_name,
             UOM: productByCode.uom,
             Qty: "",
+            Price: productByCode.price / (1 - productByCode.tax),
             "Unit Cost": productByCode.cost,
             Tax: productByCode.tax,
             Price: productByCode.price,
@@ -221,6 +255,7 @@ export default function Table() {
       });
       setRows(updatedRows);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [productByCode]);
 
   // AGREGAR NUEVA FILA
@@ -350,28 +385,14 @@ export default function Table() {
                             tabIndex={0}
                             style={{ overflow: "visible" }}
                           >
-                            {column !== "Description" ? (
-                              <input
-                                type={inputTypes[column]}
-                                ref={inputRefs[column][rowIndex]}
-                                className="pl-2 h-[30px] outline-none w-full"
-                                value={row[column]}
-                                onChange={(e) => {
-                                  setCurrentValues((prevValues) => ({
-                                    ...prevValues,
-                                    [column]: e.target.value,
-                                  }));
-                                  const updatedRows = [...rows];
-                                  updatedRows[rowIndex][column] =
-                                    e.target.value;
-                                  setRows(updatedRows);
-                                }}
-                                onKeyDown={(e) =>
-                                  handleKeyDown(e, rowIndex, column)
-                                }
-                              />
-                            ) : (
-                              <Select
+                            {["Total Price", "Taxt Calculation", "Total Cost", "Profit"].includes(column) ? (
+                              <span>
+                                {column === "Total Price" && calculateTotalPrice(row)}
+                                {column === "Taxt Calculation" && calculateTaxCalculation(row)}
+                                {column === "Total Cost" && calculateTotalCost(row)}
+                                {column === "Profit" && `${calculateProfit(row)}%`}
+                                {column === "Description" && (
+                                  <Select
                                 className="w-[300px] whitespace-nowrap"
                                 menuPortalTarget={document.body}
                                 options={
@@ -393,7 +414,29 @@ export default function Table() {
                                   setRows(updatedRows);
                                 }}
                               />
+                                )}
+                              </span>
+                            ) : (
+                              <input
+                                type={inputTypes[column]}
+                                ref={inputRefs[column][rowIndex]}
+                                className="pl-2 h-[30px] outline-none"
+                                value={row[column]}
+                                onChange={(e) => {
+                                  setCurrentValues((prevValues) => ({
+                                    ...prevValues,
+                                    [column]: e.target.value,
+                                  }));
+                                  const updatedRows = [...rows];
+                                  updatedRows[rowIndex][column] = e.target.value;
+                                  setRows(updatedRows);
+                                }}
+                                onKeyDown={(e) =>
+                                  handleKeyDown(e, rowIndex, column)
+                                }
+                              />
                             )}
+                           
                           </td>
                         </React.Fragment>
                       )
