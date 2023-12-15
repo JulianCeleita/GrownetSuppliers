@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import Table from "@/app/components/Table";
 import { AccName, AccNumber, Restaurants } from "../config/urls.config";
 import axios from "axios";
@@ -26,6 +26,24 @@ const OrderView = () => {
     const day = String(today.getDate()).padStart(2, "0");
     return `${year}-${month}-${day}`;
   }
+  const [totalPriceSum, setTotalPriceSum] = useState(0);
+  const [totalTaxSum, setTotalTaxSum] = useState(0);
+  const [totalNetSum, setTotalNetSum] = useState(0);
+
+  //SUMA NET INVOICE
+  const updateTotalPriceSum = (sum) => {
+    setTotalPriceSum(sum);
+  };
+
+  //SUMA TOTAL VAT
+  const updateTotalTaxSum = (sum) => {
+    setTotalTaxSum(sum);
+  };
+
+  //SUMA TOTAL VAT
+  const updateTotalNetSum = (sum) => {
+    setTotalNetSum(sum);
+  };
 
   useEffect(() => {
     const fetchData = async () => {
@@ -122,43 +140,44 @@ const OrderView = () => {
   console.log("selectedAccName:", selectedAccName);
   console.log("selectedAccNumber:", selectedAccNumber);
 
+  //VENTANA TOTAL
+  const [showCheckboxColumnTotal, setShowCheckboxColumnTotal] = useState(false);
+  const menuRefTotal = useRef(null);
+  const { initialTotalRows, toggleTotalRowVisibility } = useTableStore();
+  const columnsTotal = [
+    { name: "Net Invoice", price: "£ " + totalNetSum },
+    { name: "Total VAT", price: "£ " + totalTaxSum },
+    { name: "Total Invoice", price: "£ " + totalPriceSum },
+    { name: "Profit (£)", price: "£ 100" },
+    { name: "Profit (%)", price: "10.60%" },
+  ];
+  const handleContextMenuTotal = (e) => {
+    e.preventDefault();
+    setShowCheckboxColumnTotal(!showCheckboxColumnTotal);
+  };
+  const handleCheckboxChangeTotal = (columnName) => {
+    toggleTotalRowVisibility(columnName);
+  };
+  const handleClickOutsideTotal = (e) => {
+    if (menuRefTotal.current && !menuRefTotal.current.contains(e.target)) {
+      setShowCheckboxColumnTotal(false);
+    }
+  };
+  console.log("initialTotalsi:", initialTotalRows);
+
+  useEffect(() => {
+    document.addEventListener("click", handleClickOutsideTotal);
+    return () => {
+      document.removeEventListener("click", handleClickOutsideTotal);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
   return (
     <>
       <div className="grid grid-cols-3 gap-4 p-6 shadow-lg bg-primary-blue pb-20">
-        <div className="grid grid-cols-2 bg-white p-5 rounded-lg shadow-lg text-dark-blue">
-          <h3>Account Number:</h3>
-          <div className="relative mb-2">
-            <Select
-              options={restaurantList.map((restaurant) => ({
-                value: restaurant.accountNumber,
-                label: restaurant.accountNumber,
-              }))}
-              onChange={(selectedOption) => {
-                setSelectedAccNumber(selectedOption.value);
-                setIsDropdownVisible(false);
-              }}
-              value={{
-                value: selectedAccNumber,
-                label:
-                  customers && customers.accountNumber
-                    ? customers.accountNumber
-                    : "Search...",
-              }}
-              isSearchable
-            />
-          </div>
-          <h3>Address:</h3>
-          <h3 className="underline decoration-2 decoration-green mb-2">
-            {customers && customers.address ? customers.address : ""}
-          </h3>
-          <h3>Post Code:</h3>
-          <h3 className="underline decoration-2 decoration-green">
-            {customers && customers.postCode ? customers.postCode : ""}
-          </h3>
-        </div>
-        <div className="grid grid-cols-2 bg-white p-5 rounded-lg shadow-lg text-dark-blue">
-          <h3>Account Name:</h3>
-          <div className="relative mb-2">
+        <div className="grid grid-cols-2 bg-white p-4 rounded-lg shadow-lg text-dark-blue">
+          <h3 className="m-3">Account Name:</h3>
+          <div className="relative ml-3">
             <Select
               options={restaurantList.map((restaurant) => ({
                 value: restaurant.accountName,
@@ -179,14 +198,48 @@ const OrderView = () => {
             />
           </div>
 
-          <h3>Contact:</h3>
-          <h3 className="underline decoration-2 decoration-green mb-2">
+          <div className="grid grid-cols-2 m-3 gap-2">
+            <h3>Account Number:</h3>
+            <div className="relative">
+              <Select
+                options={restaurantList.map((restaurant) => ({
+                  value: restaurant.accountNumber,
+                  label: restaurant.accountNumber,
+                }))}
+                onChange={(selectedOption) => {
+                  setSelectedAccNumber(selectedOption.value);
+                  setIsDropdownVisible(false);
+                }}
+                value={{
+                  value: selectedAccNumber,
+                  label:
+                    customers && customers.accountNumber
+                      ? customers.accountNumber
+                      : "Search...",
+                }}
+                isSearchable
+              />
+            </div>
+
+            <h3>Post Code:</h3>
+            <h3 className="underline decoration-2 decoration-green">
+              {customers && customers.postCode ? customers.postCode : ""}
+            </h3>
+          </div>
+          <div className="grid grid-cols-2 m-3 gap-2">
+            <h3>Address:</h3>
+            <h3 className="underline decoration-2 decoration-green">
+              {customers && customers.address ? customers.address : ""}
+            </h3>
+            <h3>Telephone:</h3>
+            <h3 className="underline decoration-2 decoration-green">
+              {" "}
+              {customers && customers.telephone ? customers.telephone : ""}
+            </h3>
+          </div>
+          <h3 className="ml-3">Contact:</h3>
+          <h3 className="underline decoration-2 decoration-green ml-3">
             {customers && customers.email ? customers.email : ""}
-          </h3>
-          <h3>Telephone:</h3>
-          <h3 className="underline decoration-2 decoration-green">
-            {" "}
-            {customers && customers.telephone ? customers.telephone : ""}
           </h3>
         </div>
         <div className="bg-white p-2 pr-9 pl-9 rounded-lg flex flex-col justify-center">
@@ -215,9 +268,64 @@ const OrderView = () => {
           <h3 className="underline decoration-2 decoration-green">{""}</h3>*/}
           </div>
         </div>
+        <div
+          className="bg-white p-2 pr-9 pl-9 rounded-lg flex flex-col justify-center"
+          onContextMenu={(e) => handleContextMenuTotal(e)}
+        >
+          <h1 className="text-lg text-primary-blue font-semibold w-[80%] ml-5">
+            Payment details
+          </h1>
+          {columnsTotal.map(
+            (column, index) =>
+              initialTotalRows.includes(column.name) && (
+                <div className=" flex items-center" key={column.name}>
+                  <h1 className="text-lg text-dark-blue font-semibold w-[80%] ml-5">
+                    {column.name}
+                  </h1>
+                  <p className="text-dark-blue text-lg w-[40%]">
+                    {column.price}
+                  </p>
+                </div>
+              )
+          )}
+        </div>
+        {showCheckboxColumnTotal === true && (
+          <div
+            ref={menuRefTotal}
+            className="w-[40%] bg-white p-3 border rounded-xl"
+          >
+            <h4 className="font-bold mb-2 text-dark-blue">Show/Hide Columns</h4>
+            {columnsTotal.map((column) => (
+              <div
+                key={column.name}
+                className="flex items-center text-dark-blue"
+              >
+                <input
+                  type="checkbox"
+                  id={column.name}
+                  checked={initialTotalRows.includes(column.name)}
+                  onChange={() => handleCheckboxChangeTotal(column.name)}
+                />
+                <label htmlFor={column.name} className="ml-2">
+                  {column.name}
+                </label>
+              </div>
+            ))}
+            <button
+              className="mt-2 text-danger"
+              onClick={() => setShowCheckboxColumnTotal(false)}
+            >
+              Close
+            </button>
+          </div>
+        )}
       </div>
       <div className="-mt-20">
-        <Table />
+        <Table
+          updateTotalPriceSum={updateTotalPriceSum}
+          updateTotalTaxSum={updateTotalTaxSum}
+          updateTotalNetSum={updateTotalNetSum}
+        />
       </div>
     </>
   );
