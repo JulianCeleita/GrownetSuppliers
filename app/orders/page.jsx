@@ -30,6 +30,8 @@ const OrderView = () => {
   const [totalTaxSum, setTotalTaxSum] = useState(0);
   const [totalNetSum, setTotalNetSum] = useState(0);
   const [totalCostSum, setTotalCostSum] = useState(0);
+
+  console.log("totalPriceSum:", totalPriceSum);
   const total = totalPriceSum - totalTaxSum - totalCostSum;
   const percentageProfit = (total / totalNetSum) * 100;
   //TO DO verficar las funciones cuando se este el net
@@ -159,6 +161,7 @@ const OrderView = () => {
     { name: "Profit (£)", price: "£ " + total.toFixed(2) },
     { name: "Profit (%)", price: percentageProfit.toFixed(2) + "%" },
   ];
+
   const handleContextMenuTotal = (e) => {
     e.preventDefault();
     setShowCheckboxColumnTotal(!showCheckboxColumnTotal);
@@ -334,6 +337,9 @@ const OrderView = () => {
           updateTotalTaxSum={updateTotalTaxSum}
           updateTotalNetSum={updateTotalNetSum}
           updateTotalCostSum={updateTotalCostSum}
+          totalPriceSum={totalPriceSum}
+          totalTaxSum={totalTaxSum}
+          totalNetSum={totalNetSum}
         />
       </div>
     </>
