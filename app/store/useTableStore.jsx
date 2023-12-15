@@ -4,6 +4,7 @@ export const useTableStore = create((set) => ({
   initialColumns: getInitialColumns(),
   initialTotalRows: getInitialTotalRows(),
   customers: null,
+
   setCustomers: (newCustomers) => set({ customers: newCustomers }),
 
   toggleColumnVisibility: (columnName) =>

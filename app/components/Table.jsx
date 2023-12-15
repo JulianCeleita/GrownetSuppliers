@@ -79,6 +79,9 @@ export default function Table({
   updateTotalTaxSum,
   updateTotalNetSum,
   updateTotalCostSum,
+  totalPriceSum,
+  totalTaxSum,
+  totalNetSum,
 }) {
   const [rows, setRows] = useState(
     Array.from({ length: 5 }, () => ({ ...initialRowsState }))
@@ -421,10 +424,10 @@ export default function Table({
   //   address_delivery: customers?.address,
   //   date_delivery: customers?.orderDate,
   //   id_suppliers: 1,
-  //   net: 19.76,
-  //   observation: "Test Heiner desde app suppliers",
-  //   total: 78.5,
-  //   total_tax: 58.76,
+  //   net: parseFloat(totalNetSum),
+  //   observation: specialRequirements,
+  //   total: parseFloat(totalPriceSum),
+  //   total_tax: parseFloat(totalTaxSum),
   //   products: filteredProducts,
   // };
   // console.log("jsonOrderData", jsonOrderData);
@@ -440,14 +443,14 @@ export default function Table({
         }));
 
       const jsonOrderData = {
-        accountNumber_customers: customers.accountNumber,
-        address_delivery: customers.address,
-        date_delivery: customers.orderDate,
+        accountNumber_customers: customers?.accountNumber,
+        address_delivery: customers?.address,
+        date_delivery: customers?.orderDate,
         id_suppliers: 1,
-        net: 19.76,
-        observation: "Test Heiner desde app suppliers--Yeison",
-        total: 78.5,
-        total_tax: 58.76,
+        net: parseFloat(totalNetSum),
+        observation: specialRequirements,
+        total: parseFloat(totalPriceSum),
+        total_tax: parseFloat(totalTaxSum),
         products: filteredProducts,
       };
       console.log("jsonOrderData", jsonOrderData);
