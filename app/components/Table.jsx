@@ -199,11 +199,10 @@ export default function Table({
     const net = parseFloat(row.Net) || 0;
     const tax = parseFloat(row.Tax) || 0;
     const qty = parseFloat(row.Qty) || 0;
-    const total = (net * tax) * qty;
+    const total = net * tax * qty;
     const totalFiltered = total !== 0 ? total.toFixed(2) : "";
     return totalFiltered;
   };
-
   //  TOTAL PRICE
   const calculateTotalPrice = (row) => {
     const price = parseFloat(row.Price) || 0;
@@ -227,7 +226,7 @@ export default function Table({
     const price = parseFloat(row.Price) || 0;
     const cost = parseFloat(row["Unit Cost"]) || 0;
     const tax = parseFloat(row.Tax) * parseFloat(row.Net);
-    const total = (price - cost - tax) / parseFloat(row.Net) * 100 || 0;
+    const total = ((price - cost - tax) / parseFloat(row.Net)) * 100 || 0;
     const totalFiltered = total !== 0 ? `${total.toFixed(2)}%` : "";
     return totalFiltered;
   };
@@ -251,12 +250,16 @@ export default function Table({
   }, [rows, updateTotalTaxSum]);
 
   //SUMA NET INVOICE
-  const calculateTotalNetSum = (rows) => {
+  /*const calculateTotalNetSum = (rows) => {
     return rows.reduce((sum, row) => sum + (parseFloat(row.Price) || 0), 0);
   };
   useEffect(() => {
     const totalNetSum = calculateTotalNetSum(rows);
     updateTotalNetSum(totalNetSum);
+  }, [rows, updateTotalNetSum]);*/
+  useEffect(() => {
+    const totalSum = rows.reduce((sum, row) => sum + calculateTotalNet(row), 0);
+    updateTotalNetSum(totalSum);
   }, [rows, updateTotalNetSum]);
 
   // VALORES INICIALES DE LA TABLA
@@ -274,9 +277,14 @@ export default function Table({
             Packsize: productByCode.presentation_name,
             UOM: productByCode.uom,
             Qty: "",
-            Price: productByCode.price + productByCode.price * productByCode.tax,
+            Price:
+              productByCode.price + productByCode.price * productByCode.tax,
             Net: productByCode.price,
             "Total Net": "",
+            Tax: productByCode.tax,
+            "Tax Calculation": "",
+            "Total Price": "",
+            "Unit Cost": productByCode.cost,
             Tax: productByCode.tax,
             "Tax Calculation": "",
             "Total Price": "",
@@ -427,7 +435,9 @@ export default function Table({
                       <th
                         key={index}
                         scope="col"
-                        className={`py-2 bg-dark-blue rounded-lg ${["Net", "Tax"].includes(column) ? "hidden" : ""}`}
+                        className={`py-2 bg-dark-blue rounded-lg ${
+                          ["Net", "Tax"].includes(column) ? "hidden" : ""
+                        }`}
                         onContextMenu={(e) => handleContextMenu(e)}
                         style={{
                           boxShadow:
@@ -451,7 +461,9 @@ export default function Table({
                           <td
                             className={`px-3 py-2 border-r-2 border-r-[#0c547a] border-[#808e94] ${
                               rowIndex === 0 ? "border-t-0" : "border-t-2"
-                            } ${["Net", "Tax"].includes(column) ? "hidden" : ""}`}
+                            } ${
+                              ["Net", "Tax"].includes(column) ? "hidden" : ""
+                            }`}
                             tabIndex={0}
                             style={{ overflow: "visible" }}
                           >
@@ -471,11 +483,9 @@ export default function Table({
                                   calculateTaxCalculation(row)}
                                 {column === "Total Cost" &&
                                   calculateTotalCost(row)}
-                                {column === "Profit" &&
-                                  calculateProfit(row)}
-                                  {column === "Price" &&
-                                  calculatePrice(row)}
-                                  {column === "Total Net" &&
+                                {column === "Profit" && calculateProfit(row)}
+                                {column === "Price" && calculatePrice(row)}
+                                {column === "Total Net" &&
                                   calculateTotalNet(row)}
                                 {column === "Description" && (
                                   <Select
@@ -545,7 +555,12 @@ export default function Table({
             <div ref={menuRef} className="absolute bg-white p-2 border rounded">
               <h4 className="font-bold mb-2">Show/Hide Columns</h4>
               {columns.map((column) => (
-                <div key={column} className={`flex items-center ${["Net", "Tax"].includes(column) ? "hidden" : ""}`}>
+                <div
+                  key={column}
+                  className={`flex items-center ${
+                    ["Net", "Tax"].includes(column) ? "hidden" : ""
+                  }`}
+                >
                   <input
                     type="checkbox"
                     id={column}

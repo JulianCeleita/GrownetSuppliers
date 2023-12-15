@@ -29,8 +29,11 @@ const OrderView = () => {
   const [totalPriceSum, setTotalPriceSum] = useState(0);
   const [totalTaxSum, setTotalTaxSum] = useState(0);
   const [totalNetSum, setTotalNetSum] = useState(0);
+  const [totalCostSum, setTotalCostSum] = useState(0);
+  const total = totalPriceSum - totalTaxSum - totalCostSum;
+  const percentageProfit = (total / totalNetSum) * 100;
 
-  //SUMA NET INVOICE
+  //SUMA TOTAL INVOICE
   const updateTotalPriceSum = (sum) => {
     setTotalPriceSum(sum);
   };
@@ -148,8 +151,8 @@ const OrderView = () => {
     { name: "Net Invoice", price: "£ " + totalNetSum },
     { name: "Total VAT", price: "£ " + totalTaxSum },
     { name: "Total Invoice", price: "£ " + totalPriceSum },
-    { name: "Profit (£)", price: "£ 100" },
-    { name: "Profit (%)", price: "10.60%" },
+    { name: "Profit (£)", price: "£ " + total },
+    { name: "Profit (%)", price: percentageProfit + "%" },
   ];
   const handleContextMenuTotal = (e) => {
     e.preventDefault();
