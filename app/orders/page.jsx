@@ -33,7 +33,7 @@ const OrderView = () => {
 
   console.log("totalPriceSum:", totalPriceSum);
   const total = totalPriceSum - totalTaxSum - totalCostSum;
-  const percentageProfit = (total / totalNetSum) * 100;
+  const percentageProfit = (total / totalNetSum) * 100 || 0;
   //TO DO verficar las funciones cuando se este el net
   //SUMA TOTAL INVOICE
   const updateTotalPriceSum = (sum) => {

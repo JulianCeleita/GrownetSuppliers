@@ -539,7 +539,7 @@ export default function Table({
                                   calculateTotalNet(row)}
                                 {column === "Description" && (
                                   <Select
-                                    className="w-[680px] whitespace-nowrap"
+                                    className="w-[240px] whitespace-nowrap"
                                     menuPortalTarget={document.body}
                                     options={
                                       DescriptionData
@@ -576,13 +576,13 @@ export default function Table({
                                       }),
                                       dropdownIndicator: (provided) => ({
                                         ...provided,
-                                        display: "none"
+                                        display: "none",
                                       }),
                                       indicatorSeparator: (provided) => ({
                                         ...provided,
                                         display: "none",
                                       }),
-                                    }}                                
+                                    }}
                                   />
                                 )}
                               </span>
