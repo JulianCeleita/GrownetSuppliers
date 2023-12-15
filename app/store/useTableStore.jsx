@@ -41,6 +41,8 @@ function getInitialColumns() {
       "Qty",
       "Price",
       "Net",
+      "Total Net",
+      "Tax",
       "Tax Calculation",
       "Total Price",
       "Unit Cost",
