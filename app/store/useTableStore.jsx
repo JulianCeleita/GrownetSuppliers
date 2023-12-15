@@ -3,6 +3,9 @@ import { create } from "zustand";
 export const useTableStore = create((set) => ({
   initialColumns: getInitialColumns(),
   initialTotalRows: getInitialTotalRows(),
+  customers: null,
+  setCustomers: (newCustomers) => set({ customers: newCustomers }),
+
   toggleColumnVisibility: (columnName) =>
     set((state) => {
       const newInitialColumns = state.initialColumns.includes(columnName)

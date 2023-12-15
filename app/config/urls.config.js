@@ -50,12 +50,12 @@ export const taxexUrl = "https://api.grownetapp.com/grownet/api/taxes/all";
 
 //Orders
 export const Restaurants =
-  "https://api.grownetapp.com/grownet/api/customers/chef";
+  "https://api.grownetapp.com/grownet/api/customers/all";
 export const createOrders =
   "https://api.grownetapp.com/grownet/api/orders/create";
 
 export const AccNumber =
-  "https://api.grownetapp.com/grownet/api/customers/accountNumber/";
+  "https://api.grownetapp.com/grownet/api/customers/serch/";
 export const AccName =
   "https://api.grownetapp.com/grownet/api/customers/accountName/";
 
@@ -64,3 +64,5 @@ export const presentationsCode =
 
 export const PresentationData =
   "https://api.grownetapp.com/grownet/api/products/presentations/all";
+export const createStorageOrder =
+  "https://api.grownetapp.com/grownet/api/orders/create";

@@ -4,12 +4,12 @@ import Select from "react-select";
 import axios from "axios";
 import {
   PresentationData,
+  createStorageOrder,
   presentationsCode,
   productsUrl,
 } from "@/app/config/urls.config";
 import useTokenStore from "@/app/store/useTokenStore";
 import { useTableStore } from "@/app/store/useTableStore";
-import { fetchPresentations } from "../presentations/page";
 
 const initialRowsState = {
   Code: "",
@@ -85,6 +85,7 @@ export default function Table({
     toggleColumnVisibility,
     initialTotalRows,
     toggleTotalRowVisibility,
+    customers,
   } = useTableStore();
   const [showCheckboxColumnTotal, setShowCheckboxColumnTotal] = useState(false);
   const menuRef = useRef(null);
@@ -140,7 +141,8 @@ export default function Table({
           .map((item) => ({
             ...item,
             concatenatedName: `${item.productName} - ${item.presentationName}`,
-          }));
+          }))
+          .sort((a, b) => a.concatenatedName.localeCompare(b.concatenatedName));
 
         setDescriptionData(modifiedData);
       } catch (error) {
@@ -223,60 +225,6 @@ export default function Table({
     const totalNetSum = calculateTotalNetSum(rows);
     updateTotalNetSum(totalNetSum);
   }, [rows, updateTotalNetSum]);
-
-  //Ventana Total:
-  /* const columnsTotal = [
-    { name: "Net Invoice", price: "£ 100" },
-    { name: "Total VAT", price: "£ 200" },
-    { name: "Total Invoice", price: "£ 300" },
-    { name: "Profit (£)", price: "£ 100" },
-    { name: "Profit (%)", price: "10.60%" },
-  ];
-
-  const handleContextMenuTotal = (e) => {
-    e.preventDefault();
-    setShowCheckboxColumnTotal(!showCheckboxColumnTotal);
-  };
-  const handleCheckboxChangeTotal = (columnName) => {
-    toggleTotalRowVisibility(columnName);
-  };
-  const handleClickOutsideTotal = (e) => {
-    if (menuRefTotal.current && !menuRefTotal.current.contains(e.target)) {
-      setShowCheckboxColumnTotal(false);
-    }
-  };
-  console.log("initialTotalsi:", initialTotalRows);
-
-  useEffect(() => {
-    document.addEventListener("click", handleClickOutsideTotal);
-    return () => {
-      document.removeEventListener("click", handleClickOutsideTotal);
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);*/
-
-  //Product api
-  // useEffect(() => {
-  //   axios
-  //     .get(productsUrl, {
-  //       headers: {
-  //         Authorization: `Bearer ${token}`,
-  //       },
-  //     })
-  //     .then((response) => {
-  //       setProducts(
-  //         response.data.products.map((product) => ({
-  //           value: product.code,
-  //           label: product.code,
-  //         }))
-  //       );
-  //       console.log("Productos:", response.data.products);
-  //     })
-  //     .catch((error) => {
-  //       console.error("Error al obtener los productos:", error);
-  //     });
-  //   // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, []);
 
   // VALORES INICIALES DE LA TABLA
   useEffect(() => {
@@ -395,9 +343,38 @@ export default function Table({
   };
 
   console.log("currentValues", currentValues);
-  console.log("DescriptionData", DescriptionData);
-
+  console.log("data A enviar :", rows);
   console.log("productByCode:", productByCode);
+
+  const createOrder = async () => {
+    try {
+      const filteredProducts = rows
+        .filter((row) => parseFloat(row.Qty) > 0)
+        .map(({ Qty, Packsize, Price }) => ({ Qty, Packsize, Price }));
+
+      const jsonOrderData = {
+        accountNumber_customers: customers.accountNumber,
+        address_delivery: customers.address,
+        date_delivery: customers.orderDate,
+        id_suppliers: 1,
+        net: 19.76,
+        observation: "Test Heiner desde app suppliers",
+        total: 78.5,
+        total_tax: 58.76,
+        products: filteredProducts,
+      };
+      console.log("jsonOrderData", jsonOrderData);
+      const response = await axios.post(createStorageOrder, jsonOrderData, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      console.log("se creo la ordern", response);
+    } catch (error) {
+      console.log("Error al crear la orden", error);
+    }
+  };
 
   return (
     <div className="flex flex-col p-8">
@@ -559,7 +536,10 @@ export default function Table({
           className="p-3 border border-dark-blue rounded-tr-lg rounded-br-lg w-full mr-5"
           placeholder="Write your comments here"
         />
-        <button className="bg-primary-blue py-2 px-4 rounded-lg text-white font-medium mr-2 w-[15%]">
+        <button
+          onClick={createOrder}
+          className="bg-primary-blue py-2 px-4 rounded-lg text-white font-medium mr-2 w-[15%]"
+        >
           Send order
         </button>
       </div>

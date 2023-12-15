@@ -9,13 +9,14 @@ import { useTableStore } from "../store/useTableStore";
 
 const OrderView = () => {
   const { token } = useTokenStore();
-  const [customers, setCustomers] = useState(null);
+  const { customers, setCustomers } = useTableStore();
 
   const [restaurants, setRestaurants] = useState(null);
   const [selectedAccNumber, setSelectedAccNumber] = useState("");
   const [selectedAccName, setSelectedAccName] = useState("");
   const [isDropdownVisible, setIsDropdownVisible] = useState(false);
   const [isNameDropdownVisible, setIsNameDropdownVisible] = useState(false);
+  const [orderDate, setOrderDate] = useState(getCurrentDate());
 
   //Fecha input
   function getCurrentDate() {
@@ -53,7 +54,11 @@ const OrderView = () => {
           },
         });
 
-        setRestaurants(responseRestaurants.data.customersChef);
+        const sortedRestaurants = responseRestaurants.data.customers.sort(
+          (a, b) => a.accountName.localeCompare(b.accountName)
+        );
+
+        setRestaurants(sortedRestaurants);
       } catch (error) {
         console.error("Error fetching restaurants data", error);
       }
@@ -71,7 +76,7 @@ const OrderView = () => {
 
   // Click en la pantalla
   useEffect(() => {
-    console.log("AccNumber:", customers);
+    console.log("customers:", customers);
 
     const handleClickOutside = () => {
       setIsDropdownVisible(false);
@@ -96,7 +101,12 @@ const OrderView = () => {
         }
       );
 
-      setCustomers(responseAccNumber.data.data);
+      const updatedCustomers = {
+        ...responseAccNumber.data.customer,
+        orderDate: orderDate,
+      };
+      console.log("responseAccNumber", responseAccNumber);
+      setCustomers(updatedCustomers);
     } catch (error) {
       console.error("Error fetching AccNumber data", error);
     }
@@ -112,7 +122,12 @@ const OrderView = () => {
         }
       );
 
-      setCustomers(responseAccNumber.data.data);
+      const updatedCustomers = {
+        ...responseAccNumber.data.customer,
+        orderDate: orderDate,
+      };
+
+      setCustomers(updatedCustomers);
       console.log("se ejecuto AccName:");
     } catch (error) {
       console.error("Error fetching AccNumber data", error);
@@ -175,8 +190,8 @@ const OrderView = () => {
               value={{
                 value: selectedAccNumber,
                 label:
-                  customers && customers.length > 0
-                    ? customers[0].accountName
+                  customers && customers.accountName
+                    ? customers.accountName
                     : "Search...",
               }}
               isSearchable
@@ -198,8 +213,8 @@ const OrderView = () => {
                 value={{
                   value: selectedAccNumber,
                   label:
-                    customers && customers.length > 0
-                      ? customers[0].accountNumber
+                    customers && customers.accountNumber
+                      ? customers.accountNumber
                       : "Search...",
                 }}
                 isSearchable
@@ -208,23 +223,23 @@ const OrderView = () => {
 
             <h3>Post Code:</h3>
             <h3 className="underline decoration-2 decoration-green">
-              {customers && customers.length > 0 ? customers[0].postCode : ""}
+              {customers && customers.postCode ? customers.postCode : ""}
             </h3>
           </div>
           <div className="grid grid-cols-2 m-3 gap-2">
             <h3>Address:</h3>
             <h3 className="underline decoration-2 decoration-green">
-              {customers && customers.length > 0 ? customers[0].address : ""}
+              {customers && customers.address ? customers.address : ""}
             </h3>
             <h3>Telephone:</h3>
             <h3 className="underline decoration-2 decoration-green">
               {" "}
-              {customers && customers.length > 0 ? customers[0].telephone : ""}
+              {customers && customers.telephone ? customers.telephone : ""}
             </h3>
           </div>
           <h3 className="ml-3">Contact:</h3>
           <h3 className="underline decoration-2 decoration-green ml-3">
-            {customers && customers.length > 0 ? customers[0].email : ""}
+            {customers && customers.email ? customers.email : ""}
           </h3>
         </div>
         <div className="bg-white p-2 pr-9 pl-9 rounded-lg flex flex-col justify-center">
