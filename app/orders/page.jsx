@@ -153,9 +153,9 @@ const OrderView = () => {
   const menuRefTotal = useRef(null);
   const { initialTotalRows, toggleTotalRowVisibility } = useTableStore();
   const columnsTotal = [
-    { name: "Net Invoice", price: "£ " + totalNetSum.toFixed(2) },
-    { name: "Total VAT", price: "£ " + totalTaxSum.toFixed(2) },
-    { name: "Total Invoice", price: "£ " + totalPriceSum.toFixed(2) },
+    { name: "Net Invoice", price: "£ " + totalNetSum },
+    { name: "Total VAT", price: "£ " + totalTaxSum },
+    { name: "Total Invoice", price: "£ " + totalPriceSum },
     { name: "Profit (£)", price: "£ " + total.toFixed(2) },
     { name: "Profit (%)", price: percentageProfit.toFixed(2) + "%" },
   ];

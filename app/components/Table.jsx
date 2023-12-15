@@ -174,35 +174,60 @@ export default function Table({
     }
   };
 
-  //  TOTAL PRICE
-  const calculateTotalPrice = (row) => {
-    const qty = parseFloat(row.Qty) || 0;
-    const price = parseFloat(row.Price) || 0;
-    return qty * price;
+  // PRICE
+  const calculatePrice = (row) => {
+    const net = parseFloat(row.Net) || 0;
+    const tax = parseFloat(row.Tax) || 0;
+    const total = net + net * tax;
+    const totalFiltered = total !== 0 ? total.toFixed(2) : "";
+    return totalFiltered;
   };
 
-  // TAX CALCULATION
+  // TOTAL NET
+  const calculateTotalNet = (row) => {
+    const net = parseFloat(row.Net) || 0;
+    const qty = parseFloat(row.Qty) || 0;
+    const total = net * qty;
+    const totalFiltered = total !== 0 ? total.toFixed(2) : "";
+    return totalFiltered;
+  };
+
+  // VAT £
   const calculateTaxCalculation = (row) => {
+    const net = parseFloat(row.Net) || 0;
     const tax = parseFloat(row.Tax) || 0;
+    const qty = parseFloat(row.Qty) || 0;
+    const total = net * tax * qty;
+    const totalFiltered = total !== 0 ? total.toFixed(2) : "";
+    return totalFiltered;
+  };
+
+  //  TOTAL PRICE
+  const calculateTotalPrice = (row) => {
     const price = parseFloat(row.Price) || 0;
     const qty = parseFloat(row.Qty) || 0;
-    return tax * price * qty;
+    const total = price * qty;
+    const totalFiltered = total !== 0 ? total.toFixed(2) : "";
+    return totalFiltered;
   };
 
   // TOTAL COST
   const calculateTotalCost = (row) => {
     const qty = parseFloat(row.Qty) || 0;
     const cost = parseFloat(row["Unit Cost"]) || 0;
-    return qty * cost;
+    const total = qty * cost;
+    const totalFiltered = total !== 0 ? total.toFixed(2) : "";
+    return totalFiltered;
   };
 
   // PROFIT
   const calculateProfit = (row) => {
-    const totalCost = calculateTotalCost(row);
-    const totalPrice = calculateTotalPrice(row);
-    const taxCalculation = calculateTaxCalculation(row);
-    const total = totalPrice - totalCost - taxCalculation;
-    return (total / totalPrice) * 100 || 0;
+    const price = parseFloat(row.Price) || 0;
+    const cost = parseFloat(row["Unit Cost"]) || 0;
+    const tax = parseFloat(row.Tax) * parseFloat(row.Net);
+    const total = ((price - cost - tax) / parseFloat(row.Net)) * 100 || 0;
+    const totalFiltered = total !== 0 ? `${total.toFixed(2)}%` : "";
+    return totalFiltered;
   };
 
   //SUMA TOTAL INVOICE
@@ -226,11 +251,15 @@ export default function Table({
   //SUMA NET INVOICE
   const calculateTotalNetSum = (rows) => {
     return rows.reduce((sum, row) => sum + (parseFloat(row.Price) || 0), 0);
-  };
+  }; /*
   useEffect(() => {
     const totalNetSum = calculateTotalNetSum(rows);
     updateTotalNetSum(totalNetSum);
   }, [rows, updateTotalNetSum]);
+  useEffect(() => {
+    const totalSum = rows.reduce((sum, row) => sum + calculateTotalNet(row), 0);
+    updateTotalNetSum(totalSum);
+  }, [rows, updateTotalNetSum]);*/
 
   //SUMA TOTAL COST
   useEffect(() => {
@@ -256,11 +285,19 @@ export default function Table({
             Packsize: productByCode.presentation_name,
             UOM: productByCode.uom,
             Qty: "",
-            Price: productByCode.price / (1 - productByCode.tax),
+            Price:
+              productByCode.price + productByCode.price * productByCode.tax,
+            Net: productByCode.price,
+            "Total Net": "",
+            Tax: productByCode.tax,
+            "Tax Calculation": "",
+            "Total Price": "",
             "Unit Cost": productByCode.cost,
             Tax: productByCode.tax,
-            Price: productByCode.price,
+            "Tax Calculation": "",
             "Total Price": "",
+            "Unit Cost": productByCode.cost,
+            "Total Cost": "",
             Profit: "",
             "Price Band": "",
             "Total Cost": "",
@@ -411,7 +448,9 @@ export default function Table({
                       <th
                         key={index}
                         scope="col"
-                        className="py-2 bg-dark-blue rounded-lg"
+                        className={`py-2 bg-dark-blue rounded-lg ${
+                          ["Net", "Tax"].includes(column) ? "hidden" : ""
+                        }`}
                         onContextMenu={(e) => handleContextMenu(e)}
                         style={{
                           boxShadow:
@@ -435,6 +474,8 @@ export default function Table({
                           <td
                             className={`px-3 py-2 border-r-2 border-r-[#0c547a] border-[#808e94] ${
                               rowIndex === 0 ? "border-t-0" : "border-t-2"
+                            } ${
+                              ["Net", "Tax"].includes(column) ? "hidden" : ""
                             }`}
                             tabIndex={0}
                             style={{ overflow: "visible" }}
@@ -453,8 +494,10 @@ export default function Table({
                                   calculateTaxCalculation(row)}
                                 {column === "Total Cost" &&
                                   calculateTotalCost(row)}
-                                {column === "Profit" &&
-                                  `${calculateProfit(row)}%`}
+                                {column === "Profit" && calculateProfit(row)}
+                                {column === "Price" && calculatePrice(row)}
+                                {column === "Total Net" &&
+                                  calculateTotalNet(row)}
                                 {column === "Description" && (
                                   <Select
                                     className="w-[240px] whitespace-nowrap"
@@ -523,7 +566,12 @@ export default function Table({
             <div ref={menuRef} className="absolute bg-white p-2 border rounded">
               <h4 className="font-bold mb-2">Show/Hide Columns</h4>
               {columns.map((column) => (
-                <div key={column} className="flex items-center">
+                <div
+                  key={column}
+                  className={`flex items-center ${
+                    ["Net", "Tax"].includes(column) ? "hidden" : ""
+                  }`}
+                >
                   <input
                     type="checkbox"
                     id={column}
