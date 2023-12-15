@@ -1,17 +1,16 @@
 "use client";
-import React, { useRef, useState, useEffect } from "react";
-import Select from "react-select";
-import axios from "axios";
 import {
   PresentationData,
   createStorageOrder,
   presentationsCode,
-  productsUrl,
 } from "@/app/config/urls.config";
-import useTokenStore from "@/app/store/useTokenStore";
 import { useTableStore } from "@/app/store/useTableStore";
-import ModalSuccessfull from "./ModalSuccessfull";
+import useTokenStore from "@/app/store/useTokenStore";
+import axios from "axios";
+import React, { useEffect, useRef, useState } from "react";
+import Select from "react-select";
 import ModalOrderError from "./ModalOrderError";
+import ModalSuccessfull from "./ModalSuccessfull";
 
 const initialRowsState = {
   Code: "",
@@ -74,15 +73,7 @@ const useFocusOnEnter = (formRef) => {
   return { onEnterKey };
 };
 
-export default function Table({
-  updateTotalPriceSum,
-  updateTotalTaxSum,
-  updateTotalNetSum,
-  updateTotalCostSum,
-  totalPriceSum,
-  totalTaxSum,
-  totalNetSum,
-}) {
+export default function Table() {
   const [rows, setRows] = useState(
     Array.from({ length: 5 }, () => ({ ...initialRowsState }))
   );
@@ -96,6 +87,12 @@ export default function Table({
     initialTotalRows,
     toggleTotalRowVisibility,
     customers,
+    setTotalNetSum,
+    setTotalPriceSum,
+    setTotalTaxSum,
+    setTotalCostSum,
+    setTotalProfit,
+    setTotalProfitPercentage,
   } = useTableStore();
   const [showCheckboxColumnTotal, setShowCheckboxColumnTotal] = useState(false);
   const menuRef = useRef(null);
@@ -202,8 +199,8 @@ export default function Table({
     const net = parseFloat(row.Net) || 0;
     const qty = parseFloat(row.quantity) || 0;
     const total = net * qty;
-    //const totalFormatted = isNaN(total) ? 0 : total.toFixed(2);
-    return total;
+    const totalFormatted = total !== 0 ? total.toFixed(2) : "";
+    return totalFormatted;
   };
 
   // VAT £
@@ -212,8 +209,8 @@ export default function Table({
     const tax = parseFloat(row.Tax) || 0;
     const qty = parseFloat(row.quantity) || 0;
     const total = net * tax * qty;
-    //const totalFormatted = isNaN(total) ? 0 : total.toFixed(2);
-    return total;
+    const totalFormatted = total !== 0 ? total.toFixed(2) : "";
+    return totalFormatted;
   };
 
   //  TOTAL PRICE
@@ -221,8 +218,8 @@ export default function Table({
     const price = parseFloat(row.price) || 0;
     const qty = parseFloat(row.quantity) || 0;
     const total = price * qty;
-    //const totalFormatted = isNaN(total) ? 0 : total.toFixed(2);
-    return total;
+    const totalFormatted = total !== 0 ? total.toFixed(2) : "";
+    return totalFormatted;
   };
 
   // TOTAL COST
@@ -230,8 +227,8 @@ export default function Table({
     const qty = parseFloat(row.quantity) || 0;
     const cost = parseFloat(row["Unit Cost"]) || 0;
     const total = qty * cost;
-    //const totalFormatted = isNaN(total) ? 0 : total.toFixed(2);
-    return total;
+    const totalFormatted = total !== 0 ? total.toFixed(2) : "";
+    return totalFormatted;
   };
 
   // PROFIT
@@ -244,39 +241,86 @@ export default function Table({
     return totalFiltered;
   };
 
-  //SUMA TOTAL INVOICE
-  useEffect(() => {
-    const totalSum = rows.reduce(
-      (sum, row) => sum + calculateTotalPrice(row),
-      0
-    );
-    updateTotalPriceSum(totalSum);
-    console.log("Total invoice: " + totalSum);
-  }, [rows, updateTotalPriceSum]);
+  // TOTAL NET SUM
+  const calculateTotalNetSum = (rows) => {
+    return rows
+      .reduce((acc, row) => {
+        const totalNet = parseFloat(calculateTotalNet(row)) || 0;
+        return acc + totalNet;
+      }, 0)
+      .toFixed(2);
+  };
 
-  //SUMA TOTAL VAT
-  useEffect(() => {
-    const totalSum = rows.reduce(
-      (sum, row) => sum + calculateTaxCalculation(row),
-      0
-    );
-    updateTotalTaxSum(totalSum);
-  }, [rows, updateTotalTaxSum]);
+  // TOTAL PRICE SUM
+  const calculateTotalPriceSum = (rows) => {
+    return rows
+      .reduce((acc, row) => {
+        const totalPrice = parseFloat(calculateTotalPrice(row)) || 0;
+        return acc + totalPrice;
+      }, 0)
+      .toFixed(2);
+  };
 
-  //SUMA NET INVOICE
-  useEffect(() => {
-    const totalSum = rows.reduce((sum, row) => sum + calculateTotalNet(row), 0);
-    updateTotalNetSum(totalSum);
-  }, [rows, updateTotalNetSum]);
+  // TOTAL TAX SUM
+  const calculateTotalTaxSum = (rows) => {
+    return rows
+      .reduce((acc, row) => {
+        const totalTax = parseFloat(calculateTaxCalculation(row)) || 0;
+        return acc + totalTax;
+      }, 0)
+      .toFixed(2);
+  };
 
-  //SUMA TOTAL COST
+  // TOTAL COST SUM
+  const calculateTotalCostSum = (rows) => {
+    return rows
+      .reduce((acc, row) => {
+        const totalCost = parseFloat(calculateTotalCost(row)) || 0;
+        return acc + totalCost;
+      }, 0)
+      .toFixed(2);
+  };
+
+  // TOTAL PROFIT $
+  const calculateTotalProfit = () => {
+    const totalProfit = totalPriceSum - totalTaxSum - totalCostSum;
+    return totalProfit.toFixed(2);
+  };
+
+  // TOTAL PROFIT %
+  const calculateTotalProfitPercentage = () => {
+    const totalProfitPercentage = (totalProfit / totalNetSum) * 100 || 0;
+    return totalProfitPercentage.toFixed(2);
+  };
+
+  const totalNetSum = calculateTotalNetSum(rows);
+  const totalPriceSum = calculateTotalPriceSum(rows);
+  const totalTaxSum = calculateTotalTaxSum(rows);
+  const totalCostSum = calculateTotalCostSum(rows);
+  const totalProfit = calculateTotalProfit();
+  const totalProfitPercentage = calculateTotalProfitPercentage();
+
   useEffect(() => {
-    const totalSum = rows.reduce(
-      (sum, row) => sum + calculateTotalCost(row),
-      0
-    );
-    updateTotalCostSum(totalSum);
-  }, [rows, updateTotalCostSum]);
+    setTotalNetSum(totalNetSum);
+    setTotalPriceSum(totalPriceSum);
+    setTotalTaxSum(totalTaxSum);
+    setTotalCostSum(totalCostSum);
+    setTotalProfit(totalProfit);
+    setTotalProfitPercentage(totalProfitPercentage);
+  }, [
+    totalNetSum,
+    totalPriceSum,
+    totalProfit,
+    setTotalProfit,
+    totalProfitPercentage,
+    setTotalProfitPercentage,
+    totalCostSum,
+    setTotalCostSum,
+    totalTaxSum,
+    setTotalNetSum,
+    setTotalPriceSum,
+    setTotalTaxSum,
+  ]);
 
   // VALORES INICIALES DE LA TABLA
   useEffect(() => {
@@ -346,7 +390,6 @@ export default function Table({
           currentValues["Description"].trim() !== "")
       ) {
         fetchPrductCOde();
-        console.log("Entro fetchPrductCOde");
       }
 
       const nextFieldName = getNextFieldName(fieldName, rowIndex);
@@ -362,7 +405,6 @@ export default function Table({
           initialColumns.indexOf(fieldName) === initialColumns.length - 1;
 
         if (isLastCell) {
-          console.log("Entro addNewRow");
           addNewRow();
         } else {
           const nextRowIndex = rowIndex + 1;
@@ -380,7 +422,6 @@ export default function Table({
       // Obtener el valor del input de "Code" desde currentValues
       const currentProductCode =
         currentValues["Code"] || currentValues["Description"];
-      console.log("currentProductCode", currentProductCode);
       const response = await axios.get(
         `${presentationsCode}${currentProductCode}`,
         {
@@ -411,30 +452,6 @@ export default function Table({
     }
   };
 
-  console.log("currentValues", currentValues);
-  console.log("data A enviar :", rows);
-  console.log("productByCode:", productByCode);
-  // const filteredProducts = rows
-  //   .filter((row) => parseFloat(row.quantity) > 0)
-  //   .map(({ quantity, price, id_presentations }) => ({
-  //     quantity: parseFloat(quantity),
-  //     price,
-  //     id_presentations,
-  //   }));
-
-  // const jsonOrderData = {
-  //   accountNumber_customers: customers?.accountNumber,
-  //   address_delivery: customers?.address,
-  //   date_delivery: customers?.orderDate,
-  //   id_suppliers: 1,
-  //   net: parseFloat(totalNetSum),
-  //   observation: specialRequirements,
-  //   total: parseFloat(totalPriceSum),
-  //   total_tax: parseFloat(totalTaxSum),
-  //   products: filteredProducts,
-  // };
-  // console.log("jsonOrderData", jsonOrderData);
-
   const createOrder = async () => {
     try {
       const filteredProducts = rows
@@ -456,19 +473,16 @@ export default function Table({
         total_tax: parseFloat(totalTaxSum),
         products: filteredProducts,
       };
-      console.log("jsonOrderData", jsonOrderData);
       const response = await axios.post(createStorageOrder, jsonOrderData, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
       setShowConfirmModal(true);
-      console.log("se creo la ordern", response);
       setRows(Array.from({ length: 5 }, () => ({ ...initialRowsState })));
       setSpecialRequirements("");
     } catch (error) {
       setShowErrorOrderModal(true);
-      console.log("Error al crear la orden", error);
     }
   };
 

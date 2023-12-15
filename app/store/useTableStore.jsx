@@ -4,7 +4,18 @@ export const useTableStore = create((set) => ({
   initialColumns: getInitialColumns(),
   initialTotalRows: getInitialTotalRows(),
   customers: null,
-
+  totalNetSum: "0.00",
+  totalPriceSum: "0.00",
+  totalTaxSum: "0.00",
+  totalCostSum: "0.00",
+  totalProfit: "0.00",
+  totalProfitPercentage: "0.00",
+  setTotalNetSum: (total) => set({ totalNetSum: total }),
+  setTotalPriceSum: (total) => set({ totalPriceSum: total }),
+  setTotalTaxSum: (total) => set({ totalTaxSum: total }),
+  setTotalCostSum: (total) => set({ totalCostSum: total }),
+  setTotalProfit: (total) => set({ totalProfit: total }),
+  setTotalProfitPercentage: (total) => set({ totalProfitPercentage: total }),
   setCustomers: (newCustomers) => set({ customers: newCustomers }),
 
   toggleColumnVisibility: (columnName) =>
