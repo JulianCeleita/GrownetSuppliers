@@ -21,7 +21,7 @@ const initialRowsState = {
   Net: "",
   "Total Net": "",
   Tax: "",
-  "Tax Calculation": "",
+  "VAT £": "",
   "Total Price": "",
   "Unit Cost": "",
   "Total Cost": "",
@@ -39,7 +39,7 @@ const inputRefs = {
   Net: [],
   "Total Net": [],
   Tax: [],
-  "Tax Calculation": [],
+  "VAT £": [],
   "Total Price": [],
   "Unit Cost": [],
   "Total Cost": [],
@@ -110,7 +110,7 @@ export default function Table({
     "Net",
     "Total Net",
     "Tax",
-    "Tax Calculation",
+    "VAT £",
     "Total Price",
     "Unit Cost",
     "Total Cost",
@@ -127,7 +127,7 @@ export default function Table({
     Net: "number",
     "Total Net": "number",
     Tax: "number",
-    "Tax Calculation": "text",
+    "VAT £": "text",
     "Total Price": "number",
     "Unit Cost": "number",
     "Total Cost": "number",
@@ -194,7 +194,7 @@ export default function Table({
     return totalFiltered;
   };
 
-  // TAX CALCULATION
+  // VAT £
   const calculateTaxCalculation = (row) => {
     const net = parseFloat(row.Net) || 0;
     const tax = parseFloat(row.Tax) || 0;
@@ -269,7 +269,7 @@ export default function Table({
         ) {
           return {
             ...row,
-            Code: productByCode.product_code,
+            Code: productByCode.presentation_code,
             Description: productByCode.product_name,
             Packsize: productByCode.presentation_name,
             UOM: productByCode.uom,
@@ -278,7 +278,7 @@ export default function Table({
             Net: productByCode.price,
             "Total Net": "",
             Tax: productByCode.tax,
-            "Tax Calculation": "",
+            "VAT £": "",
             "Total Price": "",
             "Unit Cost": productByCode.cost,
             "Total Cost": "",
@@ -371,7 +371,6 @@ export default function Table({
       );
       setProductByCode(response.data.data[0]);
     } catch (error) {
-      // Manejar errores aquí
       console.error("Error al hacer la solicitud:", error.message);
     }
   };
@@ -427,7 +426,7 @@ export default function Table({
                       <th
                         key={index}
                         scope="col"
-                        className={`py-2 bg-dark-blue rounded-lg ${["Net", "Tax"].includes(column) ? "hidden" : ""}`}
+                        className={`py-2 bg-dark-blue rounded-lg `}
                         onContextMenu={(e) => handleContextMenu(e)}
                         style={{
                           boxShadow:
@@ -451,13 +450,13 @@ export default function Table({
                           <td
                             className={`px-3 py-2 border-r-2 border-r-[#0c547a] border-[#808e94] ${
                               rowIndex === 0 ? "border-t-0" : "border-t-2"
-                            } ${["Net", "Tax"].includes(column) ? "hidden" : ""}`}
+                            } `}
                             tabIndex={0}
                             style={{ overflow: "visible" }}
                           >
                             {[
                               "Total Price",
-                              "Tax Calculation",
+                              "VAT £",
                               "Total Cost",
                               "Profit",
                               "Description",
@@ -467,7 +466,7 @@ export default function Table({
                               <span>
                                 {column === "Total Price" &&
                                   calculateTotalPrice(row)}
-                                {column === "Tax Calculation" &&
+                                {column === "VAT £" &&
                                   calculateTaxCalculation(row)}
                                 {column === "Total Cost" &&
                                   calculateTotalCost(row)}
@@ -545,7 +544,7 @@ export default function Table({
             <div ref={menuRef} className="absolute bg-white p-2 border rounded">
               <h4 className="font-bold mb-2">Show/Hide Columns</h4>
               {columns.map((column) => (
-                <div key={column} className={`flex items-center ${["Net", "Tax"].includes(column) ? "hidden" : ""}`}>
+                <div key={column} className={`flex items-center`}>
                   <input
                     type="checkbox"
                     id={column}

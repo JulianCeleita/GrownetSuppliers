@@ -46,7 +46,7 @@ function getInitialColumns() {
       "Net",
       "Total Net",
       "Tax",
-      "Tax Calculation",
+      "VAT £",
       "Total Price",
       "Unit Cost",
       "Total Cost",
