@@ -43,13 +43,15 @@ function getInitialColumns() {
       "UOM",
       "Qty",
       "Price",
-      "Total Price",
-      "Unit Cost",
-      "Profit",
-      "Price Band",
-      "Total Cost",
+      "Net",
+      "Total Net",
       "Tax",
       "Tax Calculation",
+      "Total Price",
+      "Unit Cost",
+      "Total Cost",
+      "Profit",
+      "Price Band",
     ]
   );
 }
