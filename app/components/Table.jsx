@@ -228,7 +228,7 @@ export default function Table({
     const cost = parseFloat(row["Unit Cost"]) || 0;
     const tax = parseFloat(row.Tax) * parseFloat(row.Net);
     const total = (price - cost - tax) / parseFloat(row.Net) * 100 || 0;
-    const totalFiltered = total !== 0 ? total.toFixed(2) : "";
+    const totalFiltered = total !== 0 ? `${total.toFixed(2)}%` : "";
     return totalFiltered;
   };
 
@@ -472,7 +472,7 @@ export default function Table({
                                 {column === "Total Cost" &&
                                   calculateTotalCost(row)}
                                 {column === "Profit" &&
-                                  `${calculateProfit(row)}%`}
+                                  calculateProfit(row)}
                                   {column === "Price" &&
                                   calculatePrice(row)}
                                   {column === "Total Net" &&
