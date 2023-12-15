@@ -67,8 +67,6 @@ const OrderView = () => {
 
   // Click en la pantalla
   useEffect(() => {
-    console.log("customers:", customers);
-
     const handleClickOutside = () => {
       setIsDropdownVisible(false);
       setIsNameDropdownVisible(false);
@@ -96,7 +94,6 @@ const OrderView = () => {
         ...responseAccNumber.data.customer,
         orderDate: orderDate,
       };
-      console.log("responseAccNumber", responseAccNumber);
       setCustomers(updatedCustomers);
     } catch (error) {
       console.error("Error fetching AccNumber data", error);
@@ -119,17 +116,12 @@ const OrderView = () => {
       };
 
       setCustomers(updatedCustomers);
-      console.log("se ejecuto AccName:");
     } catch (error) {
       console.error("Error fetching AccNumber data", error);
     }
   };
 
-  console.log("customers:", customers);
-
   const restaurantList = Array.isArray(restaurants) ? restaurants : [];
-  console.log("selectedAccName:", selectedAccName);
-  console.log("selectedAccNumber:", selectedAccNumber);
 
   //VENTANA TOTAL
   const [showCheckboxColumnTotal, setShowCheckboxColumnTotal] = useState(false);
@@ -155,7 +147,6 @@ const OrderView = () => {
       setShowCheckboxColumnTotal(false);
     }
   };
-  console.log("initialTotalsi:", initialTotalRows);
 
   useEffect(() => {
     document.addEventListener("click", handleClickOutsideTotal);

@@ -2,7 +2,7 @@
 import {
   PresentationData,
   createStorageOrder,
-  presentationsCode
+  presentationsCode,
 } from "@/app/config/urls.config";
 import { useTableStore } from "@/app/store/useTableStore";
 import useTokenStore from "@/app/store/useTokenStore";
@@ -390,7 +390,6 @@ export default function Table() {
           currentValues["Description"].trim() !== "")
       ) {
         fetchPrductCOde();
-        console.log("Entro fetchPrductCOde");
       }
 
       const nextFieldName = getNextFieldName(fieldName, rowIndex);
@@ -406,7 +405,6 @@ export default function Table() {
           initialColumns.indexOf(fieldName) === initialColumns.length - 1;
 
         if (isLastCell) {
-          console.log("Entro addNewRow");
           addNewRow();
         } else {
           const nextRowIndex = rowIndex + 1;
@@ -424,7 +422,6 @@ export default function Table() {
       // Obtener el valor del input de "Code" desde currentValues
       const currentProductCode =
         currentValues["Code"] || currentValues["Description"];
-      console.log("currentProductCode", currentProductCode);
       const response = await axios.get(
         `${presentationsCode}${currentProductCode}`,
         {
@@ -455,30 +452,6 @@ export default function Table() {
     }
   };
 
-  console.log("currentValues", currentValues);
-  console.log("data A enviar :", rows);
-  console.log("productByCode:", productByCode);
-  // const filteredProducts = rows
-  //   .filter((row) => parseFloat(row.quantity) > 0)
-  //   .map(({ quantity, price, id_presentations }) => ({
-  //     quantity: parseFloat(quantity),
-  //     price,
-  //     id_presentations,
-  //   }));
-
-  // const jsonOrderData = {
-  //   accountNumber_customers: customers?.accountNumber,
-  //   address_delivery: customers?.address,
-  //   date_delivery: customers?.orderDate,
-  //   id_suppliers: 1,
-  //   net: parseFloat(totalNetSum),
-  //   observation: specialRequirements,
-  //   total: parseFloat(totalPriceSum),
-  //   total_tax: parseFloat(totalTaxSum),
-  //   products: filteredProducts,
-  // };
-  // console.log("jsonOrderData", jsonOrderData);
-
   const createOrder = async () => {
     try {
       const filteredProducts = rows
@@ -500,19 +473,16 @@ export default function Table() {
         total_tax: parseFloat(totalTaxSum),
         products: filteredProducts,
       };
-      console.log("jsonOrderData", jsonOrderData);
       const response = await axios.post(createStorageOrder, jsonOrderData, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
       setShowConfirmModal(true);
-      console.log("se creo la ordern", response);
       setRows(Array.from({ length: 5 }, () => ({ ...initialRowsState })));
       setSpecialRequirements("");
     } catch (error) {
       setShowErrorOrderModal(true);
-      console.log("Error al crear la orden", error);
     }
   };
 
