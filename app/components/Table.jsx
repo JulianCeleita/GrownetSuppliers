@@ -16,8 +16,8 @@ const initialRowsState = {
   Description: "",
   Packsize: "",
   UOM: "",
-  Qty: "",
-  Price: "",
+  quantity: "",
+  price: "",
   "Total Price": "",
   "Unit Cost": "",
   Profit: "",
@@ -32,8 +32,8 @@ const inputRefs = {
   Description: [],
   Packsize: [],
   UOM: [],
-  Qty: [],
-  Price: [],
+  quantity: [],
+  price: [],
   "Total Price": [],
   "Unit Cost": [],
   Profit: [],
@@ -101,8 +101,8 @@ export default function Table({
     "Description",
     "Packsize",
     "UOM",
-    "Qty",
-    "Price",
+    "quantity",
+    "price",
     "Total Price",
     "Unit Cost",
     "Profit",
@@ -116,8 +116,8 @@ export default function Table({
     Description: "text",
     Packsize: "text",
     UOM: "text",
-    Qty: "number",
-    Price: "number",
+    quantity: "number",
+    price: "number",
     "Total Price": "number",
     "Unit Cost": "number",
     Profit: "number",
@@ -170,22 +170,22 @@ export default function Table({
 
   //  TOTAL PRICE
   const calculateTotalPrice = (row) => {
-    const qty = parseFloat(row.Qty) || 0;
-    const price = parseFloat(row.Price) || 0;
+    const qty = parseFloat(row.quantity) || 0;
+    const price = parseFloat(row.price) || 0;
     return qty * price;
   };
 
   // TAX CALCULATION
   const calculateTaxCalculation = (row) => {
     const tax = parseFloat(row.Tax) || 0;
-    const price = parseFloat(row.Price) || 0;
-    const qty = parseFloat(row.Qty) || 0;
+    const price = parseFloat(row.price) || 0;
+    const qty = parseFloat(row.quantity) || 0;
     return tax * price * qty;
   };
 
   // TOTAL COST
   const calculateTotalCost = (row) => {
-    const qty = parseFloat(row.Qty) || 0;
+    const qty = parseFloat(row.quantity) || 0;
     const cost = parseFloat(row["Unit Cost"]) || 0;
     return qty * cost;
   };
@@ -219,7 +219,7 @@ export default function Table({
 
   //SUMA NET INVOICE
   const calculateTotalNetSum = (rows) => {
-    return rows.reduce((sum, row) => sum + (parseFloat(row.Price) || 0), 0);
+    return rows.reduce((sum, row) => sum + (parseFloat(row.price) || 0), 0);
   };
   useEffect(() => {
     const totalNetSum = calculateTotalNetSum(rows);
@@ -236,15 +236,15 @@ export default function Table({
         ) {
           return {
             ...row,
-            Code: productByCode.product_code,
+            Code: productByCode.presentation_code,
             Description: productByCode.product_name,
             Packsize: productByCode.presentation_name,
             UOM: productByCode.uom,
-            Qty: "",
-            Price: productByCode.price / (1 - productByCode.tax),
+            quantity: row.quantity,
+            price: productByCode.price / (1 - productByCode.tax),
             "Unit Cost": productByCode.cost,
             Tax: productByCode.tax,
-            Price: productByCode.price,
+
             "Total Price": "",
             Profit: "",
             "Price Band": "",
@@ -335,7 +335,23 @@ export default function Table({
           },
         }
       );
-      setProductByCode(response.data.data[0]);
+      const productByCodeData = response.data.data[0];
+
+      const updatedRows = rows.map((row) => {
+        if (
+          row["Code"] === currentValues["Code"] ||
+          row["Description"] === currentValues["Description"]
+        ) {
+          return {
+            ...row,
+            id_presentations: productByCodeData.id_presentations,
+          };
+        }
+        return row;
+      });
+
+      setRows(updatedRows);
+      setProductByCode(productByCodeData);
     } catch (error) {
       // Manejar errores aquí
       console.error("Error al hacer la solicitud:", error.message);
@@ -345,12 +361,36 @@ export default function Table({
   console.log("currentValues", currentValues);
   console.log("data A enviar :", rows);
   console.log("productByCode:", productByCode);
+  // const filteredProducts = rows
+  //   .filter((row) => parseFloat(row.quantity) > 0)
+  //   .map(({ quantity, price, id_presentations }) => ({
+  //     quantity: parseFloat(quantity),
+  //     price,
+  //     id_presentations,
+  //   }));
+
+  // const jsonOrderData = {
+  //   accountNumber_customers: customers?.accountNumber,
+  //   address_delivery: customers?.address,
+  //   date_delivery: customers?.orderDate,
+  //   id_suppliers: 1,
+  //   net: 19.76,
+  //   observation: "Test Heiner desde app suppliers",
+  //   total: 78.5,
+  //   total_tax: 58.76,
+  //   products: filteredProducts,
+  // };
+  // console.log("jsonOrderData", jsonOrderData);
 
   const createOrder = async () => {
     try {
       const filteredProducts = rows
-        .filter((row) => parseFloat(row.Qty) > 0)
-        .map(({ Qty, Packsize, Price }) => ({ Qty, Packsize, Price }));
+        .filter((row) => parseFloat(row.quantity) > 0)
+        .map(({ quantity, price, id_presentations }) => ({
+          quantity: parseFloat(quantity),
+          price,
+          id_presentations,
+        }));
 
       const jsonOrderData = {
         accountNumber_customers: customers.accountNumber,
@@ -358,7 +398,7 @@ export default function Table({
         date_delivery: customers.orderDate,
         id_suppliers: 1,
         net: 19.76,
-        observation: "Test Heiner desde app suppliers",
+        observation: "Test Heiner desde app suppliers--Yeison",
         total: 78.5,
         total_tax: 58.76,
         products: filteredProducts,

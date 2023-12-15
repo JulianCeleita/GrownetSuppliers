@@ -1,7 +1,7 @@
 "use client";
 import React, { useEffect, useState, useRef } from "react";
 import Table from "@/app/components/Table";
-import { AccName, AccNumber, Restaurants } from "../config/urls.config";
+import { Restaurants, customersData } from "../config/urls.config";
 import axios from "axios";
 import useTokenStore from "../store/useTokenStore";
 import Select from "react-select";
@@ -93,7 +93,7 @@ const OrderView = () => {
   const fetchDataAccNumber = async () => {
     try {
       const responseAccNumber = await axios.get(
-        `${AccNumber}${selectedAccNumber}`,
+        `${customersData}${selectedAccNumber}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -114,7 +114,7 @@ const OrderView = () => {
   const fetchDataAccName = async () => {
     try {
       const responseAccNumber = await axios.get(
-        `${AccName}${selectedAccName}`,
+        `${customersData}${selectedAccName}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -135,7 +135,7 @@ const OrderView = () => {
   };
 
   console.log("customers:", customers);
-  console.log("restaurants:", restaurants);
+
   const restaurantList = Array.isArray(restaurants) ? restaurants : [];
   console.log("selectedAccName:", selectedAccName);
   console.log("selectedAccNumber:", selectedAccNumber);
