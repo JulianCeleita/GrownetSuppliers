@@ -489,7 +489,7 @@ export default function Table({
                       <th
                         key={index}
                         scope="col"
-                        className={`py-2 bg-dark-blue rounded-lg `}
+                        className={`py-2 bg-dark-blue rounded-lg capitalize`}
                         onContextMenu={(e) => handleContextMenu(e)}
                         style={{
                           boxShadow:
@@ -539,7 +539,7 @@ export default function Table({
                                   calculateTotalNet(row)}
                                 {column === "Description" && (
                                   <Select
-                                    className="w-[240px] whitespace-nowrap"
+                                    className="w-[680px] whitespace-nowrap"
                                     menuPortalTarget={document.body}
                                     options={
                                       DescriptionData
@@ -568,6 +568,21 @@ export default function Table({
                                     onKeyDown={(e) =>
                                       handleKeyDown(e, rowIndex, column)
                                     }
+                                    styles={{
+                                      control: (provided) => ({
+                                        ...provided,
+                                        border: "none",
+                                        boxShadow: "none",
+                                      }),
+                                      dropdownIndicator: (provided) => ({
+                                        ...provided,
+                                        display: "none"
+                                      }),
+                                      indicatorSeparator: (provided) => ({
+                                        ...provided,
+                                        display: "none",
+                                      }),
+                                    }}                                
                                   />
                                 )}
                               </span>
@@ -612,7 +627,7 @@ export default function Table({
                     checked={initialColumns.includes(column)}
                     onChange={() => handleCheckboxChange(column)}
                   />
-                  <label htmlFor={column} className="ml-2">
+                  <label htmlFor={column} className="ml-2 capitalize">
                     {column}
                   </label>
                 </div>
