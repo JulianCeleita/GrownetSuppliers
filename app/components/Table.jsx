@@ -1,17 +1,16 @@
 "use client";
-import React, { useRef, useState, useEffect } from "react";
-import Select from "react-select";
-import axios from "axios";
 import {
   PresentationData,
   createStorageOrder,
-  presentationsCode,
-  productsUrl,
+  presentationsCode
 } from "@/app/config/urls.config";
-import useTokenStore from "@/app/store/useTokenStore";
 import { useTableStore } from "@/app/store/useTableStore";
-import ModalSuccessfull from "./ModalSuccessfull";
+import useTokenStore from "@/app/store/useTokenStore";
+import axios from "axios";
+import React, { useEffect, useRef, useState } from "react";
+import Select from "react-select";
 import ModalOrderError from "./ModalOrderError";
+import ModalSuccessfull from "./ModalSuccessfull";
 
 const initialRowsState = {
   Code: "",
@@ -74,15 +73,7 @@ const useFocusOnEnter = (formRef) => {
   return { onEnterKey };
 };
 
-export default function Table({
-  updateTotalPriceSum,
-  updateTotalTaxSum,
-  updateTotalNetSum,
-  updateTotalCostSum,
-  totalPriceSum,
-  totalTaxSum,
-  totalNetSum,
-}) {
+export default function Table() {
   const [rows, setRows] = useState(
     Array.from({ length: 5 }, () => ({ ...initialRowsState }))
   );
@@ -96,6 +87,12 @@ export default function Table({
     initialTotalRows,
     toggleTotalRowVisibility,
     customers,
+    setTotalNetSum,
+    setTotalPriceSum,
+    setTotalTaxSum,
+    setTotalCostSum,
+    setTotalProfit,
+    setTotalProfitPercentage,
   } = useTableStore();
   const [showCheckboxColumnTotal, setShowCheckboxColumnTotal] = useState(false);
   const menuRef = useRef(null);
@@ -202,7 +199,7 @@ export default function Table({
     const net = parseFloat(row.Net) || 0;
     const qty = parseFloat(row.quantity) || 0;
     const total = net * qty;
-    const totalFormatted = isNaN(total) ? 0 : total.toFixed(2);
+    const totalFormatted = total !== 0 ? total.toFixed(2) : "";
     return totalFormatted;
   };
 
@@ -212,7 +209,7 @@ export default function Table({
     const tax = parseFloat(row.Tax) || 0;
     const qty = parseFloat(row.quantity) || 0;
     const total = net * tax * qty;
-    const totalFormatted = isNaN(total) ? 0 : total.toFixed(2);
+    const totalFormatted = total !== 0 ? total.toFixed(2) : "";
     return totalFormatted;
   };
 
@@ -221,7 +218,7 @@ export default function Table({
     const price = parseFloat(row.price) || 0;
     const qty = parseFloat(row.quantity) || 0;
     const total = price * qty;
-    const totalFormatted = isNaN(total) ? 0 : total.toFixed(2);
+    const totalFormatted = total !== 0 ? total.toFixed(2) : "";
     return totalFormatted;
   };
 
@@ -230,7 +227,7 @@ export default function Table({
     const qty = parseFloat(row.quantity) || 0;
     const cost = parseFloat(row["Unit Cost"]) || 0;
     const total = qty * cost;
-    const totalFormatted = isNaN(total) ? 0 : total.toFixed(2);
+    const totalFormatted = total !== 0 ? total.toFixed(2) : "";
     return totalFormatted;
   };
 
@@ -244,39 +241,86 @@ export default function Table({
     return totalFiltered;
   };
 
-  //SUMA TOTAL INVOICE
-  useEffect(() => {
-    const totalSum = rows.reduce(
-      (sum, row) => sum + calculateTotalPrice(row),
-      0
-    );
-    updateTotalPriceSum(totalSum);
-    console.log("Total invoice: " + totalSum);
-  }, [rows, updateTotalPriceSum]);
+  // TOTAL NET SUM
+  const calculateTotalNetSum = (rows) => {
+    return rows
+      .reduce((acc, row) => {
+        const totalNet = parseFloat(calculateTotalNet(row)) || 0;
+        return acc + totalNet;
+      }, 0)
+      .toFixed(2);
+  };
 
-  //SUMA TOTAL VAT
-  useEffect(() => {
-    const totalSum = rows.reduce(
-      (sum, row) => sum + calculateTaxCalculation(row),
-      0
-    );
-    updateTotalTaxSum(totalSum);
-  }, [rows, updateTotalTaxSum]);
+  // TOTAL PRICE SUM
+  const calculateTotalPriceSum = (rows) => {
+    return rows
+      .reduce((acc, row) => {
+        const totalPrice = parseFloat(calculateTotalPrice(row)) || 0;
+        return acc + totalPrice;
+      }, 0)
+      .toFixed(2);
+  };
 
-  //SUMA NET INVOICE
-  useEffect(() => {
-    const totalSum = rows.reduce((sum, row) => sum + calculateTotalNet(row), 0);
-    updateTotalNetSum(totalSum);
-  }, [rows, updateTotalNetSum]);
+  // TOTAL TAX SUM
+  const calculateTotalTaxSum = (rows) => {
+    return rows
+      .reduce((acc, row) => {
+        const totalTax = parseFloat(calculateTaxCalculation(row)) || 0;
+        return acc + totalTax;
+      }, 0)
+      .toFixed(2);
+  };
 
-  //SUMA TOTAL COST
+  // TOTAL COST SUM
+  const calculateTotalCostSum = (rows) => {
+    return rows
+      .reduce((acc, row) => {
+        const totalCost = parseFloat(calculateTotalCost(row)) || 0;
+        return acc + totalCost;
+      }, 0)
+      .toFixed(2);
+  };
+
+  // TOTAL PROFIT $
+  const calculateTotalProfit = () => {
+    const totalProfit = totalPriceSum - totalTaxSum - totalCostSum;
+    return totalProfit.toFixed(2);
+  };
+
+  // TOTAL PROFIT %
+  const calculateTotalProfitPercentage = () => {
+    const totalProfitPercentage = (totalProfit / totalNetSum) * 100 || 0;
+    return totalProfitPercentage.toFixed(2);
+  };
+
+  const totalNetSum = calculateTotalNetSum(rows);
+  const totalPriceSum = calculateTotalPriceSum(rows);
+  const totalTaxSum = calculateTotalTaxSum(rows);
+  const totalCostSum = calculateTotalCostSum(rows);
+  const totalProfit = calculateTotalProfit();
+  const totalProfitPercentage = calculateTotalProfitPercentage();
+
   useEffect(() => {
-    const totalSum = rows.reduce(
-      (sum, row) => sum + calculateTotalCost(row),
-      0
-    );
-    updateTotalCostSum(totalSum);
-  }, [rows, updateTotalCostSum]);
+    setTotalNetSum(totalNetSum);
+    setTotalPriceSum(totalPriceSum);
+    setTotalTaxSum(totalTaxSum);
+    setTotalCostSum(totalCostSum);
+    setTotalProfit(totalProfit);
+    setTotalProfitPercentage(totalProfitPercentage);
+  }, [
+    totalNetSum,
+    totalPriceSum,
+    totalProfit,
+    setTotalProfit,
+    totalProfitPercentage,
+    setTotalProfitPercentage,
+    totalCostSum,
+    setTotalCostSum,
+    totalTaxSum,
+    setTotalNetSum,
+    setTotalPriceSum,
+    setTotalTaxSum,
+  ]);
 
   // VALORES INICIALES DE LA TABLA
   useEffect(() => {
@@ -576,13 +620,13 @@ export default function Table({
                                       }),
                                       dropdownIndicator: (provided) => ({
                                         ...provided,
-                                        display: "none"
+                                        display: "none",
                                       }),
                                       indicatorSeparator: (provided) => ({
                                         ...provided,
                                         display: "none",
                                       }),
-                                    }}                                
+                                    }}
                                   />
                                 )}
                               </span>

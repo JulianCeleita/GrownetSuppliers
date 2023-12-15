@@ -1,15 +1,24 @@
 "use client";
-import React, { useEffect, useState, useRef } from "react";
 import Table from "@/app/components/Table";
-import { Restaurants, customersData } from "../config/urls.config";
 import axios from "axios";
-import useTokenStore from "../store/useTokenStore";
+import { useEffect, useRef, useState } from "react";
 import Select from "react-select";
+import { Restaurants, customersData } from "../config/urls.config";
 import { useTableStore } from "../store/useTableStore";
+import useTokenStore from "../store/useTokenStore";
 
 const OrderView = () => {
   const { token } = useTokenStore();
-  const { customers, setCustomers } = useTableStore();
+  const {
+    customers,
+    setCustomers,
+    totalNetSum,
+    totalPriceSum,
+    totalTaxSum,
+    totalCostSum,
+    totalProfit,
+    totalProfitPercentage,
+  } = useTableStore();
 
   const [restaurants, setRestaurants] = useState(null);
   const [selectedAccNumber, setSelectedAccNumber] = useState("");
@@ -26,38 +35,6 @@ const OrderView = () => {
     const day = String(today.getDate()).padStart(2, "0");
     return `${year}-${month}-${day}`;
   }
-  const [totalPriceSum, setTotalPriceSum] = useState(0);
-  const [totalTaxSum, setTotalTaxSum] = useState(0);
-  const [totalNetSum, setTotalNetSum] = useState(0);
-  const [totalCostSum, setTotalCostSum] = useState(0);
-
-  console.log("totalPriceSum:", totalPriceSum);
-  const total = totalPriceSum - totalTaxSum - totalCostSum;
-  const percentageProfit = (total / totalNetSum) * 100;
-  //TO DO verficar las funciones cuando se este el net
-  //SUMA TOTAL INVOICE
-  const updateTotalPriceSum = (sum) => {
-    const numericSum = parseFloat(sum) || 0;
-    setTotalPriceSum(numericSum);
-  };
-
-  //SUMA TOTAL VAT
-  const updateTotalTaxSum = (sum) => {
-    const numericSum = parseFloat(sum) || 0;
-    setTotalTaxSum(numericSum);
-  };
-
-  //SUMA NET INVOICE
-  const updateTotalNetSum = (sum) => {
-    const numericSum = parseFloat(sum) || 0;
-    setTotalNetSum(numericSum);
-  };
-
-  //SUMA TOTAL COST
-  const updateTotalCostSum = (sum) => {
-    const numericSum = parseFloat(sum) || 0;
-    setTotalCostSum(numericSum);
-  };
 
   useEffect(() => {
     const fetchData = async () => {
@@ -159,11 +136,11 @@ const OrderView = () => {
   const menuRefTotal = useRef(null);
   const { initialTotalRows, toggleTotalRowVisibility } = useTableStore();
   const columnsTotal = [
-    { name: "Net Invoice", price: "£ " + totalNetSum.toFixed(2) },
-    { name: "Total VAT", price: "£ " + totalTaxSum.toFixed(2) },
-    { name: "Total Invoice", price: "£ " + totalPriceSum.toFixed(2) },
-    { name: "Profit (£)", price: "£ " + total.toFixed(2) },
-    { name: "Profit (%)", price: percentageProfit.toFixed(2) + "%" },
+    { name: "Net Invoice", price: "£ " + totalNetSum },
+    { name: "Total VAT", price: "£ " + totalTaxSum },
+    { name: "Total Invoice", price: "£ " + totalPriceSum },
+    { name: "Profit (£)", price: "£ " + totalProfit },
+    { name: "Profit (%)", price: totalProfitPercentage + "%" },
   ];
 
   const handleContextMenuTotal = (e) => {
@@ -336,15 +313,7 @@ const OrderView = () => {
         )}
       </div>
       <div className="-mt-20">
-        <Table
-          updateTotalPriceSum={updateTotalPriceSum}
-          updateTotalTaxSum={updateTotalTaxSum}
-          updateTotalNetSum={updateTotalNetSum}
-          updateTotalCostSum={updateTotalCostSum}
-          totalPriceSum={totalPriceSum}
-          totalTaxSum={totalTaxSum}
-          totalNetSum={totalNetSum}
-        />
+        <Table />
       </div>
     </>
   );
