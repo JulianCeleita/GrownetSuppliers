@@ -196,8 +196,8 @@ export default function Table({
     const net = parseFloat(row.Net) || 0;
     const qty = parseFloat(row.quantity) || 0;
     const total = net * qty;
-    const totalFiltered = total !== 0 ? total.toFixed(2) : "";
-    return totalFiltered;
+    //const totalFiltered = total !== 0 ? total.toFixed(2) : "";
+    return total;
   };
 
   // VAT £
@@ -206,8 +206,8 @@ export default function Table({
     const tax = parseFloat(row.Tax) || 0;
     const qty = parseFloat(row.quantity) || 0;
     const total = net * tax * qty;
-    const totalFiltered = total !== 0 ? total.toFixed(2) : "";
-    return totalFiltered;
+    //const totalFiltered = total !== 0 ? total.toFixed(2) : "";
+    return total;
   };
 
   //  TOTAL PRICE
@@ -215,8 +215,8 @@ export default function Table({
     const price = parseFloat(row.price) || 0;
     const qty = parseFloat(row.quantity) || 0;
     const total = price * qty;
-    const totalFiltered = total !== 0 ? total.toFixed(2) : "";
-    return totalFiltered;
+    //const totalFiltered = total !== 0 ? total.toFixed(2) : "";
+    return total;
   };
 
   // TOTAL COST
@@ -224,8 +224,8 @@ export default function Table({
     const qty = parseFloat(row.quantity) || 0;
     const cost = parseFloat(row["Unit Cost"]) || 0;
     const total = qty * cost;
-    const totalFiltered = total !== 0 ? total.toFixed(2) : "";
-    return totalFiltered;
+    //const totalFiltered = total !== 0 ? total.toFixed(2) : "";
+    return total;
   };
 
   // PROFIT
@@ -245,6 +245,7 @@ export default function Table({
       0
     );
     updateTotalPriceSum(totalSum);
+    console.log("Total invoice: " + totalSum);
   }, [rows, updateTotalPriceSum]);
 
   //SUMA TOTAL VAT
@@ -260,7 +261,6 @@ export default function Table({
   useEffect(() => {
     const totalSum = rows.reduce((sum, row) => sum + calculateTotalNet(row), 0);
     updateTotalNetSum(totalSum);
-    console.log("Suma del NET " + totalSum);
   }, [rows, updateTotalNetSum]);
 
   //SUMA TOTAL COST

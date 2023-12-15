@@ -153,9 +153,9 @@ const OrderView = () => {
   const menuRefTotal = useRef(null);
   const { initialTotalRows, toggleTotalRowVisibility } = useTableStore();
   const columnsTotal = [
-    { name: "Net Invoice", price: "£ " + totalNetSum },
-    { name: "Total VAT", price: "£ " + totalTaxSum },
-    { name: "Total Invoice", price: "£ " + totalPriceSum },
+    { name: "Net Invoice", price: "£ " + totalNetSum.toFixed(2) },
+    { name: "Total VAT", price: "£ " + totalTaxSum.toFixed(2) },
+    { name: "Total Invoice", price: "£ " + totalPriceSum.toFixed(2) },
     { name: "Profit (£)", price: "£ " + total.toFixed(2) },
     { name: "Profit (%)", price: percentageProfit.toFixed(2) + "%" },
   ];
@@ -280,14 +280,14 @@ const OrderView = () => {
           className="bg-white p-2 pr-9 pl-9 rounded-lg flex flex-col justify-center"
           onContextMenu={(e) => handleContextMenuTotal(e)}
         >
-          <h1 className="text-lg text-primary-blue font-semibold w-[80%] ml-5">
+          <h1 className="text-lg text-primary-blue font-semibold ml-5">
             Payment details
           </h1>
           {columnsTotal.map(
             (column, index) =>
               initialTotalRows.includes(column.name) && (
                 <div className=" flex items-center" key={column.name}>
-                  <h1 className="text-lg text-dark-blue font-semibold w-[80%] ml-5">
+                  <h1 className="text-lg text-dark-blue font-semibold w-[60%] ml-5">
                     {column.name}
                   </h1>
                   <p className="text-dark-blue text-lg w-[40%]">
