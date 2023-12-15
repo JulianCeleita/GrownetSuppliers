@@ -99,7 +99,7 @@ export default function Table({
   const [DescriptionData, setDescriptionData] = useState(null);
   const lastActiveColumn = initialColumns[initialColumns.length - 1];
   const [showConfirmModal, setShowConfirmModal] = useState(false);
-  const [showErrorOrderModal, setShowErrorOrderModal] = useState(true);
+  const [showErrorOrderModal, setShowErrorOrderModal] = useState(false);
   const [specialRequirements, setSpecialRequirements] = useState("");
 
   const columns = [
