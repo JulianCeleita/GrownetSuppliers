@@ -54,10 +54,8 @@ export const Restaurants =
 export const createOrders =
   "https://api.grownetapp.com/grownet/api/orders/create";
 
-export const AccNumber =
+export const customersData =
   "https://api.grownetapp.com/grownet/api/customers/serch/";
-export const AccName =
-  "https://api.grownetapp.com/grownet/api/customers/accountName/";
 
 export const presentationsCode =
   "https://api.grownetapp.com/grownet/api/presentations/search/";
