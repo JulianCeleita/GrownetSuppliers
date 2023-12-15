@@ -249,17 +249,14 @@ export default function Table({
   }, [rows, updateTotalTaxSum]);
 
   //SUMA NET INVOICE
-  const calculateTotalNetSum = (rows) => {
+  /*const calculateTotalNetSum = (rows) => {
     return rows.reduce((sum, row) => sum + (parseFloat(row.Price) || 0), 0);
-  }; /*
-  useEffect(() => {
-    const totalNetSum = calculateTotalNetSum(rows);
-    updateTotalNetSum(totalNetSum);
-  }, [rows, updateTotalNetSum]);
+  }; */
   useEffect(() => {
     const totalSum = rows.reduce((sum, row) => sum + calculateTotalNet(row), 0);
     updateTotalNetSum(totalSum);
-  }, [rows, updateTotalNetSum]);*/
+    console.log("Suma del NET " + totalSum);
+  }, [rows, updateTotalNetSum]);
 
   //SUMA TOTAL COST
   useEffect(() => {
