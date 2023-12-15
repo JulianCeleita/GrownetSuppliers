@@ -533,7 +533,7 @@ export default function Table({
                                   calculateTotalNet(row)}
                                 {column === "Description" && (
                                   <Select
-                                    className="w-[240px] whitespace-nowrap"
+                                    className="w-[680px] whitespace-nowrap"
                                     menuPortalTarget={document.body}
                                     options={
                                       DescriptionData
@@ -562,6 +562,21 @@ export default function Table({
                                     onKeyDown={(e) =>
                                       handleKeyDown(e, rowIndex, column)
                                     }
+                                    styles={{
+                                      control: (provided) => ({
+                                        ...provided,
+                                        border: "none",
+                                        boxShadow: "none",
+                                      }),
+                                      dropdownIndicator: (provided) => ({
+                                        ...provided,
+                                        display: "none"
+                                      }),
+                                      indicatorSeparator: (provided) => ({
+                                        ...provided,
+                                        display: "none",
+                                      }),
+                                    }}                                
                                   />
                                 )}
                               </span>
