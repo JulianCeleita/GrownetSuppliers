@@ -37,22 +37,26 @@ const OrderView = () => {
   //TO DO verficar las funciones cuando se este el net
   //SUMA TOTAL INVOICE
   const updateTotalPriceSum = (sum) => {
-    setTotalPriceSum(sum);
+    const numericSum = parseFloat(sum) || 0;
+    setTotalPriceSum(numericSum);
   };
 
   //SUMA TOTAL VAT
   const updateTotalTaxSum = (sum) => {
-    setTotalTaxSum(sum);
+    const numericSum = parseFloat(sum) || 0;
+    setTotalTaxSum(numericSum);
   };
 
   //SUMA NET INVOICE
   const updateTotalNetSum = (sum) => {
-    setTotalNetSum(sum);
+    const numericSum = parseFloat(sum) || 0;
+    setTotalNetSum(numericSum);
   };
 
   //SUMA TOTAL COST
   const updateTotalCostSum = (sum) => {
-    setTotalCostSum(sum);
+    const numericSum = parseFloat(sum) || 0;
+    setTotalCostSum(numericSum);
   };
 
   useEffect(() => {

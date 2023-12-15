@@ -108,6 +108,9 @@ export default function Table({
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [showErrorOrderModal, setShowErrorOrderModal] = useState(false);
   const [specialRequirements, setSpecialRequirements] = useState("");
+  const formatNumber = (number) => {
+    return isNaN(number) ? "" : parseFloat(number).toFixed(2);
+  };
 
   const columns = [
     "Code",
@@ -199,8 +202,8 @@ export default function Table({
     const net = parseFloat(row.Net) || 0;
     const qty = parseFloat(row.quantity) || 0;
     const total = net * qty;
-    //const totalFiltered = total !== 0 ? total.toFixed(2) : "";
-    return total;
+    const totalFormatted = isNaN(total) ? 0 : total.toFixed(2);
+    return totalFormatted;
   };
 
   // VAT £
@@ -209,8 +212,8 @@ export default function Table({
     const tax = parseFloat(row.Tax) || 0;
     const qty = parseFloat(row.quantity) || 0;
     const total = net * tax * qty;
-    //const totalFiltered = total !== 0 ? total.toFixed(2) : "";
-    return total;
+    const totalFormatted = isNaN(total) ? 0 : total.toFixed(2);
+    return totalFormatted;
   };
 
   //  TOTAL PRICE
@@ -218,8 +221,8 @@ export default function Table({
     const price = parseFloat(row.price) || 0;
     const qty = parseFloat(row.quantity) || 0;
     const total = price * qty;
-    //const totalFiltered = total !== 0 ? total.toFixed(2) : "";
-    return total;
+    const totalFormatted = isNaN(total) ? 0 : total.toFixed(2);
+    return totalFormatted;
   };
 
   // TOTAL COST
@@ -227,8 +230,8 @@ export default function Table({
     const qty = parseFloat(row.quantity) || 0;
     const cost = parseFloat(row["Unit Cost"]) || 0;
     const total = qty * cost;
-    //const totalFiltered = total !== 0 ? total.toFixed(2) : "";
-    return total;
+    const totalFormatted = isNaN(total) ? 0 : total.toFixed(2);
+    return totalFormatted;
   };
 
   // PROFIT
