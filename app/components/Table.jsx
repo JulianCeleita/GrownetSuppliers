@@ -10,6 +10,8 @@ import {
 } from "@/app/config/urls.config";
 import useTokenStore from "@/app/store/useTokenStore";
 import { useTableStore } from "@/app/store/useTableStore";
+import ModalSuccessfull from "./ModalSuccessfull";
+import ModalOrderError from "./ModalOrderError";
 
 const initialRowsState = {
   Code: "",
@@ -72,6 +74,7 @@ export default function Table({
   updateTotalPriceSum,
   updateTotalTaxSum,
   updateTotalNetSum,
+  updateTotalCostSum,
 }) {
   const [rows, setRows] = useState(
     Array.from({ length: 5 }, () => ({ ...initialRowsState }))
@@ -95,6 +98,9 @@ export default function Table({
   const [productByCode, setProductByCode] = useState({});
   const [DescriptionData, setDescriptionData] = useState(null);
   const lastActiveColumn = initialColumns[initialColumns.length - 1];
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
+  const [showErrorOrderModal, setShowErrorOrderModal] = useState(true);
+  const [specialRequirements, setSpecialRequirements] = useState("");
 
   const columns = [
     "Code",
@@ -225,6 +231,15 @@ export default function Table({
     const totalNetSum = calculateTotalNetSum(rows);
     updateTotalNetSum(totalNetSum);
   }, [rows, updateTotalNetSum]);
+
+  //SUMA TOTAL COST
+  useEffect(() => {
+    const totalSum = rows.reduce(
+      (sum, row) => sum + calculateTotalCost(row),
+      0
+    );
+    updateTotalCostSum(totalSum);
+  }, [rows, updateTotalCostSum]);
 
   // VALORES INICIALES DE LA TABLA
   useEffect(() => {
@@ -369,9 +384,12 @@ export default function Table({
           Authorization: `Bearer ${token}`,
         },
       });
-
+      setShowConfirmModal(true);
       console.log("se creo la ordern", response);
+      setRows(Array.from({ length: 5 }, () => ({ ...initialRowsState })));
+      setSpecialRequirements("");
     } catch (error) {
+      setShowErrorOrderModal(true);
       console.log("Error al crear la orden", error);
     }
   };
@@ -533,6 +551,8 @@ export default function Table({
         </h1>
         <input
           type="text"
+          value={specialRequirements}
+          onChange={(e) => setSpecialRequirements(e.target.value)}
           className="p-3 border border-dark-blue rounded-tr-lg rounded-br-lg w-full mr-5"
           placeholder="Write your comments here"
         />
@@ -543,6 +563,14 @@ export default function Table({
           Send order
         </button>
       </div>
+      <ModalSuccessfull
+        isvisible={showConfirmModal}
+        onClose={() => setShowConfirmModal(false)}
+      />
+      <ModalOrderError
+        isvisible={showErrorOrderModal}
+        onClose={() => setShowErrorOrderModal(false)}
+      />
     </div>
   );
 }

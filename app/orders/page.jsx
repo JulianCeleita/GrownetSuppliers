@@ -29,8 +29,11 @@ const OrderView = () => {
   const [totalPriceSum, setTotalPriceSum] = useState(0);
   const [totalTaxSum, setTotalTaxSum] = useState(0);
   const [totalNetSum, setTotalNetSum] = useState(0);
-
-  //SUMA NET INVOICE
+  const [totalCostSum, setTotalCostSum] = useState(0);
+  const total = totalPriceSum - totalTaxSum - totalCostSum;
+  const percentageProfit = (total / totalNetSum) * 100;
+  //TO DO verficar las funciones cuando se este el net
+  //SUMA TOTAL INVOICE
   const updateTotalPriceSum = (sum) => {
     setTotalPriceSum(sum);
   };
@@ -40,9 +43,14 @@ const OrderView = () => {
     setTotalTaxSum(sum);
   };
 
-  //SUMA TOTAL VAT
+  //SUMA NET INVOICE
   const updateTotalNetSum = (sum) => {
     setTotalNetSum(sum);
+  };
+
+  //SUMA TOTAL COST
+  const updateTotalCostSum = (sum) => {
+    setTotalCostSum(sum);
   };
 
   useEffect(() => {
@@ -145,11 +153,11 @@ const OrderView = () => {
   const menuRefTotal = useRef(null);
   const { initialTotalRows, toggleTotalRowVisibility } = useTableStore();
   const columnsTotal = [
-    { name: "Net Invoice", price: "£ " + totalNetSum },
-    { name: "Total VAT", price: "£ " + totalTaxSum },
-    { name: "Total Invoice", price: "£ " + totalPriceSum },
-    { name: "Profit (£)", price: "£ 100" },
-    { name: "Profit (%)", price: "10.60%" },
+    { name: "Net Invoice", price: "£ " + totalNetSum.toFixed(2) },
+    { name: "Total VAT", price: "£ " + totalTaxSum.toFixed(2) },
+    { name: "Total Invoice", price: "£ " + totalPriceSum.toFixed(2) },
+    { name: "Profit (£)", price: "£ " + total },
+    { name: "Profit (%)", price: percentageProfit.toFixed(2) + "%" },
   ];
   const handleContextMenuTotal = (e) => {
     e.preventDefault();
@@ -325,6 +333,7 @@ const OrderView = () => {
           updateTotalPriceSum={updateTotalPriceSum}
           updateTotalTaxSum={updateTotalTaxSum}
           updateTotalNetSum={updateTotalNetSum}
+          updateTotalCostSum={updateTotalCostSum}
         />
       </div>
     </>

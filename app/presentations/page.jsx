@@ -34,7 +34,7 @@ export const fetchPresentations = async (
       : [];
     setPresentations(newPresentation);
     setIsLoading(false);
-    console.log("response.data.presentations", response.data.presentations)
+    console.log("response.data.presentations", response.data.presentations);
   } catch (error) {
     console.error("Error al obtener las presentaciones:", error);
   }
@@ -52,14 +52,12 @@ function Presentations() {
   //Api
   const [presentations, setPresentations] = useState([]);
 
-
   useEffect(() => {
     fetchPresentations(token, setPresentations, setIsLoading);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   //Delete
-  const [deleteResponse, setDeleteResponse] = useState(null);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
 
   const handleDeletePresentation = (presentation) => {
@@ -88,7 +86,7 @@ function Presentations() {
       })
       .then((response) => {
         setProducts(response.data.products);
-        console.log("response.data.products", response.data.products)
+        console.log("response.data.products", response.data.products);
       })
       .catch((error) => {
         console.error("Error al obtener los productos:", error);
@@ -139,7 +137,7 @@ function Presentations() {
         <table className="w-[90%] bg-white rounded-2xl text-center shadow-[0_8px_30px_rgb(0,0,0,0.12)] mb-10">
           <thead className="sticky top-0 bg-white shadow-[0px_11px_15px_-3px_#edf2f7] ">
             <tr className="border-b-2 border-stone-100 text-dark-blue">
-              <th className="py-4 rounded-tl-lg">Code</th>  
+              <th className="py-4 rounded-tl-lg">Code</th>
               <th className="py-4">Product</th>
               <th className="py-4">Unit of measurement</th>
               <th className="py-4">Packsize</th>
