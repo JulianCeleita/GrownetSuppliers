@@ -626,10 +626,16 @@ export default function Table() {
                                       const updatedRows = [...rows];
                                       updatedRows[rowIndex][column] =
                                         selectedDescription.code;
+                                        if (selectedDescription.code) {
+                                          fetchPrductCOde(rowIndex);
+                                        }
                                       setRows(updatedRows);
                                     }}
-                                    onKeyDown={(e) =>
-                                      handleKeyDown(e, rowIndex, column)
+                                    onKeyDown={(selectedDescription) => {
+                                      if (selectedDescription.code) {
+                                        fetchPrductCOde(rowIndex);
+                                      }
+                                    }
                                     }
                                     styles={{
                                       control: (provided) => ({
