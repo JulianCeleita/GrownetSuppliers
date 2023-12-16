@@ -1,6 +1,6 @@
 "use client";
 import {
-  PresentationData,
+  presentationData,
   createStorageOrder,
   presentationsCode,
 } from "@/app/config/urls.config";
@@ -147,7 +147,7 @@ export default function Table() {
   useEffect(() => {
     const fetchPresentationData = async () => {
       try {
-        const response = await axios.get(PresentationData, {
+        const response = await axios.get(presentationData, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
