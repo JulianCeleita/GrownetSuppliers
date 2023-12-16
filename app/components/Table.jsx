@@ -502,7 +502,7 @@ export default function Table() {
       [column]: newCodeValue,
     }));
 
-    if (newCodeValue.trim() === "") {
+    if (column === "Code" && newCodeValue.trim() === "") {
       const updatedRows = rows.map((row, index) => {
         if (index === rowIndex) {
           return {
