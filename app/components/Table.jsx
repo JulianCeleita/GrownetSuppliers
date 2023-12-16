@@ -105,9 +105,7 @@ export default function Table() {
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [showErrorOrderModal, setShowErrorOrderModal] = useState(false);
   const [specialRequirements, setSpecialRequirements] = useState("");
-  const formatNumber = (number) => {
-    return isNaN(number) ? "" : parseFloat(number).toFixed(2);
-  };
+  const [mouseCoords, setMouseCoords] = useState({ x: 0, y: 0 });
 
   const columns = [
     "Code",
@@ -173,6 +171,7 @@ export default function Table() {
   const handleContextMenu = (e) => {
     e.preventDefault();
     setShowCheckboxColumn(!showCheckboxColumn);
+    setMouseCoords({ x: e.clientX, y: e.clientY });
   };
 
   const handleCheckboxChange = (columnName) => {
@@ -684,7 +683,10 @@ export default function Table() {
           </table>
 
           {showCheckboxColumn === true && (
-            <div ref={menuRef} className="absolute bg-white p-2 border rounded">
+            <div ref={menuRef} className="absolute bg-white p-2 border rounded" style={{
+              top: `${mouseCoords.y}px`,
+              left: `${mouseCoords.x}px`,
+            }}>
               <h4 className="font-bold mb-2">Show/Hide Columns</h4>
               {columns.map((column) => (
                 <div key={column} className={`flex items-center`}>
