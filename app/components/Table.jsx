@@ -397,7 +397,7 @@ export default function Table() {
         (fieldName === "Description" &&
           currentValues["Description"].trim() !== "")
       ) {
-        fetchPrductCOde(rowIndex);
+        fetchProductCode(rowIndex);
       }
 
       if (fieldName === "Net") {
@@ -416,25 +416,28 @@ export default function Table() {
     }
   };
 
-  const fetchPrductCOde = async (rowIndex) => {
+  const fetchProductCode = async (rowIndex) => {
     try {
       // Obtener el valor del input de "Code" desde la fila
-      const currentProductCode = rows[rowIndex]["Code"] || rows[rowIndex]["Description"];
-      const response = await axios.get(
-        `${presentationsCode}${currentProductCode}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      const currentProductCode = rows[rowIndex]["Code"] || "0";
+      const currentDescription = rows[rowIndex]["Description"];
+      const codeToUse =
+        currentProductCode && currentProductCode !== currentValues["Code"]
+          ? currentDescription
+          : currentProductCode;
+
+      const response = await axios.get(`${presentationsCode}${codeToUse}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
       const productByCodeData = response.data.data[0];
 
       const updatedRows = rows.map((row, index) => {
         if (
           index === rowIndex &&
           (row["Code"] === currentProductCode ||
-          row["Description"] === currentProductCode)
+            row["Description"] === currentProductCode)
         ) {
           return {
             ...row,
@@ -613,21 +616,21 @@ export default function Table() {
                                         ...prevValues,
                                         [column]: selectedDescription.code,
                                       }));
+                                      console.log(setCurrentValues);
 
                                       const updatedRows = [...rows];
                                       updatedRows[rowIndex][column] =
                                         selectedDescription.code;
-                                        if (selectedDescription.code) {
-                                          fetchPrductCOde(rowIndex);
-                                        }
+                                      if (selectedDescription.code) {
+                                        fetchProductCode(rowIndex);
+                                      }
                                       setRows(updatedRows);
                                     }}
                                     onKeyDown={(selectedDescription) => {
                                       if (selectedDescription.code) {
-                                        fetchPrductCOde(rowIndex);
+                                        fetchProductCode(rowIndex);
                                       }
-                                    }
-                                    }
+                                    }}
                                     styles={{
                                       control: (provided) => ({
                                         ...provided,
