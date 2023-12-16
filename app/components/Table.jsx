@@ -616,7 +616,6 @@ export default function Table() {
                                         ...prevValues,
                                         [column]: selectedDescription.code,
                                       }));
-                                      console.log(setCurrentValues);
 
                                       const updatedRows = [...rows];
                                       updatedRows[rowIndex][column] =

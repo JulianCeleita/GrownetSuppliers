@@ -49,7 +49,7 @@ export const uomUrl = "https://api.grownetapp.com/grownet/api/uom/all";
 export const taxexUrl = "https://api.grownetapp.com/grownet/api/taxes/all";
 
 //Orders
-export const Restaurants =
+export const restaurantsData =
   "https://api.grownetapp.com/grownet/api/customers/all";
 export const createOrders =
   "https://api.grownetapp.com/grownet/api/orders/create";
@@ -60,7 +60,7 @@ export const customersData =
 export const presentationsCode =
   "https://api.grownetapp.com/grownet/api/presentations/search/";
 
-export const PresentationData =
+export const presentationData =
   "https://api.grownetapp.com/grownet/api/products/presentations/all";
 export const createStorageOrder =
   "https://api.grownetapp.com/grownet/api/orders/create";

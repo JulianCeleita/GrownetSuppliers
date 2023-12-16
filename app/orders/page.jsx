@@ -3,7 +3,7 @@ import Table from "@/app/components/Table";
 import axios from "axios";
 import { useEffect, useRef, useState } from "react";
 import Select from "react-select";
-import { Restaurants, customersData } from "../config/urls.config";
+import { restaurantsData, customersData } from "../config/urls.config";
 import { useTableStore } from "../store/useTableStore";
 import useTokenStore from "../store/useTokenStore";
 
@@ -39,7 +39,7 @@ const OrderView = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const responseRestaurants = await axios.get(Restaurants, {
+        const responseRestaurants = await axios.get(restaurantsData, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
