@@ -57,15 +57,14 @@ function getInitialColumns() {
       "price",
       "Net",
       "Total Net",
-      "Tax",
+      "VAT %",
       "VAT £",
       "Total Price",
       "Unit Cost",
       "Profit",
       "Price Band",
       "Total Cost",
-      "Tax",
-      "Tax Calculation",
+      "VAT %",
     ]
   );
 }

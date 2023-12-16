@@ -21,7 +21,7 @@ const initialRowsState = {
   price: "",
   Net: "",
   "Total Net": "",
-  Tax: "",
+  "VAT %": "",
   "VAT £": "",
   "Total Price": "",
   "Unit Cost": "",
@@ -39,7 +39,7 @@ const inputRefs = {
   price: [],
   Net: [],
   "Total Net": [],
-  Tax: [],
+  "VAT %": [],
   "VAT £": [],
   "Total Price": [],
   "Unit Cost": [],
@@ -118,7 +118,7 @@ export default function Table() {
     "price",
     "Net",
     "Total Net",
-    "Tax",
+    "VAT %",
     "VAT £",
     "Total Price",
     "Unit Cost",
@@ -135,7 +135,7 @@ export default function Table() {
     price: "number",
     Net: "number",
     "Total Net": "number",
-    Tax: "number",
+    "VAT %": "number",
     "VAT £": "text",
     "Total Price": "number",
     "Unit Cost": "number",
@@ -195,7 +195,7 @@ export default function Table() {
   // PRICE
   const calculatePrice = (row) => {
     const net = parseFloat(row.Net) || 0;
-    const tax = parseFloat(row.Tax) || 0;
+    const tax = parseFloat(row["VAT %"]) || 0;
     const total = net + net * tax;
     const totalFiltered = total !== 0 ? total.toFixed(2) : "";
     return totalFiltered;
@@ -213,7 +213,7 @@ export default function Table() {
   // VAT £
   const calculateTaxCalculation = (row) => {
     const net = parseFloat(row.Net) || 0;
-    const tax = parseFloat(row.Tax) || 0;
+    const tax = parseFloat(row["VAT %"]) || 0;
     const qty = parseFloat(row.quantity) || 0;
     const total = net * tax * qty;
     const totalFormatted = total !== 0 ? total.toFixed(2) : "";
@@ -242,7 +242,7 @@ export default function Table() {
   const calculateProfit = (row) => {
     const price = parseFloat(row.price) || 0;
     const cost = parseFloat(row["Unit Cost"]) || 0;
-    const tax = parseFloat(row.Tax) * parseFloat(row.Net);
+    const tax = parseFloat(row["VAT %"]) * parseFloat(row.Net);
     const total = ((price - cost - tax) / parseFloat(row.Net)) * 100 || 0;
     const totalFiltered = total !== 0 ? `${total.toFixed(2)}%` : "";
     return totalFiltered;
@@ -348,7 +348,7 @@ export default function Table() {
               productByCode.price + productByCode.price * productByCode.tax,
             Net: productByCode.price,
             "Total Net": "",
-            Tax: productByCode.tax,
+            "VAT %": productByCode.tax,
             "VAT £": "",
             "Total Price": "",
             "Unit Cost": productByCode.cost,
@@ -500,7 +500,7 @@ export default function Table() {
       ...prevValues,
       [column]: newCodeValue,
     }));
-  
+
     if (newCodeValue.trim() === "") {
       const updatedRows = rows.map((row, index) => {
         if (index === rowIndex) {
@@ -534,7 +534,7 @@ export default function Table() {
                         className={`py-2 px-2 bg-dark-blue rounded-lg capitalize ${
                           column === "quantity" ||
                           column === "Code" ||
-                          column === "Tax" ||
+                          column === "VAT %" ||
                           column === "UOM" ||
                           column === "Net"
                             ? "w-20"
@@ -570,25 +570,35 @@ export default function Table() {
                             style={{ overflow: "visible" }}
                           >
                             {[
-                              "Total Price",
-                              "VAT £",
-                              "Total Cost",
-                              "Profit",
                               "Description",
+                              "Packsize",
+                              "UOM",
                               "price",
                               "Total Net",
+                              "VAT %",
+                              "VAT £",
+                              "Total Price",
+                              "Unit Cost",
+                              "Profit",
+                              "Price Band",
+                              "Total Cost",
                             ].includes(column) ? (
                               <span>
-                                {column === "Total Price" &&
-                                  calculateTotalPrice(row)}
-                                {column === "VAT £" &&
-                                  calculateTaxCalculation(row)}
-                                {column === "Total Cost" &&
-                                  calculateTotalCost(row)}
-                                {column === "Profit" && calculateProfit(row)}
+                                {column === "Packsize" && row[column]}
+                                {column === "UOM" && row[column]}
                                 {column === "price" && calculatePrice(row)}
                                 {column === "Total Net" &&
                                   calculateTotalNet(row)}
+                                {column === "VAT %" && row[column]}
+                                {column === "VAT £" &&
+                                  calculateTaxCalculation(row)}
+                                {column === "Total Price" &&
+                                  calculateTotalPrice(row)}
+                                {column === "Unit Cost" && row[column]}
+                                {column === "Profit" && calculateProfit(row)}
+                                {column === "Price Band" && row[column]}
+                                {column === "Total Cost" &&
+                                  calculateTotalCost(row)}
                                 {column === "Description" && (
                                   <Select
                                     className="w-full"
@@ -616,7 +626,11 @@ export default function Table() {
                                       updatedRows[rowIndex][column] =
                                         selectedDescription.code;
                                       setRows(updatedRows);
-                                      handleDescriptionSelected(e, rowIndex, column);
+                                      handleDescriptionSelected(
+                                        e,
+                                        rowIndex,
+                                        column
+                                      );
                                     }}
                                     onKeyDown={(e) =>
                                       handleKeyDown(e, rowIndex, column)
@@ -658,7 +672,7 @@ export default function Table() {
                                   updatedRows[rowIndex][column] =
                                     e.target.value;
                                   setRows(updatedRows);
-                                  handleCodeChange(e, rowIndex, column)
+                                  handleCodeChange(e, rowIndex, column);
                                 }}
                                 onKeyDown={(e) =>
                                   handleKeyDown(e, rowIndex, column)
