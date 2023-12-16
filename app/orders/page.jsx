@@ -236,6 +236,8 @@ const OrderView = () => {
             <label className="ml-3">Inv. No.: </label>
             <input
               type="text"
+              value="Order"
+              readOnly
               className="border ml-2 p-1.5 rounded-md w-[100%]"
             />
           </div>

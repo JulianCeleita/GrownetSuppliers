@@ -184,6 +184,13 @@ export default function Table() {
       setShowCheckboxColumn(false);
     }
   };
+  useEffect(() => {
+    document.addEventListener("click", handleClickOutside);
+    return () => {
+      document.removeEventListener("click", handleClickOutside);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // PRICE
   const calculatePrice = (row) => {
@@ -503,7 +510,17 @@ export default function Table() {
                       <th
                         key={index}
                         scope="col"
-                        className={`py-2 bg-dark-blue rounded-lg capitalize`}
+                        className={`py-2 px-2 bg-dark-blue rounded-lg capitalize ${
+                          column === "quantity" ||
+                          column === "Code" ||
+                          column === "Tax" ||
+                          column === "UOM" ||
+                          column === "Net"
+                            ? "w-20"
+                            : column === "Packsize"
+                            ? "w-40"
+                            : ""
+                        }`}
                         onContextMenu={(e) => handleContextMenu(e)}
                         style={{
                           boxShadow:
@@ -553,7 +570,7 @@ export default function Table() {
                                   calculateTotalNet(row)}
                                 {column === "Description" && (
                                   <Select
-                                    className="w-[240px] whitespace-nowrap"
+                                    className="w-full"
                                     menuPortalTarget={document.body}
                                     options={
                                       DescriptionData
@@ -604,7 +621,11 @@ export default function Table() {
                               <input
                                 type={inputTypes[column]}
                                 ref={inputRefs[column][rowIndex]}
-                                className="pl-2 h-[30px] outline-none w-full"
+                                className={`pl-2 h-[30px] outline-none w-full ${
+                                  inputTypes[column] === "number"
+                                    ? "hide-number-arrows"
+                                    : ""
+                                }`}
                                 value={row[column] || ""}
                                 onChange={(e) => {
                                   setCurrentValues((prevValues) => ({
