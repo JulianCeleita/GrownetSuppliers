@@ -486,6 +486,27 @@ export default function Table() {
     }
   };
 
+  // BORRAR CASILLAS SI SE BORRA EL CODE
+  const handleCodeChange = (e, rowIndex, column) => {
+    const newCodeValue = e.target.value;
+    setCurrentValues((prevValues) => ({
+      ...prevValues,
+      [column]: newCodeValue,
+    }));
+  
+    if (newCodeValue.trim() === "") {
+      const updatedRows = rows.map((row, index) => {
+        if (index === rowIndex) {
+          return {
+            ...initialRowsState,
+          };
+        }
+        return row;
+      });
+      setRows(updatedRows);
+    }
+  };
+
   return (
     <div className="flex flex-col p-8">
       <div className="overflow-x-auto">
@@ -568,7 +589,7 @@ export default function Table() {
                                       label: row[column] || "",
                                       value: row[column] || "",
                                     }}
-                                    onChange={(selectedDescription) => {
+                                    onChange={(selectedDescription, e) => {
                                       setCurrentValues((prevValues) => ({
                                         ...prevValues,
                                         [column]: selectedDescription.code,
@@ -578,6 +599,7 @@ export default function Table() {
                                       updatedRows[rowIndex][column] =
                                         selectedDescription.code;
                                       setRows(updatedRows);
+                                      handleDescriptionSelected(e, rowIndex, column);
                                     }}
                                     onKeyDown={(e) =>
                                       handleKeyDown(e, rowIndex, column)
@@ -615,6 +637,7 @@ export default function Table() {
                                   updatedRows[rowIndex][column] =
                                     e.target.value;
                                   setRows(updatedRows);
+                                  handleCodeChange(e, rowIndex, column)
                                 }}
                                 onKeyDown={(e) =>
                                   handleKeyDown(e, rowIndex, column)
