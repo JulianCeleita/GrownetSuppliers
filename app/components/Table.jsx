@@ -397,7 +397,7 @@ export default function Table() {
         (fieldName === "Description" &&
           currentValues["Description"].trim() !== "")
       ) {
-        fetchPrductCOde();
+        fetchPrductCOde(rowIndex);
       }
 
       const nextFieldName = getNextFieldName(fieldName, rowIndex);
@@ -425,11 +425,10 @@ export default function Table() {
     }
   };
 
-  const fetchPrductCOde = async () => {
+  const fetchPrductCOde = async (rowIndex) => {
     try {
-      // Obtener el valor del input de "Code" desde currentValues
-      const currentProductCode =
-        currentValues["Code"] || currentValues["Description"];
+      // Obtener el valor del input de "Code" desde la fila
+      const currentProductCode = rows[rowIndex]["Code"] || rows[rowIndex]["Description"];
       const response = await axios.get(
         `${presentationsCode}${currentProductCode}`,
         {
@@ -440,10 +439,11 @@ export default function Table() {
       );
       const productByCodeData = response.data.data[0];
 
-      const updatedRows = rows.map((row) => {
+      const updatedRows = rows.map((row, index) => {
         if (
-          row["Code"] === currentValues["Code"] ||
-          row["Description"] === currentValues["Description"]
+          index === rowIndex &&
+          (row["Code"] === currentProductCode ||
+          row["Description"] === currentProductCode)
         ) {
           return {
             ...row,
@@ -627,11 +627,6 @@ export default function Table() {
                                       updatedRows[rowIndex][column] =
                                         selectedDescription.code;
                                       setRows(updatedRows);
-                                      handleDescriptionSelected(
-                                        e,
-                                        rowIndex,
-                                        column
-                                      );
                                     }}
                                     onKeyDown={(e) =>
                                       handleKeyDown(e, rowIndex, column)
