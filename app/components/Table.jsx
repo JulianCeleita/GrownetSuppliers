@@ -222,9 +222,10 @@ export default function Table() {
 
   //  TOTAL PRICE
   const calculateTotalPrice = (row) => {
-    const price = parseFloat(row.price) || 0;
+    const net = parseFloat(row.Net) || 0;
+    const tax = parseFloat(row["VAT %"]) || 0;
     const qty = parseFloat(row.quantity) || 0;
-    const total = price * qty;
+    const total = (net + net * tax) * qty;
     const totalFormatted = total !== 0 ? total.toFixed(2) : "";
     return totalFormatted;
   };

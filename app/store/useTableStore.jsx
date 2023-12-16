@@ -50,21 +50,13 @@ function getInitialColumns() {
         : "[]"
     ) || [
       "Code",
-      "Packsize",
       "Description",
       "UOM",
       "quantity",
-      "price",
       "Net",
       "Total Net",
-      "VAT %",
       "VAT £",
       "Total Price",
-      "Unit Cost",
-      "Profit",
-      "Price Band",
-      "Total Cost",
-      "VAT %",
     ]
   );
 }
