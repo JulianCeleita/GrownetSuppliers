@@ -400,26 +400,17 @@ export default function Table() {
         fetchPrductCOde(rowIndex);
       }
 
-      const nextFieldName = getNextFieldName(fieldName, rowIndex);
-
-      if (nextFieldName != null) {
+      if (fieldName === "Net") {
+        const isLastRow = rowIndex === rows.length - 1;
+        if (isLastRow) {
+          addNewRow();
+          return;
+        }
+      } else {
+        const nextFieldName = getNextFieldName(fieldName, rowIndex);
         const nextFieldRefs = inputRefs[nextFieldName];
         if (nextFieldRefs && nextFieldRefs[rowIndex]) {
           nextFieldRefs[rowIndex].current.focus();
-        }
-      } else {
-        const isLastCell =
-          rowIndex === rows.length - 1 &&
-          initialColumns.indexOf(fieldName) === initialColumns.length - 1;
-
-        if (isLastCell) {
-          addNewRow();
-        } else {
-          const nextRowIndex = rowIndex + 1;
-          const nextFieldRefs = inputRefs[lastActiveColumn][nextRowIndex];
-          if (nextFieldRefs && nextFieldRefs.current) {
-            nextFieldRefs.current.focus();
-          }
         }
       }
     }
