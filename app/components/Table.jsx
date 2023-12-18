@@ -430,7 +430,7 @@ export default function Table() {
         },
       });
       const productByCodeData = response.data.data[0];
-      console.log("PRODUCT BY CODE", productByCodeData)
+      console.log("PRODUCT BY CODE", productByCodeData);
 
       const updatedRows = rows.map((row, index) => {
         if (
@@ -671,6 +671,14 @@ export default function Table() {
                                 onKeyDown={(e) =>
                                   handleKeyDown(e, rowIndex, column)
                                 }
+                                onKeyPress={(e) => {
+                                  if (
+                                    inputTypes[column] === "number" &&
+                                    (e.charCode < 48 || e.charCode > 57)
+                                  ) {
+                                    e.preventDefault();
+                                  }
+                                }}
                               />
                             )}
                           </td>
@@ -683,10 +691,14 @@ export default function Table() {
           </table>
 
           {showCheckboxColumn === true && (
-            <div ref={menuRef} className="absolute bg-white p-2 border rounded" style={{
-              top: `${mouseCoords.y}px`,
-              left: `${mouseCoords.x}px`,
-            }}>
+            <div
+              ref={menuRef}
+              className="absolute bg-white p-2 border rounded"
+              style={{
+                top: `${mouseCoords.y}px`,
+                left: `${mouseCoords.x}px`,
+              }}
+            >
               <h4 className="font-bold mb-2">Show/Hide Columns</h4>
               {columns.map((column) => (
                 <div key={column} className={`flex items-center`}>
