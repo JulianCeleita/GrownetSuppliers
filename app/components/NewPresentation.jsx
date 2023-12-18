@@ -1,7 +1,12 @@
 import { XMarkIcon } from "@heroicons/react/24/outline";
 import axios from "axios";
 import { useEffect, useState } from "react";
-import { addPresentationUrl, productsUrl, uomUrl, taxexUrl } from "../config/urls.config";
+import {
+  addPresentationUrl,
+  productsUrl,
+  uomUrl,
+  taxexUrl,
+} from "../config/urls.config";
 import { fetchPresentations } from "../presentations/page";
 import useTokenStore from "../store/useTokenStore";
 import ReactCountryFlag from "react-country-flag";
@@ -19,6 +24,7 @@ function NewPresentation({
   const [costPresentation, setCostPresentation] = useState("");
   const [quantityPresentation, setQuantityPresentation] = useState("");
   const [selecteUomsStatus, setSelectedUomsStatus] = useState("unit");
+  const [selecteUomsStatus2, setSelectedUomsStatus2] = useState("");
   const [selecteProductsStatus, setSelectedProductsStatus] =
     useState("Red pepper");
   const [codePresentation, setCodePresentation] = useState("");
@@ -110,7 +116,7 @@ function NewPresentation({
       uoms_id: selecteUomsStatus,
       products_id: selecteProductsStatus,
       quantity: quantityPresentation,
-      name: namePresentation,
+      name: `${namePresentation} - ${selecteUomsStatus2}`,
       cost: costPresentation,
       code: codePresentation,
       tax: selectedTax,
@@ -132,6 +138,7 @@ function NewPresentation({
         console.error("Error al agregar la nueva presentación: ", error);
       });
   };
+
   return (
     <div className="fixed inset-0 bg-black bg-opacity-25 backdrop-blur-sm flex flex-col justify-center items-center">
       <div className="bg-white p-8 rounded-2xl w-[800px] flex flex-col items-center">
@@ -165,50 +172,50 @@ function NewPresentation({
             ))}
           </select>
           <div>
-          <label>Unit of measurement: </label>
-          <select
-            id="uom"
-            name="uom"
-            className="border p-3 rounded-md mr-3 mt-3"
-            required
-            onChange={(e) => setSelectedUomsStatus(e.target.value)}
-          >
-            <option value="" disabled selected>
-              Select uom
-            </option>
-            {uoms.map((uom) => (
-              <option key={uom.id} value={uom.id}>
-                {uom.name}
+            <label>Unit of measurement: </label>
+            <select
+              id="uom"
+              name="uom"
+              className="border p-3 rounded-md mr-3 mt-3"
+              required
+              onChange={(e) => setSelectedUomsStatus(e.target.value)}
+            >
+              <option value="" disabled selected>
+                Select uom
               </option>
-            ))}
-          </select>
-              <label htmlFor="taxes">Product taxes: </label>
-              <select
-                id="taxes"
-                name="taxes"
-                className="border p-3 rounded-md mr-3 mt-3"
-                required
-                onChange={(e) => setSelectedTax(e.target.value)}
-              >
-                <option value="" disabled selected>
-                  Select tax
+              {uoms.map((uom) => (
+                <option key={uom.id} value={uom.id}>
+                  {uom.name}
                 </option>
-                {tax.map((tax) => (
-                  <option key={tax.id} value={tax.id}>
-                    {tax.countries_indicative === 44 ? (
-                      <ReactCountryFlag countryCode="GB" />
-                    ) : tax.countries_indicative === 57 ? (
-                      <ReactCountryFlag countryCode="CO" />
-                    ) : tax.countries_indicative === 351 ? (
-                      <ReactCountryFlag countryCode="PT" />
-                    ) : tax.countries_indicative === 34 ? (
-                      <ReactCountryFlag countryCode="ES" />
-                    ) : null}{" "}
-                    {tax.name}
-                  </option>
-                ))}
-              </select>
-            </div>          
+              ))}
+            </select>
+            <label htmlFor="taxes">Product taxes: </label>
+            <select
+              id="taxes"
+              name="taxes"
+              className="border p-3 rounded-md mr-3 mt-3"
+              required
+              onChange={(e) => setSelectedTax(e.target.value)}
+            >
+              <option value="" disabled selected>
+                Select tax
+              </option>
+              {tax.map((tax) => (
+                <option key={tax.id} value={tax.id}>
+                  {tax.countries_indicative === 44 ? (
+                    <ReactCountryFlag countryCode="GB" />
+                  ) : tax.countries_indicative === 57 ? (
+                    <ReactCountryFlag countryCode="CO" />
+                  ) : tax.countries_indicative === 351 ? (
+                    <ReactCountryFlag countryCode="PT" />
+                  ) : tax.countries_indicative === 34 ? (
+                    <ReactCountryFlag countryCode="ES" />
+                  ) : null}{" "}
+                  {tax.name}
+                </option>
+              ))}
+            </select>
+          </div>
           <div>
             <label>Code: </label>
             <input
@@ -218,14 +225,30 @@ function NewPresentation({
               type="text"
               value={codePresentation}
             ></input>
-            <label>Packsize: </label>
+            <label className="ml-9">Packsize: </label>
             <input
-              className="border p-3 rounded-md mr-3 mt-3 w-[35.5%]"
-              placeholder="6 Kg"
+              className="border p-3 rounded-md mr-3 mt-3 w-[12%]"
+              placeholder="6"
               type="text"
               onChange={(e) => setNamePresentation(e.target.value)}
               required
             ></input>
+            <select
+              id="uom"
+              name="uom"
+              className="border p-3 rounded-md mr-3 mt-3"
+              onChange={(e) => setSelectedUomsStatus2(e.target.value)}
+              required
+            >
+              <option value="" disabled selected>
+                UOM
+              </option>
+              {uoms.map((uom) => (
+                <option key={uom.id} value={uom.name}>
+                  {uom.name}
+                </option>
+              ))}
+            </select>
           </div>
           <div>
             <label>Cost: </label>
@@ -237,7 +260,7 @@ function NewPresentation({
               onChange={(e) => setCostPresentation(e.target.value)}
               required
             ></input>
-            <label>Quantity: </label>
+            <label className="ml-2">Quantity: </label>
             <input
               className="border p-3 rounded-md mr-3 mt-3"
               placeholder="50"
