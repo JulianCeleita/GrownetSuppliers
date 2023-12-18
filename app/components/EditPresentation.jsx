@@ -36,6 +36,7 @@ function EditPresentation({
   const [selectedUomsStatus, setSelectedUomsStatus] = useState(
     presentation ? presentation.uoms_id : ""
   );
+  const [selecteUomsStatus2, setSelectedUomsStatus2] = useState("");
   const [selectedProductsStatus, setSelectedProductsStatus] = useState(
     presentation ? presentation.products_id : ""
   );
@@ -54,7 +55,7 @@ function EditPresentation({
     setSelectedProductsStatus(presentation ? presentation.products_id : "");
     setCodePresentation(presentation ? presentation.code : "");
     setSelectedTax(presentation ? presentation.taxes_id : "");
-    console.log('Tax que recibo:', presentation);
+    console.log("Tax que recibo:", presentation);
   }, [presentation]);
 
   // Api products
@@ -136,13 +137,13 @@ function EditPresentation({
     const postData = {
       uoms_id: selectedUomsStatus,
       quantity: editedQuantity,
-      name: editedName,
+      name: `${editedName} - ${selecteUomsStatus2}`,
       cost: editedCost,
       products_id: selectedProductsStatus,
       code: codePresentation,
       tax: selectedTax,
     };
-    console.log('Esto es lo que envio:', postData)
+    console.log("Esto es lo que envio:", postData);
     axios
       .post(`${updatePresentationUrl}${presentation.id}`, postData, {
         headers: {
@@ -154,7 +155,7 @@ function EditPresentation({
         setSelectedUomsStatus("");
         setSelectedProductsStatus("");
         onClose();
-        console.log("Respuesta de editar presentación:", response.data)
+        console.log("Respuesta de editar presentación:", response.data);
       })
       .catch((error) => {
         console.error("Error editando la presentación:", error);
@@ -202,52 +203,52 @@ function EditPresentation({
             ))}
           </select>
           <div>
-          <label>Unit of measurement: </label>
-          <select
-            id="uom"
-            name="uom"
-            className="border p-3 rounded-md mr-3 mt-3"
-            required
-            onChange={(e) => setSelectedUomsStatus(e.target.value)}
-            value={selectedUomsStatus}
-          >
-            <option value="" disabled selected>
-              Select uom
-            </option>
-            {uoms.map((uom) => (
-              <option key={uom.id} value={uom.id}>
-                {uom.id} - {uom.name}
+            <label>Unit of measurement: </label>
+            <select
+              id="uom"
+              name="uom"
+              className="border p-3 rounded-md mr-3 mt-3"
+              required
+              onChange={(e) => setSelectedUomsStatus(e.target.value)}
+              value={selectedUomsStatus}
+            >
+              <option value="" disabled selected>
+                Select uom
               </option>
-            ))}
-          </select>
-          <label htmlFor="taxes">Product taxes: </label>
-              <select
-                id="taxes"
-                name="taxes"
-                className="border p-3 rounded-md mr-3 mt-3"
-                required
-                onChange={(e) => setSelectedTax(e.target.value)}
-                value={selectedTax}
-              >
-                <option value="" disabled selected>
-                  Select tax
+              {uoms.map((uom) => (
+                <option key={uom.id} value={uom.id}>
+                  {uom.id} - {uom.name}
                 </option>
-                {tax.map((tax) => (
-                  <option key={tax.id} value={tax.id}>
-                    {tax.countries_indicative === 44 ? (
-                      <ReactCountryFlag countryCode="GB" />
-                    ) : tax.countries_indicative === 57 ? (
-                      <ReactCountryFlag countryCode="CO" />
-                    ) : tax.countries_indicative === 351 ? (
-                      <ReactCountryFlag countryCode="PT" />
-                    ) : tax.countries_indicative === 34 ? (
-                      <ReactCountryFlag countryCode="ES" />
-                    ) : null}{" "}
-                    {tax.name}
-                  </option>
-                ))}
-              </select>
-              </div>
+              ))}
+            </select>
+            <label htmlFor="taxes">Product taxes: </label>
+            <select
+              id="taxes"
+              name="taxes"
+              className="border p-3 rounded-md mr-3 mt-3"
+              required
+              onChange={(e) => setSelectedTax(e.target.value)}
+              value={selectedTax}
+            >
+              <option value="" disabled selected>
+                Select tax
+              </option>
+              {tax.map((tax) => (
+                <option key={tax.id} value={tax.id}>
+                  {tax.countries_indicative === 44 ? (
+                    <ReactCountryFlag countryCode="GB" />
+                  ) : tax.countries_indicative === 57 ? (
+                    <ReactCountryFlag countryCode="CO" />
+                  ) : tax.countries_indicative === 351 ? (
+                    <ReactCountryFlag countryCode="PT" />
+                  ) : tax.countries_indicative === 34 ? (
+                    <ReactCountryFlag countryCode="ES" />
+                  ) : null}{" "}
+                  {tax.name}
+                </option>
+              ))}
+            </select>
+          </div>
           <div>
             <label>Code: </label>
             <input
@@ -259,13 +260,29 @@ function EditPresentation({
             ></input>
             <label>Packsize: </label>
             <input
-              className="border p-3 rounded-md mr-3 mt-3 w-[35.5%]"
+              className="border p-3 rounded-md mr-3 mt-3 w-[12%]"
               placeholder="Foodpoint"
               type="text"
               required
               value={editedName}
               onChange={(e) => setEditedName(e.target.value)}
             ></input>
+            <select
+              id="uom"
+              name="uom"
+              className="border p-3 rounded-md mr-3 mt-3"
+              required
+              onChange={(e) => setSelectedUomsStatus2(e.target.value)}
+            >
+              <option value="" disabled selected>
+                UOM
+              </option>
+              {uoms.map((uom) => (
+                <option key={uom.id} value={uom.name}>
+                  {uom.name}
+                </option>
+              ))}
+            </select>
           </div>
           <div>
             <label>Cost: </label>
@@ -296,7 +313,7 @@ function EditPresentation({
               value="Submit"
               className="bg-primary-blue py-3 px-4 rounded-lg text-white font-medium mr-3 "
             >
-              Add Presentation
+              Adit Presentation
             </button>
             <button
               onClick={() => onClose()}
