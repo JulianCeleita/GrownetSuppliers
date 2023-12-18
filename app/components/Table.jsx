@@ -242,8 +242,6 @@ export default function Table() {
   const calculateProfit = (row) => {
     const net = parseFloat(row.Net) || 0;
     const cost = parseFloat(row["Unit Cost"]) || 0;
-    const tax = parseFloat(row["VAT %"]) * parseFloat(row.Net);
-    console.log("Price", net, "cost", cost, "tax", tax, "net", row.Net) 
     const total = ((net - cost) / net) * 100 || 0;
     const totalFiltered = total !== 0 ? `${total.toFixed(2)}%` : "";
     return totalFiltered;
