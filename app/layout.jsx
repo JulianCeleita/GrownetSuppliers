@@ -14,7 +14,7 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
-      <body className="relative pb-40 min-h-screen	font-poppins">
+      <body className="relative pb-40 min-h-screen	font-poppins text-dark-blue">
         <Header />
         {children}
         <Footer />

@@ -164,6 +164,7 @@ const OrderView = () => {
           <h3 className="m-3">Account Name:</h3>
           <div className="relative ml-3">
             <Select
+              instanceId
               options={restaurantList.map((restaurant) => ({
                 value: restaurant.accountName,
                 label: restaurant.accountName,
@@ -187,6 +188,7 @@ const OrderView = () => {
             <h3>Account Number:</h3>
             <div className="relative">
               <Select
+                instanceId
                 options={restaurantList.map((restaurant) => ({
                   value: restaurant.accountNumber,
                   label: restaurant.accountNumber,

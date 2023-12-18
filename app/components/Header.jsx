@@ -29,6 +29,8 @@ function Header() {
             width={150}
             height={150}
             alt="Logo Grownet"
+            priority={true}
+            style={{ objectFit: "contain", width: "100%", height: "100%" }}
           />
         </Link>
       </div>
