@@ -3,7 +3,7 @@ import Table from "@/app/components/Table";
 import axios from "axios";
 import { useEffect, useRef, useState } from "react";
 import Select from "react-select";
-import { Restaurants, customersData } from "../config/urls.config";
+import { restaurantsData, customersData } from "../config/urls.config";
 import { useTableStore } from "../store/useTableStore";
 import useTokenStore from "../store/useTokenStore";
 
@@ -26,6 +26,7 @@ const OrderView = () => {
   const [isDropdownVisible, setIsDropdownVisible] = useState(false);
   const [isNameDropdownVisible, setIsNameDropdownVisible] = useState(false);
   const [orderDate, setOrderDate] = useState(getCurrentDate());
+  const [mouseCoords, setMouseCoords] = useState({ x: 0, y: 0 });
 
   //Fecha input
   function getCurrentDate() {
@@ -39,7 +40,7 @@ const OrderView = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const responseRestaurants = await axios.get(Restaurants, {
+        const responseRestaurants = await axios.get(restaurantsData, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -138,6 +139,7 @@ const OrderView = () => {
   const handleContextMenuTotal = (e) => {
     e.preventDefault();
     setShowCheckboxColumnTotal(!showCheckboxColumnTotal);
+    setMouseCoords({ x: e.clientX, y: e.clientY });
   };
   const handleCheckboxChangeTotal = (columnName) => {
     toggleTotalRowVisibility(columnName);
@@ -277,7 +279,11 @@ const OrderView = () => {
         {showCheckboxColumnTotal === true && (
           <div
             ref={menuRefTotal}
-            className="w-[40%] bg-white p-3 border rounded-xl"
+            className="absolute w-[40%] bg-white p-3 border rounded-xl"
+            style={{
+              top: `${mouseCoords.y}px`,
+              left: `${mouseCoords.x}px`,
+            }}
           >
             <h4 className="font-bold mb-2 text-dark-blue">Show/Hide Columns</h4>
             {columnsTotal.map((column) => (

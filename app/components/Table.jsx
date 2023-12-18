@@ -1,6 +1,6 @@
 "use client";
 import {
-  PresentationData,
+  presentationData,
   createStorageOrder,
   presentationsCode,
 } from "@/app/config/urls.config";
@@ -105,9 +105,7 @@ export default function Table() {
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [showErrorOrderModal, setShowErrorOrderModal] = useState(false);
   const [specialRequirements, setSpecialRequirements] = useState("");
-  const formatNumber = (number) => {
-    return isNaN(number) ? "" : parseFloat(number).toFixed(2);
-  };
+  const [mouseCoords, setMouseCoords] = useState({ x: 0, y: 0 });
 
   const columns = [
     "Code",
@@ -147,7 +145,7 @@ export default function Table() {
   useEffect(() => {
     const fetchPresentationData = async () => {
       try {
-        const response = await axios.get(PresentationData, {
+        const response = await axios.get(presentationData, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -173,6 +171,7 @@ export default function Table() {
   const handleContextMenu = (e) => {
     e.preventDefault();
     setShowCheckboxColumn(!showCheckboxColumn);
+    setMouseCoords({ x: e.clientX, y: e.clientY });
   };
 
   const handleCheckboxChange = (columnName) => {
@@ -397,7 +396,7 @@ export default function Table() {
         (fieldName === "Description" &&
           currentValues["Description"].trim() !== "")
       ) {
-        fetchPrductCOde(rowIndex);
+        fetchProductCode(rowIndex);
       }
 
       if (fieldName === "Net") {
@@ -416,25 +415,28 @@ export default function Table() {
     }
   };
 
-  const fetchPrductCOde = async (rowIndex) => {
+  const fetchProductCode = async (rowIndex) => {
     try {
       // Obtener el valor del input de "Code" desde la fila
-      const currentProductCode = rows[rowIndex]["Code"] || rows[rowIndex]["Description"];
-      const response = await axios.get(
-        `${presentationsCode}${currentProductCode}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      const currentProductCode = rows[rowIndex]["Code"] || "0";
+      const currentDescription = rows[rowIndex]["Description"];
+      const codeToUse =
+        currentProductCode && currentProductCode !== currentValues["Code"]
+          ? currentDescription
+          : currentProductCode;
+
+      const response = await axios.get(`${presentationsCode}${codeToUse}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
       const productByCodeData = response.data.data[0];
 
       const updatedRows = rows.map((row, index) => {
         if (
           index === rowIndex &&
           (row["Code"] === currentProductCode ||
-          row["Description"] === currentProductCode)
+            row["Description"] === currentProductCode)
         ) {
           return {
             ...row,
@@ -617,17 +619,16 @@ export default function Table() {
                                       const updatedRows = [...rows];
                                       updatedRows[rowIndex][column] =
                                         selectedDescription.code;
-                                        if (selectedDescription.code) {
-                                          fetchPrductCOde(rowIndex);
-                                        }
+                                      if (selectedDescription.code) {
+                                        fetchProductCode(rowIndex);
+                                      }
                                       setRows(updatedRows);
                                     }}
                                     onKeyDown={(selectedDescription) => {
                                       if (selectedDescription.code) {
-                                        fetchPrductCOde(rowIndex);
+                                        fetchProductCode(rowIndex);
                                       }
-                                    }
-                                    }
+                                    }}
                                     styles={{
                                       control: (provided) => ({
                                         ...provided,
@@ -682,7 +683,10 @@ export default function Table() {
           </table>
 
           {showCheckboxColumn === true && (
-            <div ref={menuRef} className="absolute bg-white p-2 border rounded">
+            <div ref={menuRef} className="absolute bg-white p-2 border rounded" style={{
+              top: `${mouseCoords.y}px`,
+              left: `${mouseCoords.x}px`,
+            }}>
               <h4 className="font-bold mb-2">Show/Hide Columns</h4>
               {columns.map((column) => (
                 <div key={column} className={`flex items-center`}>
