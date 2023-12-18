@@ -240,10 +240,11 @@ export default function Table() {
 
   // PROFIT
   const calculateProfit = (row) => {
-    const price = parseFloat(row.price) || 0;
+    const net = parseFloat(row.Net) || 0;
     const cost = parseFloat(row["Unit Cost"]) || 0;
     const tax = parseFloat(row["VAT %"]) * parseFloat(row.Net);
-    const total = ((price - cost - tax) / parseFloat(row.Net)) * 100 || 0;
+    console.log("Price", net, "cost", cost, "tax", tax, "net", row.Net) 
+    const total = ((net - cost) / net) * 100 || 0;
     const totalFiltered = total !== 0 ? `${total.toFixed(2)}%` : "";
     return totalFiltered;
   };
@@ -431,6 +432,7 @@ export default function Table() {
         },
       });
       const productByCodeData = response.data.data[0];
+      console.log("PRODUCT BY CODE", productByCodeData)
 
       const updatedRows = rows.map((row, index) => {
         if (
