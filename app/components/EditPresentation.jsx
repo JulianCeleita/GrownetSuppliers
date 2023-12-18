@@ -31,7 +31,7 @@ function EditPresentation({
       return "UOM";
     }
   });
-  console.log("editedName", editedName);
+
   const [editedCost, setEditedCost] = useState(
     presentation ? presentation.cost : ""
   );
