@@ -1,7 +1,9 @@
 import { create } from "zustand";
 
 const useTokenStore = create(() => ({
-  token: "1846|frQSf3ZxPsiwEUfx5INSMvsjQcJhScLy6L0B1Tna",
+  token: "1322|D0wbgSlhEIZthyIl9gsH4YSVqw5mowyrkldqHFhF",
 }));
 
 export default useTokenStore;
+
+// 1322|D0wbgSlhEIZthyIl9gsH4YSVqw5mowyrkldqHFhF
