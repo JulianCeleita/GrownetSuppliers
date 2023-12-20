@@ -104,7 +104,6 @@ function EditProduct({ isvisible, onClose, fetchProducts, product }) {
     const formData = new FormData();
     formData.append("name", addProduct);
     formData.append("category_id", selectedCategoryId);
-    formData.append("country_indicative", "44");
     formData.append("family_id", selectedFamiliesStatus);
     formData.append("state", statusMapping[selectedStatus]);
     if (selectedImageName !== null) {
