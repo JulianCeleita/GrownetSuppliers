@@ -1,22 +1,12 @@
 // Products
-/* export const productsUrl =
+export const productsUrl =
   "https://api.grownetapp.com/grownet/api/products/all";
 export const addProductUrl =
   "https://api.grownetapp.com/grownet/api/products/create";
 export const updateProductUrl =
   "https://api.grownetapp.com/grownet/api/products/update/";
 export const deleteProductUrl =
-  "https://api.grownetapp.com/grownet/api/products/delete/"; */
-
-  // Products
-export const productsUrl =
-"http://3.139.16.141/api/products/all";
-export const addProductUrl =
-"http://3.139.16.141/api/products/create";
-export const updateProductUrl =
-"http://3.139.16.141/api/products/update/";
-export const deleteProductUrl =
-"http://3.139.16.141/api/products/delete/";
+  "https://api.grownetapp.com/grownet/api/products/delete/";
 
 //Presentations
 export const presentationsUrl =
