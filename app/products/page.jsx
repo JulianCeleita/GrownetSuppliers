@@ -26,7 +26,6 @@ function Products() {
 
   //Api
   const { products, setProducts } = useProductStore();
-  const urlImagen = "https://api.grownetapp.com/grownet/";
 
   const fetchProducts = async (token) => {
     try {
@@ -116,7 +115,7 @@ function Products() {
                   <td className="py-3">
                     <img
                       className="w-[40px] mx-auto"
-                      src={urlImagen + product.image}
+                      src={product.image}
                       alt={product.name}
                     />
                   </td>

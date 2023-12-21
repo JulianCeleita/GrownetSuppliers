@@ -24,9 +24,14 @@ function EditPresentation({
   const [tax, setTax] = useState([]);
 
   //Variables formulario
-  const [editedName, setEditedName] = useState(
-    presentation ? presentation.name : ""
-  );
+  const [editedName, setEditedName] = useState(() => {
+    if (presentation && presentation.name && presentation.name.includes("-")) {
+      return presentation.name;
+    } else {
+      return "UOM";
+    }
+  });
+
   const [editedCost, setEditedCost] = useState(
     presentation ? presentation.cost : ""
   );
@@ -48,7 +53,17 @@ function EditPresentation({
   );
 
   useEffect(() => {
-    setEditedName(presentation ? presentation.name : "");
+    setEditedName(() => {
+      if (
+        presentation &&
+        presentation.name &&
+        presentation.name.includes("-")
+      ) {
+        return presentation.name;
+      } else {
+        return "UOM";
+      }
+    });
     setEditedCost(presentation ? presentation.cost : "");
     setEditedQuantity(presentation ? presentation.quantity : "");
     setSelectedUomsStatus(presentation ? presentation.uoms_id : "");
@@ -261,10 +276,10 @@ function EditPresentation({
             <label>Packsize: </label>
             <input
               className="border p-3 rounded-md mr-3 mt-3 w-[12%]"
-              placeholder="Foodpoint"
+              placeholder="UOM"
               type="text"
               required
-              value={editedName}
+              value={editedName.split("-")[0]}
               onChange={(e) => setEditedName(e.target.value)}
             ></input>
             <select

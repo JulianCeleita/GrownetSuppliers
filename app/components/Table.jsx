@@ -345,7 +345,7 @@ export default function Table() {
             quantity: row.quantity,
             price:
               productByCode.price + productByCode.price * productByCode.tax,
-            Net: productByCode.price.toFixed(2),
+            Net: productByCode.price !== null && productByCode.price.toFixed(2) || 0,
             "Total Net": "",
             "VAT %": productByCode.tax,
             "VAT £": "",
