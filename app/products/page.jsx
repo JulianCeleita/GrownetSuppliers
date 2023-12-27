@@ -24,7 +24,6 @@ function Products() {
   const [isLoading, setIsLoading] = useState(true);
   const [country, setCountry] = useState(44);
 
-
   //Api
   const { products, setProducts } = useProductStore();
 
