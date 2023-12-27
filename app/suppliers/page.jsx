@@ -30,6 +30,7 @@ export const fetchSuppliers = async (token, setSuppliers, setIsLoading) => {
 
     setSuppliers(sortedSuppliers);
     setIsLoading(false);
+    console.log("response.data.suppliers", response.data.suppliers)
   } catch (error) {
     console.error("Error al obtener las proveedores:", error);
   }
@@ -40,7 +41,6 @@ function Suppliers() {
   const [showNewSupplier, setShowNewSupplier] = useState(false);
   const [showEditSupplier, setShowEditSupplier] = useState(false);
   const [selectedSupplier, setSelectedSupplier] = useState(null);
-  const urlImagen = "https://api.grownetapp.com/grownet/";
   const [suppliers, setSuppliers] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -101,7 +101,7 @@ function Suppliers() {
                 <td className="py-3">
                   <img
                     className="w-[40px] mx-auto"
-                    src={urlImagen + supplier.image}
+                    src={supplier.image}
                     alt={supplier.name}
                   />
                 </td>
