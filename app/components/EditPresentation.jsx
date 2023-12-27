@@ -232,7 +232,7 @@ function EditPresentation({
               </option>
               {uoms.map((uom) => (
                 <option key={uom.id} value={uom.id}>
-                  {uom.id} - {uom.name}
+                  {uom.name}
                 </option>
               ))}
             </select>

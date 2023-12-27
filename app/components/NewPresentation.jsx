@@ -116,7 +116,7 @@ function NewPresentation({
       uoms_id: selecteUomsStatus,
       products_id: selecteProductsStatus,
       quantity: quantityPresentation,
-      name: `${namePresentation} - ${selecteUomsStatus2}`,
+      name: `${selecteUomsStatus2}`,
       cost: costPresentation,
       code: codePresentation,
       tax: selectedTax,

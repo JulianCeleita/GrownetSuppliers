@@ -30,6 +30,7 @@ export const fetchSuppliers = async (token, setSuppliers, setIsLoading) => {
 
     setSuppliers(sortedSuppliers);
     setIsLoading(false);
+    console.log("response.data.suppliers", response.data.suppliers)
   } catch (error) {
     console.error("Error al obtener las proveedores:", error);
   }
