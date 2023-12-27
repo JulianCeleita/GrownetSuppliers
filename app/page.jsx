@@ -19,7 +19,6 @@ function Home() {
   }
 
   const handleLogin = () => {
-    // Lógica de inicio de sesión aquí
     console.log("Usuario:", username, "Contraseña:", password);
     setIsLoggedIn(true);
   };

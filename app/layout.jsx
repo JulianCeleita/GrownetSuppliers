@@ -1,4 +1,3 @@
-// RootLayout.jsx
 import { Inter } from "next/font/google";
 import "./globals.css";
 import Header from "@/app/components/Header";
@@ -9,7 +8,7 @@ const inter = Inter({ subsets: ["latin"] });
 const metadata = {
   title: "Grownet Suppliers",
   description:
-    "La plataforma exclusiva para proveedores que simplifica la gestión de pedidos de suministros con los restaurantes de la más alta calidad.",
+    "The exclusive platform for suppliers that streamlines the management of supply orders with the highest-quality restaurants.",
 };
 
 export const getMetadata = () => {
