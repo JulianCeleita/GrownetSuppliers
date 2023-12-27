@@ -23,6 +23,8 @@ function EditPresentation({
   const [products, setProducts] = useState([]);
   const [tax, setTax] = useState([]);
 
+  
+
   //Variables formulario
   const [editedName, setEditedName] = useState(() => {
     if (presentation && presentation.name && presentation.name.includes("-")) {
@@ -53,6 +55,7 @@ function EditPresentation({
   );
 
   useEffect(() => {
+    console.log({presentation});
     setEditedName(() => {
       if (
         presentation &&
@@ -66,10 +69,10 @@ function EditPresentation({
     });
     setEditedCost(presentation ? presentation.cost : "");
     setEditedQuantity(presentation ? presentation.quantity : "");
-    setSelectedUomsStatus(presentation ? presentation.uoms_id : "");
-    setSelectedProductsStatus(presentation ? presentation.products_id : "");
+    setSelectedUomsStatus(presentation ? presentation.uomName : "");
+    setSelectedProductsStatus(presentation ? presentation.productName : "");
     setCodePresentation(presentation ? presentation.code : "");
-    setSelectedTax(presentation ? presentation.taxes_id : "");
+    setSelectedTax(presentation ? presentation.taxName : "");
     console.log("Tax que recibo:", presentation);
   }, [presentation]);
 
