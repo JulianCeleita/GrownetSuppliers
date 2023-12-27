@@ -16,15 +16,11 @@ export const getMetadata = () => {
   return metadata;
 };
 
-export default function RootLayout({ children, hideHeaderFooter }) {
-  console.log("hideHeaderFooter:", hideHeaderFooter);
-
+export default function RootLayout({ children }) {
   return (
     <html lang="es">
       <body className="relative pb-40 min-h-screen font-poppins text-dark-blue">
-        {!hideHeaderFooter && <Header />}
         {children}
-        {!hideHeaderFooter && <Footer />}
       </body>
     </html>
   );
