@@ -23,11 +23,9 @@ function EditPresentation({
   const [products, setProducts] = useState([]);
   const [tax, setTax] = useState([]);
 
-  
-
   //Variables formulario
   const [editedName, setEditedName] = useState(() => {
-    if (presentation && presentation.name && presentation.name.includes("-")) {
+    if (presentation && presentation.name) {
       return presentation.name;
     } else {
       return "UOM";
@@ -55,7 +53,6 @@ function EditPresentation({
   );
 
   useEffect(() => {
-    console.log({presentation});
     setEditedName(() => {
       if (
         presentation &&
@@ -69,10 +66,10 @@ function EditPresentation({
     });
     setEditedCost(presentation ? presentation.cost : "");
     setEditedQuantity(presentation ? presentation.quantity : "");
-    setSelectedUomsStatus(presentation ? presentation.uomName : "");
-    setSelectedProductsStatus(presentation ? presentation.productName : "");
+    setSelectedUomsStatus(presentation ? presentation.uoms_id : "");
+    setSelectedProductsStatus(presentation ? presentation.products_id : "");
     setCodePresentation(presentation ? presentation.code : "");
-    setSelectedTax(presentation ? presentation.taxName : "");
+    setSelectedTax(presentation ? presentation.taxes_id : "");
     console.log("Tax que recibo:", presentation);
   }, [presentation]);
 
@@ -155,7 +152,7 @@ function EditPresentation({
     const postData = {
       uoms_id: selectedUomsStatus,
       quantity: editedQuantity,
-      name: `${editedName} - ${selecteUomsStatus2}`,
+      name: `${editedName}  ${selecteUomsStatus2}`,
       cost: editedCost,
       products_id: selectedProductsStatus,
       code: codePresentation,
@@ -282,7 +279,7 @@ function EditPresentation({
               placeholder="UOM"
               type="text"
               required
-              value={editedName.split("-")[0]}
+              value={editedName.split(" ")[0]}
               onChange={(e) => setEditedName(e.target.value)}
             ></input>
             <select

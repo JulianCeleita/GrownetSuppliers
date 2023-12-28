@@ -24,7 +24,7 @@ export const fetchPresentations = async (
   setIsLoading
 ) => {
   try {
-    const response = await axios.get(presentationData, {
+    const response = await axios.get(presentationsUrl, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -77,30 +77,12 @@ function Presentations() {
       });
   };
   
-  // Api uom
-  useEffect(() => {
-    axios
-      .get(uomUrl, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      })
-      .then((response) => {
-        setUoms(response.data.uoms);
-      })
-      .catch((error) => {
-        console.error("Error al obtener UOMS productos:", error);
-      });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
-  // const sortedPresentations = presentations.slice().sort((a, b) => {
-  //   const productNameA =
-  //     products.find((product) => product.id === a.products_id)?.name || "";
-  //   const productNameB =
-  //     products.find((product) => product.id === b.products_id)?.name || "";
-  //   return productNameA.localeCompare(productNameB);
-  // });
+  const sortedPresentations = presentations.slice().sort((a, b) => {
+    const presentationProductNameA = a.product_name || "";
+    const presentationProductNameB = b.product_name || "";
+    return presentationProductNameA.localeCompare(presentationProductNameB);
+});
 
   return (
     <div>
@@ -131,20 +113,20 @@ function Presentations() {
             </tr>
           </thead>
           <tbody>
-            {presentations.map((presentation) => (
+          {sortedPresentations.map((presentation) => (
               <tr
                 key={presentation.id}
                 className="text-dark-blue border-b-2 border-stone-100 "
               >
                 <td className="py-4">{presentation.code}</td>
                 <td className="py-4">
-                  {presentation.productName}
+                  {presentation.product_name}
                 </td>
                 <td className="py-4">
-                  {presentation.uomName}
+                  {presentation.uom}
                 </td>
 
-                <td className="py-4">{presentation.presentationName}</td>
+                <td className="py-4">{presentation.name}</td>
                 <td className="py-4">£ {presentation.cost}</td>
                 <td className="py-4">{presentation.quantity}</td>
                 <td className="py-4 flex justify-center">
