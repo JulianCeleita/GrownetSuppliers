@@ -1,19 +1,16 @@
 import Image from "next/image";
 import { useState } from "react";
 import { useRouter } from "next/router";
+import Link from "next/link";
 import logo_blancov2 from "../img/logo_blancov2.svg";
 
-function LoginForm() {
-    // const router = useRouter();
-    const [username, setUsername] = useState('');
-    const [password, setPassword] = useState('');
-
-    const handleLogin = () => {
-        // TODO cuando se tenga la lógica de iniciar sesion se realiza acá
-        console.log('Usuario:', username, 'Contraseña:', password);
-        // router.push("/orders");
-    };
-
+function LoginForm({
+    username,
+    setUsername,
+    password,
+    setPassword,
+    handleLogin,
+}) {
     return (
         <body>
             <div className="min-h-screen flex flex-col items-center justify-center bg-blue-500">
