@@ -25,7 +25,7 @@ function EditPresentation({
 
   //Variables formulario
   const [editedName, setEditedName] = useState(() => {
-    if (presentation && presentation.name && presentation.name.includes("-")) {
+    if (presentation && presentation.name) {
       return presentation.name;
     } else {
       return "UOM";
@@ -152,7 +152,7 @@ function EditPresentation({
     const postData = {
       uoms_id: selectedUomsStatus,
       quantity: editedQuantity,
-      name: `${editedName} - ${selecteUomsStatus2}`,
+      name: `${editedName}  ${selecteUomsStatus2}`,
       cost: editedCost,
       products_id: selectedProductsStatus,
       code: codePresentation,
@@ -232,7 +232,7 @@ function EditPresentation({
               </option>
               {uoms.map((uom) => (
                 <option key={uom.id} value={uom.id}>
-                  {uom.id} - {uom.name}
+                  {uom.name}
                 </option>
               ))}
             </select>
@@ -279,7 +279,7 @@ function EditPresentation({
               placeholder="UOM"
               type="text"
               required
-              value={editedName.split("-")[0]}
+              value={editedName.split(" ")[0]}
               onChange={(e) => setEditedName(e.target.value)}
             ></input>
             <select

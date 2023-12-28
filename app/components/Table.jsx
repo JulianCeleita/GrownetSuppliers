@@ -345,7 +345,7 @@ export default function Table() {
             quantity: row.quantity,
             price:
               productByCode.price + productByCode.price * productByCode.tax,
-            Net: productByCode.price,
+            Net: productByCode.price !== null && productByCode.price.toFixed(2) || 0,
             "Total Net": "",
             "VAT %": productByCode.tax,
             "VAT £": "",
@@ -658,6 +658,11 @@ export default function Table() {
                                 }`}
                                 value={row[column] || ""}
                                 onChange={(e) => {
+                                  if (column === "Net") {
+                                    let newValue = parseFloat(e.target.value);
+
+                                    newValue = newValue.toFixed(2);
+                                  }
                                   setCurrentValues((prevValues) => ({
                                     ...prevValues,
                                     [column]: e.target.value,
@@ -668,10 +673,14 @@ export default function Table() {
                                   setRows(updatedRows);
                                   handleCodeChange(e, rowIndex, column);
                                 }}
+                                step={0.1}
                                 onKeyDown={(e) =>
                                   handleKeyDown(e, rowIndex, column)
                                 }
                                 onKeyPress={(e) => {
+                                  if (column === "Net" && e.charCode === 46) {
+                                    return;
+                                  }
                                   if (
                                     inputTypes[column] === "number" &&
                                     (e.charCode < 48 || e.charCode > 57)

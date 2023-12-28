@@ -116,7 +116,7 @@ function NewPresentation({
       uoms_id: selecteUomsStatus,
       products_id: selecteProductsStatus,
       quantity: quantityPresentation,
-      name: `${namePresentation} - ${selecteUomsStatus2}`,
+      name: `${namePresentation} ${selecteUomsStatus2}`,
       cost: costPresentation,
       code: codePresentation,
       tax: selectedTax,
@@ -152,7 +152,7 @@ function NewPresentation({
           Add <span className="text-primary-blue">new presentation</span>
         </h1>
         <form className="text-left  flex flex-col" onSubmit={enviarData}>
-          <label for="produvt" className="mt-2">
+          <label htmlFor="produvt" className="mt-2">
             Product:
           </label>
           <select
@@ -162,7 +162,7 @@ function NewPresentation({
             onChange={(e) => setSelectedProductsStatus(e.target.value)}
             required
           >
-            <option value="" disabled selected>
+            <option disabled selected>
               Select product
             </option>
             {products.map((product) => (
