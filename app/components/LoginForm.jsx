@@ -27,7 +27,7 @@ function LoginForm({
                                 Email:
                             </label>
                             <input
-                                className="border border-inherit rounded-3xl p-3 w-[100%]"
+                                className="border border-inherit rounded-xl p-3 w-[100%]"
                                 type="text"
                                 placeholder="email@user.com"
                                 value={username}
@@ -40,7 +40,7 @@ function LoginForm({
                                 Password:
                             </label>
                             <input
-                                className="border border-inherit rounded-3xl p-3 w-[100%]"
+                                className="border border-inherit rounded-xl p-3 w-[100%]"
                                 type="password"
                                 placeholder="**************"
                                 value={password}
@@ -48,7 +48,7 @@ function LoginForm({
                             />
                         </div>
                         <div className="mt-5 flex justify-center items-center">
-                            <button className="bg-dark-blue hover:scale-110 text-white transition-all font-bold py-2 px-4 rounded-xl w-80" onClick={handleLogin}>
+                            <button className="bg-dark-blue hover:scale-110 text-white transition-all font-bold py-2 px-4 rounded-3xl w-80" onClick={handleLogin}>
                                 Log in
                             </button>
                         </div>
