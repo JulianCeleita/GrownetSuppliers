@@ -92,7 +92,6 @@ function NewProduct({ isvisible, onClose, fetchProducts }) {
     if (selectedImageName !== null) {
       formData.append("image", selectedImageName);
     }
-    formData.append("code", "Y100");
 
     const formDataObject = {};
     formData.forEach((value, key) => {
