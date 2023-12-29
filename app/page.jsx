@@ -26,9 +26,7 @@ function Home() {
   return (
     <>
       {isLoggedIn ? (
-        <Layout>
           <OrderView />
-        </Layout>
       ) : (
         <div className="min-h-screen flex items-center justify-center bg-blue-500">
           <div className="bg-white p-8 rounded shadow-md">
