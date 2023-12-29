@@ -3,10 +3,7 @@ import EditPresentation from "@/app/components/EditPresentation";
 import NewPresentation from "@/app/components/NewPresentation";
 import {
   deletePresentationUrl,
-  presentationsUrl,
-  productsUrl,
-  uomUrl,
-  presentationData,
+  presentationsUrl
 } from "@/app/config/urls.config";
 import useTokenStore from "@/app/store/useTokenStore";
 import {
@@ -76,13 +73,12 @@ function Presentations() {
         console.error("Error al eliminar la presentación:", error);
       });
   };
-  
 
   const sortedPresentations = presentations.slice().sort((a, b) => {
     const presentationProductNameA = a.product_name || "";
     const presentationProductNameB = b.product_name || "";
     return presentationProductNameA.localeCompare(presentationProductNameB);
-});
+  });
 
   return (
     <div>
@@ -113,19 +109,14 @@ function Presentations() {
             </tr>
           </thead>
           <tbody>
-          {sortedPresentations.map((presentation) => (
+            {sortedPresentations.map((presentation) => (
               <tr
                 key={presentation.id}
                 className="text-dark-blue border-b-2 border-stone-100 "
               >
                 <td className="py-4">{presentation.code}</td>
-                <td className="py-4">
-                  {presentation.product_name}
-                </td>
-                <td className="py-4">
-                  {presentation.uom}
-                </td>
-
+                <td className="py-4">{presentation.product_name}</td>
+                <td className="py-4">{presentation.uom}</td>
                 <td className="py-4">{presentation.name}</td>
                 <td className="py-4">£ {presentation.cost}</td>
                 <td className="py-4">{presentation.quantity}</td>
