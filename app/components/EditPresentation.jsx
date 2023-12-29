@@ -70,7 +70,6 @@ function EditPresentation({
     setSelectedProductsStatus(presentation ? presentation.products_id : "");
     setCodePresentation(presentation ? presentation.code : "");
     setSelectedTax(presentation ? presentation.taxes_id : "");
-    console.log("Tax que recibo:", presentation);
   }, [presentation]);
 
   // Api products
@@ -112,7 +111,6 @@ function EditPresentation({
           (a, b) => a.worth - b.worth
         );
         setTax(sortedTaxes);
-        console.log(sortedTaxes);
       } catch (error) {
         console.error("Error al obtener Taxes productos:", error);
       }
