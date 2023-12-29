@@ -6,6 +6,7 @@ import {
   presentationsUrl,
   productsUrl,
   uomUrl,
+  presentationData,
 } from "@/app/config/urls.config";
 import useTokenStore from "@/app/store/useTokenStore";
 import {
@@ -43,7 +44,6 @@ export const fetchPresentations = async (
 
 function Presentations() {
   const { token } = useTokenStore();
-  const [products, setProducts] = useState([]);
   const [uoms, setUoms] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [showNewPresentations, setShowNewPresentations] = useState(false);
@@ -77,47 +77,13 @@ function Presentations() {
         console.error("Error al eliminar la presentación:", error);
       });
   };
-  //Api products
-  useEffect(() => {
-    axios
-      .get(productsUrl, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      })
-      .then((response) => {
-        setProducts(response.data.products);
-        console.log("response.data.products", response.data.products);
-      })
-      .catch((error) => {
-        console.error("Error al obtener los productos:", error);
-      });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-  // Api uom
-  useEffect(() => {
-    axios
-      .get(uomUrl, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      })
-      .then((response) => {
-        setUoms(response.data.uoms);
-      })
-      .catch((error) => {
-        console.error("Error al obtener UOMS productos:", error);
-      });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  
 
   const sortedPresentations = presentations.slice().sort((a, b) => {
-    const productNameA =
-      products.find((product) => product.id === a.products_id)?.name || "";
-    const productNameB =
-      products.find((product) => product.id === b.products_id)?.name || "";
-    return productNameA.localeCompare(productNameB);
-  });
+    const presentationProductNameA = a.product_name || "";
+    const presentationProductNameB = b.product_name || "";
+    return presentationProductNameA.localeCompare(presentationProductNameB);
+});
 
   return (
     <Layout>

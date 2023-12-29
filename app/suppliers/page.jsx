@@ -31,6 +31,7 @@ export const fetchSuppliers = async (token, setSuppliers, setIsLoading) => {
 
     setSuppliers(sortedSuppliers);
     setIsLoading(false);
+    console.log("response.data.suppliers", response.data.suppliers)
   } catch (error) {
     console.error("Error al obtener las proveedores:", error);
   }
@@ -41,7 +42,6 @@ function Suppliers() {
   const [showNewSupplier, setShowNewSupplier] = useState(false);
   const [showEditSupplier, setShowEditSupplier] = useState(false);
   const [selectedSupplier, setSelectedSupplier] = useState(null);
-  const urlImagen = "https://api.grownetapp.com/grownet/";
   const [suppliers, setSuppliers] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -69,6 +69,7 @@ function Suppliers() {
       });
   };
   return (
+
     <Layout>
       <div>
         <div className="flex justify-between p-8 pb-20 bg-primary-blue">

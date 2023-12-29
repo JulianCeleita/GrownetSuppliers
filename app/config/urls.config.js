@@ -1,66 +1,66 @@
 // Products
 export const productsUrl =
-  "https://api.grownetapp.com/grownet/api/products/all";
+"http://3.139.16.141/api/products/all";
 export const addProductUrl =
-  "https://api.grownetapp.com/grownet/api/products/create";
+"http://3.139.16.141/api/products/create";
 export const updateProductUrl =
-  "https://api.grownetapp.com/grownet/api/products/update/";
+"http://3.139.16.141/api/products/update/";
 export const deleteProductUrl =
-  "https://api.grownetapp.com/grownet/api/products/delete/";
+"http://3.139.16.141/api/products/delete/";
 
 //Presentations
 export const presentationsUrl =
-  "https://api.grownetapp.com/grownet/api/presentations/all";
+  "http://3.139.16.141/api/presentations/all";
 export const addPresentationUrl =
-  "https://api.grownetapp.com/grownet/api/presentations/create";
+  "http://3.139.16.141/api/presentations/create";
 export const updatePresentationUrl =
-  "https://api.grownetapp.com/grownet/api/presentations/update/";
+  "http://3.139.16.141/api/presentations/update/";
 export const deletePresentationUrl =
-  "https://api.grownetapp.com/grownet/api/presentations/delete/";
+  "http://3.139.16.141/api/presentations/delete/";
 
 //Categories
 export const categoriesUrl =
-  "https://api.grownetapp.com/grownet/api/categories/all";
+  "http://3.139.16.141/api/categories/all";
 export const addCategoryUrl =
-  "https://api.grownetapp.com/grownet/api/categories/created";
+  "http://3.139.16.141/api/categories/created";
 export const updateCategoryUrl =
-  "https://api.grownetapp.com/grownet/api/categories/updated/";
+  "http://3.139.16.141/api/categories/updated/";
 export const deleteCategoryUrl =
-  "https://api.grownetapp.com/grownet/api/categories/delete/";
+  "http://3.139.16.141/api/categories/delete/";
 
 //Suppliers
 export const suppliersUrl =
-  "https://api.grownetapp.com/grownet/api/suppliers/all";
+  "http://3.139.16.141/api/suppliers/all";
 export const addSupplierUrl =
-  "https://api.grownetapp.com/grownet/api/suppliers/create";
+  "http://3.139.16.141/api/suppliers/create";
 export const updateSupplierUrl =
-  "https://api.grownetapp.com/grownet/api/suppliers/update/";
+  "http://3.139.16.141/api/suppliers/update/";
 export const deleteSupplierUrl =
-  "https://api.grownetapp.com/grownet/api/suppliers/delete/";
+  "http://3.139.16.141/api/suppliers/delete/";
 
 //Families
 export const familiesUrl =
-  "https://api.grownetapp.com/grownet/api/families/all";
+  "http://3.139.16.141/api/families/all";
 
 //UOM
-export const uomUrl = "https://api.grownetapp.com/grownet/api/uom/all";
+export const uomUrl = "http://3.139.16.141/api/uom/all";
 
 //Taxes
-export const taxexUrl = "https://api.grownetapp.com/grownet/api/taxes/all";
+export const taxexUrl = "http://3.139.16.141/api/taxes/all";
 
 //Orders
 export const restaurantsData =
-  "https://api.grownetapp.com/grownet/api/customers/all";
+  "http://3.139.16.141/api/customers/all";
 export const createOrders =
-  "https://api.grownetapp.com/grownet/api/orders/create";
+  "http://3.139.16.141/api/orders/create";
 
 export const customersData =
-  "https://api.grownetapp.com/grownet/api/customers/serch/";
+  "http://3.139.16.141/api/customers/serch/";
 
 export const presentationsCode =
-  "https://api.grownetapp.com/grownet/api/presentations/search/";
+  "http://3.139.16.141/api/presentations/search/";
 
 export const presentationData =
-  "https://api.grownetapp.com/grownet/api/products/presentations/all";
+  "http://3.139.16.141/api/products/presentations/all";
 export const createStorageOrder =
-  "https://api.grownetapp.com/grownet/api/orders/create";
+  "http://3.139.16.141/api/orders/create";
