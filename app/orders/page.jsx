@@ -4,6 +4,7 @@ import axios from "axios";
 import { useEffect, useRef, useState } from "react";
 import Select from "react-select";
 import { restaurantsData, customersData } from "../config/urls.config";
+import Layout from "../layoutS";
 import { useTableStore } from "../store/useTableStore";
 import useTokenStore from "../store/useTokenStore";
 
@@ -158,7 +159,7 @@ const OrderView = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   return (
-    <>
+    <Layout>
       <div className="grid grid-cols-3 gap-4 p-6 shadow-lg bg-primary-blue pb-20">
         <div className="grid grid-cols-2 bg-white p-4 rounded-lg shadow-lg text-dark-blue">
           <h3 className="m-3">Account Name:</h3>
@@ -316,7 +317,7 @@ const OrderView = () => {
       <div className="-mt-20">
         <Table />
       </div>
-    </>
+    </Layout>
   );
 };
 export default OrderView;
