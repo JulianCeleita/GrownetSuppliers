@@ -6,6 +6,7 @@ import {
   presentationsUrl,
   productsUrl,
   uomUrl,
+  presentationData,
 } from "@/app/config/urls.config";
 import useTokenStore from "@/app/store/useTokenStore";
 import {
@@ -42,7 +43,6 @@ export const fetchPresentations = async (
 
 function Presentations() {
   const { token } = useTokenStore();
-  const [products, setProducts] = useState([]);
   const [uoms, setUoms] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [showNewPresentations, setShowNewPresentations] = useState(false);
@@ -76,47 +76,13 @@ function Presentations() {
         console.error("Error al eliminar la presentación:", error);
       });
   };
-  //Api products
-  useEffect(() => {
-    axios
-      .get(productsUrl, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      })
-      .then((response) => {
-        setProducts(response.data.products);
-        console.log("response.data.products", response.data.products);
-      })
-      .catch((error) => {
-        console.error("Error al obtener los productos:", error);
-      });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-  // Api uom
-  useEffect(() => {
-    axios
-      .get(uomUrl, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      })
-      .then((response) => {
-        setUoms(response.data.uoms);
-      })
-      .catch((error) => {
-        console.error("Error al obtener UOMS productos:", error);
-      });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  
 
   const sortedPresentations = presentations.slice().sort((a, b) => {
-    const productNameA =
-      products.find((product) => product.id === a.products_id)?.name || "";
-    const productNameB =
-      products.find((product) => product.id === b.products_id)?.name || "";
-    return productNameA.localeCompare(productNameB);
-  });
+    const presentationProductNameA = a.product_name || "";
+    const presentationProductNameB = b.product_name || "";
+    return presentationProductNameA.localeCompare(presentationProductNameB);
+});
 
   return (
     <div>
@@ -147,21 +113,17 @@ function Presentations() {
             </tr>
           </thead>
           <tbody>
-            {sortedPresentations.map((presentation) => (
+          {sortedPresentations.map((presentation) => (
               <tr
                 key={presentation.id}
                 className="text-dark-blue border-b-2 border-stone-100 "
               >
                 <td className="py-4">{presentation.code}</td>
                 <td className="py-4">
-                  {products.find(
-                    (product) => product.id === presentation.products_id
-                  )?.name || ""}
+                  {presentation.product_name}
                 </td>
                 <td className="py-4">
-                  {uoms.map((uom) =>
-                    uom.id === presentation.uoms_id ? uom.name : null
-                  )}
+                  {presentation.uom}
                 </td>
 
                 <td className="py-4">{presentation.name}</td>
