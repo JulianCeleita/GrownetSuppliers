@@ -8,6 +8,7 @@ import Layout from "../layoutS";
 import { useTableStore } from "../store/useTableStore";
 import useTokenStore from "../store/useTokenStore";
 
+
 const OrderView = () => {
   const { token } = useTokenStore();
   const {
@@ -29,6 +30,7 @@ const OrderView = () => {
   const [orderDate, setOrderDate] = useState(getCurrentDate());
   const [mouseCoords, setMouseCoords] = useState({ x: 0, y: 0 });
 
+  
   //Fecha input
   function getCurrentDate() {
     const today = new Date();
@@ -37,6 +39,8 @@ const OrderView = () => {
     const day = String(today.getDate()).padStart(2, "0");
     return `${year}-${month}-${day}`;
   }
+
+  
 
   useEffect(() => {
     const fetchData = async () => {
@@ -80,6 +84,8 @@ const OrderView = () => {
       document.removeEventListener("click", handleClickOutside);
     };
   }, [isDropdownVisible, isNameDropdownVisible, customers]);
+
+  
 
   const fetchDataAccNumber = async () => {
     try {

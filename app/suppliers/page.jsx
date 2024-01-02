@@ -104,7 +104,7 @@ function Suppliers() {
                   <td className="py-3">
                     <img
                       className="w-[40px] mx-auto"
-                      src={urlImagen + supplier.image}
+                      src={supplier.image}
                       alt={supplier.name}
                     />
                   </td>

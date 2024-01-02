@@ -1,47 +1,112 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import Layout from "./layoutS";
+import axios from "axios";
 import LoginForm from "./components/LoginForm";
 import OrderView from "./orders/page";
+import { loginUrl } from "./config/urls.config";
+import useTokenStore from "./store/useTokenStore";
+import Swal from "sweetalert2";
+import { useRouter } from "next/navigation";
 
 function Home() {
   const [hasMounted, setHasMounted] = useState(false);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const { token, setToken } = useTokenStore();
+  const router = useRouter();
 
   useEffect(() => {
     setHasMounted(true);
   }, []);
 
+  useEffect(() => {
+    setHasMounted(true);
+    const storedToken = localStorage.getItem("token");
+    if (storedToken) {
+      setIsLoggedIn(true);
+      setToken(storedToken);
+    }
+  }, [setToken]);
+
+  useEffect(() => {
+    if (isLoggedIn) {
+      router.push("/orders");
+    }
+  }, [isLoggedIn, router]);
+  
   if (!hasMounted) {
     return null;
   }
 
-  const handleLogin = () => {
-    console.log("Usuario:", username, "Contraseña:", password);
-    setIsLoggedIn(true);
+  if (!hasMounted) {
+    return null;
+  }
+
+  // Función para enviar datos de inicio de sesión
+  const enviarData = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setError(null);
+    console.log("Usuario:", username, "Contraseña:", password)
+
+    const postData = {
+      email: username,
+      password: password,
+    };
+    axios.post(loginUrl, postData, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
+    .then((response) => {
+      if(response.data.status === 200) {
+        setUsername("");
+        setPassword("");
+        setIsLoggedIn(true);
+        setToken(response.data.token);
+        localStorage.setItem("token", response.data.token);
+      } else {
+        setLoading(false);
+        Swal.fire({
+          icon: "error",
+          title: "Error",
+          text: `${response.data.message}`,
+        });
+        console.log(response.data)
+      }
+      console.log(response.data)
+    })
+    .catch((error) => {
+      console.error("Error al iniciar sesión: ", error);
+    });
   };
+
+  // const handleLogin = () => {
+  //   console.log("Usuario:", username, "Contraseña:", password);
+  // };
 
   return (
     <>
       {isLoggedIn ? (
-          <OrderView />
+        <OrderView />
       ) : (
-        <div className="min-h-screen flex items-center justify-center bg-blue-500">
-          <div className="bg-white p-8 rounded shadow-md">
-            <h1 className="text-2xl mb-4">Log In</h1>
+        <div className="min-h-screen flex flex-col items-center justify-center bg-blue-500">
             <LoginForm
               username={username}
               setUsername={setUsername}
               password={password}
               setPassword={setPassword}
-              handleLogin={handleLogin}
+              enviarData={enviarData}
+              loading={loading}
             />
-          </div>
+            {error && <p className="text-red-500">{error}</p>}
         </div>
       )}
     </>
   );
 }
+
 export default Home;

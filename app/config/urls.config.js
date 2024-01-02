@@ -1,3 +1,7 @@
+// login
+export const loginUrl =
+"http://3.139.16.141/api/login/login";
+
 // Products
 export const productsUrl =
 "http://3.139.16.141/api/products/all";

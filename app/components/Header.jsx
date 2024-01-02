@@ -3,8 +3,11 @@ import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useRouter } from "next/navigation";
+import { ArrowLeftOnRectangleIcon } from "@heroicons/react/24/outline";
 
 function Header() {
+  const router = useRouter();
   const [activeLink, setActiveLink] = useState("");
 
   const pathname = usePathname();
@@ -19,6 +22,12 @@ function Header() {
 
     handleRouteChange();
   }, [pathname]);
+
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    router.push("/");
+  };
+
 
   return (
     <div className="flex justify-between items-center bg-primary-blue p-4">
@@ -140,6 +149,13 @@ function Header() {
             <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-white group-hover:w-full transition-all duration-300 ease-in-out"></span>
           )}
         </Link>
+        <button
+          className="text-white flex bg-dark-blue rounded-lg m-2 p-2 transition-all hover:bg-black hover:scale-110"
+          onClick={handleLogout}
+        >
+          <ArrowLeftOnRectangleIcon className="h-6 w-6" />
+          Log out
+        </button>
       </div>
     </div>
   );
