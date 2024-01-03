@@ -35,7 +35,6 @@ function NewPresentation({
 
   // Taxes
   useEffect(() => {
-    console.log(user.id_supplier);
     const fetchTaxes = async () => {
       try {
         const response = await axios.get(taxexUrl, {
@@ -123,7 +122,7 @@ function NewPresentation({
       cost: costPresentation,
       code: codePresentation,
       tax: selectedTax,
-      suppliers_id: user.id_supplier
+      supplier_id: user.id_supplier
     };
     console.log("se envio: ", postData);
     axios
