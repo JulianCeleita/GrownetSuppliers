@@ -1,4 +1,4 @@
-"use client"
+"use client";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import Header from "@/app/components/Header";
@@ -6,12 +6,11 @@ import Footer from "@/app/components/Footer";
 import "./style.css";
 const inter = Inter({ subsets: ["latin"] });
 import useTokenStore from "./store/useTokenStore";
-import React, { useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import React, { useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import Swal from "sweetalert2";
-import Home from "./page"
-
+import Home from "./page";
 
 const metadata = {
   title: "Grownet Suppliers",
@@ -26,14 +25,12 @@ export const getMetadata = () => {
 export default function RootLayout({ children }) {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const { token, setToken } = useTokenStore();
-  
 
   // const router = useRouter();
   const router = useRouter();
   useEffect(() => {
-    
     const handleRouter = async () => {
-      const localStorageToken = localStorage.getItem('token');
+      const localStorageToken = localStorage.getItem("token");
       setToken(localStorageToken);
 
       if (localStorageToken || token) {
@@ -46,23 +43,16 @@ export default function RootLayout({ children }) {
     };
 
     setTimeout(() => {
-      if (typeof window !== 'undefined') {
+      if (typeof window !== "undefined") {
         handleRouter();
       }
-
-    }, 50)
-
+    }, 50);
   }, [token, setToken, isLoggedIn]);
-
 
   return (
     <html lang="es">
       <body className="relative pb-40 min-h-screen font-poppins text-dark-blue">
-        {isLoggedIn ? (
-          children
-        ) : (
-          <Home />
-        )}
+        {isLoggedIn ? children : <Home />}
       </body>
     </html>
   );

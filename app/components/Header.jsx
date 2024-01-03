@@ -28,18 +28,16 @@ function Header() {
     router.push("/");
   };
 
-
   return (
     <div className="flex justify-between items-center bg-primary-blue p-4">
       <div className="mx-5">
         <Link href="#">
           <Image
             src="/logoGrownetBlanco.svg"
-            width={150}
-            height={150}
+            width={180}
+            height={180}
             alt="Logo Grownet"
             priority={true}
-            style={{ objectFit: "contain", width: "100%", height: "100%" }}
           />
         </Link>
       </div>
@@ -82,7 +80,7 @@ function Header() {
             <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-white group-hover:w-full transition-all duration-300 ease-in-out"></span>
           )}
         </Link>
-        <Link
+        {/* <Link
           href="/products"
           className="relative group text-white rounded m-2 py-2 hover:text-light-green hover:scale-110"
         >
@@ -100,7 +98,7 @@ function Header() {
           {activeLink !== "products" && (
             <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-white group-hover:w-full transition-all duration-300 ease-in-out"></span>
           )}
-        </Link>
+        </Link> */}
         <Link
           href="/presentations"
           className="relative group text-white rounded m-2 py-2 hover:text-light-green hover:scale-110"
@@ -117,7 +115,7 @@ function Header() {
             <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-white group-hover:w-full transition-all duration-300 ease-in-out"></span>
           )}
         </Link>
-        <Link
+        {/* <Link
           href="/categories"
           className="relative group text-white rounded m-2 py-2 hover:text-light-green hover:scale-110"
         >
@@ -132,8 +130,8 @@ function Header() {
           ) : (
             <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-white group-hover:w-full transition-all duration-300 ease-in-out"></span>
           )}
-        </Link>
-        <Link
+        </Link> */}
+        {/* <Link
           href="/suppliers"
           className="relative group text-white rounded m-2 py-2 hover:text-light-green hover:scale-110"
         >
@@ -148,7 +146,7 @@ function Header() {
           ) : (
             <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-white group-hover:w-full transition-all duration-300 ease-in-out"></span>
           )}
-        </Link>
+        </Link> */}
         <button
           className="text-white flex bg-dark-blue rounded-lg m-2 p-2 transition-all hover:bg-black hover:scale-110"
           onClick={handleLogout}
