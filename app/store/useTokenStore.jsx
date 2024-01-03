@@ -1,9 +1,8 @@
 import { create } from "zustand";
 
 const useTokenStore = create((set) => ({
-  token: null, // Inicialmente, el token está vacío
+  token: null,
 
-  // Acción para actualizar el token
   setToken: (newToken) => set({ token: newToken }),
 
   

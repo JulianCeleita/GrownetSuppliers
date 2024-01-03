@@ -11,6 +11,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import Swal from "sweetalert2";
 import Home from "./page";
+import useUserStore from "./store/useUserStore";
 
 const metadata = {
   title: "Grownet Suppliers",
@@ -31,6 +32,7 @@ export default function RootLayout({ children }) {
   useEffect(() => {
     const handleRouter = async () => {
       const localStorageToken = localStorage.getItem("token");
+      
       setToken(localStorageToken);
 
       if (localStorageToken || token) {

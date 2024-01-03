@@ -5,12 +5,16 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useRouter } from "next/navigation";
 import { ArrowLeftOnRectangleIcon } from "@heroicons/react/24/outline";
+import { fetchUsers } from "../users/page";
+import useUserStore from "../store/useUserStore";
 
 function Header() {
   const router = useRouter();
   const [activeLink, setActiveLink] = useState("");
+  const { user, setUser } = useUserStore();
 
   const pathname = usePathname();
+
 
   useEffect(() => {
     const handleRouteChange = () => {
@@ -25,6 +29,7 @@ function Header() {
 
   const handleLogout = () => {
     localStorage.removeItem("token");
+    localStorage.removeItem("user");
     router.push("/");
   };
 
@@ -115,6 +120,29 @@ function Header() {
             <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-white group-hover:w-full transition-all duration-300 ease-in-out"></span>
           )}
         </Link>
+
+        {/* {user && user.rol_name === "Administrador" && (
+          <Link
+            href="/presentations"
+            className="relative group text-white rounded m-2 py-2 hover:text-light-green hover:scale-110"
+          >
+            <h3
+              className={activeLink === "presentations" ? "active" : ""}
+              onClick={() => setActiveLink("presentations")}
+            >
+              Presentations
+            </h3>
+
+            {activeLink === "presentations" && (
+              <span className="absolute bottom-0 left-0 h-0.5 bg-light-green w-full transition-all duration-300 ease-in-out"></span>
+            )}
+
+            {activeLink !== "presentations" && (
+              <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-white group-hover:w-full transition-all duration-300 ease-in-out"></span>
+            )}
+          </Link>
+        )} */}
+
         {/* <Link
           href="/categories"
           className="relative group text-white rounded m-2 py-2 hover:text-light-green hover:scale-110"

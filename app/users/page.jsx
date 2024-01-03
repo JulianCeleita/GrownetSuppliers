@@ -48,17 +48,6 @@ export const fetchUsers = async (
   }
 };
 
-// export const fetchUsers = async (
-//   token,
-//   setIsLoading
-// ) => {
-//   try {
-//     const response = await axios.get(usersUrl, {
-//       headers: {
-//         Authorization: `Bearer ${token}`,
-//       },
-//     });
-
 function Users() {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const { token } = useTokenStore();

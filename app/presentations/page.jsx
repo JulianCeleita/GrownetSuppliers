@@ -4,6 +4,7 @@ import NewPresentation from "@/app/components/NewPresentation";
 import {
   deletePresentationUrl,
   presentationsUrl,
+  presentationsSupplierUrl
 } from "@/app/config/urls.config";
 import useTokenStore from "@/app/store/useTokenStore";
 import {
@@ -15,6 +16,9 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import ModalDelete from "../components/ModalDelete";
 import Layout from "../layoutS";
+import useUserStore from "../store/useUserStore";
+
+
 
 export const fetchPresentations = async (
   token,
@@ -39,6 +43,32 @@ export const fetchPresentations = async (
   }
 };
 
+
+
+export const fetchPresentationsSupplier = async (
+  token,
+  user,
+  setPresentations,
+  setIsLoading
+) => {
+  try {
+    const response = await axios.get(`${presentationsSupplierUrl}${user.id_supplier}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    const newPresentation = Array.isArray(response.data.presentations)
+      ? response.data.presentations
+      : [];
+    setPresentations(newPresentation);
+    setIsLoading(false);
+    console.log("response.data.presentations", response.data.presentations);
+  } catch (error) {
+    console.error("Error al obtener las presentaciones:", error);
+  }
+};
+
 function Presentations() {
   const { token } = useTokenStore();
   const [uoms, setUoms] = useState([]);
@@ -46,14 +76,24 @@ function Presentations() {
   const [showNewPresentations, setShowNewPresentations] = useState(false);
   const [showEditPresentations, setShowEditPresentations] = useState(false);
   const [selectedPresentation, setSelectedPresentation] = useState(null);
+  const { user, setUser } = useUserStore();
 
   //Api
   const [presentations, setPresentations] = useState([]);
 
   useEffect(() => {
-    fetchPresentations(token, setPresentations, setIsLoading);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+    var localStorageUser = JSON.parse(localStorage.getItem("user"));
+    setUser(localStorageUser);
+  }, [setUser]);
+
+  useEffect(() => {
+    console.log(user);
+    if (user && user.rol_name === "super") {
+      fetchPresentations(token, setPresentations, setIsLoading);
+    } else {
+      fetchPresentationsSupplier(token, user, setPresentations, setIsLoading);
+    }
+  }, [user, token]);
 
   //Delete
   const [showDeleteModal, setShowDeleteModal] = useState(false);

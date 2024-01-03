@@ -7,6 +7,7 @@ import { loginUrl } from "./config/urls.config";
 import useTokenStore from "./store/useTokenStore";
 import Swal from "sweetalert2";
 import { useRouter } from "next/navigation";
+import useUserStore from "./store/useUserStore";
 
 function Home() {
   const [hasMounted, setHasMounted] = useState(false);
@@ -16,6 +17,7 @@ function Home() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const { token, setToken } = useTokenStore();
+  const { user, setUser } = useUserStore();
   const router = useRouter();
 
   useEffect(() => {
@@ -67,7 +69,9 @@ function Home() {
         setPassword("");
         setIsLoggedIn(true);
         setToken(response.data.token);
+        setUser(response.data.user);
         localStorage.setItem("token", response.data.token);
+        localStorage.setItem("user", JSON.stringify(response.data.user));
       } else {
         setLoading(false);
         Swal.fire({

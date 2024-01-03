@@ -19,6 +19,8 @@ export const deleteProductUrl =
 //Presentations
 export const presentationsUrl =
   "http://3.139.16.141/api/presentations/all";
+  export const presentationsSupplierUrl =
+  "http://3.139.16.141/api/presentations/supplier/";
 export const addPresentationUrl =
   "http://3.139.16.141/api/presentations/create";
 export const updatePresentationUrl =
