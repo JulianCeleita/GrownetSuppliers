@@ -90,7 +90,7 @@ function Products() {
             New product
           </button>
         </div>
-        <div className="flex items-center justify-center mb-6 -mt-14">
+        <div className="flex items-center justify-center mb-20 -mt-14">
           <table className="w-[90%] bg-white rounded-2xl text-center shadow-[0_8px_30px_rgb(0,0,0,0.12)] mb-8">
             <thead className="sticky top-0 bg-white shadow-[0px_11px_15px_-3px_#edf2f7] ">
               <tr className="border-b-2 border-stone-100 text-dark-blue ">

@@ -345,7 +345,10 @@ export default function Table() {
             quantity: row.quantity,
             price:
               productByCode.price + productByCode.price * productByCode.tax,
-            Net: productByCode.price !== null && productByCode.price.toFixed(2) || 0,
+            Net:
+              (productByCode.price !== null &&
+                productByCode.price.toFixed(2)) ||
+              0,
             "Total Net": "",
             "VAT %": productByCode.tax,
             "VAT £": "",
@@ -732,7 +735,7 @@ export default function Table() {
           )}
         </form>
       </div>
-      <div className="flex justify-center mb-40 w-full mt-5">
+      <div className="flex justify-center mb-20 w-full mt-5">
         <h1 className="bg-dark-blue text-white font-semibold p-3 rounded-tl-lg rounded-bl-lg w-[30%] items-center text-center flex justify-center">
           Special requirements
         </h1>

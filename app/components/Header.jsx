@@ -28,18 +28,16 @@ function Header() {
     router.push("/");
   };
 
-
   return (
     <div className="flex justify-between items-center bg-primary-blue p-4">
       <div className="mx-5">
         <Link href="#">
           <Image
             src="/logoGrownetBlanco.svg"
-            width={150}
-            height={150}
+            width={180}
+            height={180}
             alt="Logo Grownet"
             priority={true}
-            style={{ objectFit: "contain", width: "100%", height: "100%" }}
           />
         </Link>
       </div>
