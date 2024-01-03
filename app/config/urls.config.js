@@ -1,3 +1,11 @@
+// login
+export const loginUrl =
+"http://3.139.16.141/api/login/login";
+
+// users
+export const usersUrl =
+"http://3.139.16.141/api/user/all";
+
 // Products
 export const productsUrl =
 "https://api.grownetapp.com/grownet/api/products/all";
@@ -10,7 +18,9 @@ export const deleteProductUrl =
 
 //Presentations
 export const presentationsUrl =
-  "https://api.grownetapp.com/grownet/api/presentations/all";
+      "https://api.grownetapp.com/grownet/api/presentations/all";
+  export const presentationsSupplierUrl =
+  "http://3.139.16.141/api/presentations/supplier/";
 export const addPresentationUrl =
   "https://api.grownetapp.com/grownet/api/presentations/create";
 export const updatePresentationUrl =

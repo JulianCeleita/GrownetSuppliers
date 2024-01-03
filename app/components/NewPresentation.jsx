@@ -7,9 +7,10 @@ import {
   uomUrl,
   taxexUrl,
 } from "../config/urls.config";
-import { fetchPresentations } from "../presentations/page";
+import { fetchPresentations, fetchPresentationsSupplier } from "../presentations/page";
 import useTokenStore from "../store/useTokenStore";
 import ReactCountryFlag from "react-country-flag";
+import useUserStore from "../store/useUserStore";
 
 function NewPresentation({
   isvisible,
@@ -30,9 +31,11 @@ function NewPresentation({
   const [codePresentation, setCodePresentation] = useState("");
   const [tax, setTax] = useState([]);
   const [selectedTax, setSelectedTax] = useState("");
+  const { user, setUser } = useUserStore();
 
   // Taxes
   useEffect(() => {
+    console.log(user.id_supplier);
     const fetchTaxes = async () => {
       try {
         const response = await axios.get(taxexUrl, {
@@ -120,6 +123,7 @@ function NewPresentation({
       cost: costPresentation,
       code: codePresentation,
       tax: selectedTax,
+      suppliers_id: user.id_supplier
     };
     console.log("se envio: ", postData);
     axios
@@ -129,7 +133,11 @@ function NewPresentation({
         },
       })
       .then((response) => {
-        fetchPresentations(token, setPresentations, setIsLoading);
+        if(user.id_supplier) {
+          fetchPresentationsSupplier(token, user, setPresentations, setIsLoading);
+        } else {
+          fetchPresentations(token, setPresentations, setIsLoading);
+        }
         setSelectedUomsStatus("");
         setSelectedProductsStatus("");
         onClose();

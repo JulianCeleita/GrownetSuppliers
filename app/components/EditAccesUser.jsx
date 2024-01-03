@@ -87,29 +87,28 @@ function EditAccessUser({
                 <h1 className="text-2xl font-bold text-green mb-2">
                     Edit user access
                 </h1>
-                <form
-                    className="text-left  flex flex-col"
-                    onSubmit={handleEditAccessUser}
-                >
-                    <div className="grid grid-cols-2 mt-2 mb-2">
-                        <label>Orders: </label>
-                        <input type="checkbox" className="w-6 h-6" />
-                    </div>
-                    <div className="grid grid-cols-2 mt-2 mb-2">
-                        <label>Products: </label>
-                        <input type="checkbox" className="w-6 h-6" />
-                    </div>
-                    <div className="grid grid-cols-2 mt-2 mb-2">
-                        <label>Presentations: </label>
-                        <input type="checkbox" className="w-6 h-6" />
-                    </div>
-                    <div className="grid grid-cols-2 mt-2 mb-2">
-                        <label>Categories: </label>
-                        <input type="checkbox" className="w-6 h-6" />
-                    </div>
-                    <div className="grid grid-cols-2 mt-2 mb-2">
-                        <label>Suppliers: </label>
-                        <input type="checkbox" className="w-6 h-6" />
+                <form className="text-left" onSubmit={handleEditAccessUser}>
+                    <div className="grid grid-cols-2 gap-4">
+                        <div className="mt-2 mb-2">
+                            <label className="mr-3">Orders:</label>
+                            <input type="checkbox" className="w-5 h-5" />
+                        </div>
+                        <div className="mt-2 mb-2">
+                            <label className="mr-3">Products:</label>
+                            <input type="checkbox" className="w-5 h-5" />
+                        </div>
+                        <div className="mt-2 mb-2">
+                            <label className="mr-3">Presentations:</label>
+                            <input type="checkbox" className="w-5 h-5" />
+                        </div>
+                        <div className="mt-2 mb-2">
+                            <label className="mr-3">Categories:</label>
+                            <input type="checkbox" className="w-5 h-5" />
+                        </div>
+                        <div className="mt-2 mb-2">
+                            <label className="mr-3">Suppliers:</label>
+                            <input type="checkbox" className="w-5 h-5" />
+                        </div>
                     </div>
 
                     <div className="mt-3 text-center">
@@ -118,11 +117,11 @@ function EditAccessUser({
                             value="Submit"
                             className="bg-primary-blue py-3 px-4 rounded-lg text-white font-medium mr-3 "
                         >
-                            Adit user access
+                            Edit user access
                         </button>
                         <button
                             onClick={() => onClose()}
-                            className=" py-3 px-4 rounded-lg text-primary-blue border border-primary-blue font-medium"
+                            className="py-3 px-4 rounded-lg text-primary-blue border border-primary-blue font-medium"
                         >
                             Close
                         </button>

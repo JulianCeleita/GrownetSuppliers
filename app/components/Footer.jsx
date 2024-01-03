@@ -5,17 +5,16 @@ import React from "react";
 
 export default function Footer() {
   return (
-    <footer className="absolute bottom-0 left-0 -z-50 w-full bg-dark-blue rounded-t-3xl shadow-[0px_10px_1px_rgba(221,_221,_221,_1),_0_10px_20px_rgba(204,_204,_204,_1)] ">
+    <footer className="absolute bottom-0 w-full bg-dark-blue rounded-t-3xl shadow-[0px_10px_1px_rgba(221,_221,_221,_1),_0_10px_20px_rgba(204,_204,_204,_1)] ">
       <div className="w-full max-w-screen-xl mx-auto p-4 md:py-8">
         <div className="sm:flex sm:items-center sm:justify-between">
           <Link href="#" className="ml-4">
             <Image
               src="/logoGrownetBlanco.svg"
-              width={150}
-              height={150}
+              width={180}
+              height={180}
               alt="Logo Grownet"
               priority={true}
-              style={{ objectFit: "contain", width: "100%", height: "100%" }}
             />
           </Link>
 

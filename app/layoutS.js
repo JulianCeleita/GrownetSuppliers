@@ -3,10 +3,10 @@ import Footer from "./components/Footer";
 
 export default function Layout({ children }) {
   return (
-    <div>
+    <body className="relative pb-40 min-h-screen font-poppins text-dark-blue">
       <Header />
       {children}
       <Footer />
-    </div>
+    </body>
   );
 }
