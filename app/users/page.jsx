@@ -6,6 +6,7 @@ import {
   presentationsUrl,
   productsUrl,
   uomUrl,
+  usersUrl,
 } from "@/app/config/urls.config";
 import useTokenStore from "@/app/store/useTokenStore";
 import {
@@ -23,42 +24,65 @@ import ModalDelete from "../components/ModalDelete";
 import Layout from "../layoutS";
 import "react-calendar/dist/Calendar.css";
 
-// export const fetchPresentations = async (
+export const fetchUsers = async (
+  token,
+  setUsers,
+  setIsLoading
+) => {
+  try {
+    const response = await axios.get(usersUrl, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    const newUser = Array.isArray(response.data.users)
+      ? response.data.users
+      : [];
+    setUsers(newUser);
+    setIsLoading(false);
+    console.log("response.data.users", response.data.users);
+  } catch (error) {
+    console.error("Error al obtener los usuarios:", error);
+    console.error(response.data.users);
+  }
+};
+
+// export const fetchUsers = async (
 //   token,
-//   setPresentations,
 //   setIsLoading
 // ) => {
 //   try {
-//     const response = await axios.get(presentationsUrl, {
+//     const response = await axios.get(usersUrl, {
 //       headers: {
 //         Authorization: `Bearer ${token}`,
 //       },
 //     });
 
-//     const newPresentation = Array.isArray(response.data.presentations)
-//       ? response.data.presentations
-//       : [];
-//     setPresentations(newPresentation);
-//     setIsLoading(false);
-//     console.log("response.data.presentations", response.data.presentations);
-//   } catch (error) {
-//     console.error("Error al obtener las presentaciones:", error);
-//   }
-// };
-
 function Users() {
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
   const { token } = useTokenStore();
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [showEditAccessUsers, setShowEditAccessUsers] = useState(false);
 
-  // const sortedUsers = presentations.slice().sort((a, b) => {
-  //   const productNameA =
-  //     products.find((product) => product.id === a.products_id)?.name || "";
-  //   const productNameB =
-  //     products.find((product) => product.id === b.products_id)?.name || "";
-  //   return productNameA.localeCompare(productNameB);
-  // });
-  const sortedUsers = ["Jaime"];
+  //Api
+  const [users, setUsers] = useState([]);
+
+  useEffect(() => {
+    fetchUsers(token, setUsers, setIsLoading);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+
+
+  const sortedUsers = users.slice().sort((a, b) => {
+    const userNameA =
+      users.find((user) => user.id === a.users_id)?.name || "";
+    const userNameB =
+      users.find((user) => user.id === b.users_id)?.name || "";
+    return userNameA.localeCompare(userNameB);
+  });
+  // const sortedUsers = ["Jaime"];
 
   return (
     <Layout>
@@ -81,39 +105,43 @@ function Users() {
             <thead className="sticky top-0 bg-white shadow-[0px_11px_15px_-3px_#edf2f7]">
               <tr className="border-b-2 border-stone-100 text-dark-blue">
                 <th className="py-4">User</th>
+                <th className="py-4">Email</th>
+                <th className="py-4">Rol</th>
+                <th className="py-4">Users</th>
                 <th className="py-4">Orders</th>
-                <th className="py-4">Products</th>
+                {/* <th className="py-4">Products</th> */}
                 <th className="py-4">Presentations</th>
-                <th className="py-4">Categories</th>
-                <th className="py-4">Suppliers</th>
+                {/* <th className="py-4">Categories</th> */}
+                {/* <th className="py-4">Suppliers</th> */}
                 <th className="py-4">Access</th>
               </tr>
             </thead>
             <tbody>
               {sortedUsers.map((user) => (
                 <tr
-                  key="users"
+                  key={user.id}
                   className="text-dark-blue border-b-2 border-stone-100 "
                 >
-                  <td className="py-8">Javier</td>
+                  <td className="py-8">{user.name}</td>
+                  <td className="py-8">{user.email}</td>
+                  <td className="py-8">{user.rol_name}</td>
                   <td className="py-8">
                     {" "}
                     <CheckIcon className="h-6 w-[100%]" />{" "}
                   </td>
                   <td className="py-8">
-                    {" "}
-                    <XMarkIcon className="h-6 w-[100%]" />{" "}
+                    {user.rol_name === "Administrador" ? (
+                      <CheckIcon className="h-6 w-[100%]" />
+                    ) : (
+                      <XMarkIcon className="h-6 w-[100%]" />
+                    )}
                   </td>
                   <td className="py-8">
-                    <XMarkIcon className="h-6 w-[100%]" />
-                  </td>
-                  <td className="py-8">
-                    {" "}
-                    <CheckIcon className="h-6 w-[100%]" />{" "}
-                  </td>
-                  <td className="py-8">
-                    {" "}
-                    <CheckIcon className="h-6 w-[100%]" />{" "}
+                    {user.rol_name === "Administrador" ? (
+                      <CheckIcon className="h-6 w-[100%]" />
+                    ) : (
+                      <XMarkIcon className="h-6 w-[100%]" />
+                    )}
                   </td>
                   <td className="py-8 w-[100%] flex items-center justify-center">
                     <button

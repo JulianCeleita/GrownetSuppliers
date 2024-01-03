@@ -49,7 +49,7 @@ function LoginForm({
                 className={`bg-dark-blue hover:scale-110 text-white transition-all font-bold py-3 px-2 rounded-3xl w-80`}
                 disabled={loading}
               >
-                {loading ? "Iniciando sesión..." : "Log in"}
+                {loading ? "Logging in..." : "Log in"}
               </button>
             </div>
           </form>
