@@ -1,11 +1,5 @@
 "use client";
-import EditPresentation from "@/app/components/EditPresentation";
-import NewPresentation from "@/app/components/NewPresentation";
 import {
-  deletePresentationUrl,
-  presentationsUrl,
-  productsUrl,
-  uomUrl,
   usersUrl,
 } from "@/app/config/urls.config";
 import useTokenStore from "@/app/store/useTokenStore";

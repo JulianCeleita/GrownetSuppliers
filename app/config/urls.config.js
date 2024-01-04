@@ -59,6 +59,10 @@ export const uomUrl = "http://3.139.16.141/api/uom/all";
 export const taxexUrl = "http://3.139.16.141/api/taxes/all";
 
 //Orders
+export const ordersUrl = 
+  "http://3.139.16.141/api/orders/all";
+export const ordersSupplierUrl = 
+  "http://3.139.16.141/api/orders/supplier/";
 export const restaurantsData =
   "http://3.139.16.141/api/customers/all";
 export const createOrders =

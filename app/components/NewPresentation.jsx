@@ -35,7 +35,6 @@ function NewPresentation({
 
   // Taxes
   useEffect(() => {
-    console.log(user.id_supplier);
     const fetchTaxes = async () => {
       try {
         const response = await axios.get(taxexUrl, {

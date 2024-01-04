@@ -1,321 +1,147 @@
 "use client";
 import Table from "@/app/components/Table";
 import axios from "axios";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
-import Select from "react-select";
-import { restaurantsData, customersData } from "../config/urls.config";
+import { ordersSupplierUrl, ordersUrl } from "../config/urls.config";
 import Layout from "../layoutS";
-import { useTableStore } from "../store/useTableStore";
 import useTokenStore from "../store/useTokenStore";
+import useUserStore from "../store/useUserStore";
+
+
+export const fetchOrders = async (
+  token,
+  setOrders,
+  setIsLoading
+) => {
+  try {
+    const response = await axios.get(ordersUrl, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    const newOrder = Array.isArray(response.data.orders)
+      ? response.data.orders
+      : [];
+    setOrders(newOrder);
+    setIsLoading(false);
+    console.log("response.data.orders", response.data.orders);
+  } catch (error) {
+    console.error("Error al obtener las ordenes:", error);
+    console.error(response.data.orders);
+  }
+};
+
+export const fetchOrdersSupplier = async (
+  token,
+  user,
+  setOrders,
+  setIsLoading
+) => {
+  try {
+    const response = await axios.get(`${ordersSupplierUrl}${user.id_supplier}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    const newOrder = Array.isArray(response.data.orders)
+      ? response.data.orders
+      : [];
+    setOrders(newOrder);
+    setIsLoading(false);
+    console.log("response.data.orders supplier", response.data.orders);
+  } catch (error) {
+    console.error("Error al obtener las ordenes:", error);
+  }
+};
 
 const OrderView = () => {
+  const router = useRouter();
   const { token } = useTokenStore();
-  const {
-    customers,
-    setCustomers,
-    totalNetSum,
-    totalPriceSum,
-    totalTaxSum,
-    totalCostSum,
-    totalProfit,
-    totalProfitPercentage,
-  } = useTableStore();
-
-  const [restaurants, setRestaurants] = useState(null);
-  const [selectedAccNumber, setSelectedAccNumber] = useState("");
-  const [selectedAccName, setSelectedAccName] = useState("");
-  const [isDropdownVisible, setIsDropdownVisible] = useState(false);
-  const [isNameDropdownVisible, setIsNameDropdownVisible] = useState(false);
-  const [orderDate, setOrderDate] = useState(getCurrentDate());
-  const [mouseCoords, setMouseCoords] = useState({ x: 0, y: 0 });
-
-  //Fecha input
-  function getCurrentDate() {
-    const today = new Date();
-    const year = today.getFullYear();
-    const month = String(today.getMonth() + 1).padStart(2, "0");
-    const day = String(today.getDate()).padStart(2, "0");
-    return `${year}-${month}-${day}`;
-  }
+  const [searchTerm, setSearchTerm] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const [orders, setOrders] = useState([]);
+  const { user, setUser } = useUserStore();
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const responseRestaurants = await axios.get(restaurantsData, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-
-        const sortedRestaurants = responseRestaurants.data.customers.sort(
-          (a, b) => a.accountName.localeCompare(b.accountName)
-        );
-
-        setRestaurants(sortedRestaurants);
-      } catch (error) {
-        console.error("Error fetching restaurants data", error);
-      }
-    };
-
-    fetchData();
-
-    if (selectedAccNumber) {
-      fetchDataAccNumber();
-    } else if (selectedAccName) {
-      fetchDataAccName();
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [token, selectedAccNumber, selectedAccName]);
-
-  // Click en la pantalla
-  useEffect(() => {
-    const handleClickOutside = () => {
-      setIsDropdownVisible(false);
-      setIsNameDropdownVisible(false);
-    };
-
-    document.addEventListener("click", handleClickOutside);
-
-    return () => {
-      document.removeEventListener("click", handleClickOutside);
-    };
-  }, [isDropdownVisible, isNameDropdownVisible, customers]);
-
-  const fetchDataAccNumber = async () => {
-    try {
-      const responseAccNumber = await axios.get(
-        `${customersData}${selectedAccNumber}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-
-      const updatedCustomers = {
-        ...responseAccNumber.data.customer,
-        orderDate: orderDate,
-      };
-      setCustomers(updatedCustomers);
-    } catch (error) {
-      console.error("Error fetching AccNumber data", error);
-    }
-  };
-  const fetchDataAccName = async () => {
-    try {
-      const responseAccNumber = await axios.get(
-        `${customersData}${selectedAccName}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-
-      const updatedCustomers = {
-        ...responseAccNumber.data.customer,
-        orderDate: orderDate,
-      };
-
-      setCustomers(updatedCustomers);
-    } catch (error) {
-      console.error("Error fetching AccNumber data", error);
-    }
-  };
-
-  const restaurantList = Array.isArray(restaurants) ? restaurants : [];
-
-  //VENTANA TOTAL
-  const [showCheckboxColumnTotal, setShowCheckboxColumnTotal] = useState(false);
-  const menuRefTotal = useRef(null);
-  const { initialTotalRows, toggleTotalRowVisibility } = useTableStore();
-  const columnsTotal = [
-    { name: "Net Invoice", price: "£ " + totalNetSum },
-    { name: "Total VAT", price: "£ " + totalTaxSum },
-    { name: "Total Invoice", price: "£ " + totalPriceSum },
-    { name: "Profit (£)", price: "£ " + totalProfit },
-    { name: "Profit (%)", price: totalProfitPercentage + "%" },
-  ];
-
-  const handleContextMenuTotal = (e) => {
-    e.preventDefault();
-    setShowCheckboxColumnTotal(!showCheckboxColumnTotal);
-    setMouseCoords({ x: e.clientX, y: e.clientY });
-  };
-  const handleCheckboxChangeTotal = (columnName) => {
-    toggleTotalRowVisibility(columnName);
-  };
-  const handleClickOutsideTotal = (e) => {
-    if (menuRefTotal.current && !menuRefTotal.current.contains(e.target)) {
-      setShowCheckboxColumnTotal(false);
-    }
-  };
+    var localStorageUser = JSON.parse(localStorage.getItem("user"));
+    setUser(localStorageUser);
+  }, [setUser]);
 
   useEffect(() => {
-    document.addEventListener("click", handleClickOutsideTotal);
-    return () => {
-      document.removeEventListener("click", handleClickOutsideTotal);
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+    console.log(user);
+    if (user && user.rol_name === "super") {
+      fetchOrders(token, setOrders, setIsLoading);
+    } else {
+      fetchOrdersSupplier(token, user, setOrders, setIsLoading);
+    }
+  }, [user, token]);
+
+  const filteredOrders = orders.filter((order) =>
+    order.created_date.includes(searchTerm)
+  );
+
+
+  const sortedOrders = filteredOrders.slice().sort((a, b) => {
+    const orderNameA = orders.find((o) => o.id === a.orders_id)?.accountName || '';
+    const orderNameB = orders.find((o) => o.id === b.orders_id)?.accountName || '';
+    return orderNameA.localeCompare(orderNameB);
+  });
+
   return (
     <Layout>
-      <div className="grid grid-cols-3 gap-4 p-6 shadow-lg bg-primary-blue pb-20">
-        <div className="grid grid-cols-2 bg-white p-4 rounded-lg shadow-lg text-dark-blue">
-          <h3 className="m-3">Account Name:</h3>
-          <div className="relative ml-3">
-            <Select
-              instanceId
-              options={restaurantList.map((restaurant) => ({
-                value: restaurant.accountName,
-                label: restaurant.accountName,
-              }))}
-              onChange={(selectedOption) => {
-                setSelectedAccName(selectedOption.value);
-                setIsDropdownVisible(false);
-              }}
-              value={{
-                value: selectedAccNumber,
-                label:
-                  customers && customers.accountName
-                    ? customers.accountName
-                    : "Search...",
-              }}
-              isSearchable
-            />
-          </div>
-
-          <div className="grid grid-cols-2 m-3 gap-2">
-            <h3>Account Number:</h3>
-            <div className="relative">
-              <Select
-                instanceId
-                options={restaurantList.map((restaurant) => ({
-                  value: restaurant.accountNumber,
-                  label: restaurant.accountNumber,
-                }))}
-                onChange={(selectedOption) => {
-                  setSelectedAccNumber(selectedOption.value);
-                  setIsDropdownVisible(false);
-                }}
-                value={{
-                  value: selectedAccNumber,
-                  label:
-                    customers && customers.accountNumber
-                      ? customers.accountNumber
-                      : "Search...",
-                }}
-                isSearchable
-              />
-            </div>
-
-            <h3>Post Code:</h3>
-            <h3 className="underline decoration-2 decoration-green">
-              {customers && customers.postCode ? customers.postCode : ""}
-            </h3>
-          </div>
-          <div className="grid grid-cols-2 m-3 gap-2">
-            <h3>Address:</h3>
-            <h3 className="underline decoration-2 decoration-green">
-              {customers && customers.address ? customers.address : ""}
-            </h3>
-            <h3>Telephone:</h3>
-            <h3 className="underline decoration-2 decoration-green">
-              {" "}
-              {customers && customers.telephone ? customers.telephone : ""}
-            </h3>
-          </div>
-          <h3 className="ml-3">Contact:</h3>
-          <h3 className="underline decoration-2 decoration-green ml-3">
-            {customers && customers.email ? customers.email : ""}
-          </h3>
-        </div>
-        <div className="bg-white p-2 pr-9 pl-9 rounded-lg flex flex-col justify-center">
-          <div className="flex items-center mb-3">
-            <label>Date: </label>
-            <input
-              type="date"
-              className="border ml-2 p-1.5 rounded-md w-[100%] "
-              min={getCurrentDate()}
-            />
-            <label className="ml-3">Inv. No.: </label>
-            <input
-              type="text"
-              value="Order"
-              readOnly
-              className="border ml-2 p-1.5 rounded-md w-[100%]"
-            />
-          </div>
-          <div className="grid grid-cols-2">
-            <label>Order No.: </label>
-            <input type="text" className="border p-2 rounded-md mb-2" />
-
-            <h3>Round:</h3>
-            <h3 className="underline decoration-2 decoration-green mb-2">
-              1056
-            </h3>
-            {/*<h3>Drop:</h3>
-          <h3 className="underline decoration-2 decoration-green">{""}</h3>*/}
-          </div>
-        </div>
-        <div
-          className="bg-white p-2 pr-9 pl-9 rounded-lg flex flex-col justify-center"
-          onContextMenu={(e) => handleContextMenuTotal(e)}
-        >
-          <h1 className="text-lg text-primary-blue font-semibold ml-5">
-            Payment details
+      <div>
+        <div className="flex justify-between p-8 pb-20 bg-primary-blue">
+          <h1 className="text-2xl text-white font-semibold">
+            Orders list
           </h1>
-          {columnsTotal.map(
-            (column, index) =>
-              initialTotalRows.includes(column.name) && (
-                <div className=" flex items-center" key={column.name}>
-                  <h1 className="text-lg text-dark-blue font-semibold w-[60%] ml-5">
-                    {column.name}
-                  </h1>
-                  <p className="text-dark-blue text-lg w-[40%]">
-                    {column.price}
-                  </p>
-                </div>
-              )
-          )}
+          <Link className="flex bg-green py-3 px-4 rounded-lg text-white font-medium transition-all hover:bg-dark-blue hover:scale-110 " href="/orders/create-order">
+            New Order
+          </Link>
         </div>
-        {showCheckboxColumnTotal === true && (
-          <div
-            ref={menuRefTotal}
-            className="absolute w-[40%] bg-white p-3 border rounded-xl"
-            style={{
-              top: `${mouseCoords.y}px`,
-              left: `${mouseCoords.x}px`,
-            }}
-          >
-            <h4 className="font-bold mb-2 text-dark-blue">Show/Hide Columns</h4>
-            {columnsTotal.map((column) => (
-              <div
-                key={column.name}
-                className="flex items-center text-dark-blue"
-              >
-                <input
-                  type="checkbox"
-                  id={column.name}
-                  checked={initialTotalRows.includes(column.name)}
-                  onChange={() => handleCheckboxChangeTotal(column.name)}
-                />
-                <label htmlFor={column.name} className="ml-2">
-                  {column.name}
-                </label>
-              </div>
-            ))}
-            <button
-              className="mt-2 text-danger"
-              onClick={() => setShowCheckboxColumnTotal(false)}
-            >
-              Close
-            </button>
+        <div className="flex relative items-center justify-center mb-16 bg-white z-50">
+          <input
+            type="text"
+            placeholder="Search orders by date..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="border p-2 rounded-md w-[90%] max-w-xl"
+          />
+        </div>
+        <div className="flex items-center justify-center mb-20 -mt-14">
+          <table className="w-[90%] bg-white rounded-2xl text-center shadow-[0_8px_30px_rgb(0,0,0,0.12)]">
+            <thead className="sticky top-0 bg-white shadow-[0px_11px_15px_-3px_#edf2f7] ">
+              <tr className="border-b-2 border-stone-100 text-dark-blue">
+                <th className="py-4 rounded-tl-lg">Restaurant</th>
+                <th className="py-4">Order date & time</th>
+                <th className="py-4">Delivery date</th>
+                <th className="py-4">Order status</th>
+              </tr>
+            </thead>
+            <tbody>
+              {sortedOrders.map((order) => (
+                <tr
+                  key={order.reference}
+                  className="text-dark-blue border-b-2 border-stone-100 cursor-pointer"
+                  onClick={() => router.push(`/orders/${order.reference}`)}
+                >
+                  <td className="py-4">{order.accountName}</td>
+                  <td className="py-4">{order.created_date}</td>
+                  <td className="py-4">{order.date_delivery}</td>
+                  <td className="py-4">{order.name_status}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+        {isLoading && (
+          <div className="flex justify-center items-center mb-20">
+            <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-primary-blue"></div>
           </div>
         )}
-      </div>
-      <div className="-mt-20">
-        <Table />
       </div>
     </Layout>
   );
