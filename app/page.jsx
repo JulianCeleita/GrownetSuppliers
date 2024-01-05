@@ -43,10 +43,6 @@ function Home() {
     return null;
   }
 
-  if (!hasMounted) {
-    return null;
-  }
-
   // Función para enviar datos de inicio de sesión
   const enviarData = async (e) => {
     e.preventDefault();
