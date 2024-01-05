@@ -63,6 +63,8 @@ export const ordersUrl =
   "http://3.139.16.141/api/orders/all";
 export const ordersSupplierUrl = 
   "http://3.139.16.141/api/orders/supplier/";
+export const orderDetail = 
+  "http://3.139.16.141/api/orders/";
 export const restaurantsData =
   "http://3.139.16.141/api/customers/all";
 export const createOrders =

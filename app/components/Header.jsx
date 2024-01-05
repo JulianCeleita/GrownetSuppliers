@@ -19,13 +19,16 @@ function Header() {
   useEffect(() => {
     const handleRouteChange = () => {
       const currentPath = pathname;
-      setActiveLink(
-        currentPath === "/" ? "orders" : currentPath.replace(/\//g, "")
-      );
+      console.log(currentPath);
+      if (router.isReady) {
+        setActiveLink(
+          currentPath === "/" ? "orders" : currentPath.replace(/\//g, "")
+        );
+      }
     };
 
     handleRouteChange();
-  }, [pathname]);
+  }, [pathname, router]);
 
   const handleLogout = () => {
     localStorage.removeItem("token");
