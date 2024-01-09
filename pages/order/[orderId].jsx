@@ -76,9 +76,8 @@ const OrderDetailPage = () => {
     const storedToken = localStorage.getItem("token");
     console.log("my stored token", storedToken)
     if (!storedToken) {
-      setTimeout(() => {
-        router.push("/");
-      }, 500);
+      console.log("no token")
+        // router.push("/");
     } else {
       if (storedToken != null) {
         setToken(storedToken);
