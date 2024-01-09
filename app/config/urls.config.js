@@ -81,4 +81,3 @@ export const presentationData =
 export const createStorageOrder =
   "https://api.grownetapp.com/grownet/api/orders/create";
 
-  // http://3.139.16.141
