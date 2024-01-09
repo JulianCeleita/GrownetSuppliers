@@ -87,7 +87,6 @@ function Presentations() {
   }, [setUser]);
 
   useEffect(() => {
-    console.log(user);
     if (user && user.rol_name === "super") {
       fetchPresentations(token, setPresentations, setIsLoading);
     } else {
@@ -108,7 +107,11 @@ function Presentations() {
       })
       .then((response) => {
         setShowDeleteModal(false);
-        fetchPresentations(token, setPresentations, setIsLoading);
+        if (user && user.rol_name === "super") {
+          fetchPresentations(token, setPresentations, setIsLoading);
+        } else {
+          fetchPresentationsSupplier(token, user, setPresentations, setIsLoading);
+        }
       })
       .catch((error) => {
         console.error("Error al eliminar la presentación:", error);

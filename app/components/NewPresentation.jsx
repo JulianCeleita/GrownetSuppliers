@@ -122,7 +122,7 @@ function NewPresentation({
       cost: costPresentation,
       code: codePresentation,
       tax: selectedTax,
-      suppliers_id: user.id_supplier
+      supplier_id: user.id_supplier
     };
     console.log("se envio: ", postData);
     axios

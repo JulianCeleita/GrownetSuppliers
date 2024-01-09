@@ -7,9 +7,10 @@ import {
   updatePresentationUrl,
   taxexUrl,
 } from "../config/urls.config";
-import { fetchPresentations } from "../presentations/page";
+import { fetchPresentations, fetchPresentationsSupplier } from "../presentations/page";
 import useTokenStore from "../store/useTokenStore";
 import ReactCountryFlag from "react-country-flag";
+import useUserStore from "../store/useUserStore";
 
 function EditPresentation({
   isvisible,
@@ -22,6 +23,7 @@ function EditPresentation({
   const [uoms, setUoms] = useState([]);
   const [products, setProducts] = useState([]);
   const [tax, setTax] = useState([]);
+  const { user, setUser } = useUserStore();
 
   //Variables formulario
   const [editedName, setEditedName] = useState(() => {
@@ -155,6 +157,7 @@ function EditPresentation({
       products_id: selectedProductsStatus,
       code: codePresentation,
       tax: selectedTax,
+      supplier_id: user.id_supplier
     };
     console.log("Esto es lo que envio:", postData);
     axios
@@ -164,7 +167,11 @@ function EditPresentation({
         },
       })
       .then((response) => {
-        fetchPresentations(token, setPresentations, setIsLoading);
+        if(user.id_supplier) {
+          fetchPresentationsSupplier(token, user, setPresentations, setIsLoading);
+        } else {
+          fetchPresentations(token, setPresentations, setIsLoading);
+        }
         setSelectedUomsStatus("");
         setSelectedProductsStatus("");
         onClose();
