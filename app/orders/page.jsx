@@ -126,7 +126,10 @@ const OrderView = () => {
                 <tr
                   key={order.reference}
                   className="text-dark-blue border-b-2 border-stone-100 cursor-pointer"
-                  onClick={() => router.push(`/order/${order.reference}`, undefined, { shallow: true })}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    router.push(`/order/${order.reference}`, undefined, { shallow: true });
+                  }}
                 >
                   <td className="py-4">{order.accountName}</td>
                   <td className="py-4">{order.created_date}</td>
