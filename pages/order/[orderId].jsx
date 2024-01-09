@@ -260,17 +260,17 @@ const OrderDetailPage = () => {
               <div className="grid grid-cols-2 m-3 gap-2">
                 <h3>Address:</h3>
                 <h3 className="underline decoration-2 decoration-green">
-                  {customers && customers.address ? customers.address : ""}
+                  {orderDetail && orderDetail.address_delivery ? orderDetail.address_delivery : ""}
                 </h3>
                 <h3>Telephone:</h3>
                 <h3 className="underline decoration-2 decoration-green">
                   {" "}
-                  {customers && customers.telephone ? customers.telephone : ""}
+                  {orderDetail && orderDetail.telephone_customer ? orderDetail.telephone_customer : ""}
                 </h3>
               </div>
               <h3 className="ml-3">Contact:</h3>
               <h3 className="underline decoration-2 decoration-green ml-3">
-                {customers && customers.email ? customers.email : ""}
+                {orderDetail && orderDetail.email ? orderDetail.email : ""}
               </h3>
             </div>
             <div className="bg-white p-2 pr-9 pl-9 rounded-lg flex flex-col justify-center">
@@ -279,6 +279,7 @@ const OrderDetailPage = () => {
                 <input
                   type="date"
                   className="border ml-2 p-1.5 rounded-md w-[100%] "
+                  value={orderDetail.date_delivery}
                   min={getCurrentDate()}
                 />
                 <label className="ml-3">Inv. No.: </label>
