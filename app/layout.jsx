@@ -37,8 +37,6 @@ export default function RootLayout({ children }) {
 
       if (localStorageToken || token) {
         setIsLoggedIn(true);
-        console.log("entré");
-        console.log(isLoggedIn);
       } else if (!token) {
         setIsLoggedIn(false);
       }

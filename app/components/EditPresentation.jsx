@@ -159,7 +159,6 @@ function EditPresentation({
       tax: selectedTax,
       supplier_id: user.id_supplier
     };
-    console.log("Esto es lo que envio:", postData);
     axios
       .post(`${updatePresentationUrl}${presentation.id}`, postData, {
         headers: {
@@ -175,7 +174,6 @@ function EditPresentation({
         setSelectedUomsStatus("");
         setSelectedProductsStatus("");
         onClose();
-        console.log("Respuesta de editar presentación:", response.data);
       })
       .catch((error) => {
         console.error("Error editando la presentación:", error);

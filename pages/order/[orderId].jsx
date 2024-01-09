@@ -26,13 +26,10 @@ export const fetchOrderDetail = async (
       },
     });
 
-    console.log(response);
 
     const newOrderDetail = Array.isArray(response.data.order) ? response.data.order : [];
     setOrderDetail(response.data.order);
     setIsLoading(false);
-    console.log("response.data.order", response.data.order);
-    console.log("product", orderDetail.products);
   } catch (error) {
     console.error("Error al obtener el detalle:", error);
   }
@@ -74,16 +71,13 @@ const OrderDetailPage = () => {
   }
   useEffect(() => {
     const storedToken = localStorage.getItem("token");
-    console.log("my stored token", storedToken)
     if (!storedToken) {
       console.log("no token")
         // router.push("/");
     } else {
       if (storedToken != null) {
         setToken(storedToken);
-        console.log("stored token", storedToken);
         if (token !== null && orderId !== null) {
-          console.log("mi token ", token)
           fetchOrderDetail(token, setOrderDetail, setIsLoading, orderId.orderId);
         }
       }

@@ -28,13 +28,10 @@ export const fetchOrderDetail = async (
       },
     });
 
-    console.log(response);
 
     const newOrderDetail = Array.isArray(response.data.order) ? response.data.order : [];
     setOrderDetail(response.data.order);
     setIsLoading(false);
-    // console.log("response.data.order", response.data.order);
-    // console.log("product", orderDetail.products);
   } catch (error) {
     console.error("Error al obtener el detalle:", error);
   }
@@ -137,7 +134,6 @@ export default function EditTable({ orderId }) {
   const [specialRequirements, setSpecialRequirements] = useState("");
   const [mouseCoords, setMouseCoords] = useState({ x: 0, y: 0 });
   const { user, setUser } = useUserStore();
-  console.log(user);
 
   const columns = [
     "Code",
@@ -501,7 +497,6 @@ export default function EditTable({ orderId }) {
         },
       });
       const productByCodeData = response.data.data[0];
-      console.log("PRODUCT BY CODE", productByCodeData);
 
       const updatedRows = rows.map((row, index) => {
         if (

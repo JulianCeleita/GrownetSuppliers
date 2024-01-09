@@ -108,7 +108,6 @@ export default function Table() {
   const [specialRequirements, setSpecialRequirements] = useState("");
   const [mouseCoords, setMouseCoords] = useState({ x: 0, y: 0 });
   const { user, setUser } = useUserStore();
-  console.log(user);
 
   const columns = [
     "Code",
@@ -436,7 +435,6 @@ export default function Table() {
         },
       });
       const productByCodeData = response.data.data[0];
-      console.log("PRODUCT BY CODE", productByCodeData);
 
       const updatedRows = rows.map((row, index) => {
         if (

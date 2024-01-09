@@ -46,7 +46,6 @@ function NewPresentation({
           (a, b) => a.worth - b.worth
         );
         setTax(sortedTaxes);
-        console.log(sortedTaxes);
         setSelectedTax(sortedTaxes[0].id || "");
       } catch (error) {
         console.error("Error al obtener Taxes productos:", error);
@@ -124,7 +123,6 @@ function NewPresentation({
       tax: selectedTax,
       supplier_id: user.id_supplier
     };
-    console.log("se envio: ", postData);
     axios
       .post(addPresentationUrl, postData, {
         headers: {

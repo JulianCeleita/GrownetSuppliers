@@ -23,53 +23,38 @@ function EditAccessUser({
     const [products, setProducts] = useState([]);
     const [presentations, setPresentations] = useState([]);
     const [categories, setCategories] = useState([]);
-    const [suppliers, setSuppliers] = useState([]);
-
-    //Variables formulario
-
-    //   useEffect(() => {
-    //     setUserAccess(() => {
-    //         return user.name;
-    //     });
-    //     setEditedCost(user ? user.orders : "");
-    //     setEditedQuantity(user ? user.products : "");
-    //     setSelectedUomsStatus(user ? user.presentations : "");
-    //     setSelectedProductsStatus(user ? categories : "");
-    //     setCodeuser(user ? user.suppliers : "");
-    //     console.log("Accesos del usuario:", user);
-    //   }, [user]);
+    const [suppliers, setSuppliers] = useState([])
 
     //Api editar
-    const handleEditAccessUser = (event) => {
-        event.preventDefault();
+    // const handleEditAccessUser = (event) => {
+    //     event.preventDefault();
 
-        const postData = {
-            uoms_id: selectedUomsStatus,
-            quantity: editedQuantity,
-            name: `${editedName} - ${selecteUomsStatus2}`,
-            cost: editedCost,
-            products_id: selectedProductsStatus,
-            code: codePresentation,
-            tax: selectedTax,
-        };
-        console.log("Esto es lo que envio:", postData);
-        axios
-            .post(`${updatePresentationUrl}${presentation.id}`, postData, {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
-            })
-            .then((response) => {
-                fetchPresentations(token, setPresentations, setIsLoading);
-                setSelectedUomsStatus("");
-                setSelectedProductsStatus("");
-                onClose();
-                console.log("Respuesta de editar presentación:", response.data);
-            })
-            .catch((error) => {
-                console.error("Error editando la presentación:", error);
-            });
-    };
+    //     const postData = {
+    //         uoms_id: selectedUomsStatus,
+    //         quantity: editedQuantity,
+    //         name: `${editedName} - ${selecteUomsStatus2}`,
+    //         cost: editedCost,
+    //         products_id: selectedProductsStatus,
+    //         code: codePresentation,
+    //         tax: selectedTax,
+    //     };
+    //     axios
+    //         .post(`${updatePresentationUrl}${presentation.id}`, postData, {
+    //             headers: {
+    //                 Authorization: `Bearer ${token}`,
+    //             },
+    //         })
+    //         .then((response) => {
+    //             fetchPresentations(token, setPresentations, setIsLoading);
+    //             setSelectedUomsStatus("");
+    //             setSelectedProductsStatus("");
+    //             onClose();
+    //             console.log("Respuesta de editar presentación:", response.data);
+    //         })
+    //         .catch((error) => {
+    //             console.error("Error editando la presentación:", error);
+    //         });
+    // };
 
     if (!isvisible) {
         return null;

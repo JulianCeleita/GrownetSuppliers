@@ -35,7 +35,6 @@ export const fetchUsers = async (
       : [];
     setUsers(newUser);
     setIsLoading(false);
-    console.log("response.data.users", response.data.users);
   } catch (error) {
     console.error("Error al obtener los usuarios:", error);
     console.error(response.data.users);

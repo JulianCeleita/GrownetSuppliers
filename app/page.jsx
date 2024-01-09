@@ -48,7 +48,6 @@ function Home() {
     e.preventDefault();
     setLoading(true);
     setError(null);
-    console.log("Usuario:", username, "Contraseña:", password)
 
     const postData = {
       email: username,
@@ -75,9 +74,7 @@ function Home() {
           title: "Error",
           text: `${response.data.message}`,
         });
-        console.log(response.data)
       }
-      console.log(response.data)
     })
     .catch((error) => {
       console.error("Error al iniciar sesión: ", error);
