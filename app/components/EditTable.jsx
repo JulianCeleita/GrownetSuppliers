@@ -3,6 +3,7 @@ import {
   presentationData,
   createStorageOrder,
   presentationsCode,
+  orderDetail,
 } from "@/app/config/urls.config";
 import { useTableStore } from "@/app/store/useTableStore";
 import useTokenStore from "@/app/store/useTokenStore";
@@ -12,6 +13,32 @@ import Select from "react-select";
 import useUserStore from "../store/useUserStore";
 import ModalOrderError from "./ModalOrderError";
 import ModalSuccessfull from "./ModalSuccessfull";
+
+
+export const fetchOrderDetail = async (
+  token,
+  setOrderDetail,
+  setIsLoading,
+  orderId
+) => {
+  try {
+    const response = await axios.get(`${orderDetail}${orderId}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    console.log(response);
+
+    const newOrderDetail = Array.isArray(response.data.order) ? response.data.order : [];
+    setOrderDetail(response.data.order);
+    setIsLoading(false);
+    // console.log("response.data.order", response.data.order);
+    // console.log("product", orderDetail.products);
+  } catch (error) {
+    console.error("Error al obtener el detalle:", error);
+  }
+};
 
 const initialRowsState = {
   Code: "",
@@ -74,14 +101,16 @@ const useFocusOnEnter = (formRef) => {
   return { onEnterKey };
 };
 
-export default function Table() {
+export default function EditTable({ orderId }) {
   const [rows, setRows] = useState(
     Array.from({ length: 5 }, () => ({ ...initialRowsState }))
   );
   const form = useRef();
   const { onEnterKey } = useFocusOnEnter(form);
-  const { token } = useTokenStore();
+  const { token, setToken } = useTokenStore();
   const [products, setProducts] = useState([]);
+  const [orderDetail, setOrderDetail] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
   const {
     initialColumns,
     toggleColumnVisibility,
@@ -170,6 +199,14 @@ export default function Table() {
 
     fetchPresentationData();
   }, [token]);
+
+  useEffect(() => {
+    fetchOrderDetail(token, setOrderDetail, setIsLoading, orderId)
+    // if (orderDetail && orderDetail.products && orderDetail.products.length > 0) {
+    //   console.log("my order detail", orderDetail.products[0]);
+    // }
+  }, [orderId, token, orderDetail])
+  
 
   const handleContextMenu = (e) => {
     e.preventDefault();
@@ -753,7 +790,7 @@ export default function Table() {
           onClick={createOrder}
           className="bg-primary-blue py-2 px-4 rounded-lg text-white font-medium mr-2 w-[15%]"
         >
-          Send order
+          Edit order
         </button>
       </div>
       <ModalSuccessfull
