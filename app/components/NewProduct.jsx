@@ -97,7 +97,6 @@ function NewProduct({ isvisible, onClose, fetchProducts }) {
     formData.forEach((value, key) => {
       formDataObject[key] = value;
     });
-    console.log("formDataObject", formDataObject);
 
     try {
       const response = await axios.post(addProductUrl, formData, {
@@ -110,7 +109,6 @@ function NewProduct({ isvisible, onClose, fetchProducts }) {
       await fetchProducts(token);
     } catch (error) {
       console.error("Error al crear el producto:", error);
-      console.log("ESTO ENVIA:", formData);
     }
   };
 

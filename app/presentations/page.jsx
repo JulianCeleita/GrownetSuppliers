@@ -37,7 +37,6 @@ export const fetchPresentations = async (
       : [];
     setPresentations(newPresentation);
     setIsLoading(false);
-    console.log("response.data.presentations", response.data.presentations);
   } catch (error) {
     console.error("Error al obtener las presentaciones:", error);
   }
@@ -63,7 +62,6 @@ export const fetchPresentationsSupplier = async (
       : [];
     setPresentations(newPresentation);
     setIsLoading(false);
-    console.log("response.data.presentations", response.data.presentations);
   } catch (error) {
     console.error("Error al obtener las presentaciones:", error);
   }
