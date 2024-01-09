@@ -19,7 +19,6 @@ function Header() {
   useEffect(() => {
     const handleRouteChange = () => {
       const currentPath = pathname;
-      console.log(currentPath);
       if (router.isReady) {
         setActiveLink(
           currentPath === "/" ? "orders" : currentPath.replace(/\//g, "")

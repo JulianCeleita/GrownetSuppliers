@@ -37,7 +37,6 @@ function NewSupplier({ isvisible, onClose, setSuppliers }) {
       formDataObject[key] = value;
     });
 
-    console.log("FormData:", formDataObject);
 
     try {
       const response = await axios.post(addSupplierUrl, formData, {
