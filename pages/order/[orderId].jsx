@@ -72,19 +72,9 @@ const OrderDetailPage = () => {
     const day = String(today.getDate()).padStart(2, "0");
     return `${year}-${month}-${day}`;
   }
-
-  useEffect(() => {
-    setHasMounted(true);
-  }, []);
-
-
-  useEffect(() => {
-    setAccName(orderDetail ? orderDetail.accountName : "");
-  }, [orderDetail])
-
-
   useEffect(() => {
     const storedToken = localStorage.getItem("token");
+    console.log("my stored token", storedToken)
     if (!storedToken) {
       router.push("/");
     } else {
@@ -98,6 +88,17 @@ const OrderDetailPage = () => {
       }
     }
   }, [token, setOrderDetail, setIsLoading, setToken, orderId]);
+
+  useEffect(() => {
+    setHasMounted(true);
+  }, []);
+
+
+  useEffect(() => {
+    setAccName(orderDetail ? orderDetail.accountName : "");
+  }, [orderDetail])
+
+
 
   useEffect(() => {
     const fetchData = async () => {
