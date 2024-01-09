@@ -12,6 +12,7 @@ import { useTableStore } from "@/app/store/useTableStore";
 import useTokenStore from "@/app/store/useTokenStore";
 import RootLayout from "@/app/layout";
 import EditTable from "@/app/components/EditTable";
+import { useRouter } from "next/router";
 
 export const fetchOrderDetail = async (
   token,
@@ -63,6 +64,8 @@ const OrderDetailPage = () => {
   const orderId = useParams();
   const [isLoading, setIsLoading] = useState(false);
   const [accName, setAccName] = useState("");
+  const router = useRouter();
+
 
   //Fecha input
   function getCurrentDate() {
@@ -77,6 +80,7 @@ const OrderDetailPage = () => {
     console.log("my stored token", storedToken)
     if (!storedToken) {
       router.push("/");
+      console.log("Me regreso porque no hay token");
     } else {
       if (storedToken != null) {
         setToken(storedToken);
