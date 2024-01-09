@@ -114,7 +114,6 @@ function EditProduct({ isvisible, onClose, fetchProducts, product }) {
     formData.forEach((value, key) => {
       formDataObject[key] = value;
     });
-    console.log("ESTO ENVIA:", formDataObject);
 
     try {
       const response = await axios.post(
@@ -129,7 +128,6 @@ function EditProduct({ isvisible, onClose, fetchProducts, product }) {
       );
       onClose();
       await fetchProducts(token);
-      console.log("ESTO ENVIA:", formDataObject);
     } catch (error) {
       console.error("Error al editar el producto:", error);
     }
@@ -197,7 +195,7 @@ function EditProduct({ isvisible, onClose, fetchProducts, product }) {
                     {category.name}
                   </option>
                 ))}
-              </select>              
+              </select>
             </div>
           </div>
           <label className="mt-4">Attach the product&apos;s photo: </label>

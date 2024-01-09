@@ -27,7 +27,6 @@ export const fetchOrders = async (
       : [];
     setOrders(newOrder);
     setIsLoading(false);
-    console.log("response.data.orders", response.data.orders);
   } catch (error) {
     console.error("Error al obtener las ordenes:", error);
     console.error(response.data.orders);
@@ -52,7 +51,6 @@ export const fetchOrdersSupplier = async (
       : [];
     setOrders(newOrder);
     setIsLoading(false);
-    console.log("response.data.orders supplier", response.data.orders);
   } catch (error) {
     console.error("Error al obtener las ordenes:", error);
   }
@@ -72,7 +70,6 @@ const OrderView = () => {
   }, [setUser]);
 
   useEffect(() => {
-    console.log(user);
     if (user && user.rol_name === "super") {
       fetchOrders(token, setOrders, setIsLoading);
     } else {
