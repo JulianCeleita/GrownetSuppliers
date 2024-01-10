@@ -70,6 +70,7 @@ const OrderDetailPage = () => {
   const router = useRouter();
 
   const { orderId } = router.query;
+  console.log("orderId", orderId);
 
   //Fecha input
   function getCurrentDate() {
@@ -226,6 +227,7 @@ const OrderDetailPage = () => {
   if (!hasMounted) {
     return null;
   }
+  console.log("orderDetail", orderDetail);
   return (
     <>
       {token ? (
@@ -293,7 +295,7 @@ const OrderDetailPage = () => {
                 <input
                   type="date"
                   className="border ml-2 p-1.5 rounded-md w-[100%] "
-                  value={orderDetail.date_delivery}
+                  value={orderDetail?.date_delivery}
                   min={getCurrentDate()}
                 />
                 <label className="ml-3">Inv. No.: </label>
@@ -375,7 +377,7 @@ const OrderDetailPage = () => {
             )}
           </div>
           <div className="-mt-20">
-            {orderId && <EditTable orderId={orderId.orderId} />}
+            {orderId && <EditTable orderId={orderId} />}
           </div>
         </Layout>
       ) : (
