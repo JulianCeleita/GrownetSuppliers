@@ -174,6 +174,7 @@ export default function EditTable({ orderId }) {
     fetchOrderDetail(token, setOrderDetail, setIsLoading, orderId);
   }, [orderId, token]);
 
+// Se muestran los valores iniciales en la tabla con la peticion
   useEffect(() => {
     if (orderDetail && orderDetail.products && orderDetail.products.length > 0) {
       const initialRows = orderDetail.products.map(product => ({

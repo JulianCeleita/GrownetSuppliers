@@ -100,6 +100,7 @@ function Users() {
             </thead>
             <tbody>
               {sortedUsers.map((user) => (
+                user.email.toLowerCase() !== "admin@grownetapp.com" && (
                 <tr
                   key={user.id}
                   className="text-dark-blue border-b-2 border-stone-100 "
@@ -112,14 +113,14 @@ function Users() {
                     <CheckIcon className="h-6 w-[100%]" />{" "}
                   </td>
                   <td className="py-8">
-                    {user.rol_name === "Administrador" ? (
+                    {(user.rol_name === "Administrador" || user.rol_name === "AdminGrownet") ? (
                       <CheckIcon className="h-6 w-[100%]" />
                     ) : (
                       <XMarkIcon className="h-6 w-[100%]" />
                     )}
                   </td>
                   <td className="py-8">
-                    {user.rol_name === "Administrador" ? (
+                    {(user.rol_name === "Administrador" || user.rol_name === "AdminGrownet") ? (
                       <CheckIcon className="h-6 w-[100%]" />
                     ) : (
                       <XMarkIcon className="h-6 w-[100%]" />
@@ -138,6 +139,7 @@ function Users() {
                     </button>
                   </td>
                 </tr>
+                )
               ))}
             </tbody>
           </table>
