@@ -9,12 +9,7 @@ import Layout from "../layoutS";
 import useTokenStore from "../store/useTokenStore";
 import useUserStore from "../store/useUserStore";
 
-
-export const fetchOrders = async (
-  token,
-  setOrders,
-  setIsLoading
-) => {
+export const fetchOrders = async (token, setOrders, setIsLoading) => {
   try {
     const response = await axios.get(ordersUrl, {
       headers: {
@@ -40,11 +35,14 @@ export const fetchOrdersSupplier = async (
   setIsLoading
 ) => {
   try {
-    const response = await axios.get(`${ordersSupplierUrl}${user.id_supplier}`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
+    const response = await axios.get(
+      `${ordersSupplierUrl}${user.id_supplier}`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
 
     const newOrder = Array.isArray(response.data.orders)
       ? response.data.orders
@@ -59,7 +57,7 @@ export const fetchOrdersSupplier = async (
 const OrderView = () => {
   const router = useRouter();
   const { token } = useTokenStore();
-  const [searchTerm, setSearchTerm] = useState('');
+  const [searchTerm, setSearchTerm] = useState("");
   const [isLoading, setIsLoading] = useState(true);
   const [orders, setOrders] = useState([]);
   const { user, setUser } = useUserStore();
@@ -81,10 +79,11 @@ const OrderView = () => {
     order.created_date.includes(searchTerm)
   );
 
-
   const sortedOrders = filteredOrders.slice().sort((a, b) => {
-    const orderNameA = orders.find((o) => o.id === a.orders_id)?.accountName || '';
-    const orderNameB = orders.find((o) => o.id === b.orders_id)?.accountName || '';
+    const orderNameA =
+      orders.find((o) => o.id === a.orders_id)?.accountName || "";
+    const orderNameB =
+      orders.find((o) => o.id === b.orders_id)?.accountName || "";
     return orderNameA.localeCompare(orderNameB);
   });
 
@@ -92,10 +91,11 @@ const OrderView = () => {
     <Layout>
       <div>
         <div className="flex justify-between p-8 pb-20 bg-primary-blue">
-          <h1 className="text-2xl text-white font-semibold">
-            Orders list
-          </h1>
-          <Link className="flex bg-green py-3 px-4 rounded-lg text-white font-medium transition-all hover:bg-dark-blue hover:scale-110 " href="/orders/create-order">
+          <h1 className="text-2xl text-white font-semibold">Orders list</h1>
+          <Link
+            className="flex bg-green py-3 px-4 rounded-lg text-white font-medium transition-all hover:bg-dark-blue hover:scale-110 "
+            href="/orders/create-order"
+          >
             New Order
           </Link>
         </div>
@@ -123,10 +123,7 @@ const OrderView = () => {
                 <tr
                   key={order.reference}
                   className="text-dark-blue border-b-2 border-stone-100 cursor-pointer"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    router.push(`/order/${order.reference}`, undefined, { shallow: true });
-                  }}
+                  onClick={() => router.push(`/order/${order.reference}`)}
                 >
                   <td className="py-4">{order.accountName}</td>
                   <td className="py-4">{order.created_date}</td>
