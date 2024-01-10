@@ -1,6 +1,10 @@
 "use client";
 import Table from "@/app/components/Table";
-import { orderDetail, restaurantsData, customersData } from "@/app/config/urls.config";
+import {
+  orderDetail,
+  restaurantsData,
+  customersData,
+} from "@/app/config/urls.config";
 import { ArrowLeftIcon } from "@heroicons/react/24/outline";
 import axios from "axios";
 import Link from "next/link";
@@ -27,11 +31,12 @@ export const fetchOrderDetail = async (
       },
     });
 
-
-    const newOrderDetail = Array.isArray(response.data.order) ? response.data.order : [];
+    const newOrderDetail = Array.isArray(response.data.order)
+      ? response.data.order
+      : [];
     setOrderDetail(response.data.order);
     setIsLoading(false);
-    console.log(response.data.order)
+    console.log(response.data.order);
   } catch (error) {
     console.error("Error al obtener el detalle:", error);
   }
@@ -59,11 +64,12 @@ const OrderDetailPage = () => {
   const [orderDate, setOrderDate] = useState(getCurrentDate());
   const [mouseCoords, setMouseCoords] = useState({ x: 0, y: 0 });
   const [orderDetail, setOrderDetail] = useState([]);
-  const orderId = useParams();
+
   const [isLoading, setIsLoading] = useState(false);
   const [accName, setAccName] = useState("");
   const router = useRouter();
 
+  const { orderId } = router.query;
 
   //Fecha input
   function getCurrentDate() {
@@ -82,7 +88,7 @@ const OrderDetailPage = () => {
       if (storedToken != null) {
         setToken(storedToken);
         if (token !== null && orderId !== null) {
-          fetchOrderDetail(token, setOrderDetail, setIsLoading, orderId.orderId);
+          fetchOrderDetail(token, setOrderDetail, setIsLoading, orderId);
         }
       }
     }
@@ -92,12 +98,9 @@ const OrderDetailPage = () => {
     setHasMounted(true);
   }, []);
 
-
   useEffect(() => {
     setAccName(orderDetail ? orderDetail.accountName : "");
-  }, [orderDetail])
-
-
+  }, [orderDetail]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -228,28 +231,35 @@ const OrderDetailPage = () => {
       {token ? (
         <Layout>
           <div className="flex p-6 pb-0 bg-primary-blue">
-
-            <Link className="flex bg-dark-blue py-3 px-4 rounded-lg text-white font-medium transition-all hover:scale-110 " href="/orders">
-              <ArrowLeftIcon className="w-5 h-5 mt-0.5 mr-1 inline-block" /> Orders
+            <Link
+              className="flex bg-dark-blue py-3 px-4 rounded-lg text-white font-medium transition-all hover:scale-110 "
+              href="/orders"
+            >
+              <ArrowLeftIcon className="w-5 h-5 mt-0.5 mr-1 inline-block" />{" "}
+              Orders
             </Link>
           </div>
           <div className="grid grid-cols-3 gap-4 p-6 shadow-lg bg-primary-blue pb-20">
             <div className="grid grid-cols-2 bg-white p-4 rounded-lg shadow-lg text-dark-blue">
               <h3 className="m-3">Account Name:</h3>
               <div className="relative ml-3">
-              <h3 className="underline decoration-2 decoration-green mt-3">
+                <h3 className="underline decoration-2 decoration-green mt-3">
                   {" "}
-                  {orderDetail && orderDetail.accountName ? orderDetail.accountName : ""}
+                  {orderDetail && orderDetail.accountName
+                    ? orderDetail.accountName
+                    : ""}
                 </h3>
               </div>
 
               <div className="grid grid-cols-2 m-3 gap-2">
                 <h3>Account Number:</h3>
                 <div className="relative">
-                <h3 className="underline decoration-2 decoration-green">
-                  {" "}
-                  {orderDetail && orderDetail.accountNumber ? orderDetail.accountNumber : ""}
-                </h3>
+                  <h3 className="underline decoration-2 decoration-green">
+                    {" "}
+                    {orderDetail && orderDetail.accountNumber
+                      ? orderDetail.accountNumber
+                      : ""}
+                  </h3>
                 </div>
 
                 <h3>Post Code:</h3>
@@ -260,12 +270,16 @@ const OrderDetailPage = () => {
               <div className="grid grid-cols-2 m-3 gap-2">
                 <h3>Address:</h3>
                 <h3 className="underline decoration-2 decoration-green">
-                  {orderDetail && orderDetail.address_delivery ? orderDetail.address_delivery : ""}
+                  {orderDetail && orderDetail.address_delivery
+                    ? orderDetail.address_delivery
+                    : ""}
                 </h3>
                 <h3>Telephone:</h3>
                 <h3 className="underline decoration-2 decoration-green">
                   {" "}
-                  {orderDetail && orderDetail.telephone_customer ? orderDetail.telephone_customer : ""}
+                  {orderDetail && orderDetail.telephone_customer
+                    ? orderDetail.telephone_customer
+                    : ""}
                 </h3>
               </div>
               <h3 className="ml-3">Contact:</h3>
@@ -332,7 +346,9 @@ const OrderDetailPage = () => {
                   left: `${mouseCoords.x}px`,
                 }}
               >
-                <h4 className="font-bold mb-2 text-dark-blue">Show/Hide Columns</h4>
+                <h4 className="font-bold mb-2 text-dark-blue">
+                  Show/Hide Columns
+                </h4>
                 {columnsTotal.map((column) => (
                   <div
                     key={column.name}
