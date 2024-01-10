@@ -35,6 +35,7 @@ export const fetchOrderDetail = async (
       ? response.data.order
       : [];
     setOrderDetail(response.data.order);
+    console.log("response.data.order", response.data.order);
     setIsLoading(false);
     console.log(response.data.order);
   } catch (error) {
@@ -70,7 +71,6 @@ const OrderDetailPage = () => {
   const router = useRouter();
 
   const { orderId } = router.query;
-  console.log("orderId", orderId);
 
   //Fecha input
   function getCurrentDate() {
@@ -93,7 +93,7 @@ const OrderDetailPage = () => {
         }
       }
     }
-  }, [token, setOrderDetail, setIsLoading, setToken, orderId]);
+  }, [orderId]);
 
   useEffect(() => {
     setHasMounted(true);
@@ -228,6 +228,7 @@ const OrderDetailPage = () => {
     return null;
   }
   console.log("orderDetail", orderDetail);
+  console.log("orderId", orderId);
   return (
     <>
       {token ? (
