@@ -177,8 +177,8 @@ export default function EditTable({ orderId }) {
   useEffect(() => {
     if (orderDetail && orderDetail.products && orderDetail.products.length > 0) {
       const initialRows = orderDetail.products.map(product => ({
-        Code: product.presentation_code,
-        Description: product.product_name,
+        Code: product.code,
+        Description: product.name,
         Packsize: product.presentation_name,
         UOM: product.uom,
         quantity: product.quantity,

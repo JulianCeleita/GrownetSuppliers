@@ -60,7 +60,7 @@ const OrderView = () => {
   const router = useRouter();
   const { token } = useTokenStore();
   const [searchTerm, setSearchTerm] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [orders, setOrders] = useState([]);
   const { user, setUser } = useUserStore();
 
