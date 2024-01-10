@@ -85,7 +85,7 @@ function Presentations() {
   }, [setUser]);
 
   useEffect(() => {
-    if (user && user.rol_name === "super") {
+    if (user && user.rol_name === "AdminGrownet") {
       fetchPresentations(token, setPresentations, setIsLoading);
     } else {
       fetchPresentationsSupplier(token, user, setPresentations, setIsLoading);

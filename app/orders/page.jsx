@@ -29,7 +29,6 @@ export const fetchOrders = async (
     setIsLoading(false);
   } catch (error) {
     console.error("Error al obtener las ordenes:", error);
-    console.error(response.data.orders);
   }
 };
 
@@ -70,7 +69,7 @@ const OrderView = () => {
   }, [setUser]);
 
   useEffect(() => {
-    if (user && user.rol_name === "super") {
+    if (user && user.rol_name === "AdminGrownet") {
       fetchOrders(token, setOrders, setIsLoading);
     } else {
       fetchOrdersSupplier(token, user, setOrders, setIsLoading);
