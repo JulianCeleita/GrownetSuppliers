@@ -125,21 +125,21 @@ function Header() {
 
         {user && user.rol_name === "AdminGrownet" && (
           <Link
-            href="/presentations"
+            href="/products"
             className="relative group text-white rounded m-2 py-2 hover:text-light-green hover:scale-110"
           >
             <h3
-              className={activeLink === "presentations" ? "active" : ""}
-              onClick={() => setActiveLink("presentations")}
+              className={activeLink === "products" ? "active" : ""}
+              onClick={() => setActiveLink("products")}
             >
-              Presentations
+              Products
             </h3>
 
-            {activeLink === "presentations" && (
+            {activeLink === "products" && (
               <span className="absolute bottom-0 left-0 h-0.5 bg-light-green w-full transition-all duration-300 ease-in-out"></span>
             )}
 
-            {activeLink !== "presentations" && (
+            {activeLink !== "products" && (
               <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-white group-hover:w-full transition-all duration-300 ease-in-out"></span>
             )}
           </Link>
