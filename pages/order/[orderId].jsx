@@ -117,6 +117,7 @@ const OrderDetailPage = () => {
         );
 
         setRestaurants(sortedRestaurants);
+        console.log("sortedRestaurants", sortedRestaurants);
       } catch (error) {
         console.error("Error fetching restaurants data", error);
       }
@@ -130,7 +131,7 @@ const OrderDetailPage = () => {
       fetchDataAccName();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [token, selectedAccNumber, selectedAccName]);
+  }, []);
 
   // Click en la pantalla
   useEffect(() => {
