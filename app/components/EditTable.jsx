@@ -173,8 +173,8 @@ export default function EditTable({ orderId }) {
   useEffect(() => {
     fetchOrderDetail(token, setOrderDetail, setIsLoading, orderId);
   }, [orderId, token]);
+  
 
-// Se muestran los valores iniciales en la tabla con la peticion
   useEffect(() => {
     if (orderDetail && orderDetail.products && orderDetail.products.length > 0) {
       const initialRows = orderDetail.products.map(product => ({
@@ -224,13 +224,6 @@ export default function EditTable({ orderId }) {
 
     fetchPresentationData();
   }, [token]);
-
-  useEffect(() => {
-    fetchOrderDetail(token, setOrderDetail, setIsLoading, orderId)
-    // if (orderDetail && orderDetail.products && orderDetail.products.length > 0) {
-    //   console.log("my order detail", orderDetail.products[0]);
-    // }
-  }, [orderId, token, orderDetail])
 
 
   const handleContextMenu = (e) => {
