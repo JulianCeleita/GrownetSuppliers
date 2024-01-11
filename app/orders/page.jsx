@@ -119,17 +119,19 @@ const OrderView = () => {
             </thead>
             <tbody>
               {sortedOrders.map((order) => (
-                <Link href={`/order/${order.reference}`} key={order.reference}>
-                  <tr
-                    className="text-dark-blue border-b-2 border-stone-100 cursor-pointer"
-                    // onClick={() => router.push(`/order/${order.reference}`)}
-                  >
-                    <td className="py-4">{order.accountName}</td>
-                    <td className="py-4">{order.created_date}</td>
-                    <td className="py-4">{order.date_delivery}</td>
-                    <td className="py-4">{order.name_status}</td>
-                  </tr>
-                </Link>
+                <tr
+                  key={order.reference}
+                  className="text-dark-blue border-b-2 border-stone-100 cursor-pointer"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    router.push(`/order/${order.reference}`, undefined, { shallow: true });
+                  }}
+                >
+                  <td className="py-4">{order.accountName}</td>
+                  <td className="py-4">{order.created_date}</td>
+                  <td className="py-4">{order.date_delivery}</td>
+                  <td className="py-4">{order.name_status}</td>
+                </tr>
               ))}
             </tbody>
           </table>
