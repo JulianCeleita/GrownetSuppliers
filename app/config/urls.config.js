@@ -69,6 +69,8 @@ export const restaurantsData =
   "https://api.grownetapp.com/grownet/api/customers/all";
 export const createOrders =
   "https://api.grownetapp.com/grownet/api/orders/create";
+export const customerSupplier =
+  "https://api.grownetapp.com/grownet/api/customers/supplier/"
 
 export const customersData =
   "https://api.grownetapp.com/grownet/api/customers/serch/";
