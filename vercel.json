@@ -1,9 +1,0 @@
-{
-  "version": 2,
-  "name": "my-next-app",
-  "builds": [{ "src": "/", "use": "@vercel/next" }],
-  "routes": [
-    { "src": "/(.*)", "dest": "/$1" },
-    { "src": "/api/(.*)", "dest": "/api/$1" }
-  ]
-}
