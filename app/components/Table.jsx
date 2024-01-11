@@ -471,7 +471,7 @@ export default function Table() {
         accountNumber_customers: customers?.accountNumber,
         address_delivery: customers?.address,
         date_delivery: customers?.orderDate,
-        id_suppliers: 1,
+        id_suppliers: user?.id_supplier,
         net: parseFloat(totalNetSum),
         observation: specialRequirements,
         total: parseFloat(totalPriceSum),

@@ -5,10 +5,11 @@ import axios from "axios";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import Select from "react-select";
-import { restaurantsData, customersData } from "../../config/urls.config";
+import { restaurantsData, customersData, customerSupplier } from "../../config/urls.config";
 import Layout from "../../layoutS";
 import { useTableStore } from "../../store/useTableStore";
 import useTokenStore from "../../store/useTokenStore";
+import useUserStore from "../../store/useUserStore";
 
 const CreateOrderView = () => {
   const { token } = useTokenStore();
@@ -30,6 +31,7 @@ const CreateOrderView = () => {
   const [isNameDropdownVisible, setIsNameDropdownVisible] = useState(false);
   const [orderDate, setOrderDate] = useState(getCurrentDate());
   const [mouseCoords, setMouseCoords] = useState({ x: 0, y: 0 });
+  const { user, setUser } = useUserStore();
 
   //Fecha input
   function getCurrentDate() {
@@ -41,6 +43,7 @@ const CreateOrderView = () => {
   }
 
   useEffect(() => {
+    console.log(user)
     const fetchData = async () => {
       try {
         const responseRestaurants = await axios.get(restaurantsData, {
@@ -59,7 +62,30 @@ const CreateOrderView = () => {
       }
     };
 
-    fetchData();
+    const fetchDataBySupplier = async () => {
+      try {
+        const responseRestaurants = await axios.get(`${customerSupplier}${user.id_supplier}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        console.log(responseRestaurants)
+
+        const sortedRestaurants = responseRestaurants.data.customers.sort(
+          (a, b) => a.accountName.localeCompare(b.accountName)
+        );
+
+        setRestaurants(sortedRestaurants);
+      } catch (error) {
+        console.error("Error fetching restaurants data by supplier", error);
+      }
+    };
+
+    if (user.rol_name !== "AdminGrownet") {
+      fetchDataBySupplier();
+    } else {
+      fetchData();
+    }
 
     if (selectedAccNumber) {
       fetchDataAccNumber();
@@ -93,6 +119,7 @@ const CreateOrderView = () => {
           },
         }
       );
+
 
       const updatedCustomers = {
         ...responseAccNumber.data.customer,
