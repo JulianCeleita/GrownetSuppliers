@@ -478,7 +478,6 @@ export default function Table() {
         total_tax: parseFloat(totalTaxSum),
         products: filteredProducts,
       };
-      console.log(jsonOrderData)
       const response = await axios.post(createStorageOrder, jsonOrderData, {
         headers: {
           Authorization: `Bearer ${token}`,
