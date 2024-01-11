@@ -119,7 +119,10 @@ const OrderView = () => {
             </thead>
             <tbody>
               {sortedOrders.map((order) => (
-                <Link href={`/prueba/${order.reference}`} key={order.reference}>
+                <Link
+                  href={`/prueba2/${order.reference}`}
+                  key={order.reference}
+                >
                   <tr
                     className="text-dark-blue border-b-2 border-stone-100 cursor-pointer"
                     // onClick={() => router.push(`/order/${order.reference}`)}
