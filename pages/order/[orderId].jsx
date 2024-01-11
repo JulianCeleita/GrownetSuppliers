@@ -8,7 +8,6 @@ import {
 import { ArrowLeftIcon } from "@heroicons/react/24/outline";
 import axios from "axios";
 import Link from "next/link";
-import { useParams } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import Select from "react-select";
 import Layout from "@/app/layoutS";
@@ -16,7 +15,7 @@ import { useTableStore } from "@/app/store/useTableStore";
 import useTokenStore from "@/app/store/useTokenStore";
 import RootLayout from "@/app/layout";
 import EditTable from "@/app/components/EditTable";
-import { useRouter } from "next/router";
+import { useParams } from "next/navigation";
 
 export const fetchOrderDetail = async (
   token,
@@ -68,9 +67,12 @@ const OrderDetailPage = () => {
 
   const [isLoading, setIsLoading] = useState(false);
   const [accName, setAccName] = useState("");
-  const router = useRouter();
+  const params = useParams();
 
-  const { orderId } = router.query;
+  let orderId;
+  if (params) {
+    ({ orderId } = params);
+  }
 
   //Fecha input
   function getCurrentDate() {
