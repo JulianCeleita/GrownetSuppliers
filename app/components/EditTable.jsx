@@ -523,11 +523,11 @@ export default function EditTable({ orderId }) {
           price,
           id_presentations,
         }));
-        console.log("My user", user)
+        console.log(filteredProducts)
 
       const jsonOrderData = {
         date_delivery: orderDetail.orderDate,
-        id_suppliers: user.id_supplier,
+        id_suppliers: user.id_suppliers,
         net: parseFloat(totalNetSum),
         observation: specialRequirements,
         total: parseFloat(totalPriceSum),
