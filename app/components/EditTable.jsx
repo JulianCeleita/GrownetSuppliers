@@ -15,7 +15,6 @@ import useUserStore from "../store/useUserStore";
 import ModalOrderError from "./ModalOrderError";
 import ModalSuccessfull from "./ModalSuccessfull";
 
-
 export const fetchOrderDetail = async (
   token,
   setOrderDetail,
@@ -29,8 +28,9 @@ export const fetchOrderDetail = async (
       },
     });
 
-
-    const newOrderDetail = Array.isArray(response.data.order) ? response.data.order : [];
+    const newOrderDetail = Array.isArray(response.data.order)
+      ? response.data.order
+      : [];
     setOrderDetail(response.data.order);
     setIsLoading(false);
   } catch (error) {
@@ -100,6 +100,7 @@ const useFocusOnEnter = (formRef) => {
 };
 
 export default function EditTable({ orderId }) {
+  console.log("orderId", orderId);
   const [rows, setRows] = useState(
     Array.from({ length: 5 }, () => ({ ...initialRowsState }))
   );
@@ -107,7 +108,6 @@ export default function EditTable({ orderId }) {
   const { onEnterKey } = useFocusOnEnter(form);
   const { token, setToken } = useTokenStore();
   const [products, setProducts] = useState([]);
-  const [orderDetail, setOrderDetail] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const {
     initialColumns,
@@ -121,6 +121,8 @@ export default function EditTable({ orderId }) {
     setTotalCostSum,
     setTotalProfit,
     setTotalProfitPercentage,
+    orderDetail,
+    setOrderDetail,
   } = useTableStore();
   const [showCheckboxColumnTotal, setShowCheckboxColumnTotal] = useState(false);
   const menuRef = useRef(null);
@@ -174,11 +176,14 @@ export default function EditTable({ orderId }) {
   useEffect(() => {
     fetchOrderDetail(token, setOrderDetail, setIsLoading, orderId);
   }, [orderId, token]);
-  
 
   useEffect(() => {
-    if (orderDetail && orderDetail.products && orderDetail.products.length > 0) {
-      const initialRows = orderDetail.products.map(product => ({
+    if (
+      orderDetail &&
+      orderDetail.products &&
+      orderDetail.products.length > 0
+    ) {
+      const initialRows = orderDetail.products.map((product) => ({
         Code: product.code,
         Description: product.name,
         Packsize: product.presentation_name,
@@ -195,6 +200,8 @@ export default function EditTable({ orderId }) {
         "Price Band": "",
         "Total Cost": "",
       }));
+
+      console.log("orderDetail.products", orderDetail.products);
 
       setRows(initialRows);
     }
@@ -225,7 +232,6 @@ export default function EditTable({ orderId }) {
 
     fetchPresentationData();
   }, [token]);
-
 
   const handleContextMenu = (e) => {
     e.preventDefault();
@@ -518,12 +524,19 @@ export default function EditTable({ orderId }) {
     try {
       const filteredProducts = rows
         .filter((row) => parseFloat(row.quantity) > 0)
-        .map(({ quantity, price, id_presentations }) => ({
-          quantity: parseFloat(quantity),
-          price,
-          id_presentations,
-        }));
-        console.log(filteredProducts)
+        .map((row) => {
+          const product = orderDetail.products.find(
+            (product) => product.code === row.Code
+          );
+          console.log("product", product);
+          return {
+            quantity: parseFloat(row.quantity),
+            price: row.price,
+            id_presentations: product ? product.id_presentations : undefined,
+          };
+        });
+
+      console.log("filteredProducts", filteredProducts);
 
       const jsonOrderData = {
         date_delivery: orderDetail.orderDate,
@@ -534,13 +547,17 @@ export default function EditTable({ orderId }) {
         total_tax: parseFloat(totalTaxSum),
         products: filteredProducts,
       };
-      console.log("mi json", jsonOrderData)
-      const response = await axios.post(`${editStorageOrder}${orderDetail.reference}`, jsonOrderData, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      console.log(response)
+      console.log("jsonOrderData", jsonOrderData);
+      const response = await axios.post(
+        `${editStorageOrder}${orderDetail.reference}`,
+        jsonOrderData,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      console.log(response);
       setRows(Array.from({ length: 5 }, () => ({ ...initialRowsState })));
       setSpecialRequirements("");
     } catch (error) {
@@ -569,6 +586,9 @@ export default function EditTable({ orderId }) {
     }
   };
 
+  console.log("rows", rows);
+  console.log("orderDetail", orderDetail);
+
   return (
     <div className="flex flex-col p-8">
       <div className="overflow-x-auto">
@@ -586,16 +606,17 @@ export default function EditTable({ orderId }) {
                       <th
                         key={index}
                         scope="col"
-                        className={`py-2 px-2 bg-dark-blue rounded-lg capitalize ${column === "quantity" ||
-                            column === "Code" ||
-                            column === "VAT %" ||
-                            column === "UOM" ||
-                            column === "Net"
+                        className={`py-2 px-2 bg-dark-blue rounded-lg capitalize ${
+                          column === "quantity" ||
+                          column === "Code" ||
+                          column === "VAT %" ||
+                          column === "UOM" ||
+                          column === "Net"
                             ? "w-20"
                             : column === "Packsize"
-                              ? "w-40"
-                              : ""
-                          }`}
+                            ? "w-40"
+                            : ""
+                        }`}
                         onContextMenu={(e) => handleContextMenu(e)}
                         style={{
                           boxShadow:
@@ -617,8 +638,9 @@ export default function EditTable({ orderId }) {
                       initialColumns.includes(column) && (
                         <React.Fragment key={columnIndex}>
                           <td
-                            className={`px-3 py-2 border-r-2 border-r-[#0c547a] border-[#808e94] ${rowIndex === 0 ? "border-t-0" : "border-t-2"
-                              } `}
+                            className={`px-3 py-2 border-r-2 border-r-[#0c547a] border-[#808e94] ${
+                              rowIndex === 0 ? "border-t-0" : "border-t-2"
+                            } `}
                             tabIndex={0}
                             style={{ overflow: "visible" }}
                           >
@@ -659,10 +681,10 @@ export default function EditTable({ orderId }) {
                                     options={
                                       DescriptionData
                                         ? DescriptionData.map((item) => ({
-                                          value: item.productName,
-                                          label: item.concatenatedName,
-                                          code: item.code,
-                                        }))
+                                            value: item.productName,
+                                            label: item.concatenatedName,
+                                            code: item.code,
+                                          }))
                                         : []
                                     }
                                     value={{
@@ -710,10 +732,11 @@ export default function EditTable({ orderId }) {
                               <input
                                 type={inputTypes[column]}
                                 ref={inputRefs[column][rowIndex]}
-                                className={`pl-2 h-[30px] outline-none w-full ${inputTypes[column] === "number"
+                                className={`pl-2 h-[30px] outline-none w-full ${
+                                  inputTypes[column] === "number"
                                     ? "hide-number-arrows"
                                     : ""
-                                  }`}
+                                }`}
                                 value={row[column] || ""}
                                 onChange={(e) => {
                                   if (column === "Net") {

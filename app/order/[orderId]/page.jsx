@@ -34,9 +34,8 @@ export const fetchOrderDetail = async (
       ? response.data.order
       : [];
     setOrderDetail(response.data.order);
-    console.log("response.data.order", response.data.order);
+
     setIsLoading(false);
-    console.log(response.data.order);
   } catch (error) {
     console.error("Error al obtener el detalle:", error);
   }
@@ -54,6 +53,8 @@ const OrderDetailPage = () => {
     totalCostSum,
     totalProfit,
     totalProfitPercentage,
+    setOrderDetail,
+    orderDetail,
   } = useTableStore();
 
   const [restaurants, setRestaurants] = useState(null);
@@ -63,7 +64,6 @@ const OrderDetailPage = () => {
   const [isNameDropdownVisible, setIsNameDropdownVisible] = useState(false);
   const [orderDate, setOrderDate] = useState(getCurrentDate());
   const [mouseCoords, setMouseCoords] = useState({ x: 0, y: 0 });
-  const [orderDetail, setOrderDetail] = useState([]);
 
   const [isLoading, setIsLoading] = useState(false);
   const [accName, setAccName] = useState("");
@@ -119,7 +119,6 @@ const OrderDetailPage = () => {
         );
 
         setRestaurants(sortedRestaurants);
-        console.log("sortedRestaurants", sortedRestaurants);
       } catch (error) {
         console.error("Error fetching restaurants data", error);
       }
@@ -165,6 +164,7 @@ const OrderDetailPage = () => {
         orderDate: orderDate,
       };
       setCustomers(updatedCustomers);
+      setOrderDetail(updatedCustomers);
     } catch (error) {
       console.error("Error fetching AccNumber data", error);
     }
@@ -186,6 +186,7 @@ const OrderDetailPage = () => {
       };
 
       setCustomers(updatedCustomers);
+      setOrderDetail(updatedCustomers);
     } catch (error) {
       console.error("Error fetching AccNumber data", error);
     }
@@ -230,8 +231,7 @@ const OrderDetailPage = () => {
   if (!hasMounted) {
     return null;
   }
-  console.log("orderDetail", orderDetail);
-  console.log("orderId", orderId);
+
   return (
     <>
       {token ? (
