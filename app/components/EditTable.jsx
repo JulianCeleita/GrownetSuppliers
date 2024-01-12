@@ -4,6 +4,7 @@ import {
   createStorageOrder,
   presentationsCode,
   orderDetail,
+  editStorageOrder,
 } from "@/app/config/urls.config";
 import { useTableStore } from "@/app/store/useTableStore";
 import useTokenStore from "@/app/store/useTokenStore";
@@ -513,7 +514,7 @@ export default function EditTable({ orderId }) {
     }
   };
 
-  const createOrder = async () => {
+  const editOrder = async () => {
     try {
       const filteredProducts = rows
         .filter((row) => parseFloat(row.quantity) > 0)
@@ -522,24 +523,24 @@ export default function EditTable({ orderId }) {
           price,
           id_presentations,
         }));
+        console.log("My user", user)
 
       const jsonOrderData = {
-        accountNumber_customers: customers?.accountNumber,
-        address_delivery: customers?.address,
-        date_delivery: customers?.orderDate,
-        id_suppliers: 1,
+        date_delivery: orderDetail.orderDate,
+        id_suppliers: user.id_supplier,
         net: parseFloat(totalNetSum),
         observation: specialRequirements,
         total: parseFloat(totalPriceSum),
         total_tax: parseFloat(totalTaxSum),
         products: filteredProducts,
       };
-      const response = await axios.post(createStorageOrder, jsonOrderData, {
+      console.log("mi json", jsonOrderData)
+      const response = await axios.post(`${editStorageOrder}${orderDetail.reference}`, jsonOrderData, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
-      setShowConfirmModal(true);
+      console.log(response)
       setRows(Array.from({ length: 5 }, () => ({ ...initialRowsState })));
       setSpecialRequirements("");
     } catch (error) {
@@ -801,7 +802,7 @@ export default function EditTable({ orderId }) {
           placeholder="Write your comments here"
         />
         <button
-          onClick={createOrder}
+          onClick={editOrder}
           className="bg-primary-blue py-2 px-4 rounded-lg text-white font-medium mr-2 w-[15%]"
         >
           Edit order
