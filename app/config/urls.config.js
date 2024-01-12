@@ -82,4 +82,6 @@ export const presentationData =
   "https://api.grownetapp.com/grownet/api/products/presentations/all";
 export const createStorageOrder =
   "https://api.grownetapp.com/grownet/api/orders/create";
+export const editStorageOrder =
+  "https://api.grownetapp.com/grownet/api/orders/edit/"
 
