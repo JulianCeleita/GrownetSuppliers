@@ -527,7 +527,7 @@ export default function EditTable({ orderId }) {
 
       const jsonOrderData = {
         date_delivery: orderDetail.orderDate,
-        id_suppliers: user.id_suppliers,
+        id_suppliers: user.id_supplier,
         net: parseFloat(totalNetSum),
         observation: specialRequirements,
         total: parseFloat(totalPriceSum),
