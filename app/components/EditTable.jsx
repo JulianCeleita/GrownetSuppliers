@@ -100,7 +100,7 @@ const useFocusOnEnter = (formRef) => {
   return { onEnterKey };
 };
 
-export default function EditTable({ orderId, dateDelivery, observation }) {
+export default function EditTable({ orderId, dateDelivery }) {
   console.log("orderId", orderId);
   console.log("date que recibo x2", dateDelivery)
   const [rows, setRows] = useState(
@@ -178,7 +178,7 @@ export default function EditTable({ orderId, dateDelivery, observation }) {
 
   useEffect(() => {
     fetchOrderDetail(token, setOrderDetail, setIsLoading, orderId);
-    
+
   }, [orderId, token]);
 
   useEffect(() => {
@@ -188,7 +188,7 @@ export default function EditTable({ orderId, dateDelivery, observation }) {
       orderDetail.products.length > 0
     ) {
       const initialRows = orderDetail.products.map((product) => ({
-        Code: product.code,
+        Code: product.presentations_code,
         Description: product.name,
         Packsize: product.presentation_name,
         UOM: product.uom,
@@ -399,7 +399,7 @@ export default function EditTable({ orderId, dateDelivery, observation }) {
 
   // VALORES INICIALES DE LA TABLA
   useEffect(() => {
-    console.log("Mi order detail only this page ",orderDetail)
+    console.log("Mi order detail only this page ", orderDetail)
     if (productByCode) {
       const updatedRows = rows.map((row, index) => {
         if (
@@ -531,8 +531,8 @@ export default function EditTable({ orderId, dateDelivery, observation }) {
         .filter((row) => parseFloat(row.quantity) > 0)
         .map((row) => {
           const product = orderDetail.products.find(
-            (product) => product.code === row.Code
-          );
+            (product) => product.presentations_code === row.Code
+          ); 
 
           return {
             quantity: parseFloat(row.quantity),
@@ -545,7 +545,7 @@ export default function EditTable({ orderId, dateDelivery, observation }) {
 
       const jsonOrderData = {
         date_delivery: dateDelivery,
-        id_suppliers: user.id_supplier,
+        id_suppliers: orderDetail.id_suppliers,
         net: parseFloat(totalNetSum),
         observation: specialRequirements,
         total: parseFloat(totalPriceSum),
@@ -564,7 +564,7 @@ export default function EditTable({ orderId, dateDelivery, observation }) {
       );
       console.log(response);
       setSpecialRequirements("");
-      
+
       router.push("/");
     } catch (error) {
       setShowErrorOrderModal(true);

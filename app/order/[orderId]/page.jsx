@@ -16,12 +16,13 @@ import useTokenStore from "@/app/store/useTokenStore";
 import RootLayout from "@/app/layout";
 import EditTable from "@/app/components/EditTable";
 import { useParams } from "next/navigation";
+import useUserStore from "@/app/store/useUserStore";
 
 export const fetchOrderDetail = async (
   token,
   setOrderDetail,
   setIsLoading,
-  orderId
+  orderId,
 ) => {
   try {
     const response = await axios.get(`${orderDetail}${orderId}`, {
@@ -30,11 +31,12 @@ export const fetchOrderDetail = async (
       },
     });
 
-    const newOrderDetail = Array.isArray(response.data.order)
-      ? response.data.order
-      : [];
-    setOrderDetail(response.data.order);
-    setIsLoading(false);
+    if (user.id_suppliers == orderDetail.id_suppliers && user.rol_name === "AdminGrownet") {
+      setOrderDetail(response.data.order);
+      setIsLoading(false);
+    } else {
+      router.push("/");
+    }
   } catch (error) {
     console.error("Error al obtener el detalle:", error);
   }
@@ -64,6 +66,7 @@ const OrderDetailPage = () => {
   const [orderDate, setOrderDate] = useState(getCurrentDate());
   const [mouseCoords, setMouseCoords] = useState({ x: 0, y: 0 });
   const [selectedDate, setSelectedDate] = useState(getCurrentDate());
+  const { user, setUser } = useUserStore();
 
   const [isLoading, setIsLoading] = useState(false);
   const [accName, setAccName] = useState("");
@@ -105,6 +108,8 @@ const OrderDetailPage = () => {
   }, [orderDetail]);
 
   useEffect(() => {
+    const storedUser = localStorage.getItem('user');
+    setUser(storedUser);
     const fetchData = async () => {
       try {
         const responseRestaurants = await axios.get(restaurantsData, {
