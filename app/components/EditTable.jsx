@@ -192,7 +192,7 @@ export default function EditTable({ orderId, dateDelivery }) {
         UOM: product.uom,
         quantity: product.quantity,
         price: product.price + product.price * product.tax,
-        Net: product.price.toFixed(2),
+        Net: product.price?.toFixed(2),
         "Total Net": "",
         "VAT %": product.tax,
         "VAT £": "",
@@ -431,6 +431,8 @@ export default function EditTable({ orderId, dateDelivery }) {
       });
       setRows(updatedRows);
     }
+    console.log(productByCode);
+    orderDetail.products?.push(productByCode);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [productByCode]);
 
@@ -529,7 +531,9 @@ export default function EditTable({ orderId, dateDelivery }) {
         .filter((row) => parseFloat(row.quantity) > 0)
         .map((row) => {
           const product = orderDetail.products.find(
-            (product) => product.presentations_code === row.Code
+            (product) =>
+              product.presentations_code === row.Code ||
+              product.presentation_code === row.Code
           );
 
           return {
@@ -572,21 +576,15 @@ export default function EditTable({ orderId, dateDelivery }) {
   // BORRAR CASILLAS SI SE BORRA EL CODE
   const handleCodeChange = (e, rowIndex, column) => {
     const newCodeValue = e.target.value;
+
     setCurrentValues((prevValues) => ({
       ...prevValues,
       [column]: newCodeValue,
     }));
 
+    // Si la columna es "Code" y el nuevo valor está en blanco, elimina completamente la fila
     if (column === "Code" && newCodeValue.trim() === "") {
-      const updatedRows = rows.map((row, index) => {
-        if (index === rowIndex) {
-          return {
-            ...initialRowsState,
-          };
-        }
-        return row;
-      });
-      setRows(updatedRows);
+      setRows((prevRows) => prevRows.filter((_, index) => index !== rowIndex));
     }
   };
 
