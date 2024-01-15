@@ -73,16 +73,7 @@ function Users() {
           <h1 className="text-2xl text-white font-semibold">Users list</h1>
         </div>
         <div className="flex gap-16 items-center justify-center mb-0 -mt-14">
-          {/* TODO: Implementar calendario 
-          <div className="flex-col items-center">
-            <Calendar
-              className="border rounded p-4 shadow-md text-black mt-40"
-              locale="en-GB"
-            />
-            <button className="bg-green p-5 text-white hover:scale-105 transition-all font-semibold rounded-lg mt-4">
-              Close Day
-            </button>
-          </div> */}
+          
           <table className="w-[90%] bg-white rounded-2xl text-center shadow-[0_8px_30px_rgb(0,0,0,0.12)] mb-10">
             <thead className="sticky top-0 bg-white shadow-[0px_11px_15px_-3px_#edf2f7]">
               <tr className="border-b-2 border-stone-100 text-dark-blue">
@@ -91,10 +82,7 @@ function Users() {
                 <th className="py-4">Rol</th>
                 <th className="py-4">Users</th>
                 <th className="py-4">Orders</th>
-                {/* <th className="py-4">Products</th> */}
                 <th className="py-4">Presentations</th>
-                {/* <th className="py-4">Categories</th> */}
-                {/* <th className="py-4">Suppliers</th> */}
                 <th className="py-4">Access</th>
               </tr>
             </thead>

@@ -12,9 +12,7 @@ function Header() {
   const router = useRouter();
   const [activeLink, setActiveLink] = useState("");
   const { user, setUser } = useUserStore();
-
   const pathname = usePathname();
-
 
   useEffect(() => {
     const handleRouteChange = () => {
@@ -87,25 +85,6 @@ function Header() {
             <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-white group-hover:w-full transition-all duration-300 ease-in-out"></span>
           )}
         </Link>
-        {/* <Link
-          href="/products"
-          className="relative group text-white rounded m-2 py-2 hover:text-light-green hover:scale-110"
-        >
-          <div
-            className={activeLink === "products" ? "active" : ""}
-            onClick={() => setActiveLink("products")}
-          >
-            Products
-          </div>
-
-          {activeLink === "products" && (
-            <span className="absolute bottom-0 left-0 h-0.5 bg-light-green w-full transition-all duration-300 ease-in-out"></span>
-          )}
-
-          {activeLink !== "products" && (
-            <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-white group-hover:w-full transition-all duration-300 ease-in-out"></span>
-          )}
-        </Link> */}
         <Link
           href="/presentations"
           className="relative group text-white rounded m-2 py-2 hover:text-light-green hover:scale-110"
@@ -117,6 +96,22 @@ function Header() {
             Presentations
           </div>
           {activeLink === "presentations" ? (
+            <span className="absolute bottom-0 left-0  h-0.5 bg-light-green w-full transition-all duration-300 ease-in-out"></span>
+          ) : (
+            <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-white group-hover:w-full transition-all duration-300 ease-in-out"></span>
+          )}
+        </Link>
+        <Link
+          href="/calendar"
+          className="relative group text-white rounded m-2 py-2 hover:text-light-green hover:scale-110"
+        >
+          <div
+            className={activeLink === "calendar" ? "active" : ""}
+            onClick={() => setActiveLink("calendar")}
+          >
+            Calendar
+          </div>
+          {activeLink === "calendar" ? (
             <span className="absolute bottom-0 left-0  h-0.5 bg-light-green w-full transition-all duration-300 ease-in-out"></span>
           ) : (
             <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-white group-hover:w-full transition-all duration-300 ease-in-out"></span>
