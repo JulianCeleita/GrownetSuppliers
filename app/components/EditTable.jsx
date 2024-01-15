@@ -101,8 +101,7 @@ const useFocusOnEnter = (formRef) => {
 };
 
 export default function EditTable({ orderId, dateDelivery }) {
-  console.log("orderId", orderId);
-  console.log("date que recibo x2", dateDelivery)
+  console.log("date que recibo x2", dateDelivery);
   const [rows, setRows] = useState(
     Array.from({ length: 5 }, () => ({ ...initialRowsState }))
   );
@@ -178,7 +177,6 @@ export default function EditTable({ orderId, dateDelivery }) {
 
   useEffect(() => {
     fetchOrderDetail(token, setOrderDetail, setIsLoading, orderId);
-
   }, [orderId, token]);
 
   useEffect(() => {
@@ -399,7 +397,7 @@ export default function EditTable({ orderId, dateDelivery }) {
 
   // VALORES INICIALES DE LA TABLA
   useEffect(() => {
-    console.log("Mi order detail only this page ", orderDetail)
+    console.log("Mi order detail only this page ", orderDetail);
     if (productByCode) {
       const updatedRows = rows.map((row, index) => {
         if (
@@ -532,7 +530,7 @@ export default function EditTable({ orderId, dateDelivery }) {
         .map((row) => {
           const product = orderDetail.products.find(
             (product) => product.presentations_code === row.Code
-          ); 
+          );
 
           return {
             quantity: parseFloat(row.quantity),
@@ -594,6 +592,7 @@ export default function EditTable({ orderId, dateDelivery }) {
 
   console.log("rows", rows);
   console.log("orderDetail", orderDetail);
+  console.log("CurrentValues", currentValues);
 
   return (
     <div className="flex flex-col p-8">
@@ -612,16 +611,17 @@ export default function EditTable({ orderId, dateDelivery }) {
                       <th
                         key={index}
                         scope="col"
-                        className={`py-2 px-2 bg-dark-blue rounded-lg capitalize ${column === "quantity" ||
+                        className={`py-2 px-2 bg-dark-blue rounded-lg capitalize ${
+                          column === "quantity" ||
                           column === "Code" ||
                           column === "VAT %" ||
                           column === "UOM" ||
                           column === "Net"
-                          ? "w-20"
-                          : column === "Packsize"
+                            ? "w-20"
+                            : column === "Packsize"
                             ? "w-40"
                             : ""
-                          }`}
+                        }`}
                         onContextMenu={(e) => handleContextMenu(e)}
                         style={{
                           boxShadow:
@@ -643,8 +643,9 @@ export default function EditTable({ orderId, dateDelivery }) {
                       initialColumns.includes(column) && (
                         <React.Fragment key={columnIndex}>
                           <td
-                            className={`px-3 py-2 border-r-2 border-r-[#0c547a] border-[#808e94] ${rowIndex === 0 ? "border-t-0" : "border-t-2"
-                              } `}
+                            className={`px-3 py-2 border-r-2 border-r-[#0c547a] border-[#808e94] ${
+                              rowIndex === 0 ? "border-t-0" : "border-t-2"
+                            } `}
                             tabIndex={0}
                             style={{ overflow: "visible" }}
                           >
@@ -685,10 +686,10 @@ export default function EditTable({ orderId, dateDelivery }) {
                                     options={
                                       DescriptionData
                                         ? DescriptionData.map((item) => ({
-                                          value: item.productName,
-                                          label: item.concatenatedName,
-                                          code: item.code,
-                                        }))
+                                            value: item.productName,
+                                            label: item.concatenatedName,
+                                            code: item.code,
+                                          }))
                                         : []
                                     }
                                     value={{
@@ -736,10 +737,11 @@ export default function EditTable({ orderId, dateDelivery }) {
                               <input
                                 type={inputTypes[column]}
                                 ref={inputRefs[column][rowIndex]}
-                                className={`pl-2 h-[30px] outline-none w-full ${inputTypes[column] === "number"
-                                  ? "hide-number-arrows"
-                                  : ""
-                                  }`}
+                                className={`pl-2 h-[30px] outline-none w-full ${
+                                  inputTypes[column] === "number"
+                                    ? "hide-number-arrows"
+                                    : ""
+                                }`}
                                 value={row[column] || ""}
                                 onChange={(e) => {
                                   if (column === "Net") {
@@ -751,6 +753,7 @@ export default function EditTable({ orderId, dateDelivery }) {
                                     ...prevValues,
                                     [column]: e.target.value,
                                   }));
+
                                   const updatedRows = [...rows];
                                   updatedRows[rowIndex][column] =
                                     e.target.value;

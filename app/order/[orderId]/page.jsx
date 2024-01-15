@@ -22,7 +22,7 @@ export const fetchOrderDetail = async (
   token,
   setOrderDetail,
   setIsLoading,
-  orderId,
+  orderId
 ) => {
   try {
     const response = await axios.get(`${orderDetail}${orderId}`, {
@@ -31,7 +31,10 @@ export const fetchOrderDetail = async (
       },
     });
 
-    if (user.id_suppliers == orderDetail.id_suppliers && user.rol_name === "AdminGrownet") {
+    if (
+      user.id_suppliers == orderDetail.id_suppliers &&
+      user.rol_name === "AdminGrownet"
+    ) {
       setOrderDetail(response.data.order);
       setIsLoading(false);
     } else {
@@ -65,7 +68,8 @@ const OrderDetailPage = () => {
   const [isNameDropdownVisible, setIsNameDropdownVisible] = useState(false);
   const [orderDate, setOrderDate] = useState(getCurrentDate());
   const [mouseCoords, setMouseCoords] = useState({ x: 0, y: 0 });
-  const [selectedDate, setSelectedDate] = useState(getCurrentDate());
+  const [selectedDate, setSelectedDate] = useState("");
+
   const { user, setUser } = useUserStore();
 
   const [isLoading, setIsLoading] = useState(false);
@@ -101,14 +105,17 @@ const OrderDetailPage = () => {
 
   useEffect(() => {
     setHasMounted(true);
-  }, []);
+    if (orderDetail && orderDetail.date_delivery) {
+      setSelectedDate(orderDetail.date_delivery);
+    }
+  }, [orderDetail]);
 
   useEffect(() => {
     setAccName(orderDetail ? orderDetail.accountName : "");
   }, [orderDetail]);
 
   useEffect(() => {
-    const storedUser = localStorage.getItem('user');
+    const storedUser = localStorage.getItem("user");
     setUser(storedUser);
     const fetchData = async () => {
       try {
@@ -154,6 +161,7 @@ const OrderDetailPage = () => {
 
   const handleDateChange = (e) => {
     setSelectedDate(e.target.value);
+    console.log("e.target.value", e.target.value);
   };
 
   const fetchDataAccNumber = async () => {
@@ -307,7 +315,7 @@ const OrderDetailPage = () => {
                 <input
                   type="date"
                   className="border ml-2 p-1.5 rounded-md w-[100%] "
-                  value={orderDetail?.date_delivery}
+                  value={selectedDate}
                   onChange={handleDateChange}
                 />
                 <label className="ml-3">Inv. No.: </label>
@@ -389,7 +397,9 @@ const OrderDetailPage = () => {
             )}
           </div>
           <div className="-mt-20">
-            {orderId && <EditTable orderId={orderId} dateDelivery={selectedDate} />}
+            {orderId && (
+              <EditTable orderId={orderId} dateDelivery={selectedDate} />
+            )}
           </div>
         </Layout>
       ) : (
