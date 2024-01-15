@@ -65,7 +65,7 @@ const OrderDetailPage = () => {
   const [isNameDropdownVisible, setIsNameDropdownVisible] = useState(false);
   const [orderDate, setOrderDate] = useState(getCurrentDate());
   const [mouseCoords, setMouseCoords] = useState({ x: 0, y: 0 });
-  const [selectedDate, setSelectedDate] = useState(getCurrentDate());
+  const [selectedDate, setSelectedDate] = useState();
   const { user, setUser } = useUserStore();
 
   const [isLoading, setIsLoading] = useState(false);
