@@ -577,20 +577,23 @@ export default function EditTable({ orderId, dateDelivery }) {
   // BORRAR CASILLAS SI SE BORRA EL CODE
   const handleCodeChange = (e, rowIndex, column) => {
     const newCodeValue = e.target.value;
-  
     setCurrentValues((prevValues) => ({
       ...prevValues,
       [column]: newCodeValue,
     }));
-  
-    // Si la columna es "Code" y el nuevo valor está en blanco, elimina completamente la fila
+
     if (column === "Code" && newCodeValue.trim() === "") {
-      setRows((prevRows) => prevRows.filter((_, index) => index !== rowIndex));
+      const updatedRows = rows.map((row, index) => {
+        if (index === rowIndex) {
+          return {
+            ...initialRowsState,
+          };
+        }
+        return row;
+      });
+      setRows(updatedRows);
     }
   };
-
-  console.log("rows", rows);
-  console.log("orderDetail", orderDetail);
 
   return (
     <div className="flex flex-col p-8">
@@ -694,7 +697,7 @@ export default function EditTable({ orderId, dateDelivery }) {
                                     }}
                                     onChange={(selectedDescription, e) => {
                                       setCurrentValues((prevValues) => ({
-                                        ...prevValues,
+                                        // ...prevValues,
                                         [column]: selectedDescription.code,
                                       }));
 
