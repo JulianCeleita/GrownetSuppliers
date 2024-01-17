@@ -1,20 +1,16 @@
 "use client";
 import {
-  presentationData,
-  createStorageOrder,
-  presentationsCode,
-  orderDetail,
-  editStorageOrder,
+  editStorageOrder, orderDetail, presentationData, presentationsCode
 } from "@/app/config/urls.config";
 import { useTableStore } from "@/app/store/useTableStore";
 import useTokenStore from "@/app/store/useTokenStore";
 import axios from "axios";
+import { useRouter } from "next/navigation";
 import React, { useEffect, useRef, useState } from "react";
 import Select from "react-select";
 import useUserStore from "../store/useUserStore";
 import ModalOrderError from "./ModalOrderError";
 import ModalSuccessfull from "./ModalSuccessfull";
-import { useRouter } from "next/navigation";
 
 export const fetchOrderDetail = async (
   token,
@@ -101,7 +97,6 @@ const useFocusOnEnter = (formRef) => {
 };
 
 export default function EditTable({ orderId, dateDelivery }) {
-  console.log("date que recibo x2", dateDelivery);
   const [rows, setRows] = useState(
     Array.from({ length: 5 }, () => ({ ...initialRowsState }))
   );
@@ -177,7 +172,7 @@ export default function EditTable({ orderId, dateDelivery }) {
 
   useEffect(() => {
     fetchOrderDetail(token, setOrderDetail, setIsLoading, orderId);
-  }, [orderId, token]);
+  }, [orderId, token, setOrderDetail]);
 
   useEffect(() => {
     if (
@@ -203,7 +198,6 @@ export default function EditTable({ orderId, dateDelivery }) {
         "Total Cost": "",
       }));
 
-      console.log("orderDetail.products", orderDetail.products);
 
       setRows(initialRows);
     }
@@ -397,7 +391,6 @@ export default function EditTable({ orderId, dateDelivery }) {
 
   // VALORES INICIALES DE LA TABLA
   useEffect(() => {
-    console.log("Mi order detail only this page ", orderDetail);
     if (productByCode) {
       const updatedRows = rows.map((row, index) => {
         if (
@@ -431,7 +424,6 @@ export default function EditTable({ orderId, dateDelivery }) {
       });
       setRows(updatedRows);
     }
-    console.log(productByCode);
     orderDetail.products?.push(productByCode);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [productByCode]);
@@ -543,7 +535,6 @@ export default function EditTable({ orderId, dateDelivery }) {
           };
         });
 
-      console.log("filteredProducts", filteredProducts);
 
       const jsonOrderData = {
         date_delivery: dateDelivery,
@@ -554,7 +545,6 @@ export default function EditTable({ orderId, dateDelivery }) {
         total_tax: parseFloat(totalTaxSum),
         products: filteredProducts,
       };
-      console.log("jsonOrderData", jsonOrderData);
       const response = await axios.post(
         `${editStorageOrder}${orderDetail.reference}`,
         jsonOrderData,
@@ -564,7 +554,6 @@ export default function EditTable({ orderId, dateDelivery }) {
           },
         }
       );
-      console.log(response);
       setSpecialRequirements("");
 
       router.push("/");
@@ -584,13 +573,17 @@ export default function EditTable({ orderId, dateDelivery }) {
 
     // Si la columna es "Code" y el nuevo valor está en blanco, elimina completamente la fila
     if (column === "Code" && newCodeValue.trim() === "") {
-      setRows((prevRows) => prevRows.filter((_, index) => index !== rowIndex));
+      const updatedRows = rows.map((row, index) => {
+        if (index === rowIndex) {
+          return {
+            ...initialRowsState,
+          };
+        }
+        return row;
+      });
+      setRows(updatedRows);
     }
   };
-
-  console.log("rows", rows);
-  console.log("orderDetail", orderDetail);
-  console.log("CurrentValues", currentValues);
 
   return (
     <div className="flex flex-col p-8">
@@ -609,17 +602,16 @@ export default function EditTable({ orderId, dateDelivery }) {
                       <th
                         key={index}
                         scope="col"
-                        className={`py-2 px-2 bg-dark-blue rounded-lg capitalize ${
-                          column === "quantity" ||
-                          column === "Code" ||
-                          column === "VAT %" ||
-                          column === "UOM" ||
-                          column === "Net"
+                        className={`py-2 px-2 bg-dark-blue rounded-lg capitalize ${column === "quantity" ||
+                            column === "Code" ||
+                            column === "VAT %" ||
+                            column === "UOM" ||
+                            column === "Net"
                             ? "w-20"
                             : column === "Packsize"
-                            ? "w-40"
-                            : ""
-                        }`}
+                              ? "w-40"
+                              : ""
+                          }`}
                         onContextMenu={(e) => handleContextMenu(e)}
                         style={{
                           boxShadow:
@@ -641,9 +633,8 @@ export default function EditTable({ orderId, dateDelivery }) {
                       initialColumns.includes(column) && (
                         <React.Fragment key={columnIndex}>
                           <td
-                            className={`px-3 py-2 border-r-2 border-r-[#0c547a] border-[#808e94] ${
-                              rowIndex === 0 ? "border-t-0" : "border-t-2"
-                            } `}
+                            className={`px-3 py-2 border-r-2 border-r-[#0c547a] border-[#808e94] ${rowIndex === 0 ? "border-t-0" : "border-t-2"
+                              } `}
                             tabIndex={0}
                             style={{ overflow: "visible" }}
                           >
@@ -684,10 +675,10 @@ export default function EditTable({ orderId, dateDelivery }) {
                                     options={
                                       DescriptionData
                                         ? DescriptionData.map((item) => ({
-                                            value: item.productName,
-                                            label: item.concatenatedName,
-                                            code: item.code,
-                                          }))
+                                          value: item.productName,
+                                          label: item.concatenatedName,
+                                          code: item.code,
+                                        }))
                                         : []
                                     }
                                     value={{
@@ -696,7 +687,7 @@ export default function EditTable({ orderId, dateDelivery }) {
                                     }}
                                     onChange={(selectedDescription, e) => {
                                       setCurrentValues((prevValues) => ({
-                                        ...prevValues,
+                                        // ...prevValues,
                                         [column]: selectedDescription.code,
                                       }));
 
@@ -735,11 +726,10 @@ export default function EditTable({ orderId, dateDelivery }) {
                               <input
                                 type={inputTypes[column]}
                                 ref={inputRefs[column][rowIndex]}
-                                className={`pl-2 h-[30px] outline-none w-full ${
-                                  inputTypes[column] === "number"
+                                className={`pl-2 h-[30px] outline-none w-full ${inputTypes[column] === "number"
                                     ? "hide-number-arrows"
                                     : ""
-                                }`}
+                                  }`}
                                 value={row[column] || ""}
                                 onChange={(e) => {
                                   if (column === "Net") {

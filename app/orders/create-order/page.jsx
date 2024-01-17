@@ -5,7 +5,7 @@ import axios from "axios";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import Select from "react-select";
-import { restaurantsData, customersData, customerSupplier } from "../../config/urls.config";
+import { customersData, customerSupplier, restaurantsData } from "../../config/urls.config";
 import Layout from "../../layoutS";
 import { useTableStore } from "../../store/useTableStore";
 import useTokenStore from "../../store/useTokenStore";
@@ -43,7 +43,6 @@ const CreateOrderView = () => {
   }
 
   useEffect(() => {
-    console.log(user)
     const fetchData = async () => {
       try {
         const responseRestaurants = await axios.get(restaurantsData, {
@@ -69,7 +68,6 @@ const CreateOrderView = () => {
             Authorization: `Bearer ${token}`,
           },
         });
-        console.log(responseRestaurants)
 
         const sortedRestaurants = responseRestaurants.data.customers.sort(
           (a, b) => a.accountName.localeCompare(b.accountName)

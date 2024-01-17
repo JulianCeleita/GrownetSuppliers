@@ -5,13 +5,13 @@ import useTokenStore from "@/app/store/useTokenStore";
 import {
   PencilSquareIcon,
   PlusCircleIcon,
-  TrashIcon,
+  TrashIcon
 } from "@heroicons/react/24/outline";
 import axios from "axios";
 import { useEffect, useState } from "react";
 import EditCategory from "../components/EditCategory";
-import NewCategory from "../components/NewCategory";
 import ModalDelete from "../components/ModalDelete";
+import NewCategory from "../components/NewCategory";
 import Layout from "../layoutS";
 
 export const fetchCategories = async (token, setCategories, setIsLoading) => {

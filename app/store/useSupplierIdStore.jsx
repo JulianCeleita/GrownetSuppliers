@@ -5,6 +5,6 @@ const useSupplierIdStore = create((set) => ({
 
   setSupplierId: (newSupplierId) => set({ supplierId: newSupplierId }),
 
-  
+
 }));
 export default useSupplierIdStore;

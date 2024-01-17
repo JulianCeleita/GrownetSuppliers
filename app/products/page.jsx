@@ -6,15 +6,16 @@ import useTokenStore from "@/app/store/useTokenStore";
 import {
   PencilSquareIcon,
   PlusCircleIcon,
-  TrashIcon,
+  TrashIcon
 } from "@heroicons/react/24/outline";
 import axios from "axios";
+import Image from "next/image";
 import { useEffect, useState } from "react";
 import { fetchCategories } from "../categories/page";
-import NewProduct from "../components/NewProduct";
-import useCategoryStore from "../store/useCategoryStore";
 import ModalDelete from "../components/ModalDelete";
+import NewProduct from "../components/NewProduct";
 import Layout from "../layoutS";
+import useCategoryStore from "../store/useCategoryStore";
 
 function Products() {
   const { token } = useTokenStore();
@@ -114,10 +115,12 @@ function Products() {
                       <td className="py-3">{product.name}</td>
                     )}
                     <td className="py-3">
-                      <img
-                        className="w-[40px] mx-auto"
+                      <Image
                         src={product.image}
                         alt={product.name}
+                        width={40}
+                        height={40}
+                        className="mx-auto"
                       />
                     </td>
                     <td className="py-4 flex justify-center">

@@ -1,28 +1,27 @@
 "use client";
-import Table from "@/app/components/Table";
+import EditTable from "@/app/components/EditTable";
 import {
-  orderDetail,
-  restaurantsData,
-  customersData,
+  customersData, orderDetail,
+  restaurantsData
 } from "@/app/config/urls.config";
-import { ArrowLeftIcon } from "@heroicons/react/24/outline";
-import axios from "axios";
-import Link from "next/link";
-import { useEffect, useRef, useState } from "react";
-import Select from "react-select";
+import RootLayout from "@/app/layout";
 import Layout from "@/app/layoutS";
 import { useTableStore } from "@/app/store/useTableStore";
 import useTokenStore from "@/app/store/useTokenStore";
-import RootLayout from "@/app/layout";
-import EditTable from "@/app/components/EditTable";
-import { useParams } from "next/navigation";
 import useUserStore from "@/app/store/useUserStore";
+import { ArrowLeftIcon } from "@heroicons/react/24/outline";
+import axios from "axios";
+import Link from "next/link";
+import { useParams } from "next/navigation";
+import { useEffect, useRef, useState } from "react";
 
 export const fetchOrderDetail = async (
   token,
   setOrderDetail,
   setIsLoading,
-  orderId
+  orderId,
+  user,
+  router
 ) => {
   try {
     const response = await axios.get(`${orderDetail}${orderId}`, {
@@ -32,13 +31,13 @@ export const fetchOrderDetail = async (
     });
 
     if (
-      user.id_suppliers == orderDetail.id_suppliers &&
-      user.rol_name === "AdminGrownet"
+      user?.id_suppliers == orderDetail.id_suppliers &&
+      user?.rol_name === "AdminGrownet"
     ) {
       setOrderDetail(response.data.order);
       setIsLoading(false);
     } else {
-      router.push("/");
+      router?.push("/");
     }
   } catch (error) {
     console.error("Error al obtener el detalle:", error);
@@ -161,7 +160,6 @@ const OrderDetailPage = () => {
 
   const handleDateChange = (e) => {
     setSelectedDate(e.target.value);
-    console.log("e.target.value", e.target.value);
   };
 
   const fetchDataAccNumber = async () => {
@@ -255,10 +253,9 @@ const OrderDetailPage = () => {
           <div className="flex p-6 pb-0 bg-primary-blue">
             <Link
               className="flex bg-dark-blue py-3 px-4 rounded-lg text-white font-medium transition-all hover:scale-110 "
-              href="/orders"
+              href="/"
             >
-              <ArrowLeftIcon className="w-5 h-5 mt-0.5 mr-1 inline-block" />{" "}
-              Orders
+              <ArrowLeftIcon className="w-5 h-5 mt-0.5 mr-1 inline-block" /> Orders
             </Link>
           </div>
           <div className="grid grid-cols-3 gap-4 p-6 shadow-lg bg-primary-blue pb-20">

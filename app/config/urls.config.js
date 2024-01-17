@@ -1,25 +1,23 @@
 // login
-export const loginUrl =
-"https://api.grownetapp.com/grownet/api/login/login";
+export const loginUrl = "https://api.grownetapp.com/grownet/api/login/login";
 
 // users
-export const usersUrl =
-"https://api.grownetapp.com/grownet/api/user/all";
+export const usersUrl = "https://api.grownetapp.com/grownet/api/user/all";
 
 // Products
 export const productsUrl =
-"https://api.grownetapp.com/grownet/api/products/all";
+  "https://api.grownetapp.com/grownet/api/products/all";
 export const addProductUrl =
-"https://api.grownetapp.com/grownet/api/products/create";
+  "https://api.grownetapp.com/grownet/api/products/create";
 export const updateProductUrl =
-"https://api.grownetapp.com/grownet/api/products/update/";
+  "https://api.grownetapp.com/grownet/api/products/update/";
 export const deleteProductUrl =
-"https://api.grownetapp.com/grownet/api/products/delete/";
+  "https://api.grownetapp.com/grownet/api/products/delete/";
 
 //Presentations
 export const presentationsUrl =
   "https://api.grownetapp.com/grownet/api/presentations/all";
-  export const presentationsSupplierUrl =
+export const presentationsSupplierUrl =
   "https://api.grownetapp.com/grownet/api/presentations/supplier/";
 export const addPresentationUrl =
   "https://api.grownetapp.com/grownet/api/presentations/create";
@@ -59,18 +57,16 @@ export const uomUrl = "https://api.grownetapp.com/grownet/api/uom/all";
 export const taxexUrl = "https://api.grownetapp.com/grownet/api/taxes/all";
 
 //Orders
-export const ordersUrl = 
-  "https://api.grownetapp.com/grownet/api/orders/all";
-export const ordersSupplierUrl = 
+export const ordersUrl = "https://api.grownetapp.com/grownet/api/orders/all";
+export const ordersSupplierUrl =
   "https://api.grownetapp.com/grownet/api/orders/supplier/";
-export const orderDetail = 
-  "https://api.grownetapp.com/grownet/api/orders/";
+export const orderDetail = "https://api.grownetapp.com/grownet/api/orders/";
 export const restaurantsData =
   "https://api.grownetapp.com/grownet/api/customers/all";
 export const createOrders =
   "https://api.grownetapp.com/grownet/api/orders/create";
 export const customerSupplier =
-  "https://api.grownetapp.com/grownet/api/customers/supplier/"
+  "https://api.grownetapp.com/grownet/api/customers/supplier/";
 
 export const customersData =
   "https://api.grownetapp.com/grownet/api/customers/serch/";
@@ -83,5 +79,9 @@ export const presentationData =
 export const createStorageOrder =
   "https://api.grownetapp.com/grownet/api/orders/create";
 export const editStorageOrder =
-  "https://api.grownetapp.com/grownet/api/orders/edit/"
+  "https://api.grownetapp.com/grownet/api/orders/edit/";
 
+export const closeDay =
+  "https://api.grownetapp.com/grownet/api/suppliers/operationEnd";
+export const openDay =
+  "https://api.grownetapp.com/grownet/api/suppliers/operationStart";

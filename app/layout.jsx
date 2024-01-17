@@ -1,17 +1,12 @@
 "use client";
 import { Inter } from "next/font/google";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 import "./globals.css";
-import Header from "@/app/components/Header";
-import Footer from "@/app/components/Footer";
+import Home from "./page";
+import useTokenStore from "./store/useTokenStore";
 import "./style.css";
 const inter = Inter({ subsets: ["latin"] });
-import useTokenStore from "./store/useTokenStore";
-import React, { useEffect } from "react";
-import { useRouter } from "next/navigation";
-import { useState } from "react";
-import Swal from "sweetalert2";
-import Home from "./page";
-import useUserStore from "./store/useUserStore";
 
 const metadata = {
   title: "Grownet Suppliers",
@@ -32,7 +27,7 @@ export default function RootLayout({ children }) {
   useEffect(() => {
     const handleRouter = async () => {
       const localStorageToken = localStorage.getItem("token");
-      
+
       setToken(localStorageToken);
 
       if (localStorageToken || token) {

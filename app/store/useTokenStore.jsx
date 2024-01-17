@@ -5,7 +5,7 @@ const useTokenStore = create((set) => ({
 
   setToken: (newToken) => set({ token: newToken }),
 
-  
+
 }));
 export default useTokenStore;
 

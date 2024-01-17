@@ -108,9 +108,8 @@ function NewSupplier({ isvisible, onClose, setSuppliers }) {
             <button
               type="submit"
               value="Submit"
-              className={`bg-primary-blue py-3 px-4 rounded-lg text-white font-medium mr-3 ${
-                isLoading === true ? "bg-gray-500/50" : ""
-              }`}
+              className={`bg-primary-blue py-3 px-4 rounded-lg text-white font-medium mr-3 ${isLoading === true ? "bg-gray-500/50" : ""
+                }`}
               disabled={isLoading}
             >
               Add supplier
