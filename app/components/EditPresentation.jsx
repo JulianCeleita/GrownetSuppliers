@@ -1,15 +1,13 @@
 import { ExclamationCircleIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import axios from "axios";
 import { useEffect, useState } from "react";
+import ReactCountryFlag from "react-country-flag";
 import {
-  productsUrl,
-  uomUrl,
-  updatePresentationUrl,
-  taxexUrl,
+  productsUrl, taxexUrl, uomUrl,
+  updatePresentationUrl
 } from "../config/urls.config";
 import { fetchPresentations, fetchPresentationsSupplier } from "../presentations/page";
 import useTokenStore from "../store/useTokenStore";
-import ReactCountryFlag from "react-country-flag";
 import useUserStore from "../store/useUserStore";
 
 function EditPresentation({
@@ -166,7 +164,7 @@ function EditPresentation({
         },
       })
       .then((response) => {
-        if(user.id_supplier) {
+        if (user.id_supplier) {
           fetchPresentationsSupplier(token, user, setPresentations, setIsLoading);
         } else {
           fetchPresentations(token, setPresentations, setIsLoading);

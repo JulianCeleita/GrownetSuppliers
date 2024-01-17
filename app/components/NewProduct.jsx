@@ -2,11 +2,10 @@ import useCategoryStore from "@/app/store/useCategoryStore";
 import { XMarkIcon } from "@heroicons/react/24/outline";
 import axios from "axios";
 import { useEffect, useState } from "react";
-import ReactCountryFlag from "react-country-flag";
 import {
   addProductUrl,
   familiesUrl,
-  uomUrl,
+  uomUrl
 } from "../config/urls.config";
 import useTokenStore from "../store/useTokenStore";
 
@@ -173,7 +172,7 @@ function NewProduct({ isvisible, onClose, fetchProducts }) {
                 ))}
               </select>
             </div>
-            <div>              
+            <div>
             </div>
           </div>
           <label className="mt-4">Attach the product&apos;s photo: </label>

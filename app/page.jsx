@@ -1,12 +1,12 @@
 "use client";
-import React, { useEffect, useState } from "react";
 import axios from "axios";
-import LoginForm from "./components/LoginForm";
-import OrderView from "./orders/page";
-import { loginUrl } from "./config/urls.config";
-import useTokenStore from "./store/useTokenStore";
-import Swal from "sweetalert2";
 import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import Swal from "sweetalert2";
+import LoginForm from "./components/LoginForm";
+import { loginUrl } from "./config/urls.config";
+import OrderView from "./orders/page";
+import useTokenStore from "./store/useTokenStore";
 import useUserStore from "./store/useUserStore";
 
 function Home() {
@@ -38,7 +38,7 @@ function Home() {
       router.push("/orders");
     }
   }, [isLoggedIn, router]);
-  
+
   if (!hasMounted) {
     return null;
   }
@@ -58,32 +58,28 @@ function Home() {
         Authorization: `Bearer ${token}`,
       },
     })
-    .then((response) => {
-      if(response.data.status === 200) {
-        setUsername("");
-        setPassword("");
-        setIsLoggedIn(true);
-        setToken(response.data.token);
-        setUser(response.data.user);
-        localStorage.setItem("token", response.data.token);
-        localStorage.setItem("user", JSON.stringify(response.data.user));
-      } else {
-        setLoading(false);
-        Swal.fire({
-          icon: "error",
-          title: "Error",
-          text: `${response.data.message}`,
-        });
-      }
-    })
-    .catch((error) => {
-      console.error("Error al iniciar sesión: ", error);
-    });
+      .then((response) => {
+        if (response.data.status === 200) {
+          setUsername("");
+          setPassword("");
+          setIsLoggedIn(true);
+          setToken(response.data.token);
+          setUser(response.data.user);
+          localStorage.setItem("token", response.data.token);
+          localStorage.setItem("user", JSON.stringify(response.data.user));
+        } else {
+          setLoading(false);
+          Swal.fire({
+            icon: "error",
+            title: "Error",
+            text: `${response.data.message}`,
+          });
+        }
+      })
+      .catch((error) => {
+        console.error("Error al iniciar sesión: ", error);
+      });
   };
-
-  // const handleLogin = () => {
-  //   console.log("Usuario:", username, "Contraseña:", password);
-  // };
 
   return (
     <>
@@ -91,15 +87,15 @@ function Home() {
         <OrderView />
       ) : (
         <div className="min-h-screen flex flex-col items-center justify-center bg-blue-500">
-            <LoginForm
-              username={username}
-              setUsername={setUsername}
-              password={password}
-              setPassword={setPassword}
-              enviarData={enviarData}
-              loading={loading}
-            />
-            {error && <p className="text-red-500">{error}</p>}
+          <LoginForm
+            username={username}
+            setUsername={setUsername}
+            password={password}
+            setPassword={setPassword}
+            enviarData={enviarData}
+            loading={loading}
+          />
+          {error && <p className="text-red-500">{error}</p>}
         </div>
       )}
     </>

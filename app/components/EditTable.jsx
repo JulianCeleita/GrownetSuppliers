@@ -1,20 +1,16 @@
 "use client";
 import {
-  presentationData,
-  createStorageOrder,
-  presentationsCode,
-  orderDetail,
-  editStorageOrder,
+  editStorageOrder, orderDetail, presentationData, presentationsCode
 } from "@/app/config/urls.config";
 import { useTableStore } from "@/app/store/useTableStore";
 import useTokenStore from "@/app/store/useTokenStore";
 import axios from "axios";
+import { useRouter } from "next/navigation";
 import React, { useEffect, useRef, useState } from "react";
 import Select from "react-select";
 import useUserStore from "../store/useUserStore";
 import ModalOrderError from "./ModalOrderError";
 import ModalSuccessfull from "./ModalSuccessfull";
-import { useRouter } from "next/navigation";
 
 export const fetchOrderDetail = async (
   token,
@@ -101,8 +97,6 @@ const useFocusOnEnter = (formRef) => {
 };
 
 export default function EditTable({ orderId, dateDelivery }) {
-  console.log("orderId", orderId);
-  console.log("date que recibo x2", dateDelivery)
   const [rows, setRows] = useState(
     Array.from({ length: 5 }, () => ({ ...initialRowsState }))
   );
@@ -178,8 +172,7 @@ export default function EditTable({ orderId, dateDelivery }) {
 
   useEffect(() => {
     fetchOrderDetail(token, setOrderDetail, setIsLoading, orderId);
-
-  }, [orderId, token]);
+  }, [orderId, token, setOrderDetail]);
 
   useEffect(() => {
     if (
@@ -205,7 +198,6 @@ export default function EditTable({ orderId, dateDelivery }) {
         "Total Cost": "",
       }));
 
-      console.log("orderDetail.products", orderDetail.products);
 
       setRows(initialRows);
     }
@@ -399,7 +391,6 @@ export default function EditTable({ orderId, dateDelivery }) {
 
   // VALORES INICIALES DE LA TABLA
   useEffect(() => {
-    console.log("Mi order detail only this page ", orderDetail)
     if (productByCode) {
       const updatedRows = rows.map((row, index) => {
         if (
@@ -433,8 +424,7 @@ export default function EditTable({ orderId, dateDelivery }) {
       });
       setRows(updatedRows);
     }
-    console.log(productByCode)
-    orderDetail.products?.push(productByCode)
+    orderDetail.products?.push(productByCode);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [productByCode]);
 
@@ -504,7 +494,7 @@ export default function EditTable({ orderId, dateDelivery }) {
           Authorization: `Bearer ${token}`,
         },
       });
-      const productByCodeData = response.data.data[0];      
+      const productByCodeData = response.data.data[0];
 
       const updatedRows = rows.map((row, index) => {
         if (
@@ -533,9 +523,10 @@ export default function EditTable({ orderId, dateDelivery }) {
         .filter((row) => parseFloat(row.quantity) > 0)
         .map((row) => {
           const product = orderDetail.products.find(
-            (product) => product.presentations_code === row.Code || product.presentation_code === row.Code
+            (product) =>
+              product.presentations_code === row.Code ||
+              product.presentation_code === row.Code
           );
-          
 
           return {
             quantity: parseFloat(row.quantity),
@@ -544,7 +535,6 @@ export default function EditTable({ orderId, dateDelivery }) {
           };
         });
 
-      console.log("filteredProducts", filteredProducts);
 
       const jsonOrderData = {
         date_delivery: dateDelivery,
@@ -555,7 +545,6 @@ export default function EditTable({ orderId, dateDelivery }) {
         total_tax: parseFloat(totalTaxSum),
         products: filteredProducts,
       };
-      console.log("jsonOrderData", jsonOrderData);
       const response = await axios.post(
         `${editStorageOrder}${orderDetail.reference}`,
         jsonOrderData,
@@ -565,7 +554,6 @@ export default function EditTable({ orderId, dateDelivery }) {
           },
         }
       );
-      console.log(response);
       setSpecialRequirements("");
 
       router.push("/");
@@ -577,11 +565,13 @@ export default function EditTable({ orderId, dateDelivery }) {
   // BORRAR CASILLAS SI SE BORRA EL CODE
   const handleCodeChange = (e, rowIndex, column) => {
     const newCodeValue = e.target.value;
+
     setCurrentValues((prevValues) => ({
       ...prevValues,
       [column]: newCodeValue,
     }));
 
+    // Si la columna es "Code" y el nuevo valor está en blanco, elimina completamente la fila
     if (column === "Code" && newCodeValue.trim() === "") {
       const updatedRows = rows.map((row, index) => {
         if (index === rowIndex) {
@@ -613,14 +603,14 @@ export default function EditTable({ orderId, dateDelivery }) {
                         key={index}
                         scope="col"
                         className={`py-2 px-2 bg-dark-blue rounded-lg capitalize ${column === "quantity" ||
-                          column === "Code" ||
-                          column === "VAT %" ||
-                          column === "UOM" ||
-                          column === "Net"
-                          ? "w-20"
-                          : column === "Packsize"
-                            ? "w-40"
-                            : ""
+                            column === "Code" ||
+                            column === "VAT %" ||
+                            column === "UOM" ||
+                            column === "Net"
+                            ? "w-20"
+                            : column === "Packsize"
+                              ? "w-40"
+                              : ""
                           }`}
                         onContextMenu={(e) => handleContextMenu(e)}
                         style={{
@@ -737,8 +727,8 @@ export default function EditTable({ orderId, dateDelivery }) {
                                 type={inputTypes[column]}
                                 ref={inputRefs[column][rowIndex]}
                                 className={`pl-2 h-[30px] outline-none w-full ${inputTypes[column] === "number"
-                                  ? "hide-number-arrows"
-                                  : ""
+                                    ? "hide-number-arrows"
+                                    : ""
                                   }`}
                                 value={row[column] || ""}
                                 onChange={(e) => {
@@ -751,6 +741,7 @@ export default function EditTable({ orderId, dateDelivery }) {
                                     ...prevValues,
                                     [column]: e.target.value,
                                   }));
+
                                   const updatedRows = [...rows];
                                   updatedRows[rowIndex][column] =
                                     e.target.value;

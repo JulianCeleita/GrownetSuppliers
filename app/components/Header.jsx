@@ -1,11 +1,9 @@
 "use client";
-import { useEffect, useState } from "react";
+import { ArrowLeftOnRectangleIcon } from "@heroicons/react/24/outline";
 import Image from "next/image";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { useRouter } from "next/navigation";
-import { ArrowLeftOnRectangleIcon } from "@heroicons/react/24/outline";
-import { fetchUsers } from "../users/page";
+import { usePathname, useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 import useUserStore from "../store/useUserStore";
 
 function Header() {
@@ -140,7 +138,7 @@ function Header() {
           </Link>
         )}
 
-        
+
         {user && user.rol_name === "AdminGrownet" && (
           <Link
             href="/categories"
@@ -163,7 +161,7 @@ function Header() {
           </Link>
         )}
 
-        
+
         {user && user.rol_name === "AdminGrownet" && (
           <Link
             href="/suppliers"

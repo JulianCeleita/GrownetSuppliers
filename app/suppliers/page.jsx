@@ -3,15 +3,15 @@ import { deleteSupplierUrl, suppliersUrl } from "@/app/config/urls.config";
 import {
   PencilSquareIcon,
   PlusCircleIcon,
-  TrashIcon,
+  TrashIcon
 } from "@heroicons/react/24/outline";
 import axios from "axios";
 import { useEffect, useState } from "react";
 import EditSupplier from "../components/EditSupplier";
-import NewSupplier from "../components/NewSupplier";
-import useTokenStore from "../store/useTokenStore";
 import ModalDelete from "../components/ModalDelete";
+import NewSupplier from "../components/NewSupplier";
 import Layout from "../layoutS";
+import useTokenStore from "../store/useTokenStore";
 
 export const fetchSuppliers = async (token, setSuppliers, setIsLoading) => {
   try {

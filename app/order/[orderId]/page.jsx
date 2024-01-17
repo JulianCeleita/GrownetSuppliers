@@ -1,28 +1,27 @@
 "use client";
-import Table from "@/app/components/Table";
+import EditTable from "@/app/components/EditTable";
 import {
-  orderDetail,
-  restaurantsData,
-  customersData,
+  customersData, orderDetail,
+  restaurantsData
 } from "@/app/config/urls.config";
-import { ArrowLeftIcon } from "@heroicons/react/24/outline";
-import axios from "axios";
-import Link from "next/link";
-import { useEffect, useRef, useState } from "react";
-import Select from "react-select";
+import RootLayout from "@/app/layout";
 import Layout from "@/app/layoutS";
 import { useTableStore } from "@/app/store/useTableStore";
 import useTokenStore from "@/app/store/useTokenStore";
-import RootLayout from "@/app/layout";
-import EditTable from "@/app/components/EditTable";
-import { useParams } from "next/navigation";
 import useUserStore from "@/app/store/useUserStore";
+import { ArrowLeftIcon } from "@heroicons/react/24/outline";
+import axios from "axios";
+import Link from "next/link";
+import { useParams } from "next/navigation";
+import { useEffect, useRef, useState } from "react";
 
 export const fetchOrderDetail = async (
   token,
   setOrderDetail,
   setIsLoading,
   orderId,
+  user,
+  router
 ) => {
   try {
     const response = await axios.get(`${orderDetail}${orderId}`, {
@@ -31,11 +30,14 @@ export const fetchOrderDetail = async (
       },
     });
 
-    if (user.id_suppliers == orderDetail.id_suppliers && user.rol_name === "AdminGrownet") {
+    if (
+      user?.id_suppliers == orderDetail.id_suppliers &&
+      user?.rol_name === "AdminGrownet"
+    ) {
       setOrderDetail(response.data.order);
       setIsLoading(false);
     } else {
-      router.push("/");
+      router?.push("/");
     }
   } catch (error) {
     console.error("Error al obtener el detalle:", error);
@@ -65,7 +67,8 @@ const OrderDetailPage = () => {
   const [isNameDropdownVisible, setIsNameDropdownVisible] = useState(false);
   const [orderDate, setOrderDate] = useState(getCurrentDate());
   const [mouseCoords, setMouseCoords] = useState({ x: 0, y: 0 });
-  const [selectedDate, setSelectedDate] = useState();
+  const [selectedDate, setSelectedDate] = useState("");
+
   const { user, setUser } = useUserStore();
 
   const [isLoading, setIsLoading] = useState(false);
@@ -101,14 +104,17 @@ const OrderDetailPage = () => {
 
   useEffect(() => {
     setHasMounted(true);
-  }, []);
+    if (orderDetail && orderDetail.date_delivery) {
+      setSelectedDate(orderDetail.date_delivery);
+    }
+  }, [orderDetail]);
 
   useEffect(() => {
     setAccName(orderDetail ? orderDetail.accountName : "");
   }, [orderDetail]);
 
   useEffect(() => {
-    const storedUser = localStorage.getItem('user');
+    const storedUser = localStorage.getItem("user");
     setUser(storedUser);
     const fetchData = async () => {
       try {
@@ -307,7 +313,7 @@ const OrderDetailPage = () => {
                 <input
                   type="date"
                   className="border ml-2 p-1.5 rounded-md w-[100%] "
-                  value={orderDetail?.date_delivery}
+                  value={selectedDate}
                   onChange={handleDateChange}
                 />
                 <label className="ml-3">Inv. No.: </label>
@@ -389,7 +395,9 @@ const OrderDetailPage = () => {
             )}
           </div>
           <div className="-mt-20">
-            {orderId && <EditTable orderId={orderId} dateDelivery={selectedDate} />}
+            {orderId && (
+              <EditTable orderId={orderId} dateDelivery={selectedDate} />
+            )}
           </div>
         </Layout>
       ) : (

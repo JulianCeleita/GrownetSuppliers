@@ -1,8 +1,6 @@
 "use client";
 import {
-  presentationData,
-  createStorageOrder,
-  presentationsCode,
+  createStorageOrder, presentationData, presentationsCode
 } from "@/app/config/urls.config";
 import { useTableStore } from "@/app/store/useTableStore";
 import useTokenStore from "@/app/store/useTokenStore";
@@ -364,6 +362,7 @@ export default function Table() {
         return row;
       });
       setRows(updatedRows);
+      products.push(productByCode);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [productByCode]);
@@ -461,11 +460,18 @@ export default function Table() {
     try {
       const filteredProducts = rows
         .filter((row) => parseFloat(row.quantity) > 0)
-        .map(({ quantity, price, id_presentations }) => ({
-          quantity: parseFloat(quantity),
-          price,
-          id_presentations,
-        }));
+        .map((row) => {
+          const product = products.find(
+            (product) =>
+              product.presentation_code === row.Code
+          );
+
+          return {
+            quantity: parseFloat(row.quantity),
+            id_presentations: product ? product.id_presentations : undefined,
+            price: Number(row.Net),
+          };
+        });
 
       const jsonOrderData = {
         accountNumber_customers: customers?.accountNumber,
@@ -483,9 +489,11 @@ export default function Table() {
           Authorization: `Bearer ${token}`,
         },
       });
+
       setShowConfirmModal(true);
       setRows(Array.from({ length: 5 }, () => ({ ...initialRowsState })));
       setSpecialRequirements("");
+      setProducts([]);
     } catch (error) {
       setShowErrorOrderModal(true);
     }
@@ -529,17 +537,16 @@ export default function Table() {
                       <th
                         key={index}
                         scope="col"
-                        className={`py-2 px-2 bg-dark-blue rounded-lg capitalize ${
-                          column === "quantity" ||
-                          column === "Code" ||
-                          column === "VAT %" ||
-                          column === "UOM" ||
-                          column === "Net"
+                        className={`py-2 px-2 bg-dark-blue rounded-lg capitalize ${column === "quantity" ||
+                            column === "Code" ||
+                            column === "VAT %" ||
+                            column === "UOM" ||
+                            column === "Net"
                             ? "w-20"
                             : column === "Packsize"
-                            ? "w-40"
-                            : ""
-                        }`}
+                              ? "w-40"
+                              : ""
+                          }`}
                         onContextMenu={(e) => handleContextMenu(e)}
                         style={{
                           boxShadow:
@@ -561,9 +568,8 @@ export default function Table() {
                       initialColumns.includes(column) && (
                         <React.Fragment key={columnIndex}>
                           <td
-                            className={`px-3 py-2 border-r-2 border-r-[#0c547a] border-[#808e94] ${
-                              rowIndex === 0 ? "border-t-0" : "border-t-2"
-                            } `}
+                            className={`px-3 py-2 border-r-2 border-r-[#0c547a] border-[#808e94] ${rowIndex === 0 ? "border-t-0" : "border-t-2"
+                              } `}
                             tabIndex={0}
                             style={{ overflow: "visible" }}
                           >
@@ -604,10 +610,10 @@ export default function Table() {
                                     options={
                                       DescriptionData
                                         ? DescriptionData.map((item) => ({
-                                            value: item.productName,
-                                            label: item.concatenatedName,
-                                            code: item.code,
-                                          }))
+                                          value: item.productName,
+                                          label: item.concatenatedName,
+                                          code: item.code,
+                                        }))
                                         : []
                                     }
                                     value={{
@@ -655,11 +661,10 @@ export default function Table() {
                               <input
                                 type={inputTypes[column]}
                                 ref={inputRefs[column][rowIndex]}
-                                className={`pl-2 h-[30px] outline-none w-full ${
-                                  inputTypes[column] === "number"
+                                className={`pl-2 h-[30px] outline-none w-full ${inputTypes[column] === "number"
                                     ? "hide-number-arrows"
                                     : ""
-                                }`}
+                                  }`}
                                 value={row[column] || ""}
                                 onChange={(e) => {
                                   if (column === "Net") {

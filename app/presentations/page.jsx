@@ -2,15 +2,13 @@
 import EditPresentation from "@/app/components/EditPresentation";
 import NewPresentation from "@/app/components/NewPresentation";
 import {
-  deletePresentationUrl,
-  presentationsUrl,
-  presentationsSupplierUrl
+  deletePresentationUrl, presentationsSupplierUrl, presentationsUrl
 } from "@/app/config/urls.config";
 import useTokenStore from "@/app/store/useTokenStore";
 import {
   PencilSquareIcon,
   PlusCircleIcon,
-  TrashIcon,
+  TrashIcon
 } from "@heroicons/react/24/outline";
 import axios from "axios";
 import { useEffect, useState } from "react";

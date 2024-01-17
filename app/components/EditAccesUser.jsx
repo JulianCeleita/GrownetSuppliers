@@ -1,15 +1,6 @@
 import { ExclamationCircleIcon, XMarkIcon } from "@heroicons/react/24/outline";
-import axios from "axios";
-import { useEffect, useState } from "react";
-import {
-    productsUrl,
-    uomUrl,
-    updatePresentationUrl,
-    taxexUrl,
-} from "../config/urls.config";
-import { fetchPresentations } from "../presentations/page";
+import { useState } from "react";
 import useTokenStore from "../store/useTokenStore";
-import ReactCountryFlag from "react-country-flag";
 
 function EditAccessUser({
     isvisible,
@@ -24,37 +15,6 @@ function EditAccessUser({
     const [presentations, setPresentations] = useState([]);
     const [categories, setCategories] = useState([]);
     const [suppliers, setSuppliers] = useState([])
-
-    //Api editar
-    // const handleEditAccessUser = (event) => {
-    //     event.preventDefault();
-
-    //     const postData = {
-    //         uoms_id: selectedUomsStatus,
-    //         quantity: editedQuantity,
-    //         name: `${editedName} - ${selecteUomsStatus2}`,
-    //         cost: editedCost,
-    //         products_id: selectedProductsStatus,
-    //         code: codePresentation,
-    //         tax: selectedTax,
-    //     };
-    //     axios
-    //         .post(`${updatePresentationUrl}${presentation.id}`, postData, {
-    //             headers: {
-    //                 Authorization: `Bearer ${token}`,
-    //             },
-    //         })
-    //         .then((response) => {
-    //             fetchPresentations(token, setPresentations, setIsLoading);
-    //             setSelectedUomsStatus("");
-    //             setSelectedProductsStatus("");
-    //             onClose();
-    //             console.log("Respuesta de editar presentación:", response.data);
-    //         })
-    //         .catch((error) => {
-    //             console.error("Error editando la presentación:", error);
-    //         });
-    // };
 
     if (!isvisible) {
         return null;

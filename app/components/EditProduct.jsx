@@ -4,11 +4,10 @@ import {
 } from "@heroicons/react/24/outline";
 import axios from "axios";
 import { useEffect, useState } from "react";
-import ReactCountryFlag from "react-country-flag";
 import {
   familiesUrl,
   uomUrl,
-  updateProductUrl,
+  updateProductUrl
 } from "../config/urls.config";
 import useCategoryStore from "../store/useCategoryStore";
 import useTokenStore from "../store/useTokenStore";

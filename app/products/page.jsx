@@ -6,15 +6,15 @@ import useTokenStore from "@/app/store/useTokenStore";
 import {
   PencilSquareIcon,
   PlusCircleIcon,
-  TrashIcon,
+  TrashIcon
 } from "@heroicons/react/24/outline";
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { fetchCategories } from "../categories/page";
-import NewProduct from "../components/NewProduct";
-import useCategoryStore from "../store/useCategoryStore";
 import ModalDelete from "../components/ModalDelete";
+import NewProduct from "../components/NewProduct";
 import Layout from "../layoutS";
+import useCategoryStore from "../store/useCategoryStore";
 
 function Products() {
   const { token } = useTokenStore();

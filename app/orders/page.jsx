@@ -1,9 +1,8 @@
 "use client";
-import Table from "@/app/components/Table";
 import axios from "axios";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { ordersSupplierUrl, ordersUrl } from "../config/urls.config";
 import Layout from "../layoutS";
 import useTokenStore from "../store/useTokenStore";
@@ -35,7 +34,7 @@ export const fetchOrdersSupplier = async (
 ) => {
   try {
     const response = await axios.get(
-      `${ordersSupplierUrl}${user.id_supplier}`,
+      `${ordersSupplierUrl}${user?.id_supplier}`,
       {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -49,7 +48,7 @@ export const fetchOrdersSupplier = async (
     setOrders(newOrder);
     setIsLoading(false);
   } catch (error) {
-    console.error("Error al obtener las ordenes:", error);
+    console.error("Error al obtener las ordenes por supplier:", error);
   }
 };
 

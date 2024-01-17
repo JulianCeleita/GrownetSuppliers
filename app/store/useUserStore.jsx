@@ -5,6 +5,6 @@ const useUserStore = create((set) => ({
 
   setUser: (newUser) => set({ user: newUser }),
 
-  
+
 }));
 export default useUserStore;
