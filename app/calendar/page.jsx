@@ -1,4 +1,5 @@
 "use client";
+import "react-calendar/dist/Calendar.css";
 import axios from "axios";
 import { format } from "date-fns";
 import { useState } from "react";

@@ -6,6 +6,7 @@ import {
   TrashIcon
 } from "@heroicons/react/24/outline";
 import axios from "axios";
+import Image from "next/image";
 import { useEffect, useState } from "react";
 import EditSupplier from "../components/EditSupplier";
 import ModalDelete from "../components/ModalDelete";
@@ -100,10 +101,12 @@ function Suppliers() {
                   <td className="py-4">{supplier.name}</td>
                   <td className="py-4">{supplier.email}</td>
                   <td className="py-3">
-                    <img
-                      className="w-[40px] mx-auto"
+                    <Image
                       src={supplier.image}
                       alt={supplier.name}
+                      width={40}
+                      height={40}
+                      className="mx-auto"
                     />
                   </td>
                   <td className="py-4 flex justify-center">

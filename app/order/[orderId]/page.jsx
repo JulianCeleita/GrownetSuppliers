@@ -253,10 +253,9 @@ const OrderDetailPage = () => {
           <div className="flex p-6 pb-0 bg-primary-blue">
             <Link
               className="flex bg-dark-blue py-3 px-4 rounded-lg text-white font-medium transition-all hover:scale-110 "
-              href="/orders"
+              href="/"
             >
-              <ArrowLeftIcon className="w-5 h-5 mt-0.5 mr-1 inline-block" />{" "}
-              Orders
+              <ArrowLeftIcon className="w-5 h-5 mt-0.5 mr-1 inline-block" /> Orders
             </Link>
           </div>
           <div className="grid grid-cols-3 gap-4 p-6 shadow-lg bg-primary-blue pb-20">
