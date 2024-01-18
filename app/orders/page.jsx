@@ -1,5 +1,6 @@
 "use client";
 import axios from "axios";
+import { format } from "date-fns";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -85,6 +86,13 @@ const OrderView = () => {
     return orderNameA.localeCompare(orderNameB);
   });
 
+  const formatDate = (dateString) => {
+    // Analiza la cadena de fecha y la formatea como 'yy-MM-dd'
+    const formattedDate = format(new Date(dateString), 'yy-MM-dd');
+    return formattedDate;
+  };
+
+
   return (
     <Layout>
       <div>
@@ -111,7 +119,7 @@ const OrderView = () => {
             <thead className="sticky top-0 bg-white shadow-[0px_11px_15px_-3px_#edf2f7] ">
               <tr className="border-b-2 border-stone-100 text-dark-blue">
                 <th className="py-4 rounded-tl-lg">Restaurant</th>
-                <th className="py-4">Order date & time</th>
+                <th className="py-4">Order date</th>
                 <th className="py-4">Delivery date</th>
                 <th className="py-4">Order status</th>
               </tr>
@@ -127,8 +135,8 @@ const OrderView = () => {
                   }}
                 >
                   <td className="py-4">{order.accountName}</td>
-                  <td className="py-4">{order.created_date}</td>
-                  <td className="py-4">{order.date_delivery}</td>
+                  <td className="py-4">{formatDate(order.created_date)}</td>
+                  <td className="py-4">{formatDate(order.created_date)}</td>
                   <td className="py-4">{order.name_status}</td>
                 </tr>
               ))}
