@@ -115,12 +115,10 @@ function Products() {
                       <td className="py-3">{product.name}</td>
                     )}
                     <td className="py-3">
-                      <Image
+                      <img
+                        className="w-[40px] mx-auto"
                         src={product.image}
                         alt={product.name}
-                        width={40}
-                        height={40}
-                        className="mx-auto"
                       />
                     </td>
                     <td className="py-4 flex justify-center">
