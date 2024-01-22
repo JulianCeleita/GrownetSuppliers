@@ -3,7 +3,7 @@ import {
   XMarkIcon
 } from "@heroicons/react/24/outline";
 import axios from "axios";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   familiesUrl,
   uomUrl,
@@ -41,6 +41,7 @@ function EditProduct({ isvisible, onClose, fetchProducts, product }) {
 
   // Api families
   useEffect(() => {
+    // TODO: realizar test a editProduct
     const fetchFamilies = async () => {
       try {
         const response = await axios.get(familiesUrl, {
@@ -49,7 +50,7 @@ function EditProduct({ isvisible, onClose, fetchProducts, product }) {
           },
         });
 
-        const sortedFamilies = response.data.families.sort((a, b) =>
+        const sortedFamilies = response?.data?.families?.sort((a, b) =>
           a.name.localeCompare(b.name)
         );
         setFamilies(sortedFamilies);
@@ -165,7 +166,7 @@ function EditProduct({ isvisible, onClose, fetchProducts, product }) {
               value={selectedFamiliesStatus}
               required
             >
-              <option value="" disabled selected>
+              <option value="" disabled>
                 Select family
               </option>
               {families.map((family) => (
@@ -186,7 +187,7 @@ function EditProduct({ isvisible, onClose, fetchProducts, product }) {
                 value={selectedCategoryId}
                 required
               >
-                <option value="" disabled selected>
+                <option value="" disabled >
                   Select category
                 </option>
                 {categories.map((category) => (

@@ -1,7 +1,7 @@
 "use client";
-import { categoriesUrl, deleteCategoryUrl } from "@/app/config/urls.config";
-import useCategoryStore from "@/app/store/useCategoryStore";
-import useTokenStore from "@/app/store/useTokenStore";
+import { categoriesUrl, deleteCategoryUrl } from "../../app/config/urls.config";
+import useCategoryStore from "../../app/store/useCategoryStore";
+import useTokenStore from "../../app/store/useTokenStore";
 import {
   PencilSquareIcon,
   PlusCircleIcon,

@@ -1,17 +1,17 @@
 "use client";
-import EditPresentation from "@/app/components/EditPresentation";
-import NewPresentation from "@/app/components/NewPresentation";
+import EditPresentation from "../../app/components/EditPresentation";
+import NewPresentation from "../../app/components/NewPresentation";
 import {
   deletePresentationUrl, presentationsSupplierUrl, presentationsUrl
-} from "@/app/config/urls.config";
-import useTokenStore from "@/app/store/useTokenStore";
+} from "../../app/config/urls.config";
+import useTokenStore from "../../app/store/useTokenStore";
 import {
   PencilSquareIcon,
   PlusCircleIcon,
   TrashIcon
 } from "@heroicons/react/24/outline";
 import axios from "axios";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import ModalDelete from "../components/ModalDelete";
 import Layout from "../layoutS";
 import useUserStore from "../store/useUserStore";
@@ -30,8 +30,8 @@ export const fetchPresentations = async (
       },
     });
 
-    const newPresentation = Array.isArray(response.data.presentations)
-      ? response.data.presentations
+    const newPresentation = Array.isArray(response?.data?.presentations)
+      ? response?.data?.presentations
       : [];
     setPresentations(newPresentation);
     setIsLoading(false);

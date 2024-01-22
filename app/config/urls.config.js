@@ -85,3 +85,9 @@ export const closeDay =
   "https://api.grownetapp.com/grownet/api/suppliers/operationEnd";
 export const openDay =
   "https://api.grownetapp.com/grownet/api/suppliers/operationStart";
+
+// Customers
+export const customersUrl =
+  "https://api.grownetapp.com/grownet/api/customers/all";
+export const customersSupplierUrl =
+  "https://api.grownetapp.com/grownet/api/customers/supplier/";

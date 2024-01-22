@@ -1,14 +1,16 @@
 "use client";
-import { ArrowLeftOnRectangleIcon } from "@heroicons/react/24/outline";
+import { ArrowLeftOnRectangleIcon, Bars3Icon } from "@heroicons/react/24/outline";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import useUserStore from "../store/useUserStore";
+import SideBar from "./SideBar";
 
 function Header() {
   const router = useRouter();
   const [activeLink, setActiveLink] = useState("");
+  const [menuOpen, setMenuOpen] = useState(false);
   const { user, setUser } = useUserStore();
   const pathname = usePathname();
 
@@ -29,6 +31,10 @@ function Header() {
     localStorage.removeItem("token");
     localStorage.removeItem("user");
     router.push("/");
+  };
+
+  const toggleMenu = () => {
+    setMenuOpen(!menuOpen);
   };
 
   return (
@@ -184,38 +190,28 @@ function Header() {
           </Link>
         )}
 
-        {/* <Link
-          href="/categories"
-          className="relative group text-white rounded m-2 py-2 hover:text-light-green hover:scale-110"
-        >
-          <div
-            className={activeLink === "categories" ? "active" : ""}
-            onClick={() => setActiveLink("categories")}
+        {user && user.rol_name === "Administrador" && (
+          <Link
+            href="/customers"
+            className="relative group text-white rounded m-2 py-2 hover:text-light-green hover:scale-110"
           >
-            Categories
-          </div>
-          {activeLink === "categories" ? (
-            <span className="absolute bottom-0 left-0  h-0.5 bg-light-green w-full transition-all duration-300 ease-in-out"></span>
-          ) : (
-            <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-white group-hover:w-full transition-all duration-300 ease-in-out"></span>
-          )}
-        </Link> */}
-        {/* <Link
-          href="/suppliers"
-          className="relative group text-white rounded m-2 py-2 hover:text-light-green hover:scale-110"
-        >
-          <div
-            className={activeLink === "suppliers" ? "active" : ""}
-            onClick={() => setActiveLink("suppliers")}
-          >
-            Suppliers
-          </div>
-          {activeLink === "suppliers" ? (
-            <span className="absolute bottom-0 left-0  h-0.5 bg-light-green w-full transition-all duration-300 ease-in-out"></span>
-          ) : (
-            <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-white group-hover:w-full transition-all duration-300 ease-in-out"></span>
-          )}
-        </Link> */}
+            <h3
+              className={activeLink === "customers" ? "active" : ""}
+              onClick={() => setActiveLink("customers")}
+            >
+              Customers
+            </h3>
+
+            {activeLink === "customers" && (
+              <span className="absolute bottom-0 left-0 h-0.5 bg-light-green w-full transition-all duration-300 ease-in-out"></span>
+            )}
+
+            {activeLink !== "customers" && (
+              <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-white group-hover:w-full transition-all duration-300 ease-in-out"></span>
+            )}
+          </Link>
+        )}
+        <SideBar />
         <button
           className="text-white flex bg-dark-blue rounded-lg m-2 p-2 transition-all hover:bg-black hover:scale-110"
           onClick={handleLogout}
