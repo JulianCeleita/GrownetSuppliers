@@ -91,3 +91,5 @@ export const customersUrl =
   "https://api.grownetapp.com/grownet/api/customers/all";
 export const customersSupplierUrl =
   "https://api.grownetapp.com/grownet/api/customers/supplier/";
+export const createCustomer =
+  "https://api.grownetapp.com/grownet/api/customers/createcustomersupplier";
