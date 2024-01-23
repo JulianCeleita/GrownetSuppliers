@@ -93,3 +93,7 @@ export const customersSupplierUrl =
   "https://api.grownetapp.com/grownet/api/customers/supplier/";
 export const createCustomer =
   "https://api.grownetapp.com/grownet/api/customers/createcustomersupplier";
+export const customerDetail =
+  "https://api.grownetapp.com/grownet/api/customers/serch/";
+export const deleteCustomer =
+  "https://api.grownetapp.com/grownet/api/customers/deletecustomersupplier/";
