@@ -120,21 +120,16 @@ const CustomersView = () => {
     console.log(token)
     console.log(accountNumber)
     axios
-      .post(`${deleteCustomer.trim()}${accountNumber.trim()}`, {
+      .post(`${deleteCustomer}${accountNumber}`, null, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       })
       .then((response) => {
-        setShowDeleteModal(false);
-        if (user && user.rol_name === "AdminGrownet") {
-          fetchCustomers(token, setCustomers, setIsLoading);
-        } else {
-          fetchCustomersSupplier(token, user, setCustomers, setIsLoading);
-        }
+        console.log(response)
       })
       .catch((error) => {
-        console.error("Error al eliminar el customer:", error);
+        console.error("Error al eliminar el customer: ", error);
       });
   };
 
