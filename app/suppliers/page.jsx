@@ -1,5 +1,5 @@
 "use client";
-import { deleteSupplierUrl, suppliersUrl } from "@/app/config/urls.config";
+import { deleteSupplierUrl, suppliersUrl } from "../../app/config/urls.config";
 import {
   PencilSquareIcon,
   PlusCircleIcon,

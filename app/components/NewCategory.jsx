@@ -1,5 +1,5 @@
-import { addCategoryUrl } from "@/app/config/urls.config";
-import useTokenStore from "@/app/store/useTokenStore";
+import { addCategoryUrl } from "../../app/config/urls.config";
+import useTokenStore from "../../app/store/useTokenStore";
 import { XMarkIcon } from "@heroicons/react/24/outline";
 import axios from "axios";
 import { useState } from "react";

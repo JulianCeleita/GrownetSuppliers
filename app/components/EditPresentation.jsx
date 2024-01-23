@@ -1,6 +1,6 @@
 import { ExclamationCircleIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import axios from "axios";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import ReactCountryFlag from "react-country-flag";
 import {
   productsUrl, taxexUrl, uomUrl,
@@ -82,10 +82,10 @@ function EditPresentation({
           },
         });
 
-        const sortedProducts = response.data.products.sort((a, b) =>
+        const sortedProducts = response?.data?.products.sort((a, b) =>
           a.name.localeCompare(b.name)
         );
-        const filteredProducts = sortedProducts.filter(
+        const filteredProducts = sortedProducts?.filter(
           (product) => product.stateProduct_id !== 2
         );
         setProducts(filteredProducts);
@@ -107,7 +107,7 @@ function EditPresentation({
             Authorization: `Bearer ${token}`,
           },
         });
-        const sortedTaxes = response.data.taxes.sort(
+        const sortedTaxes = response?.data?.taxes.sort(
           (a, b) => a.worth - b.worth
         );
         setTax(sortedTaxes);
@@ -129,7 +129,7 @@ function EditPresentation({
           },
         });
 
-        const sortedUoms = response.data.uoms.sort((a, b) =>
+        const sortedUoms = response?.data?.uoms?.sort((a, b) =>
           a.name.localeCompare(b.name)
         );
 
@@ -144,7 +144,7 @@ function EditPresentation({
   }, []);
 
   //Api editar
-  const handleEditPresentation = (event) => {
+  const handleEditPresentation = async (event) => {
     event.preventDefault();
 
     const postData = {
@@ -155,27 +155,28 @@ function EditPresentation({
       products_id: selectedProductsStatus,
       code: codePresentation,
       tax: selectedTax,
-      supplier_id: user.id_supplier
+      supplier_id: user ? user.id_supplier : null,
     };
-    axios
-      .post(`${updatePresentationUrl}${presentation.id}`, postData, {
+
+    try {
+      const response = await axios.post(`${updatePresentationUrl}${presentation.id}`, postData, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
-      })
-      .then((response) => {
-        if (user.id_supplier) {
-          fetchPresentationsSupplier(token, user, setPresentations, setIsLoading);
-        } else {
-          fetchPresentations(token, setPresentations, setIsLoading);
-        }
-        setSelectedUomsStatus("");
-        setSelectedProductsStatus("");
-        onClose();
-      })
-      .catch((error) => {
-        console.error("Error editando la presentación:", error);
       });
+
+      if (user && user.rol_name !== "AdminGrownet") {
+        fetchPresentationsSupplier(token, user, setPresentations, setIsLoading);
+      } else {
+        fetchPresentations(token, setPresentations, setIsLoading);
+      }
+
+      setSelectedUomsStatus("");
+      setSelectedProductsStatus("");
+      onClose();
+    } catch (error) {
+      console.error("Error editando la presentación:", error);
+    }
   };
 
   if (!isvisible) {
@@ -198,7 +199,7 @@ function EditPresentation({
           className="text-left  flex flex-col"
           onSubmit={handleEditPresentation}
         >
-          <label for="produvt" className="mt-2">
+          <label htmlFor="produvt" className="mt-2">
             Product:
           </label>
           <select
@@ -209,10 +210,10 @@ function EditPresentation({
             value={selectedProductsStatus}
             required
           >
-            <option value="" disabled selected>
+            <option value="" disabled>
               Select product
             </option>
-            {products.map((product) => (
+            {products?.map((product) => (
               <option key={product.id} value={product.id}>
                 {product.id} - {product.name}
               </option>
@@ -228,10 +229,10 @@ function EditPresentation({
               onChange={(e) => setSelectedUomsStatus(e.target.value)}
               value={selectedUomsStatus}
             >
-              <option value="" disabled selected>
+              <option value="" disabled>
                 Select uom
               </option>
-              {uoms.map((uom) => (
+              {uoms?.map((uom) => (
                 <option key={uom.id} value={uom.id}>
                   {uom.name}
                 </option>
@@ -246,10 +247,10 @@ function EditPresentation({
               onChange={(e) => setSelectedTax(e.target.value)}
               value={selectedTax}
             >
-              <option value="" disabled selected>
+              <option value="" disabled>
                 Select tax
               </option>
-              {tax.map((tax) => (
+              {tax?.map((tax) => (
                 <option key={tax.id} value={tax.id}>
                   {tax.countries_indicative === 44 ? (
                     <ReactCountryFlag countryCode="GB" />
@@ -290,10 +291,10 @@ function EditPresentation({
               required
               onChange={(e) => setSelectedUomsStatus2(e.target.value)}
             >
-              <option value="" disabled selected>
+              <option value="" disabled>
                 UOM
               </option>
-              {uoms.map((uom) => (
+              {uoms?.map((uom) => (
                 <option key={uom.id} value={uom.name}>
                   {uom.name}
                 </option>

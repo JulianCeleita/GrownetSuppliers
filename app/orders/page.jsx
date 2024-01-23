@@ -105,7 +105,7 @@ const OrderView = () => {
             New Order
           </Link>
         </div>
-        <div className="flex relative items-center justify-center mb-16 bg-white z-50">
+        <div className="flex relative items-center justify-center mb-16">
           <input
             type="text"
             placeholder="Search orders by date..."
