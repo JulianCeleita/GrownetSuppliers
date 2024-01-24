@@ -95,5 +95,7 @@ export const createCustomer =
   "https://api.grownetapp.com/grownet/api/customers/createcustomersupplier";
 export const customerDetail =
   "https://api.grownetapp.com/grownet/api/customers/serch/";
+export const customerUpdate =
+  "https://api.grownetapp.com/grownet/api/customers/updatecustomersupplier/";
 export const deleteCustomer =
   "https://api.grownetapp.com/grownet/api/customers/deletecustomersupplier/";

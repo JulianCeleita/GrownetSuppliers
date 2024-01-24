@@ -2,7 +2,7 @@
 import EditTable from "@/app/components/EditTable";
 import {
     customerDetail,
-    customersData, orderDetail,
+    customersData, customerUpdate, orderDetail,
     restaurantsData
 } from "@/app/config/urls.config";
 import RootLayout from "@/app/layout";
@@ -13,8 +13,9 @@ import useUserStore from "@/app/store/useUserStore";
 import { ArrowLeftIcon } from "@heroicons/react/24/outline";
 import axios from "axios";
 import Link from "next/link";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
+import Swal from "sweetalert2";
 
 export const fetchCustomerDetail = async (
     token,
@@ -39,6 +40,7 @@ export const fetchCustomerDetail = async (
 };
 
 const CustomerDetailPage = () => {
+    const router = useRouter();
     const [hasMounted, setHasMounted] = useState(false);
     const { token, setToken } = useTokenStore();
     const { user, setUser } = useUserStore();
@@ -105,12 +107,13 @@ const CustomerDetailPage = () => {
             telephone: telephoneCustomer,
             email: emailCustomer,
             marketing_email: marketingEmail,
+            // countries_indicative: 57,
             stateCustomer_id: 1,
             image: ""
         };
         console.log(postData);
         axios
-            .post(createCustomer, postData, {
+            .post(`${customerUpdate}${customerId}`, postData, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },
@@ -120,7 +123,7 @@ const CustomerDetailPage = () => {
                 Swal.fire({
                     position: "top-end",
                     icon: "success",
-                    title: "Client created successfully",
+                    title: "Client update successfully",
                     showConfirmButton: false,
                     timer: 1500
                 });
@@ -129,7 +132,7 @@ const CustomerDetailPage = () => {
                 }, 1500);
             })
             .catch((error) => {
-                console.error("Error al agregar el nuevo customer: ", error);
+                console.error("Error al editar el customer: ", error);
             });
     };
 
@@ -272,7 +275,7 @@ const CustomerDetailPage = () => {
                                         }`}
                                     disabled={isLoading}
                                 >
-                                    Add customer
+                                    Edit customer
                                 </button>
                                 <Link
                                     className="py-3 px-4 rounded-lg text-primary-blue border border-primary-blue font-medium "

@@ -45,7 +45,6 @@ const CreateOrderView = () => {
             telephone: telephoneCustomer,
             email: emailCustomer,
             marketing_email: marketingEmail,
-            countries_indicative: 57,
             stateCustomer_id: 1,
             image: ""
         };

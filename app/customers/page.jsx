@@ -127,6 +127,12 @@ const CustomersView = () => {
       })
       .then((response) => {
         console.log(response)
+        setShowDeleteModal(false);
+        if (user && user.rol_name === "AdminGrownet") {
+          fetchCustomers(token, setCustomers, setIsLoading);
+        } else {
+          fetchCustomersSupplier(token, user, setCustomers, setIsLoading);
+        }
       })
       .catch((error) => {
         console.error("Error al eliminar el customer: ", error);
@@ -218,7 +224,7 @@ const CustomersView = () => {
                       setSelectedCustomer(customer);
                       setShowDeleteModal(true);
                     }}
-                    className="flex justify-center text-primary-blue font-medium hover:scale-110 mt-4 ml-6 hover:text-danger hover:border-danger"
+                    className="flex justify-center text-primary-blue font-medium hover:scale-110 mt-4 ml-6 transition-all hover:text-danger hover:border-danger"
                   >
                     <TrashIcon className="h-6 w-6 mr-1" />
                     Delete
