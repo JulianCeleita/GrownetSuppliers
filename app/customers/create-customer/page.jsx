@@ -25,7 +25,6 @@ const CreateOrderView = () => {
     const [telephoneCustomer, setTelephoneCustomer] = useState("");
     const [postCode, setPostCode] = useState("");
     const [specialInstructions, setSpecialInstructions] = useState("");
-    const [countriesIndicative, setCountriesIndicative] = useState("");
     const [selectedImage, setSelectedImage] = useState(null);
 
     const handleImageChange = (e) => {
@@ -46,7 +45,6 @@ const CreateOrderView = () => {
             telephone: telephoneCustomer,
             email: emailCustomer,
             marketing_email: marketingEmail,
-            countries_indicative: Number(countriesIndicative),
             stateCustomer_id: 1,
             image: ""
         };
@@ -181,7 +179,7 @@ const CreateOrderView = () => {
                             <input
                                 className="border p-3 rounded-md"
                                 placeholder="170001"
-                                type="number"
+                                type="text"
                                 maxLength={45}
                                 value={postCode}
                                 onChange={(e) => setPostCode(e.target.value)}
@@ -201,19 +199,6 @@ const CreateOrderView = () => {
                                 required
                             />
                         </div>
-
-
-                        <div className="flex items-center mb-4">
-                            <label className="mr-2">Countries indicative:</label>
-                            <input
-                                className="border p-3 rounded-md"
-                                placeholder="57"
-                                type="number"
-                                value={countriesIndicative}
-                                onChange={(e) => setCountriesIndicative(e.target.value)}
-                                required
-                            />
-                        </div>
                     </div>
                     <div className="mt-3 text-center">
                         <button
@@ -225,11 +210,12 @@ const CreateOrderView = () => {
                         >
                             Add customer
                         </button>
-                        <button
-                            className=" py-3 px-4 rounded-lg text-primary-blue border border-primary-blue font-medium"
+                        <Link
+                            className="py-3 px-4 rounded-lg text-primary-blue border border-primary-blue font-medium "
+                            href="/customers"
                         >
                             Cancel
-                        </button>
+                        </Link>
                     </div>
                 </form>
             </div >

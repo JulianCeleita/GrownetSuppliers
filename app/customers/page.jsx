@@ -1,12 +1,13 @@
 "use client";
-import { PlusCircleIcon } from "@heroicons/react/24/outline";
+import { PlusCircleIcon, TrashIcon } from "@heroicons/react/24/outline";
 import axios from "axios";
 import { format } from "date-fns";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import ModalDelete from "../components/ModalDelete";
 import NewCustomer from "../components/NewCustomer";
-import { customersSupplierUrl, customersUrl, ordersSupplierUrl, ordersUrl } from "../config/urls.config";
+import { customersSupplierUrl, customersUrl, deleteCustomer, ordersSupplierUrl, ordersUrl } from "../config/urls.config";
 import Layout from "../layoutS";
 import useTokenStore from "../store/useTokenStore";
 import useUserStore from "../store/useUserStore";
@@ -71,6 +72,7 @@ const CustomersView = () => {
   const [customers, setCustomers] = useState([]);
   const [showNewCustomers, setShowNewCustomers] = useState(false);
   const [status, setStatus] = useState('all');
+  const [selectedCustomer, setSelectedCustomer] = useState(null);
   const { user, setUser } = useUserStore();
 
   useEffect(() => {
@@ -96,7 +98,7 @@ const CustomersView = () => {
     );
   });
 
-  
+
   const sortedCustomers = filteredCustomers.slice().sort((a, b) => {
     const customerNameA =
       customers.find((o) => o.id === a.id)?.accountName || "";
@@ -110,6 +112,32 @@ const CustomersView = () => {
 
     return customerNameA.localeCompare(customerNameB);
   });
+
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+
+  const handleDeleteCustomer = (customer) => {
+    const { accountNumber } = customer;
+    console.log(token)
+    console.log(accountNumber)
+    axios
+      .post(`${deleteCustomer}${accountNumber}`, null, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+      .then((response) => {
+        console.log(response)
+        setShowDeleteModal(false);
+        if (user && user.rol_name === "AdminGrownet") {
+          fetchCustomers(token, setCustomers, setIsLoading);
+        } else {
+          fetchCustomersSupplier(token, user, setCustomers, setIsLoading);
+        }
+      })
+      .catch((error) => {
+        console.error("Error al eliminar el customer: ", error);
+      });
+  };
 
 
   const handleStatusChange = (e) => {
@@ -156,21 +184,34 @@ const CustomersView = () => {
                 <th className="py-4">Telephone</th>
                 <th className="py-4">Email</th>
                 <th className="py-4">Status</th>
+                <th className="py-4">Delete</th>
               </tr>
             </thead>
             <tbody>
               {sortedCustomers.map((customer) => (
                 <tr
                   key={customer.id}
-                  className="text-dark-blue border-b-2 border-stone-100"
-                // onClick={(e) => {
-                //     e.preventDefault();
-                //     router.push(`/order/${order.reference}`, undefined, { shallow: true });
-                // }}
+                  className="text-dark-blue border-b-2 border-stone-100 cursor-pointer"
+
                 >
-                  <td className="py-4">{customer.accountName}</td>
-                  <td className="py-4">{customer.telephone}</td>
-                  <td className="py-4">{customer.email}</td>
+                  <td className="py-4"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      router.push(`/customer/${customer.accountNumber}`, undefined, { shallow: true });
+                    }}
+                  >{customer.accountName}</td>
+                  <td className="py-4"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      router.push(`/customer/${customer.accountNumber}`, undefined, { shallow: true });
+                    }}
+                  >{customer.telephone}</td>
+                  <td className="py-4"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      router.push(`/customer/${customer.accountNumber}`, undefined, { shallow: true });
+                    }}
+                  >{customer.email}</td>
                   <td className="py-4">
                     {customer.stateCustomer_id === 1 ? (
                       <span style={{ color: 'green' }}>Active</span>
@@ -178,16 +219,25 @@ const CustomersView = () => {
                       <span style={{ color: 'red' }}>Inactive</span>
                     )}
                   </td>
+                  <button
+                    onClick={() => {
+                      setSelectedCustomer(customer);
+                      setShowDeleteModal(true);
+                    }}
+                    className="flex justify-center text-primary-blue font-medium hover:scale-110 mt-4 ml-6 transition-all hover:text-danger hover:border-danger"
+                  >
+                    <TrashIcon className="h-6 w-6 mr-1" />
+                    Delete
+                  </button>
                 </tr>
               ))}
             </tbody>
           </table>
         </div>
-        <NewCustomer
-          isvisible={showNewCustomers}
-          onClose={() => setShowNewCustomers(false)}
-          setCustomers={setCustomers}
-          setIsLoading={setIsLoading}
+        <ModalDelete
+          isvisible={showDeleteModal}
+          onClose={() => setShowDeleteModal(false)}
+          onConfirm={() => handleDeleteCustomer(selectedCustomer)}
         />
         {isLoading && (
           <div className="flex justify-center items-center mb-20">
