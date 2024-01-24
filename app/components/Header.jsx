@@ -27,7 +27,7 @@ function Header() {
     handleRouteChange();
   }, [pathname, router]);
 
-  
+
 
   const toggleMenu = () => {
     setMenuOpen(!menuOpen);
@@ -35,6 +35,9 @@ function Header() {
 
   return (
     <div className="flex justify-between items-center bg-primary-blue p-4">
+      <div className="flex mx-5">
+        <SideBar />
+      </div>
       <div className="mx-5">
         <Link href="#">
           <Image
@@ -46,11 +49,8 @@ function Header() {
           />
         </Link>
       </div>
-      <div className="flex gap-8 mx-10">
-
-        <SideBar />
-      </div>
     </div>
+
   );
 }
 export default Header;
