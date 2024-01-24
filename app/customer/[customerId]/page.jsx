@@ -107,7 +107,7 @@ const CustomerDetailPage = () => {
             telephone: telephoneCustomer,
             email: emailCustomer,
             marketing_email: marketingEmail,
-            // countries_indicative: 57,
+            countries_indicative: detailCustomer.countries_indicative,
             stateCustomer_id: 1,
             image: ""
         };
