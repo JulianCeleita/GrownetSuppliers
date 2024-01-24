@@ -99,3 +99,7 @@ export const customerUpdate =
   "https://api.grownetapp.com/grownet/api/customers/updatecustomersupplier/";
 export const deleteCustomer =
   "https://api.grownetapp.com/grownet/api/customers/deletecustomersupplier/";
+
+  // Prices
+export const pricesUrl =
+  "https://api.grownetapp.com/grownet/api/prices/all";
