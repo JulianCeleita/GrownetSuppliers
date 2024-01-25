@@ -40,7 +40,7 @@ export const fetchPrices = async (
     }
 };
 
-const CustomersView = () => {
+const PricesView = () => {
     const router = useRouter();
     const { token } = useTokenStore();
     const [searchTerm, setSearchTerm] = useState("");
@@ -100,7 +100,7 @@ const CustomersView = () => {
                     <h1 className="text-2xl text-white font-semibold">Prices list</h1>
                     <Link
                         className="flex bg-green py-3 px-4 rounded-lg text-white font-medium transition-all hover:bg-dark-blue hover:scale-110 "
-                        href="/customers/create-customer"
+                        href="/prices/create-price"
                     >
                         New Price
                     </Link>
@@ -181,4 +181,4 @@ const CustomersView = () => {
         </Layout>
     );
 };
-export default CustomersView;
+export default PricesView;

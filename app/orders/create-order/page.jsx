@@ -284,7 +284,7 @@ const CreateOrderView = () => {
             <label className="ml-3">Inv. No.: </label>
             <input
               type="text"
-              value="Order"
+              value="Invoice Number."
               readOnly
               className="border ml-2 p-1.5 rounded-md w-[100%]"
             />
@@ -292,11 +292,6 @@ const CreateOrderView = () => {
           <div className="grid grid-cols-2">
             <label>Order No.: </label>
             <input type="text" className="border p-2 rounded-md mb-2" />
-
-            <h3>Round:</h3>
-            <h3 className="underline decoration-2 decoration-green mb-2">
-              1056
-            </h3>
             {/*<h3>Drop:</h3>
           <h3 className="underline decoration-2 decoration-green">{""}</h3>*/}
           </div>
