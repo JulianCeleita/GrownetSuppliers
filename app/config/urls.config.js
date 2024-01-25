@@ -105,6 +105,10 @@ export const pricesUrl =
   "https://api.grownetapp.com/grownet/api/prices/all";
 export const createPrice =
   "https://api.grownetapp.com/grownet/api/prices/create";
+export const priceDetail =
+  "https://api.grownetapp.com/grownet/api/prices/info/";
+export const priceUpdate =
+  "https://api.grownetapp.com/grownet/api/prices/update/";
 
   // Bands
 export const bandsUrl =

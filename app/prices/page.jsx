@@ -125,31 +125,24 @@ const PricesView = () => {
 
                                 >
                                     <td className="py-4"
-                                    // onClick={(e) => {
-                                    //     e.preventDefault();
-                                    //     router.push(`/customer/${customer.accountNumber}`, undefined, { shallow: true });
-                                    // }}
+                                    onClick={(e) => {
+                                        e.preventDefault();
+                                        router.push(`/price/${price.id}`, undefined, { shallow: true });
+                                    }}
                                     >{price.customers_accountNumber
                                         }</td>
                                     <td className="py-4"
-                                    // onClick={(e) => {
-                                    //     e.preventDefault();
-                                    //     router.push(`/customer/${customer.accountNumber}`, undefined, { shallow: true });
-                                    // }}
+                                    onClick={(e) => {
+                                        e.preventDefault();
+                                        router.push(`/price/${price.id}`, undefined, { shallow: true });
+                                    }}
                                     >{price.product} - {price.presentation}</td>
                                     <td className="py-4"
-                                    // onClick={(e) => {
-                                    //     e.preventDefault();
-                                    //     router.push(`/customer/${customer.accountNumber}`, undefined, { shallow: true });
-                                    // }}
+                                    onClick={(e) => {
+                                        e.preventDefault();
+                                        router.push(`/price/${price.id}`, undefined, { shallow: true });
+                                    }}
                                     >{price.price}</td>
-                                    {/* <td className="py-4">
-                                        {price.stateCustomer_id === 1 ? (
-                                            <span style={{ color: 'green' }}>Active</span>
-                                        ) : (
-                                            <span style={{ color: 'red' }}>Inactive</span>
-                                        )}
-                                    </td> */}
                                     <td>
                                         <button
                                             onClick={() => {

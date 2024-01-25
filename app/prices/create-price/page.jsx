@@ -64,6 +64,7 @@ const CreatePriceView = () => {
     const router = useRouter();
     const { token } = useTokenStore();
     const [isLoading, setIsLoading] = useState(false);
+    const [showPriceSection, setShowPriceSection] = useState(false);
     const [accountNumber, setAccountNumber] = useState("");
     const [type, setType] = useState("");
     const [price, setPrice] = useState("");
@@ -136,9 +137,14 @@ const CreatePriceView = () => {
                     (a, b) => a.name.localeCompare(b.name)
                 );
 
+                const bandsWithPriceOption = [
+                    { id: "priceOption", name: "Price" },
+                    ...sortedBands,
+                ];
+
                 console.log(sortedBands)
 
-                setBandsList(sortedBands);
+                setBandsList(bandsWithPriceOption);
             } catch (error) {
                 console.error("Error fetching restaurants data", error);
             }
@@ -182,15 +188,33 @@ const CreatePriceView = () => {
     const bandList = Array.isArray(bandsList) ? bandsList : [];
     const productList = Array.isArray(productsList) ? productsList : [];
 
+    const handleBandSelect = (selectedOption) => {
+        const selectedBand = selectedOption.value;
+        setBands(selectedBand);
+
+        if (selectedBand.id === "priceOption") {
+            setShowPriceSection(true);
+        } else {
+            setShowPriceSection(false);
+        }
+
+        setIsDropdownVisible(false);
+    };
+
     const enviarData = (e) => {
         e.preventDefault();
+        let modifiedBandsId = bands.id;
+        if (bands.id == "priceOption") {
+            console.log("este es con price")
+            modifiedBandsId = null;
+        }
         const postData = {
             customers_accountNumber: accountNumber.accountNumber,
             type: type,
             price: price,
-            bands_id: bands.id,
+            bands_id: modifiedBandsId,
             presentations_id: presentation.id,
-            products_id: product.id,
+            products_id: presentation.products_id,
         };
         console.log(postData);
         axios
@@ -230,7 +254,7 @@ const CreatePriceView = () => {
                 </Link>
             </div>
             <div className="flex flex-col items-center justify-center">
-                <form className="text-left mt-10 w-[50%] mb-20" onSubmit={enviarData}>
+                <form className="text-left mt-10 w-[70%] mb-20 mx-auto" onSubmit={enviarData}>
                     <div className="flex items-center justify-center">
                         <h1 className="text-2xl font-bold text-dark-blue mb-2">
                             Add <span className="text-primary-blue">new price</span>
@@ -241,6 +265,7 @@ const CreatePriceView = () => {
                         <div className="flex items-center mb-4">
                             <label className="mr-2">Account Number:</label>
                             <Select
+                                className="w-[70%]"
                                 instanceId
                                 options={restaurantList.map((restaurant) => ({
                                     value: restaurant,
@@ -263,16 +288,13 @@ const CreatePriceView = () => {
                         <div className="flex items-center mb-4">
                             <label className="mr-2">Bands:</label>
                             <Select
+                                className="w-[70%]"
                                 instanceId
                                 options={bandList.map((band) => ({
                                     value: band,
                                     label: band.name,
                                 }))}
-                                onChange={(selectedOption) => {
-                                    console.log(selectedOption.value.id)
-                                    setBands(selectedOption.value);
-                                    setIsDropdownVisible(false);
-                                }}
+                                onChange={handleBandSelect}
                                 value={{
                                     value: bands,
                                     label: bands ? bands.name : "Search...",
@@ -281,34 +303,14 @@ const CreatePriceView = () => {
                             />
                         </div>
 
-                        {/* <div className="flex items-center mb-4">
+                        <div className="flex items-center mb-4">
                             <label className="mr-2">Product:</label>
                             <Select
-                                instanceId
-                                options={productList.map((product) => ({
-                                    value: product,
-                                    label: product.name,
-                                }))}
-                                onChange={(selectedOption) => {
-                                    console.log(selectedOption.value.id)
-                                    setProduct(selectedOption.value);
-                                    setIsDropdownVisible(false);
-                                }}
-                                value={{
-                                    value: product,
-                                    label: product ? product.name : "Search...",
-                                }}
-                                isSearchable
-                            />
-                        </div> */}
-
-                        <div className="flex items-center mb-4">
-                            <label className="mr-2">Presentation:</label>
-                            <Select
+                                className="w-[80%]"
                                 instanceId
                                 options={presentations?.map((presentation) => ({
                                     value: presentation,
-                                    label: presentation.name,
+                                    label: `${presentation.product_name} - ${presentation.name}`,
                                 }))}
                                 onChange={(selectedOption) => {
                                     console.log(selectedOption.value)
@@ -317,37 +319,26 @@ const CreatePriceView = () => {
                                 }}
                                 value={{
                                     value: presentation,
-                                    label: presentation ? presentation.name : "Search...",
+                                    label: presentation ? `${presentation.product_name} - ${presentation.name}` : "Search...",
                                 }}
                                 isSearchable
                             />
                         </div>
 
-                        <div className="flex items-center mb-4">
-                            <label className="mr-2">Price:</label>
-                            <input
-                                className="border p-3 rounded-md"
-                                placeholder="31383394455"
-                                type="number"
-                                value={price}
-                                onChange={(e) => setPrice(e.target.value)}
-                                required
-                            />
-                        </div>
+                        {showPriceSection && (
+                            <div className="flex items-center mb-4">
+                                <label className="mr-2">Price:</label>
+                                <input
+                                    className="border p-3 rounded-md"
+                                    placeholder="31383394455"
+                                    type="number"
+                                    value={price}
+                                    onChange={(e) => setPrice(e.target.value)}
+                                    required
+                                />
+                            </div>
+                        )}
 
-
-                        <div className="flex items-center mb-4">
-                            <label className="mr-2">Type:</label>
-                            <input
-                                className="border p-3 rounded-md"
-                                placeholder="Type price"
-                                type="text"
-                                maxLength={100}
-                                value={type}
-                                onChange={(e) => setType(e.target.value)}
-                                required
-                            />
-                        </div>
                     </div>
                     <div className="mt-3 text-center">
                         <button
