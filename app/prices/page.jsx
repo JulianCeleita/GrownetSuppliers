@@ -7,7 +7,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import ModalDelete from "../components/ModalDelete";
 import NewCustomer from "../components/NewCustomer";
-import { customersSupplierUrl, customersUrl, deleteCustomer, ordersSupplierUrl, ordersUrl, pricesUrl } from "../config/urls.config";
+import { customersSupplierUrl, customersUrl, deleteCustomer, ordersSupplierUrl, ordersUrl, priceDelete, pricesUrl } from "../config/urls.config";
 import Layout from "../layoutS";
 import useTokenStore from "../store/useTokenStore";
 import useUserStore from "../store/useUserStore";
@@ -48,7 +48,7 @@ const PricesView = () => {
     const [prices, setPrices] = useState([]);
     const [showNewCustomers, setShowNewCustomers] = useState(false);
     const [status, setStatus] = useState('all');
-    const [selectedCustomer, setSelectedCustomer] = useState(null);
+    const [selectedPrice, setSelectedPrice] = useState(null);
     const { user, setUser } = useUserStore();
 
     useEffect(() => {
@@ -71,12 +71,12 @@ const PricesView = () => {
 
     const [showDeleteModal, setShowDeleteModal] = useState(false);
 
-    const handleDeleteCustomer = (customer) => {
-        const { accountNumber } = customer;
+    const handleDeletePrice = (price) => {
+        const { id } = price;
         console.log(token)
-        console.log(accountNumber)
+        console.log(id)
         axios
-            .post(`${deleteCustomer}${accountNumber}`, null, {
+            .post(`${priceDelete}${id}`, null, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },
@@ -84,7 +84,7 @@ const PricesView = () => {
             .then((response) => {
                 console.log(response)
                 setShowDeleteModal(false);
-                fetchPrices(token, setPrices, setIsLoading);
+                fetchPrices(token, user, setPrices, setIsLoading);
             })
             .catch((error) => {
                 console.error("Error al eliminar el price: ", error);
@@ -146,7 +146,7 @@ const PricesView = () => {
                                     <td>
                                         <button
                                             onClick={() => {
-                                                setSelectedCustomer(customer);
+                                                setSelectedPrice(price);
                                                 setShowDeleteModal(true);
                                             }}
                                             className="flex justify-center text-primary-blue font-medium hover:scale-110 transition-all hover:text-danger hover:border-danger"
@@ -163,7 +163,7 @@ const PricesView = () => {
                 <ModalDelete
                     isvisible={showDeleteModal}
                     onClose={() => setShowDeleteModal(false)}
-                    onConfirm={() => handleDeleteCustomer(selectedCustomer)}
+                    onConfirm={() => handleDeletePrice(selectedPrice)}
                 />
                 {isLoading && (
                     <div className="flex justify-center items-center mb-20">

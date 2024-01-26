@@ -90,7 +90,7 @@ export const fetchPriceDetail = async (
         setDetailPrice(response.data.price);
         if (response.data.price[0].bands_id == null) {
             setBands({ id: "priceOption", name: "Price" });
-            console.log("my band: ",bands)
+            console.log("my band: ", bands)
             setShowPriceSection(true);
         } else {
             setShowPriceSection(false)
@@ -107,7 +107,7 @@ const CustomerDetailPage = () => {
     const [showPriceSection, setShowPriceSection] = useState(false);
     const { token, setToken } = useTokenStore();
     const { user, setUser } = useUserStore();
-    const [isLoading, setIsLoading] = useState(false);
+    const [isLoading, setIsLoading] = useState(true);
     const [detailPrice, setDetailPrice] = useState({});
     const [accountNumber, setAccountNumber] = useState(null);
     const [price, setPrice] = useState("");
@@ -159,9 +159,12 @@ const CustomerDetailPage = () => {
         setPresentation(detailPrice[0]?.presentations_id)
         setProduct(detailPrice[0]?.products_id)
         setPrice(detailPrice[0]?.price)
-        setBands({id: detailPrice[0]?.bands_id, name: detailPrice[0]?.name})
+        if (detailPrice[0]?.bands_id) {
+
+            setBands({ id: detailPrice[0]?.bands_id, name: detailPrice[0]?.name })
+        }
         console.log(bands)
-        }, [detailPrice])
+    }, [detailPrice])
 
     useEffect(() => {
         const fetchData = async () => {
@@ -248,7 +251,6 @@ const CustomerDetailPage = () => {
 
     useEffect(() => {
         setHasMounted(true);
-        console.log(bands.name)
     }, []);
 
     const enviarData = (e) => {
@@ -308,12 +310,20 @@ const CustomerDetailPage = () => {
                         </Link>
                     </div>
                     <div className="flex flex-col items-center justify-center">
+                        {isLoading && (
+                            <div className="flex justify-center items-center mb-10 mt-20">
+                                <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-primary-blue"></div>
+                            </div>
+                        )}
+                        {!isLoading && (
+
                         <form className="text-left mt-10 w-[60%] mb-20 mx-auto" onSubmit={enviarData}>
                             <div className="flex items-center justify-center">
                                 <h1 className="text-2xl font-bold text-dark-blue mb-2">
                                     Edit <span className="text-primary-blue">price</span>
                                 </h1>
                             </div>
+
                             <div className="grid grid-cols-2 gap-3 mt-3">
 
                                 <div className="flex items-center mb-4">
@@ -349,6 +359,7 @@ const CustomerDetailPage = () => {
                                             label: band.name,
                                         }))}
                                         onChange={handleBandSelect}
+
                                         value={{
                                             value: bands,
                                             label: bands?.name ? bands?.name : "search",
@@ -358,7 +369,7 @@ const CustomerDetailPage = () => {
                                 </div>
 
                                 <div className="flex items-center mb-4">
-                                    <label className="mr-2">Presentation:</label>
+                                    <label className="mr-2">Product:</label>
                                     <Select
                                         className="w-[70%]"
                                         instanceId
@@ -410,6 +421,8 @@ const CustomerDetailPage = () => {
                                 </Link>
                             </div>
                         </form>
+                        )}
+
                     </div >
                 </Layout>
             ) : (
