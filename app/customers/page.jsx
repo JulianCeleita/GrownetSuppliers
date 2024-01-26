@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import ModalDelete from "../components/ModalDelete";
-import { customersSupplierUrl, customersUrl, deleteCustomer } from "../config/urls.config";
+import { customersSupplierUrl, customersUrl, deleteCustomer, RoutesUrl } from "../config/urls.config";
 import Layout from "../layoutS";
 import useTokenStore from "../store/useTokenStore";
 import useUserStore from "../store/useUserStore";
@@ -52,6 +52,8 @@ export const fetchCustomersSupplier = async (
       }
     );
 
+    console.log(response)
+
     const newCustomer = Array.isArray(response.data.customers)
       ? response.data.customers
       : [];
@@ -61,6 +63,32 @@ export const fetchCustomersSupplier = async (
     console.error("Error al obtener los customers:", error);
   }
 };
+export const fetchRoutes = async (
+  token,
+  user,
+  setRoutes,
+  setIsLoading
+) => {
+  try {
+    const response = await axios.get(
+      RoutesUrl,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    console.log(response);
+
+    const newRoute = Array.isArray(response.data.routes)
+      ? response.data.routes
+      : [];
+    setRoutes(newRoute);
+    setIsLoading(false);
+  } catch (error) {
+    console.error("Error al obtener los routes:", error);
+  }
+};
 
 const CustomersView = () => {
   const router = useRouter();
@@ -68,11 +96,13 @@ const CustomersView = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [isLoading, setIsLoading] = useState(true);
   const [customers, setCustomers] = useState([]);
+  const [routes, setRoutes] = useState([]);
+  const [selectedRoute, setSelectedRoute] = useState(null);
   const [showNewCustomers, setShowNewCustomers] = useState(false);
   const [status, setStatus] = useState('all');
+  const [filteredRoutes, setFilteredRoutes] = useState([]);
   const [selectedCustomer, setSelectedCustomer] = useState(null);
   const { user, setUser } = useUserStore();
-
   useEffect(() => {
     var localStorageUser = JSON.parse(localStorage.getItem("user"));
     setUser(localStorageUser);
@@ -84,7 +114,18 @@ const CustomersView = () => {
     } else {
       fetchCustomersSupplier(token, user, setCustomers, setIsLoading);
     }
+    fetchRoutes(token, user, setRoutes, setIsLoading);
   }, [user, token]);
+
+
+  useEffect(() => {
+    console.log("routes", routes);
+    const routesMatchingSearchTerm = routes.filter((route) =>
+      route.name.toLowerCase().includes(searchTerm)
+    );
+
+    setFilteredRoutes(routesMatchingSearchTerm);
+  }, [searchTerm, routes]);
 
   const filteredCustomers = customers.filter((customer) => {
     return (
@@ -95,17 +136,20 @@ const CustomersView = () => {
 
 
   const sortedCustomers = filteredCustomers.slice().sort((a, b) => {
-    const customerNameA =
-      customers.find((o) => o.id === a.id)?.accountName || "";
-    const customerNameB =
-      customers.find((o) => o.id === b.id)?.accountName || "";
+    const routeA = a.route.toUpperCase();
+    const routeB = b.route.toUpperCase();
 
-    // Ahora ordena según el estado si los nombres son iguales
-    if (customerNameA === customerNameB) {
-      return a.stateCustomer_id - b.stateCustomer_id;
+    const numberA = parseInt(routeA.substring(1));
+    const numberB = parseInt(routeB.substring(1));
+
+    if (numberA < numberB) {
+      return -1;
+    }
+    if (numberA > numberB) {
+      return 1;
     }
 
-    return customerNameA.localeCompare(customerNameB);
+    return routeA.localeCompare(routeB);
   });
 
   const [showDeleteModal, setShowDeleteModal] = useState(false);
@@ -134,6 +178,23 @@ const CustomersView = () => {
 
   const handleStatusChange = (e) => {
     setStatus(e.target.value);
+  };
+
+  const handleRouteChange = (e) => {
+    setSelectedRoute(e.target.value);
+  };
+
+  const groups = [
+    { id: 0, name: "No group" },
+    { id: 1, name: "Redirect" },
+    { id: 2, name: "Efoods" },
+    { id: 3, name: "Market" },
+    { id: 4, name: "UFC" },
+  ];
+
+  const getGroupNameById = (groupId) => {
+    const group = groups.find((group) => group.id === groupId);
+    return group ? group.name : "Unknown";
   };
 
 
@@ -167,6 +228,19 @@ const CustomersView = () => {
             <option value="blocked">Blocked</option>
             <option value="inactive">Inactive</option>
           </select>
+
+          <select
+            value={selectedRoute}
+            onChange={handleRouteChange}
+            className="ml-2 border p-2 rounded-md"
+          >
+            <option value="">All Routes</option>
+            {routes && routes.map((route) => (
+              <option key={route.id} value={route.name}>
+                {route.name}
+              </option>
+            ))}
+          </select>
         </div>
         <div className="flex items-center justify-center mb-20 -mt-14">
           <table className="w-[90%] bg-white rounded-2xl text-center shadow-[0_8px_30px_rgb(0,0,0,0.12)]">
@@ -174,55 +248,71 @@ const CustomersView = () => {
               <tr className="border-b-2 border-stone-100 text-dark-blue">
                 <th className="py-4 rounded-tl-lg">Name</th>
                 <th className="py-4">Telephone</th>
-                <th className="py-4">Email</th>
+                <th className="py-4">Group</th>
+                <th className="py-4">Route</th>
+                <th className="py-4">Post Code</th>
                 <th className="py-4">Status</th>
                 <th className="py-4">Delete</th>
               </tr>
             </thead>
             <tbody>
-              {sortedCustomers.map((customer) => (
-                <tr
-                  key={customer.id}
-                  className="text-dark-blue border-b-2 border-stone-100 cursor-pointer"
+              {sortedCustomers.map((customer) => {
+                const shouldShow =
+                  customer.accountName.includes(searchTerm) &&
+                  (status === 'all' ||
+                    (status === 'active' && customer.stateCustomer_id === 1) ||
+                    (status === 'inactive' && customer.stateCustomer_id === 2)) &&
+                  (!selectedRoute || customer.route === selectedRoute); // Filtrar por ruta seleccionada
 
-                >
-                  <td className="py-4"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      router.push(`/customer/${customer.accountNumber}`, undefined, { shallow: true });
-                    }}
-                  >{customer.accountName}</td>
-                  <td className="py-4"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      router.push(`/customer/${customer.accountNumber}`, undefined, { shallow: true });
-                    }}
-                  >{customer.telephone}</td>
-                  <td className="py-4"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      router.push(`/customer/${customer.accountNumber}`, undefined, { shallow: true });
-                    }}
-                  >{customer.email}</td>
-                  <td className="py-4">
-                    {customer.stateCustomer_id === 1 ? (
-                      <span style={{ color: 'green' }}>Active</span>
-                    ) : (
-                      <span style={{ color: 'red' }}>Inactive</span>
-                    )}
-                  </td>
-                  <button
-                    onClick={() => {
-                      setSelectedCustomer(customer);
-                      setShowDeleteModal(true);
-                    }}
-                    className="flex justify-center text-primary-blue font-medium hover:scale-110 mt-4 ml-6 transition-all hover:text-danger hover:border-danger"
-                  >
-                    <TrashIcon className="h-6 w-6 mr-1" />
-                    Delete
-                  </button>
-                </tr>
-              ))}
+                if (shouldShow) {
+                  return (
+                    <tr
+                      key={customer.id}
+                      className="text-dark-blue border-b-2 border-stone-100 cursor-pointer"
+                    >
+                      <td className="py-4" onClick={(e) => {
+                        e.preventDefault();
+                        router.push(`/customer/${customer.accountNumber}`, undefined, { shallow: true });
+                      }}>{customer.accountName}</td>
+                      <td className="py-4" onClick={(e) => {
+                        e.preventDefault();
+                        router.push(`/customer/${customer.accountNumber}`, undefined, { shallow: true });
+                      }}>{customer.telephone}</td>
+                      <td className="py-4" onClick={(e) => {
+                        e.preventDefault();
+                        router.push(`/customer/${customer.accountNumber}`, undefined, { shallow: true });
+                      }}>{getGroupNameById(customer.group_id)}</td>
+                      <td className="py-4" onClick={(e) => {
+                        e.preventDefault();
+                        router.push(`/customer/${customer.accountNumber}`, undefined, { shallow: true });
+                      }}>{customer.route}</td>
+                      <td className="py-4" onClick={(e) => {
+                        e.preventDefault();
+                        router.push(`/customer/${customer.accountNumber}`, undefined, { shallow: true });
+                      }}>{customer.postCode}</td>
+                      <td className="py-4">
+                        {customer.stateCustomer_id === 1 ? (
+                          <span style={{ color: 'green' }}>Active</span>
+                        ) : (
+                          <span style={{ color: 'red' }}>Inactive</span>
+                        )}
+                      </td>
+                      <button
+                        onClick={() => {
+                          setSelectedCustomer(customer);
+                          setShowDeleteModal(true);
+                        }}
+                        className="flex justify-center text-primary-blue font-medium hover:scale-110 mt-4 ml-6 transition-all hover:text-danger hover:border-danger"
+                      >
+                        <TrashIcon className="h-6 w-6 mr-1" />
+                        Delete
+                      </button>
+                    </tr>
+                  );
+                }
+
+                return null;
+              })}
             </tbody>
           </table>
         </div>

@@ -115,3 +115,8 @@ export const priceDelete =
   // Bands
 export const bandsUrl =
   "https://api.grownetapp.com/grownet/api/bands/all";
+  
+  // Routes
+export const RoutesUrl =
+  "https://api.grownetapp.com/grownet/api/deliveryRoutes/all";
+  
