@@ -538,14 +538,14 @@ export default function Table() {
                         key={index}
                         scope="col"
                         className={`py-2 px-2 bg-dark-blue rounded-lg capitalize ${column === "quantity" ||
-                            column === "Code" ||
-                            column === "VAT %" ||
-                            column === "UOM" ||
-                            column === "Net"
-                            ? "w-20"
-                            : column === "Packsize"
-                              ? "w-40"
-                              : ""
+                          column === "Code" ||
+                          column === "VAT %" ||
+                          column === "UOM" ||
+                          column === "Net"
+                          ? "w-20"
+                          : column === "Packsize"
+                            ? "w-40"
+                            : ""
                           }`}
                         onContextMenu={(e) => handleContextMenu(e)}
                         style={{
@@ -662,8 +662,8 @@ export default function Table() {
                                 type={inputTypes[column]}
                                 ref={inputRefs[column][rowIndex]}
                                 className={`pl-2 h-[30px] outline-none w-full ${inputTypes[column] === "number"
-                                    ? "hide-number-arrows"
-                                    : ""
+                                  ? "hide-number-arrows"
+                                  : ""
                                   }`}
                                 value={row[column] || ""}
                                 onChange={(e) => {

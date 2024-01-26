@@ -1,20 +1,16 @@
 "use client";
-import EditTable from "@/app/components/EditTable";
 import {
-    customerDetail,
-    customersData, customerUpdate, orderDetail,
-    restaurantsData
+    customerDetail, customerUpdate
 } from "@/app/config/urls.config";
 import RootLayout from "@/app/layout";
 import Layout from "@/app/layoutS";
-import { useTableStore } from "@/app/store/useTableStore";
 import useTokenStore from "@/app/store/useTokenStore";
 import useUserStore from "@/app/store/useUserStore";
 import { ArrowLeftIcon } from "@heroicons/react/24/outline";
 import axios from "axios";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import Swal from "sweetalert2";
 
 export const fetchCustomerDetail = async (
@@ -29,8 +25,6 @@ export const fetchCustomerDetail = async (
                 Authorization: `Bearer ${token}`,
             },
         });
-        console.log(response)
-
 
         setDetailCustomer(response.data.customer);
         setIsLoading(false);
@@ -46,7 +40,6 @@ const CustomerDetailPage = () => {
     const { user, setUser } = useUserStore();
     const [isLoading, setIsLoading] = useState(false);
     const [detailCustomer, setDetailCustomer] = useState();
-    console.log("🚀 ~ CustomerDetailPage ~ detailCustomer:", detailCustomer)
     const [accountNumber, setAccountNumber] = useState(detailCustomer ? detailCustomer.accountNumber : "");
     const [accountName, setAccountName] = useState(detailCustomer ? detailCustomer.accountName : "");
     const [emailCustomer, setEmailCustomer] = useState(detailCustomer ? detailCustomer.email : "");
@@ -75,7 +68,6 @@ const CustomerDetailPage = () => {
                 }
             }
         }
-        console.log(detailCustomer)
     }, [customerId, setDetailCustomer, token, setToken]);
 
     useEffect(() => {
@@ -111,7 +103,6 @@ const CustomerDetailPage = () => {
             stateCustomer_id: 1,
             image: ""
         };
-        console.log(postData);
         axios
             .post(`${customerUpdate}${customerId}`, postData, {
                 headers: {
@@ -119,7 +110,6 @@ const CustomerDetailPage = () => {
                 },
             })
             .then((response) => {
-                console.log(response)
                 Swal.fire({
                     position: "top-end",
                     icon: "success",

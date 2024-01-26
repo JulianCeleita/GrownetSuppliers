@@ -1,26 +1,21 @@
 "use client";
-import EditTable from "@/app/components/EditTable";
 import {
-    bandsUrl,
-    customerDetail,
-    customersData, customerSupplier, customerUpdate, orderDetail,
-    presentationsSupplierUrl,
+    bandsUrl, customerSupplier, presentationsSupplierUrl,
     priceDetail,
     priceUpdate,
     restaurantsData
 } from "@/app/config/urls.config";
 import RootLayout from "@/app/layout";
 import Layout from "@/app/layoutS";
-import { useTableStore } from "@/app/store/useTableStore";
 import useTokenStore from "@/app/store/useTokenStore";
 import useUserStore from "@/app/store/useUserStore";
 import { ArrowLeftIcon } from "@heroicons/react/24/outline";
 import axios from "axios";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
-import { useEffect, useRef, useState } from "react";
-import Swal from "sweetalert2";
+import { useEffect, useState } from "react";
 import Select from "react-select";
+import Swal from "sweetalert2";
 
 export const fetchPresentations = async (
     token,
@@ -90,7 +85,6 @@ export const fetchPriceDetail = async (
         setDetailPrice(response.data.price);
         if (response.data.price[0].bands_id == null) {
             setBands({ id: "priceOption", name: "Price" });
-            console.log("my band: ", bands)
             setShowPriceSection(true);
         } else {
             setShowPriceSection(false)
@@ -128,7 +122,6 @@ const CustomerDetailPage = () => {
 
     const handleBandSelect = (selectedOption) => {
         const selectedBand = selectedOption.value;
-        console.log("🚀 ~ handleBandSelect ~ selectedBand:", selectedBand)
         setBands(selectedBand);
 
         if (selectedBand.id === "priceOption") {
@@ -163,7 +156,6 @@ const CustomerDetailPage = () => {
 
             setBands({ id: detailPrice[0]?.bands_id, name: detailPrice[0]?.name })
         }
-        console.log(bands)
     }, [detailPrice])
 
     useEffect(() => {
@@ -317,110 +309,110 @@ const CustomerDetailPage = () => {
                         )}
                         {!isLoading && (
 
-                        <form className="text-left mt-10 w-[60%] mb-20 mx-auto" onSubmit={enviarData}>
-                            <div className="flex items-center justify-center">
-                                <h1 className="text-2xl font-bold text-dark-blue mb-2">
-                                    Edit <span className="text-primary-blue">price</span>
-                                </h1>
-                            </div>
-
-                            <div className="grid grid-cols-2 gap-3 mt-3">
-
-                                <div className="flex items-center mb-4">
-                                    <label className="mr-2">Account Number:</label>
-                                    <Select
-                                        className="w-[70%]"
-                                        instanceId
-                                        options={restaurantList.map((restaurant) => ({
-                                            value: restaurant,
-                                            label: restaurant.accountNumber,
-                                        }))}
-                                        onChange={(selectedOption) => {
-                                            setAccountNumber(selectedOption.value);
-                                            setIsDropdownVisible(false);
-                                        }}
-                                        value={{
-                                            value: accountNumber,
-                                            label:
-                                                accountNumber?.accountNumber ? accountNumber.accountNumber : detailPrice[0]?.customers_accountNumber,
-                                        }}
-                                        isSearchable
-                                    />
+                            <form className="text-left mt-10 w-[60%] mb-20 mx-auto" onSubmit={enviarData}>
+                                <div className="flex items-center justify-center">
+                                    <h1 className="text-2xl font-bold text-dark-blue mb-2">
+                                        Edit <span className="text-primary-blue">price</span>
+                                    </h1>
                                 </div>
 
+                                <div className="grid grid-cols-2 gap-3 mt-3">
 
-                                <div className="flex items-center mb-4">
-                                    <label className="mr-2">Bands:</label>
-                                    <Select
-                                        className="w-[70%]"
-                                        instanceId
-                                        options={bandList.map((band) => ({
-                                            value: band,
-                                            label: band.name,
-                                        }))}
-                                        onChange={handleBandSelect}
-
-                                        value={{
-                                            value: bands,
-                                            label: bands?.name ? bands?.name : "search",
-                                        }}
-                                        isSearchable
-                                    />
-                                </div>
-
-                                <div className="flex items-center mb-4">
-                                    <label className="mr-2">Product:</label>
-                                    <Select
-                                        className="w-[70%]"
-                                        instanceId
-                                        options={presentations?.map((presentation) => ({
-                                            value: presentation,
-                                            label: `${presentation.product_name} - ${presentation.name}`,
-                                        }))}
-                                        onChange={(selectedOption) => {
-                                            setPresentation(selectedOption.value);
-                                            setIsDropdownVisible(false);
-                                        }}
-                                        value={{
-                                            value: presentation,
-                                            label: presentation?.product_name ? `${presentation.product_name} - ${presentation.name}` : `${detailPrice[0]?.product} - ${detailPrice[0]?.presentation}`,
-                                        }}
-                                        isSearchable
-                                    />
-                                </div>
-
-                                {showPriceSection && (
                                     <div className="flex items-center mb-4">
-                                        <label className="mr-2">Price:</label>
-                                        <input
-                                            className="border p-3 rounded-md"
-                                            placeholder="31383394455"
-                                            type="number"
-                                            value={price}
-                                            onChange={(e) => setPrice(e.target.value)}
-                                            required
+                                        <label className="mr-2">Account Number:</label>
+                                        <Select
+                                            className="w-[70%]"
+                                            instanceId
+                                            options={restaurantList.map((restaurant) => ({
+                                                value: restaurant,
+                                                label: restaurant.accountNumber,
+                                            }))}
+                                            onChange={(selectedOption) => {
+                                                setAccountNumber(selectedOption.value);
+                                                setIsDropdownVisible(false);
+                                            }}
+                                            value={{
+                                                value: accountNumber,
+                                                label:
+                                                    accountNumber?.accountNumber ? accountNumber.accountNumber : detailPrice[0]?.customers_accountNumber,
+                                            }}
+                                            isSearchable
                                         />
                                     </div>
-                                )}
-                            </div>
-                            <div className="mt-3 text-center">
-                                <button
-                                    type="submit"
-                                    value="Submit"
-                                    className={`bg-primary-blue py-3 px-4 rounded-lg text-white font-medium mr-3 ${isLoading === true ? "bg-gray-500/50" : ""
-                                        }`}
-                                    disabled={isLoading}
-                                >
-                                    Edit price
-                                </button>
-                                <Link
-                                    className="py-3 px-4 rounded-lg text-primary-blue border border-primary-blue font-medium "
-                                    href="/prices"
-                                >
-                                    Cancel
-                                </Link>
-                            </div>
-                        </form>
+
+
+                                    <div className="flex items-center mb-4">
+                                        <label className="mr-2">Bands:</label>
+                                        <Select
+                                            className="w-[70%]"
+                                            instanceId
+                                            options={bandList.map((band) => ({
+                                                value: band,
+                                                label: band.name,
+                                            }))}
+                                            onChange={handleBandSelect}
+
+                                            value={{
+                                                value: bands,
+                                                label: bands?.name ? bands?.name : "search",
+                                            }}
+                                            isSearchable
+                                        />
+                                    </div>
+
+                                    <div className="flex items-center mb-4">
+                                        <label className="mr-2">Product:</label>
+                                        <Select
+                                            className="w-[70%]"
+                                            instanceId
+                                            options={presentations?.map((presentation) => ({
+                                                value: presentation,
+                                                label: `${presentation.product_name} - ${presentation.name}`,
+                                            }))}
+                                            onChange={(selectedOption) => {
+                                                setPresentation(selectedOption.value);
+                                                setIsDropdownVisible(false);
+                                            }}
+                                            value={{
+                                                value: presentation,
+                                                label: presentation?.product_name ? `${presentation.product_name} - ${presentation.name}` : `${detailPrice[0]?.product} - ${detailPrice[0]?.presentation}`,
+                                            }}
+                                            isSearchable
+                                        />
+                                    </div>
+
+                                    {showPriceSection && (
+                                        <div className="flex items-center mb-4">
+                                            <label className="mr-2">Price:</label>
+                                            <input
+                                                className="border p-3 rounded-md"
+                                                placeholder="31383394455"
+                                                type="number"
+                                                value={price}
+                                                onChange={(e) => setPrice(e.target.value)}
+                                                required
+                                            />
+                                        </div>
+                                    )}
+                                </div>
+                                <div className="mt-3 text-center">
+                                    <button
+                                        type="submit"
+                                        value="Submit"
+                                        className={`bg-primary-blue py-3 px-4 rounded-lg text-white font-medium mr-3 ${isLoading === true ? "bg-gray-500/50" : ""
+                                            }`}
+                                        disabled={isLoading}
+                                    >
+                                        Edit price
+                                    </button>
+                                    <Link
+                                        className="py-3 px-4 rounded-lg text-primary-blue border border-primary-blue font-medium "
+                                        href="/prices"
+                                    >
+                                        Cancel
+                                    </Link>
+                                </div>
+                            </form>
                         )}
 
                     </div >

@@ -9,8 +9,7 @@ import {
   TrashIcon
 } from "@heroicons/react/24/outline";
 import axios from "axios";
-import Image from "next/image";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { fetchCategories } from "../categories/page";
 import ModalDelete from "../components/ModalDelete";
 import NewProduct from "../components/NewProduct";

@@ -1,10 +1,7 @@
 import { ArrowLeftOnRectangleIcon, Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import React from "react";
-import { useRef } from "react";
-import { useLayoutEffect } from "react";
-import { useState } from "react";
+import { useLayoutEffect, useState } from "react";
 import useUserStore from "../store/useUserStore";
 
 const SideBar = () => {

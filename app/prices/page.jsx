@@ -1,13 +1,11 @@
 "use client";
-import { PlusCircleIcon, TrashIcon } from "@heroicons/react/24/outline";
+import { TrashIcon } from "@heroicons/react/24/outline";
 import axios from "axios";
-import { format } from "date-fns";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import ModalDelete from "../components/ModalDelete";
-import NewCustomer from "../components/NewCustomer";
-import { customersSupplierUrl, customersUrl, deleteCustomer, ordersSupplierUrl, ordersUrl, priceDelete, pricesUrl } from "../config/urls.config";
+import { priceDelete, pricesUrl } from "../config/urls.config";
 import Layout from "../layoutS";
 import useTokenStore from "../store/useTokenStore";
 import useUserStore from "../store/useUserStore";
@@ -27,8 +25,6 @@ export const fetchPrices = async (
                 },
             }
         );
-
-        console.log(response)
 
         const newPrice = Array.isArray(response.data.prices)
             ? response.data.prices
@@ -73,8 +69,6 @@ const PricesView = () => {
 
     const handleDeletePrice = (price) => {
         const { id } = price;
-        console.log(token)
-        console.log(id)
         axios
             .post(`${priceDelete}${id}`, null, {
                 headers: {
@@ -82,7 +76,6 @@ const PricesView = () => {
                 },
             })
             .then((response) => {
-                console.log(response)
                 setShowDeleteModal(false);
                 fetchPrices(token, user, setPrices, setIsLoading);
             })
@@ -125,23 +118,23 @@ const PricesView = () => {
 
                                 >
                                     <td className="py-4"
-                                    onClick={(e) => {
-                                        e.preventDefault();
-                                        router.push(`/price/${price.id}`, undefined, { shallow: true });
-                                    }}
+                                        onClick={(e) => {
+                                            e.preventDefault();
+                                            router.push(`/price/${price.id}`, undefined, { shallow: true });
+                                        }}
                                     >{price.customers_accountNumber
                                         }</td>
                                     <td className="py-4"
-                                    onClick={(e) => {
-                                        e.preventDefault();
-                                        router.push(`/price/${price.id}`, undefined, { shallow: true });
-                                    }}
+                                        onClick={(e) => {
+                                            e.preventDefault();
+                                            router.push(`/price/${price.id}`, undefined, { shallow: true });
+                                        }}
                                     >{price.product} - {price.presentation}</td>
                                     <td className="py-4"
-                                    onClick={(e) => {
-                                        e.preventDefault();
-                                        router.push(`/price/${price.id}`, undefined, { shallow: true });
-                                    }}
+                                        onClick={(e) => {
+                                            e.preventDefault();
+                                            router.push(`/price/${price.id}`, undefined, { shallow: true });
+                                        }}
                                     >{price.price}</td>
                                     <td>
                                         <button

@@ -1,13 +1,12 @@
 "use client";
-import { deleteSupplierUrl, suppliersUrl } from "../../app/config/urls.config";
 import {
   PencilSquareIcon,
   PlusCircleIcon,
   TrashIcon
 } from "@heroicons/react/24/outline";
 import axios from "axios";
-import Image from "next/image";
 import { useEffect, useState } from "react";
+import { deleteSupplierUrl, suppliersUrl } from "../../app/config/urls.config";
 import EditSupplier from "../components/EditSupplier";
 import ModalDelete from "../components/ModalDelete";
 import NewSupplier from "../components/NewSupplier";

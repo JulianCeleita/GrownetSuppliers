@@ -1,16 +1,15 @@
 "use client";
-import Table from "@/app/components/Table";
 import useUserStore from "@/app/store/useUserStore";
-import { ArrowLeftIcon, XMarkIcon } from "@heroicons/react/24/outline";
+import { ArrowLeftIcon } from "@heroicons/react/24/outline";
 import axios from "axios";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
+import Select from "react-select";
 import Swal from "sweetalert2";
-import { bandsUrl, createCustomer, createPrice, customersData, customerSupplier, presentationsSupplierUrl, presentationsUrl, productsUrl, restaurantsData } from "../../config/urls.config";
+import { bandsUrl, createPrice, customerSupplier, presentationsSupplierUrl, presentationsUrl, productsUrl, restaurantsData } from "../../config/urls.config";
 import Layout from "../../layoutS";
 import useTokenStore from "../../store/useTokenStore";
-import Select from "react-select";
 
 export const fetchPresentations = async (
     token,
@@ -53,7 +52,6 @@ export const fetchPresentationsSupplier = async (
             ? response.data.presentations
             : [];
         setPresentations(newPresentation);
-        console.log(newPresentation);
         setIsLoading(false);
     } catch (error) {
         console.error("Error al obtener las presentaciones:", error);
@@ -105,8 +103,6 @@ const CreatePriceView = () => {
                     },
                 });
 
-                console.log(responseRestaurants);
-
                 const sortedRestaurants = responseRestaurants.data.customers.sort(
                     (a, b) => a.accountName.localeCompare(b.accountName)
                 );
@@ -116,8 +112,6 @@ const CreatePriceView = () => {
                 console.error("Error fetching restaurants data by supplier", error);
             }
         };
-
-        console.log(restaurants);
 
         if (user.rol_name !== "AdminGrownet") {
             fetchDataBySupplier();
@@ -142,8 +136,6 @@ const CreatePriceView = () => {
                     ...sortedBands,
                 ];
 
-                console.log(sortedBands)
-
                 setBandsList(bandsWithPriceOption);
             } catch (error) {
                 console.error("Error fetching restaurants data", error);
@@ -167,7 +159,6 @@ const CreatePriceView = () => {
                 const sortedProducts = newProducts.sort((a, b) =>
                     a.name.localeCompare(b.name)
                 );
-                console.log("🚀 ~ fetchProducts ~ sortedProducts:", sortedProducts)
                 setProductsList(sortedProducts);
             } catch (error) {
                 console.error("Error al obtener los productos:", error);
@@ -205,7 +196,6 @@ const CreatePriceView = () => {
         e.preventDefault();
         let modifiedBandsId = bands.id;
         if (bands.id == "priceOption") {
-            console.log("este es con price")
             modifiedBandsId = null;
         }
         const postData = {
@@ -216,7 +206,6 @@ const CreatePriceView = () => {
             presentations_id: presentation.id,
             products_id: presentation.products_id,
         };
-        console.log(postData);
         axios
             .post(createPrice, postData, {
                 headers: {
@@ -224,7 +213,6 @@ const CreatePriceView = () => {
                 },
             })
             .then((response) => {
-                console.log(response)
                 Swal.fire({
                     position: "top-end",
                     icon: "success",
@@ -313,7 +301,6 @@ const CreatePriceView = () => {
                                     label: `${presentation.product_name} - ${presentation.name}`,
                                 }))}
                                 onChange={(selectedOption) => {
-                                    console.log(selectedOption.value)
                                     setPresentation(selectedOption.value);
                                     setIsDropdownVisible(false);
                                 }}

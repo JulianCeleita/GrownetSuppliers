@@ -1,7 +1,4 @@
 "use client";
-import { categoriesUrl, deleteCategoryUrl } from "../../app/config/urls.config";
-import useCategoryStore from "../../app/store/useCategoryStore";
-import useTokenStore from "../../app/store/useTokenStore";
 import {
   PencilSquareIcon,
   PlusCircleIcon,
@@ -9,6 +6,9 @@ import {
 } from "@heroicons/react/24/outline";
 import axios from "axios";
 import { useEffect, useState } from "react";
+import { categoriesUrl, deleteCategoryUrl } from "../../app/config/urls.config";
+import useCategoryStore from "../../app/store/useCategoryStore";
+import useTokenStore from "../../app/store/useTokenStore";
 import EditCategory from "../components/EditCategory";
 import ModalDelete from "../components/ModalDelete";
 import NewCategory from "../components/NewCategory";
