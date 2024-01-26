@@ -36,6 +36,7 @@ const CreateOrderView = () => {
   //Fecha input
   function getCurrentDate() {
     const today = new Date();
+    today.setDate(today.getDate() + 1);
     const year = today.getFullYear();
     const month = String(today.getMonth() + 1).padStart(2, "0");
     const day = String(today.getDate()).padStart(2, "0");
@@ -178,6 +179,14 @@ const CreateOrderView = () => {
     }
   };
 
+  const handleDateChange = (e) => {
+    setOrderDate(e.target.value);
+  };
+
+  const resetStates = () => {
+    setCustomers("")
+  };
+
   useEffect(() => {
     document.addEventListener("click", handleClickOutsideTotal);
     return () => {
@@ -189,6 +198,7 @@ const CreateOrderView = () => {
     <Layout>
       <div className="flex p-6 pb-0 bg-primary-blue">
         <Link
+          onClick={resetStates}
           className="flex bg-dark-blue py-3 px-4 rounded-lg text-white font-medium transition-all hover:scale-110 "
           href="/orders"
         >
@@ -280,6 +290,8 @@ const CreateOrderView = () => {
               type="date"
               className="border ml-2 p-1.5 rounded-md w-[100%] "
               min={getCurrentDate()}
+              onChange={handleDateChange}
+              value={orderDate}
             />
             <label className="ml-3">Inv. No.: </label>
             <input
