@@ -1,13 +1,11 @@
 "use client";
-import { PlusCircleIcon, TrashIcon } from "@heroicons/react/24/outline";
+import { TrashIcon } from "@heroicons/react/24/outline";
 import axios from "axios";
-import { format } from "date-fns";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import ModalDelete from "../components/ModalDelete";
-import NewCustomer from "../components/NewCustomer";
-import { customersSupplierUrl, customersUrl, deleteCustomer, ordersSupplierUrl, ordersUrl } from "../config/urls.config";
+import { customersSupplierUrl, customersUrl, deleteCustomer } from "../config/urls.config";
 import Layout from "../layoutS";
 import useTokenStore from "../store/useTokenStore";
 import useUserStore from "../store/useUserStore";
@@ -81,16 +79,13 @@ const CustomersView = () => {
   }, [setUser]);
 
   useEffect(() => {
-    // TODO: llamar la funcion de la consulta que necesite por si varia el rol
     if (user && user.rol_name === "AdminGrownet") {
       fetchCustomers(token, user, setCustomers, setIsLoading);
-      console.log("funcion pendiente")
     } else {
       fetchCustomersSupplier(token, user, setCustomers, setIsLoading);
     }
   }, [user, token]);
 
-  //   TODO: cambiar la lógica para poder filtrar por nombre del customer
   const filteredCustomers = customers.filter((customer) => {
     return (
       customer.accountName.includes(searchTerm) &&
@@ -117,8 +112,6 @@ const CustomersView = () => {
 
   const handleDeleteCustomer = (customer) => {
     const { accountNumber } = customer;
-    console.log(token)
-    console.log(accountNumber)
     axios
       .post(`${deleteCustomer}${accountNumber}`, null, {
         headers: {
@@ -126,7 +119,6 @@ const CustomersView = () => {
         },
       })
       .then((response) => {
-        console.log(response)
         setShowDeleteModal(false);
         if (user && user.rol_name === "AdminGrownet") {
           fetchCustomers(token, setCustomers, setIsLoading);

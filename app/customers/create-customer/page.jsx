@@ -1,17 +1,13 @@
 "use client";
-import Table from "@/app/components/Table";
-import { ArrowLeftIcon, XMarkIcon } from "@heroicons/react/24/outline";
+import { ArrowLeftIcon } from "@heroicons/react/24/outline";
 import axios from "axios";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useEffect, useRef, useState } from "react";
-import Select from "react-select";
+import { useState } from "react";
 import Swal from "sweetalert2";
-import { createCustomer, customersData, customerSupplier, restaurantsData } from "../../config/urls.config";
+import { createCustomer } from "../../config/urls.config";
 import Layout from "../../layoutS";
-import { useTableStore } from "../../store/useTableStore";
 import useTokenStore from "../../store/useTokenStore";
-import useUserStore from "../../store/useUserStore";
 
 const CreateOrderView = () => {
     const router = useRouter();
@@ -48,7 +44,6 @@ const CreateOrderView = () => {
             stateCustomer_id: 1,
             image: ""
         };
-        console.log(postData);
         axios
             .post(createCustomer, postData, {
                 headers: {
@@ -56,7 +51,6 @@ const CreateOrderView = () => {
                 },
             })
             .then((response) => {
-                console.log(response)
                 Swal.fire({
                     position: "top-end",
                     icon: "success",

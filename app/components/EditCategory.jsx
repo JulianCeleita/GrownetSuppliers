@@ -1,8 +1,8 @@
-import { updateCategoryUrl } from "../../app/config/urls.config";
-import useTokenStore from "../../app/store/useTokenStore";
 import { ExclamationCircleIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import axios from "axios";
-import React, { useState } from "react";
+import { useState } from "react";
+import { updateCategoryUrl } from "../../app/config/urls.config";
+import useTokenStore from "../../app/store/useTokenStore";
 import { fetchCategories } from "../categories/page";
 function EditCategory({
   isvisible,

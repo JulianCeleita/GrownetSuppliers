@@ -1,15 +1,14 @@
 "use client";
-import "react-calendar/dist/Calendar.css";
+import { TrashIcon } from "@heroicons/react/24/outline";
 import axios from "axios";
 import { format } from "date-fns";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Calendar from "react-calendar";
+import "react-calendar/dist/Calendar.css";
 import { closeDay, openDay } from "../config/urls.config";
 import Layout from "../layoutS";
 import useTokenStore from "../store/useTokenStore";
 import useUserStore from "../store/useUserStore";
-import { TrashIcon, XMarkIcon } from "@heroicons/react/24/outline";
-import { useEffect } from "react";
 
 
 function CalendarView() {
@@ -40,7 +39,7 @@ function CalendarView() {
         const file = event.target.files[0];
         setCsvFile(file);
         setFileName(file ? file.name : "");
-    }; 
+    };
 
     const handleUpload = () => {
         if (csvFile) {

@@ -3,7 +3,7 @@ import {
   XMarkIcon
 } from "@heroicons/react/24/outline";
 import axios from "axios";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import {
   familiesUrl,
   uomUrl,
