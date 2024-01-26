@@ -155,7 +155,7 @@ export default function Table() {
           .filter((item) => item.code !== null)
           .map((item) => ({
             ...item,
-            concatenatedName: `${item.productName} - ${item.presentationName}`,
+            concatenatedName: `${item.code} - ${item.productName} - ${item.presentationName}`,
           }))
           .sort((a, b) => a.concatenatedName.localeCompare(b.concatenatedName));
 
@@ -395,28 +395,21 @@ export default function Table() {
       e.preventDefault();
 
       if (
-        (fieldName === "Code" && currentValues["Code"].trim() !== "") ||
-        (fieldName === "Description" &&
-          currentValues["Description"].trim() !== "")
+        (fieldName === "Code" && currentValues["Code"]?.trim() !== "") ||
+        (fieldName === "Description" && currentValues["Description"].trim() !== "")
       ) {
         fetchProductCode(rowIndex);
       }
 
-      if (fieldName === "Net") {
-        const isLastRow = rowIndex === rows.length - 1;
-        if (isLastRow) {
-          addNewRow();
-          return;
-        }
+      const nextRowIndex = rowIndex + 1;
+      if (nextRowIndex < rows.length) {
+        form.current[nextRowIndex].querySelector('input[type="text"]')?.focus();
       } else {
-        const nextFieldName = getNextFieldName(fieldName, rowIndex);
-        const nextFieldRefs = inputRefs[nextFieldName];
-        if (nextFieldRefs && nextFieldRefs[rowIndex]) {
-          nextFieldRefs[rowIndex].current.focus();
-        }
+        addNewRow();
       }
     }
   };
+
 
   const fetchProductCode = async (rowIndex) => {
     try {

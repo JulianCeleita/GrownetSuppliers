@@ -216,7 +216,7 @@ export default function EditTable({ orderId, dateDelivery }) {
           .filter((item) => item.code !== null)
           .map((item) => ({
             ...item,
-            concatenatedName: `${item.productName} - ${item.presentationName}`,
+            concatenatedName: `${item.code} - ${item.productName} - ${item.presentationName}`,
           }))
           .sort((a, b) => a.concatenatedName.localeCompare(b.concatenatedName));
 
