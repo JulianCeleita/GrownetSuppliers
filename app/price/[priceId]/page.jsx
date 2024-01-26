@@ -415,7 +415,7 @@ const CustomerDetailPage = () => {
                                 </button>
                                 <Link
                                     className="py-3 px-4 rounded-lg text-primary-blue border border-primary-blue font-medium "
-                                    href="/customers"
+                                    href="/prices"
                                 >
                                     Cancel
                                 </Link>
