@@ -63,7 +63,6 @@ export const fetchPresentationsSupplier = async (
             ? response.data.presentations
             : [];
         setPresentations(newPresentation);
-        console.log(newPresentation);
         setIsLoading(false);
     } catch (error) {
         console.error("Error al obtener las presentaciones:", error);
@@ -77,7 +76,8 @@ export const fetchPriceDetail = async (
     setIsLoading,
     priceId,
     setShowPriceSection,
-    setBands
+    setBands,
+    bands
 ) => {
     try {
         const response = await axios.get(`${priceDetail}${priceId}`, {
@@ -85,13 +85,15 @@ export const fetchPriceDetail = async (
                 Authorization: `Bearer ${token}`,
             },
         });
-        console.log(response)
 
 
         setDetailPrice(response.data.price);
-        setShowPriceSection(!response.data.price.bands_id);
-        if (!response.data.price.bands_id) {
+        if (response.data.price[0].bands_id == null) {
             setBands({ id: "priceOption", name: "Price" });
+            console.log("my band: ",bands)
+            setShowPriceSection(true);
+        } else {
+            setShowPriceSection(false)
         }
         setIsLoading(false);
     } catch (error) {
@@ -109,7 +111,7 @@ const CustomerDetailPage = () => {
     const [detailPrice, setDetailPrice] = useState({});
     const [accountNumber, setAccountNumber] = useState(null);
     const [price, setPrice] = useState("");
-    const [bands, setBands] = useState("");
+    const [bands, setBands] = useState({ id: "priceOption", name: "Price" });
     const [product, setProduct] = useState("");
     const [productsList, setProductsList] = useState("");
     const [presentation, setPresentation] = useState("");
@@ -146,30 +148,20 @@ const CustomerDetailPage = () => {
             if (storedToken != null) {
                 setToken(storedToken);
                 if (token !== null && priceId !== undefined) {
-                    fetchPriceDetail(token, setDetailPrice, setIsLoading, priceId, setShowPriceSection, setBands);
+                    fetchPriceDetail(token, setDetailPrice, setIsLoading, priceId, setShowPriceSection, setBands, bands);
                 }
             }
         }
     }, [token, setToken]);
 
     useEffect(() => {
-        if (typeof detailPrice === "object") {
-            console.log(detailPrice);
-
-        }
-        console.log("🚀 ~ useEffect ~ typeof detailPrice:", typeof detailPrice)
-        console.log("🚀 ~ useEffect ~ detailPrice?.price:", detailPrice[0]?.price)
         setAccountNumber(detailPrice[0]?.customers_accountNumber)
         setPresentation(detailPrice[0]?.presentations_id)
         setProduct(detailPrice[0]?.products_id)
         setPrice(detailPrice[0]?.price)
-        console.log(accountNumber);
-        console.log(presentation);
-        console.log(product);
-        console.log(price);
-
-        console.log("🚀 ~ useEffect ~ detailPrice[0]?.customers_accountNumber:", detailPrice[0]?.customers_accountNumber)
-    }, [detailPrice])
+        setBands({id: detailPrice[0]?.bands_id, name: detailPrice[0]?.name})
+        console.log(bands)
+        }, [detailPrice])
 
     useEffect(() => {
         const fetchData = async () => {
@@ -198,7 +190,6 @@ const CustomerDetailPage = () => {
                     },
                 });
 
-                console.log(responseRestaurants);
 
                 const sortedRestaurants = responseRestaurants.data.customers.sort(
                     (a, b) => a.accountName.localeCompare(b.accountName)
@@ -210,7 +201,6 @@ const CustomerDetailPage = () => {
             }
         };
 
-        console.log(restaurants);
 
         if (user.rol_name !== "AdminGrownet") {
             fetchDataBySupplier();
@@ -230,7 +220,6 @@ const CustomerDetailPage = () => {
                     (a, b) => a.name.localeCompare(b.name)
                 );
 
-                console.log(sortedBands)
                 const bandsWithPriceOption = [
                     { id: "priceOption", name: "Price" },
                     ...sortedBands,
@@ -259,23 +248,26 @@ const CustomerDetailPage = () => {
 
     useEffect(() => {
         setHasMounted(true);
+        console.log(bands.name)
     }, []);
 
     const enviarData = (e) => {
         e.preventDefault();
         let modifiedBandsId = bands.id;
+        let modifiedPrice = price;
+        if (showPriceSection == false) {
+            modifiedPrice = null
+        }
         if (bands.id == "priceOption") {
-            console.log("este es con price")
             modifiedBandsId = null;
         }
         const postData = {
-            customers_accountNumber: accountNumber.accountNumber,
-            price: price,
+            customers_accountNumber: accountNumber.accountNumber ? accountNumber.customers_accountNumber : detailPrice[0]?.customers_accountNumber,
+            price: modifiedPrice,
             bands_id: modifiedBandsId,
-            presentations_id: presentation.id,
-            products_id: presentation.products_id,
+            presentations_id: presentation.id ? presentation.id : detailPrice[0]?.presentations_id,
+            products_id: presentation.products_id ? presentation.products_id : detailPrice[0]?.products_id,
         };
-        console.log(postData);
         axios
             .post(`${priceUpdate}${priceId}`, postData, {
                 headers: {
@@ -283,11 +275,10 @@ const CustomerDetailPage = () => {
                 },
             })
             .then((response) => {
-                console.log(response)
                 Swal.fire({
                     position: "top-end",
                     icon: "success",
-                    title: "Client update successfully",
+                    title: "Price update successfully",
                     showConfirmButton: false,
                     timer: 1500
                 });
@@ -320,7 +311,7 @@ const CustomerDetailPage = () => {
                         <form className="text-left mt-10 w-[60%] mb-20 mx-auto" onSubmit={enviarData}>
                             <div className="flex items-center justify-center">
                                 <h1 className="text-2xl font-bold text-dark-blue mb-2">
-                                    Add <span className="text-primary-blue">new price</span>
+                                    Edit <span className="text-primary-blue">price</span>
                                 </h1>
                             </div>
                             <div className="grid grid-cols-2 gap-3 mt-3">
@@ -360,7 +351,7 @@ const CustomerDetailPage = () => {
                                         onChange={handleBandSelect}
                                         value={{
                                             value: bands,
-                                            label: bands?.name ? bands.name : detailPrice[0]?.name,
+                                            label: bands?.name ? bands?.name : "search",
                                         }}
                                         isSearchable
                                     />
@@ -376,7 +367,6 @@ const CustomerDetailPage = () => {
                                             label: `${presentation.product_name} - ${presentation.name}`,
                                         }))}
                                         onChange={(selectedOption) => {
-                                            console.log(selectedOption.value)
                                             setPresentation(selectedOption.value);
                                             setIsDropdownVisible(false);
                                         }}
@@ -410,7 +400,7 @@ const CustomerDetailPage = () => {
                                         }`}
                                     disabled={isLoading}
                                 >
-                                    Add price
+                                    Edit price
                                 </button>
                                 <Link
                                     className="py-3 px-4 rounded-lg text-primary-blue border border-primary-blue font-medium "
