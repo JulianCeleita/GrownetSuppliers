@@ -100,9 +100,8 @@ export const customerUpdate =
 export const deleteCustomer =
   "https://api.grownetapp.com/grownet/api/customers/deletecustomersupplier/";
 
-  // Prices
-export const pricesUrl =
-  "https://api.grownetapp.com/grownet/api/prices/all";
+// Prices
+export const pricesUrl = "https://api.grownetapp.com/grownet/api/prices/all";
 export const createPrice =
   "https://api.grownetapp.com/grownet/api/prices/create";
 export const priceDetail =
@@ -112,11 +111,13 @@ export const priceUpdate =
 export const priceDelete =
   "https://api.grownetapp.com/grownet/api/prices/delete/";
 
-  // Bands
-export const bandsUrl =
-  "https://api.grownetapp.com/grownet/api/bands/all";
-  
-  // Routes
-export const RoutesUrl =
+// Bands
+export const bandsUrl = "https://api.grownetapp.com/grownet/api/bands/all";
+
+// Routes
+export const routesUrl =
   "https://api.grownetapp.com/grownet/api/deliveryRoutes/all";
-  
+
+// Groups
+export const groupsUrl =
+  "https://api.grownetapp.com/grownet/api/group/all";
