@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import ModalDelete from "../components/ModalDelete";
-import { customersSupplierUrl, customersUrl, deleteCustomer, RoutesUrl } from "../config/urls.config";
+import { customersSupplierUrl, customersUrl, deleteCustomer, routesUrl } from "../config/urls.config";
 import Layout from "../layoutS";
 import useTokenStore from "../store/useTokenStore";
 import useUserStore from "../store/useUserStore";
@@ -52,8 +52,6 @@ export const fetchCustomersSupplier = async (
       }
     );
 
-    console.log(response)
-
     const newCustomer = Array.isArray(response.data.customers)
       ? response.data.customers
       : [];
@@ -71,14 +69,13 @@ export const fetchRoutes = async (
 ) => {
   try {
     const response = await axios.get(
-      RoutesUrl,
+      routesUrl,
       {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       }
     );
-    console.log(response);
 
     const newRoute = Array.isArray(response.data.routes)
       ? response.data.routes
@@ -119,7 +116,6 @@ const CustomersView = () => {
 
 
   useEffect(() => {
-    console.log("routes", routes);
     const routesMatchingSearchTerm = routes.filter((route) =>
       route.name.toLowerCase().includes(searchTerm)
     );

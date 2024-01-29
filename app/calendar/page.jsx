@@ -74,7 +74,6 @@ function CalendarView() {
             });
 
         } catch (error) {
-            // Maneja los errores de la solicitud
             console.error("Error al enviar la solicitud POST:", error);
         }
     };

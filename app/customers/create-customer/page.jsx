@@ -1,13 +1,66 @@
 "use client";
+import useUserStore from "@/app/store/useUserStore";
 import { ArrowLeftIcon } from "@heroicons/react/24/outline";
 import axios from "axios";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Swal from "sweetalert2";
-import { createCustomer } from "../../config/urls.config";
+import { createCustomer, groupsUrl, routesUrl } from "../../config/urls.config";
 import Layout from "../../layoutS";
 import useTokenStore from "../../store/useTokenStore";
+
+export const fetchRoutes = async (
+    token,
+    user,
+    setRoutes,
+    setIsLoading
+) => {
+    try {
+        const response = await axios.get(
+            routesUrl,
+            {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            }
+        );
+
+        const newRoute = Array.isArray(response.data.routes)
+            ? response.data.routes
+            : [];
+        setRoutes(newRoute);
+        setIsLoading(false);
+    } catch (error) {
+        console.error("Error al obtener los routes:", error);
+    }
+};
+
+export const fetchGroups = async (
+    token,
+    user,
+    setGroups,
+    setIsLoading
+) => {
+    try {
+        const response = await axios.get(
+            groupsUrl,
+            {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            }
+        );
+
+        const newGroup = Array.isArray(response.data.groups)
+            ? response.data.groups
+            : [];
+        setGroups(newGroup);
+        setIsLoading(false);
+    } catch (error) {
+        console.error("Error al obtener los groups:", error);
+    }
+};
 
 const CreateOrderView = () => {
     const router = useRouter();
@@ -22,10 +75,84 @@ const CreateOrderView = () => {
     const [postCode, setPostCode] = useState("");
     const [specialInstructions, setSpecialInstructions] = useState("");
     const [selectedImage, setSelectedImage] = useState(null);
+    const [mainContact, setMainContact] = useState("");
+    const [accountEmail, setAccountEmail] = useState("");
+    const [drop, setDrop] = useState("");
+    const [crates, setCrates] = useState("");
+    const [cratesSelected, setCratesSelected] = useState("");
+    const [vip, setVip] = useState("");
+    const [vipSelected, setVipSelected] = useState("");
+    const [deliveryWindow, setDeliveryWindow] = useState("");
+    const [group, setGroup] = useState("");
+    const [route, setRoute] = useState("");
+    const [routes, setRoutes] = useState([]);
+    const [groups, setGroups] = useState([]);
+    const [selectedRoute, setSelectedRoute] = useState(null);
+    const [selectedGroup, setSelectedGroup] = useState(null);
+    const { user, setUser } = useUserStore();
+    const [startHour, setStartHour] = useState('');
+    const [endHour, setEndHour] = useState('');
+    const [error, setError] = useState('');
+
+    useEffect(() => {
+        fetchRoutes(token, user, setRoutes, setIsLoading);
+        fetchGroups(token, user, setGroups, setIsLoading);
+    }, [])
+
 
     const handleImageChange = (e) => {
         const file = e.target.files[0];
         setSelectedImage(file);
+    };
+    const handleRouteChange = (e) => {
+        setSelectedRoute(e.target.value);
+    };
+    const handleGroupChange = (e) => {
+        setSelectedGroup(e.target.value);
+    };
+
+    const handleCratesChange = (e) => {
+        const value = e.target.value;
+        setCrates(value);
+        const isYes = value === 'yes';
+        setCratesSelected(isYes);
+    };
+
+    const handleVipChange = (e) => {
+        const value = e.target.value;
+        setVip(value);
+        const isYes = value === 'yes';
+        setVipSelected(isYes);
+    };
+
+    const validateHourFormat = (input) => {
+        return /^([01]\d|2[0-3]):([0-5]\d):([0-5]\d)$/.test(input) || input === '';
+    };
+
+    const handleStartHourChange = (e) => {
+        const input = e.target.value;
+        setStartHour(input);
+        setError(validateHourFormat(input) ? '' : 'Wrong time format');
+    };
+
+    const handleEndHourChange = (e) => {
+        const input = e.target.value;
+        setEndHour(input);
+        setError(validateHourFormat(input) ? '' : 'Wrong time format');
+    };
+
+    const handleBlur = () => {
+        if (!validateHourFormat(startHour) || !validateHourFormat(endHour)) {
+            setError('Both fields must be in valid time format');
+        } else {
+            setError('');
+        }
+    };
+
+    const handleDropChange = (e) => {
+        const inputValue = e.target.value;
+        const newValue = inputValue <= 100 ? inputValue : 100;
+        setDrop(newValue);
     };
 
     const enviarData = (e) => {
@@ -42,7 +169,15 @@ const CreateOrderView = () => {
             email: emailCustomer,
             marketing_email: marketingEmail,
             stateCustomer_id: 1,
-            image: ""
+            image: "",
+            main_contact: mainContact,
+            account_email: accountEmail,
+            drop: drop,
+            crates: cratesSelected,
+            vip: vipSelected,
+            delivery_window: `${startHour} - ${endHour}`,
+            group_id: selectedGroup,
+            route_id: selectedRoute
         };
         axios
             .post(createCustomer, postData, {
@@ -80,7 +215,7 @@ const CreateOrderView = () => {
                 </Link>
             </div>
             <div className="flex flex-col items-center justify-center">
-                <form className="text-left mt-10 w-[50%] mb-20" onSubmit={enviarData}>
+                <form className="text-left mt-10 mx-auto w-[80%] mb-20" onSubmit={enviarData}>
                     <div className="flex items-center justify-center">
                         <h1 className="text-2xl font-bold text-dark-blue mb-2">
                             Add <span className="text-primary-blue">new customer</span>
@@ -90,7 +225,7 @@ const CreateOrderView = () => {
                         <div className="flex items-center mb-4">
                             <label className="mr-2">Account Name:</label>
                             <input
-                                className="border p-3 rounded-md"
+                                className="border p-3 rounded-md w-[60%]"
                                 placeholder="Rest100"
                                 type="text"
                                 maxLength={45}
@@ -103,7 +238,7 @@ const CreateOrderView = () => {
                         <div className="flex items-center mb-4">
                             <label className="mr-2">Account Number:</label>
                             <input
-                                className="border p-3 rounded-md"
+                                className="border p-3 rounded-md w-[60%]"
                                 placeholder="RK100"
                                 type="text"
                                 maxLength={15}
@@ -117,7 +252,7 @@ const CreateOrderView = () => {
                         <div className="flex items-center mb-4">
                             <label className="mr-2">Email:</label>
                             <input
-                                className="border p-3 rounded-md"
+                                className="border p-3 rounded-md w-[60%]"
                                 placeholder="test@grownet.com"
                                 type="email"
                                 value={emailCustomer}
@@ -130,7 +265,7 @@ const CreateOrderView = () => {
                         <div className="flex items-center mb-4">
                             <label className="mr-2">Marketing Email:</label>
                             <input
-                                className="border p-3 rounded-md"
+                                className="border p-3 rounded-md w-[60%]"
                                 placeholder="test_marketing@grownet.com"
                                 type="email"
                                 value={marketingEmail}
@@ -142,7 +277,7 @@ const CreateOrderView = () => {
                         <div className="flex items-center mb-4">
                             <label className="mr-2">Address:</label>
                             <input
-                                className="border p-3 rounded-md"
+                                className="border p-3 rounded-md w-[60%]"
                                 placeholder="Cl prueba"
                                 type="text"
                                 maxLength={100}
@@ -155,7 +290,7 @@ const CreateOrderView = () => {
                         <div className="flex items-center mb-4">
                             <label className="mr-2">Telephone number:</label>
                             <input
-                                className="border p-3 rounded-md"
+                                className="border p-3 rounded-md w-[60%]"
                                 placeholder="31383394455"
                                 type="number"
                                 value={telephoneCustomer}
@@ -164,14 +299,10 @@ const CreateOrderView = () => {
                             />
                         </div>
 
-
-
-
-
                         <div className="flex items-center mb-4">
                             <label className="mr-2">Post Code:</label>
                             <input
-                                className="border p-3 rounded-md"
+                                className="border p-3 rounded-md w-[60%]"
                                 placeholder="170001"
                                 type="text"
                                 maxLength={45}
@@ -184,7 +315,7 @@ const CreateOrderView = () => {
                         <div className="flex items-center mb-4">
                             <label className="mr-2">Special Instructions:</label>
                             <input
-                                className="border p-3 rounded-md"
+                                className="border p-3 rounded-md w-[60%]"
                                 placeholder="Some special instruction"
                                 type="text"
                                 maxLength={100}
@@ -192,6 +323,123 @@ const CreateOrderView = () => {
                                 onChange={(e) => setSpecialInstructions(e.target.value)}
                                 required
                             />
+                        </div>
+                        <div className="flex items-center mb-4">
+                            <label className="mr-2">Main Contact:</label>
+                            <input
+                                className="border p-3 rounded-md w-[60%]"
+                                placeholder="Your name"
+                                type="text"
+                                maxLength={100}
+                                value={mainContact}
+                                onChange={(e) => setMainContact(e.target.value)}
+                                required
+                            />
+                        </div>
+                        <div className="flex items-center mb-4">
+                            <label className="mr-2">Account Email:</label>
+                            <input
+                                className="border p-3 rounded-md w-[60%]"
+                                placeholder="email@gmail.com"
+                                type="email"
+                                maxLength={100}
+                                value={accountEmail}
+                                onChange={(e) => setAccountEmail(e.target.value)}
+                                required
+                            />
+                        </div>
+                        <div className="flex items-center mb-4">
+                            <label className="mr-2">Drop:</label>
+                            <input
+                                className="border p-3 rounded-md"
+                                placeholder="5"
+                                type="number"
+                                maxLength={3}
+                                value={drop}
+                                onChange={handleDropChange}
+                                required
+                            />
+                        </div>
+                        <div className="flex items-center mb-4">
+                            <label className="mr-2">Crates:</label>
+                            <select
+                                value={crates}
+                                onChange={handleCratesChange}
+                                className="ml-2 border p-2 rounded-md"
+                            >
+                                <option value="">Select Option</option>
+                                <option key="yes" value="yes">Yes</option>
+                                <option key="no" value="no">No</option>
+                            </select>
+                        </div>
+                        <div className="flex items-center mb-4">
+                            <label className="mr-2">VIP:</label>
+                            <select
+                                value={vip}
+                                onChange={handleVipChange}
+                                className="ml-2 border p-2 rounded-md"
+                            >
+                                <option value="">Select Option</option>
+                                <option key="yes" value="yes">Yes</option>
+                                <option key="no" value="no">No</option>
+                            </select>
+                        </div>
+                        <div className="flex items-center mb-4">
+                            <label className="mr-2">Delivery Window:</label>
+                            <div>
+                                <input
+                                    className="border p-3 rounded-md w-[30%]"
+                                    placeholder="hh:mm:ss"
+                                    type="text"
+                                    maxLength={8}
+                                    value={startHour}
+                                    onChange={handleStartHourChange}
+                                    onBlur={handleBlur}
+                                    required
+                                />
+                                <span className="mx-2">-</span>
+                                <input
+                                    className="border p-3 rounded-md w-[30%]"
+                                    placeholder="hh:mm:ss"
+                                    type="text"
+                                    maxLength={8}
+                                    value={endHour}
+                                    onChange={handleEndHourChange}
+                                    onBlur={handleBlur}
+                                    required
+                                />
+                            </div>
+                            {error && <p className="text-red-500">{error}</p>}
+                        </div>
+                        <div className="flex items-center mb-4">
+                            <label className="mr-2">Group:</label>
+                            <select
+                                value={selectedGroup}
+                                onChange={handleGroupChange}
+                                className="ml-2 border p-2 rounded-md"
+                            >
+                                <option value="">Select Group</option>
+                                {groups && groups.map((group) => (
+                                    <option key={group.id} value={group.id}>
+                                        {group.group}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
+                        <div className="flex items-center mb-4">
+                            <label className="mr-2">Route:</label>
+                            <select
+                                value={selectedRoute}
+                                onChange={handleRouteChange}
+                                className="ml-2 border p-2 rounded-md"
+                            >
+                                <option value="">Select Route</option>
+                                {routes && routes.map((route) => (
+                                    <option key={route.id} value={route.id}>
+                                        {route.name}
+                                    </option>
+                                ))}
+                            </select>
                         </div>
                     </div>
                     <div className="mt-3 text-center">
