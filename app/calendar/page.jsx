@@ -103,7 +103,7 @@ function CalendarView() {
     return (
         <Layout>
             <div>
-                <div className="flex justify-between p-8 pb-20 bg-primary-blue">
+                <div className="flex justify-between p-8 bg-primary-blue">
                     <h1 className="text-2xl text-white font-semibold">Calendar view</h1>
                 </div>
                 <div className="flex flex-col items-center justify-center -mt-52 h-screen">

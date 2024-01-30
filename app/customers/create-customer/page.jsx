@@ -206,7 +206,7 @@ const CreateOrderView = () => {
 
     return (
         <Layout>
-            <div className="flex justify-between p-8 pb-20 bg-primary-blue">
+            <div className="flex justify-between p-8 bg-primary-blue">
                 <Link
                     className="flex bg-dark-blue py-3 px-4 rounded-lg text-white font-medium transition-all hover:scale-110 "
                     href="/customers"

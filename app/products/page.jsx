@@ -78,7 +78,7 @@ function Products() {
   return (
     <Layout>
       <div>
-        <div className="flex justify-between p-8 pb-20 bg-primary-blue">
+        <div className="flex justify-between p-8 bg-primary-blue">
           <h1 className="text-2xl text-white font-semibold">Products list</h1>
           <button
             className="flex bg-green py-3 px-4 rounded-lg text-white font-medium hover:bg-dark-blue hover:scale-110 "
@@ -89,7 +89,7 @@ function Products() {
             New product
           </button>
         </div>
-        <div className="flex items-center justify-center mb-20 -mt-14">
+        <div className="flex items-center justify-center mb-20">
           <table className="w-[90%] bg-white rounded-2xl text-center shadow-[0_8px_30px_rgb(0,0,0,0.12)] mb-8">
             <thead className="sticky top-0 bg-white shadow-[0px_11px_15px_-3px_#edf2f7] ">
               <tr className="border-b-2 border-stone-100 text-dark-blue ">
