@@ -125,7 +125,7 @@ const CustomersView = () => {
 
   const filteredCustomers = customers.filter((customer) => {
     return (
-      customer.accountName.includes(searchTerm) &&
+      customer.accountName.toLowerCase().includes(searchTerm.toLowerCase()) &&
       (status === 'all' || (status === 'active' && customer.stateCustomer_id === 1) || (status === 'inactive' && customer.stateCustomer_id === 2))
     );
   });
