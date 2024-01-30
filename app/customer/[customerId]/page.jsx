@@ -26,7 +26,6 @@ export const fetchCustomerDetail = async (
             },
         });
         
-        console.log("🚀 ~ response:", response.data.customer)
         setDetailCustomer(response.data.customer);
         setIsLoading(false);
     } catch (error) {
@@ -254,7 +253,6 @@ const CustomerDetailPage = () => {
             group_id: selectedGroup,
             route_id: parseInt(selectedRoute)
         };
-        console.log("🚀 ~ enviarData ~ postData:", postData)
         axios
             .post(`${customerUpdate}${customerId}`, postData, {
                 headers: {
@@ -262,7 +260,6 @@ const CustomerDetailPage = () => {
                 },
             })
             .then((response) => {
-                console.log("🚀 ~ .then ~ response:", response)
                 Swal.fire({
                     position: "top-end",
                     icon: "success",
