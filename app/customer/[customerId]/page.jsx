@@ -324,15 +324,7 @@ const CustomerDetailPage = () => {
 
                                     <div className="flex items-center mb-4">
                                         <label className="mr-2">Account Number:</label>
-                                        <input
-                                            className="border p-3 rounded-md w-[60%]"
-                                            placeholder="RK100"
-                                            type="text"
-                                            maxLength={15}
-                                            value={accountNumber}
-                                            onChange={(e) => setAccountNumber(e.target.value)}
-                                            required
-                                        />
+                                        <h4 className="underline decoration-2 decoration-green">{accountNumber}</h4>
                                     </div>
 
 
