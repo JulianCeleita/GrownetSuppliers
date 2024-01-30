@@ -1,8 +1,9 @@
 import { ArrowLeftOnRectangleIcon, Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useLayoutEffect, useState } from "react";
+import { Fragment, useLayoutEffect, useState } from "react";
 import useUserStore from "../store/useUserStore";
+import { Dialog, Transition } from '@headlessui/react';
 
 const SideBar = () => {
     const router = useRouter();
@@ -30,218 +31,258 @@ const SideBar = () => {
     }
 
     useLayoutEffect(() => {
-        if (open) {
-            addBodyClass('ml-80')
-        } else {
-            removeBodyClass('ml-80')
-        }
+        // if (open) {
+        //     addBodyClass('ml-80')
+        // } else {
+        //     removeBodyClass('ml-80')
+        // }
     }, [open])
 
     return (
-        <div className="py-3 absolute top-0 left-0 z-50">
+        <div>
             <button className={`${open && "hidden"} ml-4`} onClick={() => setOpen(true)}>
                 <Bars3Icon className="h-10 w-10 mr-6 text-white font-bold" />
             </button>
+            <Transition.Root show={open} as={Fragment}>
+                <Dialog as="div" className="fixed inset-0 overflow-hidden z-10" onClose={setOpen}>
+                    <Transition.Child
+                        as={Fragment}
+                        enter="ease-in-out duration-500"
+                        enterFrom="opacity-0"
+                        enterTo="opacity-100"
+                        leave="ease-in-out duration-500"
+                        leaveFrom="opacity-100"
+                        leaveTo="opacity-0"
+                    >
+                        <div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" />
+                    </Transition.Child>
 
-            <div className={`${!open && "hidden"} min-h-screen w-full fixed top-0 left-0 right-0`}>
-                <div className={`${open ? "w-80" : "w-0"} bg-primary-blue border-white min-h-screen w-80 fixed top-0 left-0`}>
-                    <div className={`${!open && "hidden"} pt-3`}>
-                        <button className="ml-4 text-white" onClick={() => setOpen(false)}>
-                            <XMarkIcon className="h-8 w-8" />
-                        </button>
-                        <div className="pl-4">
-                            <Link
-                                href="/users"
-                                className="relative group text-white rounded m-2 py-2 hover:text-light-green hover:scale-110"
-                            >
-                                <h3
-                                    className={activeLink === "users" ? "active" : ""}
-                                    onClick={() => setActiveLink("users")}
-                                >
-                                    Users
-                                </h3>
-
-                                {activeLink === "users" && (
-                                    <span className="absolute bottom-0 left-0 h-0.5 bg-light-green w-full transition-all duration-300 ease-in-out"></span>
-                                )}
-
-                                {activeLink !== "users" && (
-                                    <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-white group-hover:w-full transition-all duration-300 ease-in-out"></span>
-                                )}
-                            </Link>
-                            <Link
-                                href="/orders"
-                                className="relative group text-white rounded m-2 py-2 hover:text-light-green hover:scale-110"
-                            >
-                                <h3
-                                    className={activeLink === "orders" ? "active" : ""}
-                                    onClick={() => setActiveLink("orders")}
-                                >
-                                    Orders
-                                </h3>
-
-                                {activeLink === "orders" && (
-                                    <span className="absolute bottom-0 left-0 h-0.5 bg-light-green w-full transition-all duration-300 ease-in-out"></span>
-                                )}
-
-                                {activeLink !== "orders" && (
-                                    <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-white group-hover:w-full transition-all duration-300 ease-in-out"></span>
-                                )}
-                            </Link>
-                            <Link
-                                href="/presentations"
-                                className="relative group text-white rounded m-2 py-2 hover:text-light-green hover:scale-110"
-                            >
-                                <div
-                                    className={activeLink === "presentations" ? "active" : ""}
-                                    onClick={() => setActiveLink("presentations")}
-                                >
-                                    Presentations
+                    <Transition.Child
+                        as={Fragment}
+                        enter="transform ease-in-out duration-500"
+                        enterFrom="-translate-x-full"
+                        enterTo="translate-x-0"
+                        leave="transform ease-in-out duration-500"
+                        leaveFrom="translate-x-0"
+                        leaveTo="-translate-x-full"
+                    >
+                        <div className="absolute inset-y-0 left-0 flex max-w-full pr-10">
+                            <Dialog.Panel className="pointer-events-auto relative w-screen max-w-md">
+                                <div className="absolute right-0 top-0 -mr-8 flex pl-2 pt-4">
+                                    <button
+                                        type="button"
+                                        className="relative rounded-md text-gray-300 hover:text-white focus:outline-none focus:ring-2 focus:ring-white"
+                                        onClick={() => setOpen(false)}
+                                    >
+                                        <span className="absolute -inset-2.5" />
+                                        <span className="sr-only">Close panel</span>
+                                        <XMarkIcon className="h-6 w-6" aria-hidden="true" />
+                                    </button>
                                 </div>
-                                {activeLink === "presentations" ? (
-                                    <span className="absolute bottom-0 left-0  h-0.5 bg-light-green w-full transition-all duration-300 ease-in-out"></span>
-                                ) : (
-                                    <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-white group-hover:w-full transition-all duration-300 ease-in-out"></span>
-                                )}
-                            </Link>
-                            <Link
-                                href="/calendar"
-                                className="relative group text-white rounded m-2 py-2 hover:text-light-green hover:scale-110"
-                            >
-                                <div
-                                    className={activeLink === "calendar" ? "active" : ""}
-                                    onClick={() => setActiveLink("calendar")}
-                                >
-                                    Calendar
+                                <div className="flex h-full flex-col overflow-y-scroll bg-white py-6 shadow-xl">
+                                    <div className="px-4 sm:px-6">
+                                        <Dialog.Title className="text-base font-semibold leading-6 text-gray-900">
+                                            Menu
+                                        </Dialog.Title>
+                                    </div>
+                                    <div className="relative mt-6 flex-1 px-4 sm:px-6">
+                                        <div className="pl-4">
+                                            <Link
+                                                href="/users"
+                                                className="relative group text-black rounded m-2 py-2 transition-all hover:text-dark-green hover:scale-110"
+                                            >
+                                                <h3
+                                                    className={activeLink === "users" ? "active" : ""}
+                                                    onClick={() => setActiveLink("users")}
+                                                >
+                                                    Users
+                                                </h3>
+
+                                                {activeLink === "users" && (
+                                                    <span className="absolute bottom-0 left-0 h-0.5 bg-light-green w-full transition-all duration-300 ease-in-out"></span>
+                                                )}
+
+                                                {activeLink !== "users" && (
+                                                    <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-white group-hover:w-full transition-all duration-300 ease-in-out"></span>
+                                                )}
+                                            </Link>
+                                            <Link
+                                                href="/orders"
+                                                className="relative group text-black rounded m-2 py-2 transition-all hover:text-dark-green hover:scale-110"
+                                            >
+                                                <h3
+                                                    className={activeLink === "orders" ? "active" : ""}
+                                                    onClick={() => setActiveLink("orders")}
+                                                >
+                                                    Orders
+                                                </h3>
+
+                                                {activeLink === "orders" && (
+                                                    <span className="absolute bottom-0 left-0 h-0.5 bg-light-green w-full transition-all duration-300 ease-in-out"></span>
+                                                )}
+
+                                                {activeLink !== "orders" && (
+                                                    <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-white group-hover:w-full transition-all duration-300 ease-in-out"></span>
+                                                )}
+                                            </Link>
+                                            <Link
+                                                href="/presentations"
+                                                className="relative group text-black rounded m-2 py-2 transition-all hover:text-dark-green hover:scale-110"
+                                            >
+                                                <div
+                                                    className={activeLink === "presentations" ? "active" : ""}
+                                                    onClick={() => setActiveLink("presentations")}
+                                                >
+                                                    Presentations
+                                                </div>
+                                                {activeLink === "presentations" ? (
+                                                    <span className="absolute bottom-0 left-0  h-0.5 bg-light-green w-full transition-all duration-300 ease-in-out"></span>
+                                                ) : (
+                                                    <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-white group-hover:w-full transition-all duration-300 ease-in-out"></span>
+                                                )}
+                                            </Link>
+                                            <Link
+                                                href="/calendar"
+                                                className="relative group text-black rounded m-2 py-2 transition-all hover:text-dark-green hover:scale-110"
+                                            >
+                                                <div
+                                                    className={activeLink === "calendar" ? "active" : ""}
+                                                    onClick={() => setActiveLink("calendar")}
+                                                >
+                                                    Calendar
+                                                </div>
+                                                {activeLink === "calendar" ? (
+                                                    <span className="absolute bottom-0 left-0  h-0.5 bg-light-green w-full transition-all duration-300 ease-in-out"></span>
+                                                ) : (
+                                                    <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-white group-hover:w-full transition-all duration-300 ease-in-out"></span>
+                                                )}
+                                            </Link>
+
+                                            {user && user.rol_name === "AdminGrownet" && (
+                                                <Link
+                                                    href="/products"
+                                                    className="relative group text-black rounded m-2 py-2 transition-all hover:text-dark-green hover:scale-110"
+                                                >
+                                                    <h3
+                                                        className={activeLink === "products" ? "active" : ""}
+                                                        onClick={() => setActiveLink("products")}
+                                                    >
+                                                        Products
+                                                    </h3>
+
+                                                    {activeLink === "products" && (
+                                                        <span className="absolute bottom-0 left-0 h-0.5 bg-light-green w-full transition-all duration-300 ease-in-out"></span>
+                                                    )}
+
+                                                    {activeLink !== "products" && (
+                                                        <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-white group-hover:w-full transition-all duration-300 ease-in-out"></span>
+                                                    )}
+                                                </Link>
+                                            )}
+
+
+                                            {user && user.rol_name === "AdminGrownet" && (
+                                                <Link
+                                                    href="/categories"
+                                                    className="relative group text-black rounded m-2 py-2 transition-all hover:text-dark-green hover:scale-110"
+                                                >
+                                                    <h3
+                                                        className={activeLink === "categories" ? "active" : ""}
+                                                        onClick={() => setActiveLink("categories")}
+                                                    >
+                                                        Categories
+                                                    </h3>
+
+                                                    {activeLink === "categories" && (
+                                                        <span className="absolute bottom-0 left-0 h-0.5 bg-light-green w-full transition-all duration-300 ease-in-out"></span>
+                                                    )}
+
+                                                    {activeLink !== "categories" && (
+                                                        <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-white group-hover:w-full transition-all duration-300 ease-in-out"></span>
+                                                    )}
+                                                </Link>
+                                            )}
+
+
+                                            {user && user.rol_name === "AdminGrownet" && (
+                                                <Link
+                                                    href="/suppliers"
+                                                    className="relative group text-black rounded m-2 py-2 transition-all hover:text-dark-green hover:scale-110"
+                                                >
+                                                    <h3
+                                                        className={activeLink === "suppliers" ? "active" : ""}
+                                                        onClick={() => setActiveLink("suppliers")}
+                                                    >
+                                                        Suppliers
+                                                    </h3>
+
+                                                    {activeLink === "suppliers" && (
+                                                        <span className="absolute bottom-0 left-0 h-0.5 bg-light-green w-full transition-all duration-300 ease-in-out"></span>
+                                                    )}
+
+                                                    {activeLink !== "suppliers" && (
+                                                        <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-white group-hover:w-full transition-all duration-300 ease-in-out"></span>
+                                                    )}
+                                                </Link>
+                                            )}
+
+                                            {user && user.rol_name === "Administrador" && (
+                                                <Link
+                                                    href="/customers"
+                                                    className="relative group text-black rounded m-2 py-2 transition-all hover:text-dark-green hover:scale-110"
+                                                >
+                                                    <h3
+                                                        className={activeLink === "customers" ? "active" : ""}
+                                                        onClick={() => setActiveLink("customers")}
+                                                    >
+                                                        Customers
+                                                    </h3>
+
+                                                    {activeLink === "customers" && (
+                                                        <span className="absolute bottom-0 left-0 h-0.5 bg-light-green w-full transition-all duration-300 ease-in-out"></span>
+                                                    )}
+
+                                                    {activeLink !== "customers" && (
+                                                        <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-white group-hover:w-full transition-all duration-300 ease-in-out"></span>
+                                                    )}
+                                                </Link>
+                                            )}
+                                            {user && user.rol_name === "Administrador" && (
+                                                <Link
+                                                    href="/prices"
+                                                    className="relative group text-black rounded m-2 py-2 transition-all hover:text-dark-green hover:scale-110"
+                                                >
+                                                    <h3
+                                                        className={activeLink === "prices" ? "active" : ""}
+                                                        onClick={() => setActiveLink("prices")}
+                                                    >
+                                                        Prices
+                                                    </h3>
+
+                                                    {activeLink === "prices" && (
+                                                        <span className="absolute bottom-0 left-0 h-0.5 bg-light-green w-full transition-all duration-300 ease-in-out"></span>
+                                                    )}
+
+                                                    {activeLink !== "prices" && (
+                                                        <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-white group-hover:w-full transition-all duration-300 ease-in-out"></span>
+                                                    )}
+                                                </Link>
+                                            )}
+                                            <button
+                                                className="text-white flex bg-dark-blue rounded-lg m-2 p-2 transition-all hover:bg-black hover:scale-110"
+                                                onClick={handleLogout}
+                                            >
+                                                <ArrowLeftOnRectangleIcon className="h-6 w-6" />
+                                                Log out
+                                            </button>
+                                        </div>
+                                    </div>
                                 </div>
-                                {activeLink === "calendar" ? (
-                                    <span className="absolute bottom-0 left-0  h-0.5 bg-light-green w-full transition-all duration-300 ease-in-out"></span>
-                                ) : (
-                                    <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-white group-hover:w-full transition-all duration-300 ease-in-out"></span>
-                                )}
-                            </Link>
-
-                            {user && user.rol_name === "AdminGrownet" && (
-                                <Link
-                                    href="/products"
-                                    className="relative group text-white rounded m-2 py-2 hover:text-light-green hover:scale-110"
-                                >
-                                    <h3
-                                        className={activeLink === "products" ? "active" : ""}
-                                        onClick={() => setActiveLink("products")}
-                                    >
-                                        Products
-                                    </h3>
-
-                                    {activeLink === "products" && (
-                                        <span className="absolute bottom-0 left-0 h-0.5 bg-light-green w-full transition-all duration-300 ease-in-out"></span>
-                                    )}
-
-                                    {activeLink !== "products" && (
-                                        <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-white group-hover:w-full transition-all duration-300 ease-in-out"></span>
-                                    )}
-                                </Link>
-                            )}
-
-
-                            {user && user.rol_name === "AdminGrownet" && (
-                                <Link
-                                    href="/categories"
-                                    className="relative group text-white rounded m-2 py-2 hover:text-light-green hover:scale-110"
-                                >
-                                    <h3
-                                        className={activeLink === "categories" ? "active" : ""}
-                                        onClick={() => setActiveLink("categories")}
-                                    >
-                                        Categories
-                                    </h3>
-
-                                    {activeLink === "categories" && (
-                                        <span className="absolute bottom-0 left-0 h-0.5 bg-light-green w-full transition-all duration-300 ease-in-out"></span>
-                                    )}
-
-                                    {activeLink !== "categories" && (
-                                        <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-white group-hover:w-full transition-all duration-300 ease-in-out"></span>
-                                    )}
-                                </Link>
-                            )}
-
-
-                            {user && user.rol_name === "AdminGrownet" && (
-                                <Link
-                                    href="/suppliers"
-                                    className="relative group text-white rounded m-2 py-2 hover:text-light-green hover:scale-110"
-                                >
-                                    <h3
-                                        className={activeLink === "suppliers" ? "active" : ""}
-                                        onClick={() => setActiveLink("suppliers")}
-                                    >
-                                        Suppliers
-                                    </h3>
-
-                                    {activeLink === "suppliers" && (
-                                        <span className="absolute bottom-0 left-0 h-0.5 bg-light-green w-full transition-all duration-300 ease-in-out"></span>
-                                    )}
-
-                                    {activeLink !== "suppliers" && (
-                                        <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-white group-hover:w-full transition-all duration-300 ease-in-out"></span>
-                                    )}
-                                </Link>
-                            )}
-
-                            {user && user.rol_name === "Administrador" && (
-                                <Link
-                                    href="/customers"
-                                    className="relative group text-white rounded m-2 py-2 hover:text-light-green hover:scale-110"
-                                >
-                                    <h3
-                                        className={activeLink === "customers" ? "active" : ""}
-                                        onClick={() => setActiveLink("customers")}
-                                    >
-                                        Customers
-                                    </h3>
-
-                                    {activeLink === "customers" && (
-                                        <span className="absolute bottom-0 left-0 h-0.5 bg-light-green w-full transition-all duration-300 ease-in-out"></span>
-                                    )}
-
-                                    {activeLink !== "customers" && (
-                                        <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-white group-hover:w-full transition-all duration-300 ease-in-out"></span>
-                                    )}
-                                </Link>
-                            )}
-                            {user && user.rol_name === "Administrador" && (
-                                <Link
-                                    href="/prices"
-                                    className="relative group text-white rounded m-2 py-2 hover:text-light-green hover:scale-110"
-                                >
-                                    <h3
-                                        className={activeLink === "prices" ? "active" : ""}
-                                        onClick={() => setActiveLink("prices")}
-                                    >
-                                        Prices
-                                    </h3>
-
-                                    {activeLink === "prices" && (
-                                        <span className="absolute bottom-0 left-0 h-0.5 bg-light-green w-full transition-all duration-300 ease-in-out"></span>
-                                    )}
-
-                                    {activeLink !== "prices" && (
-                                        <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-white group-hover:w-full transition-all duration-300 ease-in-out"></span>
-                                    )}
-                                </Link>
-                            )}
-                            <button
-                                className="text-white flex bg-dark-blue rounded-lg m-2 p-2 transition-all hover:bg-black hover:scale-110"
-                                onClick={handleLogout}
-                            >
-                                <ArrowLeftOnRectangleIcon className="h-6 w-6" />
-                                Log out
-                            </button>
+                            </Dialog.Panel>
                         </div>
-                    </div>
-                </div>
-            </div>
+                    </Transition.Child>
+                </Dialog>
+            </Transition.Root>
         </div>
     )
 }

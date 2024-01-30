@@ -197,7 +197,7 @@ const CustomersView = () => {
   return (
     <Layout>
       <div>
-        <div className="flex justify-between p-8 pb-20 bg-primary-blue">
+        <div className="flex justify-between p-8 bg-primary-blue">
           <h1 className="text-2xl text-white font-semibold">Customers list</h1>
           <Link
             className="flex bg-green py-3 px-4 rounded-lg text-white font-medium transition-all hover:bg-dark-blue hover:scale-110 "
