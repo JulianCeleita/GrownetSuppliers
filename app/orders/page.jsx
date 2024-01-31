@@ -63,7 +63,9 @@ const countOrdersForDate = (orders, dateFilter) => {
 
     switch (dateFilter) {
       case "today":
-        return currentDate.toDateString() - 1 === deliveryDate.toDateString();
+        const today = new Date(currentDate);
+        today.setDate(currentDate.getDate() - 1);
+        return today.toDateString() === deliveryDate.toDateString();
       case "tomorrow":
         const tomorrow = new Date();
         tomorrow.setDate(currentDate.getDate());
@@ -137,34 +139,37 @@ const OrderView = () => {
     const currentDate = new Date();
     const deliveryDate = new Date(order.date_delivery);
 
-    switch (dateFilter) {
-      case "today":
-        return currentDate.toDateString() - 1 === deliveryDate.toDateString();
+    if (dateFilter === "today") {
+      const today = new Date(currentDate);
+      today.setDate(currentDate.getDate() - 1);
+      return today.toDateString() === deliveryDate.toDateString();
+    } else if (dateFilter === "tomorrow") {
+      const tomorrow = new Date(currentDate);
+      tomorrow.setDate(currentDate.getDate());
+      return tomorrow.toDateString() === deliveryDate.toDateString();
+    } else if (dateFilter === "dayAfterTomorrow") {
+      const dayAfterTomorrow = new Date(currentDate);
+      dayAfterTomorrow.setDate(currentDate.getDate() + 1);
+      return dayAfterTomorrow.toDateString() === deliveryDate.toDateString();
+    } else if (dateFilter === "calendarDate") {
+      const selectedDateMinusOne = new Date(selectedDate);
+      selectedDateMinusOne.setDate(selectedDate.getDate() - 1);
 
-      case "tomorrow":
-        const tomorrow = new Date(currentDate);
-        tomorrow.setDate(currentDate.getDate());
-        return tomorrow.toDateString() === deliveryDate.toDateString();
-
-      case "dayAfterTomorrow":
-        const dayAfterTomorrow = new Date(currentDate);
-        dayAfterTomorrow.setDate(currentDate.getDate() + 1);
-        return dayAfterTomorrow.toDateString() === deliveryDate.toDateString();
-
-      default:
-        return false;
+      return (
+        selectedDateMinusOne.toDateString() === deliveryDate.toDateString()
+      );
+    } else {
+      return false;
     }
   };
 
   const handleDateChange = (date) => {
-    console.log(date)
-    setSelectedDate(date);
+    setShowAllOrders(false);
     setShowDatePicker(false);
-    filterOrdersByDate(date);
+    setSelectedDate(date);
   };
 
   const totalOrders = orders.length;
-
 
   const filteredOrders = orders.filter((order) =>
     filterOrdersByDate(order)
@@ -177,9 +182,6 @@ const OrderView = () => {
       orders.find((o) => o.id === b.orders_id)?.accountName || "";
     return orderNameA.localeCompare(orderNameB);
   });
-
-
-
 
   return (
     <Layout>
@@ -206,6 +208,10 @@ const OrderView = () => {
           <button
             className={`text-dark-blue border-b-2 border-stone-100 cursor-pointer rounded-xl p-1 ${dateFilter === "today" ? "font-semibold bg-blue-300  transition-all" : ""}`}
             onClick={() => {
+              const currentDate = new Date;
+              const today = new Date(currentDate);
+              today.setDate(currentDate.getDate());
+              setSelectedDate(today)
               setDateFilter("today");
               setShowAllOrders(false);
             }}
@@ -215,6 +221,10 @@ const OrderView = () => {
           <button
             className={`text-dark-blue border-b-2 border-stone-100 cursor-pointer rounded-xl p-1 ${dateFilter === "tomorrow" ? "font-semibold bg-blue-300 transition-all" : ""}`}
             onClick={() => {
+              const currentDate = new Date;
+              const tomorrow = new Date(currentDate);
+              tomorrow.setDate(currentDate.getDate() + 1);
+              setSelectedDate(tomorrow)
               setDateFilter("tomorrow");
               setShowAllOrders(false);
             }}
@@ -224,6 +234,10 @@ const OrderView = () => {
           <button
             className={`text-dark-blue border-b-2 border-stone-100 cursor-pointer rounded-xl p-1 ${dateFilter === "dayAfterTomorrow" ? "font-semibold bg-blue-300 transition-all" : ""}`}
             onClick={() => {
+              const currentDate = new Date;
+              const dayAfterTomorrow = new Date(currentDate);
+              dayAfterTomorrow.setDate(currentDate.getDate() + 2);
+              setSelectedDate(dayAfterTomorrow)
               setDateFilter("dayAfterTomorrow");
               setShowAllOrders(false);
             }}
@@ -232,7 +246,11 @@ const OrderView = () => {
           </button>
           <button
             className={`text-dark-blue border-b-2 border-stone-100 cursor-pointer rounded-xl p-1 ${showDatePicker ? 'disabled' : ''}`}
-            onClick={() => setShowDatePicker(!showDatePicker)}
+            onClick={() => {
+              setShowDatePicker(!showDatePicker)
+              setDateFilter("calendarDate")
+
+            }}
             disabled={showDatePicker}
           >
             +
