@@ -250,20 +250,14 @@ function EditPresentation({
               <option value="" disabled>
                 Select tax
               </option>
-              {tax?.map((tax) => (
-                <option key={tax.id} value={tax.id}>
-                  {tax.countries_indicative === 44 ? (
-                    <ReactCountryFlag countryCode="GB" />
-                  ) : tax.countries_indicative === 57 ? (
-                    <ReactCountryFlag countryCode="CO" />
-                  ) : tax.countries_indicative === 351 ? (
-                    <ReactCountryFlag countryCode="PT" />
-                  ) : tax.countries_indicative === 34 ? (
-                    <ReactCountryFlag countryCode="ES" />
-                  ) : null}{" "}
-                  {tax.name}
-                </option>
+              {tax.map((tax) => (
+                tax.countries_indicative === 44 ? (
+                  <option key={tax.id} value={tax.id}>
+                    {tax.name}
+                  </option>
+                ) : null
               ))}
+
             </select>
           </div>
           <div>
