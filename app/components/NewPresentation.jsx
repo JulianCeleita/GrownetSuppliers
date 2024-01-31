@@ -206,7 +206,6 @@ function NewPresentation({
               {tax.map((tax) => (
                 tax.countries_indicative === 44 ? (
                   <option key={tax.id} value={tax.id}>
-                    <ReactCountryFlag countryCode="GB" />
                     {tax.name}
                   </option>
                 ) : null
