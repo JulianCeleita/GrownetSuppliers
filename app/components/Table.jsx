@@ -1,6 +1,8 @@
 "use client";
 import {
-  createStorageOrder, presentationData, presentationsCode
+  createStorageOrder,
+  presentationData,
+  presentationsCode,
 } from "@/app/config/urls.config";
 import { useTableStore } from "@/app/store/useTableStore";
 import useTokenStore from "@/app/store/useTokenStore";
@@ -59,9 +61,10 @@ const useFocusOnEnter = (formRef) => {
       const form = event.target.form;
       const index = Array.prototype.indexOf.call(form, event.target);
       for (let i = index + 1; i < formRef.current.length; i++) {
-        if (formRef.current[i].tabIndex === -1) {
+        if (formRef.current[i].getAttribute("data-field-name") === "Net") {
           continue;
         }
+
         formRef.current[i].focus();
         if (document.activeElement === formRef.current[i]) {
           break;
@@ -83,8 +86,6 @@ export default function Table() {
   const {
     initialColumns,
     toggleColumnVisibility,
-    initialTotalRows,
-    toggleTotalRowVisibility,
     customers,
     setTotalNetSum,
     setTotalPriceSum,
@@ -93,14 +94,13 @@ export default function Table() {
     setTotalProfit,
     setTotalProfitPercentage,
   } = useTableStore();
-  const [showCheckboxColumnTotal, setShowCheckboxColumnTotal] = useState(false);
+
   const menuRef = useRef(null);
-  const menuRefTotal = useRef(null);
+
   const [showCheckboxColumn, setShowCheckboxColumn] = useState(false);
   const [currentValues, setCurrentValues] = useState({});
   const [productByCode, setProductByCode] = useState({});
   const [DescriptionData, setDescriptionData] = useState(null);
-  const lastActiveColumn = initialColumns[initialColumns.length - 1];
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [showErrorOrderModal, setShowErrorOrderModal] = useState(false);
   const [specialRequirements, setSpecialRequirements] = useState("");
@@ -372,22 +372,6 @@ export default function Table() {
     setRows((prevRows) => [...prevRows, { ...initialRowsState }]);
   };
 
-  // OBTENER NOMBRE DEL CAMPO SIGUIENTE
-  const getNextFieldName = (currentFieldName, rowIndex) => {
-    const currentIndex = initialColumns.indexOf(currentFieldName);
-
-    if (currentIndex !== -1) {
-      const nextIndex = currentIndex + 1;
-      if (nextIndex < initialColumns.length) {
-        return initialColumns[nextIndex];
-      } else {
-        return rowIndex === rows.length - 1 ? null : initialColumns[0];
-      }
-    }
-
-    return null;
-  };
-
   // FUNCIONALIDAD TECLA ENTER
 
   const handleKeyDown = (e, rowIndex, fieldName) => {
@@ -396,7 +380,8 @@ export default function Table() {
 
       if (
         (fieldName === "Code" && currentValues["Code"]?.trim() !== "") ||
-        (fieldName === "Description" && currentValues["Description"].trim() !== "")
+        (fieldName === "Description" &&
+          currentValues["Description"].trim() !== "")
       ) {
         fetchProductCode(rowIndex);
       }
@@ -409,7 +394,6 @@ export default function Table() {
       }
     }
   };
-
 
   const fetchProductCode = async (rowIndex) => {
     try {
@@ -455,8 +439,7 @@ export default function Table() {
         .filter((row) => parseFloat(row.quantity) > 0)
         .map((row) => {
           const product = products.find(
-            (product) =>
-              product.presentation_code === row.Code
+            (product) => product.presentation_code === row.Code
           );
 
           return {
@@ -530,16 +513,17 @@ export default function Table() {
                       <th
                         key={index}
                         scope="col"
-                        className={`py-2 px-2 bg-dark-blue rounded-lg capitalize ${column === "quantity" ||
+                        className={`py-2 px-2 bg-dark-blue rounded-lg capitalize ${
+                          column === "quantity" ||
                           column === "Code" ||
                           column === "VAT %" ||
                           column === "UOM" ||
                           column === "Net"
-                          ? "w-20"
-                          : column === "Packsize"
+                            ? "w-20"
+                            : column === "Packsize"
                             ? "w-40"
                             : ""
-                          }`}
+                        }`}
                         onContextMenu={(e) => handleContextMenu(e)}
                         style={{
                           boxShadow:
@@ -561,8 +545,9 @@ export default function Table() {
                       initialColumns.includes(column) && (
                         <React.Fragment key={columnIndex}>
                           <td
-                            className={`px-3 py-2 border-r-2 border-r-[#0c547a] border-[#808e94] ${rowIndex === 0 ? "border-t-0" : "border-t-2"
-                              } `}
+                            className={`px-3 py-2 border-r-2 border-r-[#0c547a] border-[#808e94] ${
+                              rowIndex === 0 ? "border-t-0" : "border-t-2"
+                            } `}
                             tabIndex={0}
                             style={{ overflow: "visible" }}
                           >
@@ -603,10 +588,10 @@ export default function Table() {
                                     options={
                                       DescriptionData
                                         ? DescriptionData.map((item) => ({
-                                          value: item.productName,
-                                          label: item.concatenatedName,
-                                          code: item.code,
-                                        }))
+                                            value: item.productName,
+                                            label: item.concatenatedName,
+                                            code: item.code,
+                                          }))
                                         : []
                                     }
                                     value={{
@@ -654,10 +639,12 @@ export default function Table() {
                               <input
                                 type={inputTypes[column]}
                                 ref={inputRefs[column][rowIndex]}
-                                className={`pl-2 h-[30px] outline-none w-full ${inputTypes[column] === "number"
-                                  ? "hide-number-arrows"
-                                  : ""
-                                  }`}
+                                data-field-name={column}
+                                className={`pl-2 h-[30px] outline-none w-full ${
+                                  inputTypes[column] === "number"
+                                    ? "hide-number-arrows"
+                                    : ""
+                                }`}
                                 value={row[column] || ""}
                                 onChange={(e) => {
                                   if (column === "Net") {
