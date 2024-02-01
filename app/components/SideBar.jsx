@@ -17,26 +17,46 @@ const SideBar = () => {
         router.push("/");
     };
 
-    const addBodyClass = (className) => {
-        const body = document.body;
-        body.classList.add(className);
-        body.classList.add("transition")
-        body.classList.add("duration-300")
-        body.classList.add("ease-in-out")
-    }
+    const handleButtonOpen = async () => {
+        try {
+            const currentDate = formatDate(selectedDate);
 
-    const removeBodyClass = (className) => {
-        const body = document.body;
-        body.classList.remove(className);
-    }
+            const data = {
+                supplier: user.id_supplier,
+                day: currentDate,
+            };
 
-    useLayoutEffect(() => {
-        // if (open) {
-        //     addBodyClass('ml-80')
-        // } else {
-        //     removeBodyClass('ml-80')
-        // }
-    }, [open])
+            const response = await axios.post(openDay, data, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+
+        } catch (error) {
+            // Maneja los errores de la solicitud
+            console.error("Error al enviar la solicitud POST:", error);
+        }
+    };
+
+    const handleButtonClose = async () => {
+        try {
+            const currentDate = formatDate(selectedDate);
+
+            const data = {
+                supplier: user.id_supplier,
+                day: currentDate,
+            };
+
+            const response = await axios.post(closeDay, data, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+
+        } catch (error) {
+            console.error("Error al enviar la solicitud POST:", error);
+        }
+    };
 
     return (
         <div>
@@ -274,6 +294,18 @@ const SideBar = () => {
                                             >
                                                 <ArrowLeftOnRectangleIcon className="h-6 w-6" />
                                                 Log out
+                                            </button>
+                                        </div>
+                                        <div className="flex items-center justify-center gap-8 absolute bottom-0 w-[80%]">
+                                            <button className="bg-green p-2 text-white hover:scale-105 transition-all font-semibold rounded-lg"
+                                                onClick={handleButtonOpen}
+                                            >
+                                                Open Day
+                                            </button>
+                                            <button className="bg-green p-2 text-white hover:scale-105 transition-all font-semibold rounded-lg"
+                                                onClick={handleButtonClose}
+                                            >
+                                                Close Day
                                             </button>
                                         </div>
                                     </div>

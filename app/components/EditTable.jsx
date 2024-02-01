@@ -1,6 +1,9 @@
 "use client";
 import {
-  editStorageOrder, orderDetail, presentationData, presentationsCode
+  editStorageOrder,
+  orderDetail,
+  presentationData,
+  presentationsCode,
 } from "@/app/config/urls.config";
 import { useTableStore } from "@/app/store/useTableStore";
 import useTokenStore from "@/app/store/useTokenStore";
@@ -83,7 +86,7 @@ const useFocusOnEnter = (formRef) => {
       const form = event.target.form;
       const index = Array.prototype.indexOf.call(form, event.target);
       for (let i = index + 1; i < formRef.current.length; i++) {
-        if (formRef.current[i].tabIndex === -1) {
+        if (formRef.current[i].getAttribute("data-field-name") === "Net") {
           continue;
         }
         formRef.current[i].focus();
@@ -197,7 +200,6 @@ export default function EditTable({ orderId, dateDelivery }) {
         "Price Band": "",
         "Total Cost": "",
       }));
-
 
       setRows(initialRows);
     }
@@ -434,20 +436,20 @@ export default function EditTable({ orderId, dateDelivery }) {
   };
 
   // OBTENER NOMBRE DEL CAMPO SIGUIENTE
-  const getNextFieldName = (currentFieldName, rowIndex) => {
-    const currentIndex = initialColumns.indexOf(currentFieldName);
+  // const getNextFieldName = (currentFieldName, rowIndex) => {
+  //   const currentIndex = initialColumns.indexOf(currentFieldName);
 
-    if (currentIndex !== -1) {
-      const nextIndex = currentIndex + 1;
-      if (nextIndex < initialColumns.length) {
-        return initialColumns[nextIndex];
-      } else {
-        return rowIndex === rows.length - 1 ? null : initialColumns[0];
-      }
-    }
+  //   if (currentIndex !== -1) {
+  //     const nextIndex = currentIndex + 1;
+  //     if (nextIndex < initialColumns.length) {
+  //       return initialColumns[nextIndex];
+  //     } else {
+  //       return rowIndex === rows.length - 1 ? null : initialColumns[0];
+  //     }
+  //   }
 
-    return null;
-  };
+  //   return null;
+  // };
 
   // FUNCIONALIDAD TECLA ENTER
 
@@ -456,25 +458,18 @@ export default function EditTable({ orderId, dateDelivery }) {
       e.preventDefault();
 
       if (
-        (fieldName === "Code" && currentValues["Code"].trim() !== "") ||
+        (fieldName === "Code" && currentValues["Code"]?.trim() !== "") ||
         (fieldName === "Description" &&
           currentValues["Description"].trim() !== "")
       ) {
         fetchProductCode(rowIndex);
       }
 
-      if (fieldName === "Net") {
-        const isLastRow = rowIndex === rows.length - 1;
-        if (isLastRow) {
-          addNewRow();
-          return;
-        }
+      const nextRowIndex = rowIndex + 1;
+      if (nextRowIndex < rows.length) {
+        form.current[nextRowIndex].querySelector('input[type="text"]')?.focus();
       } else {
-        const nextFieldName = getNextFieldName(fieldName, rowIndex);
-        const nextFieldRefs = inputRefs[nextFieldName];
-        if (nextFieldRefs && nextFieldRefs[rowIndex]) {
-          nextFieldRefs[rowIndex].current.focus();
-        }
+        addNewRow();
       }
     }
   };
@@ -534,7 +529,6 @@ export default function EditTable({ orderId, dateDelivery }) {
             price: Number(row.Net),
           };
         });
-
 
       const jsonOrderData = {
         date_delivery: dateDelivery,
@@ -602,16 +596,17 @@ export default function EditTable({ orderId, dateDelivery }) {
                       <th
                         key={index}
                         scope="col"
-                        className={`py-2 px-2 bg-dark-blue rounded-lg capitalize ${column === "quantity" ||
+                        className={`py-2 px-2 bg-dark-blue rounded-lg capitalize ${
+                          column === "quantity" ||
                           column === "Code" ||
                           column === "VAT %" ||
                           column === "UOM" ||
                           column === "Net"
-                          ? "w-20"
-                          : column === "Packsize"
+                            ? "w-20"
+                            : column === "Packsize"
                             ? "w-40"
                             : ""
-                          }`}
+                        }`}
                         onContextMenu={(e) => handleContextMenu(e)}
                         style={{
                           boxShadow:
@@ -633,8 +628,9 @@ export default function EditTable({ orderId, dateDelivery }) {
                       initialColumns.includes(column) && (
                         <React.Fragment key={columnIndex}>
                           <td
-                            className={`px-3 py-2 border-r-2 border-r-[#0c547a] border-[#808e94] ${rowIndex === 0 ? "border-t-0" : "border-t-2"
-                              } `}
+                            className={`px-3 py-2 border-r-2 border-r-[#0c547a] border-[#808e94] ${
+                              rowIndex === 0 ? "border-t-0" : "border-t-2"
+                            } `}
                             tabIndex={0}
                             style={{ overflow: "visible" }}
                           >
@@ -675,10 +671,10 @@ export default function EditTable({ orderId, dateDelivery }) {
                                     options={
                                       DescriptionData
                                         ? DescriptionData.map((item) => ({
-                                          value: item.productName,
-                                          label: item.concatenatedName,
-                                          code: item.code,
-                                        }))
+                                            value: item.productName,
+                                            label: item.concatenatedName,
+                                            code: item.code,
+                                          }))
                                         : []
                                     }
                                     value={{
@@ -726,10 +722,12 @@ export default function EditTable({ orderId, dateDelivery }) {
                               <input
                                 type={inputTypes[column]}
                                 ref={inputRefs[column][rowIndex]}
-                                className={`pl-2 h-[30px] outline-none w-full ${inputTypes[column] === "number"
-                                  ? "hide-number-arrows"
-                                  : ""
-                                  }`}
+                                data-field-name={column}
+                                className={`pl-2 h-[30px] outline-none w-full ${
+                                  inputTypes[column] === "number"
+                                    ? "hide-number-arrows"
+                                    : ""
+                                }`}
                                 value={row[column] || ""}
                                 onChange={(e) => {
                                   if (column === "Net") {
