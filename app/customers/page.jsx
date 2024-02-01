@@ -90,7 +90,6 @@ const CustomersView = () => {
   const [routes, setRoutes] = useState([]);
   const [selectedRoute, setSelectedRoute] = useState(null);
   const [selectedGroup, setSelectedGroup] = useState(null);
-  const [showNewCustomers, setShowNewCustomers] = useState(false);
   const [status, setStatus] = useState("all");
   const [filteredRoutes, setFilteredRoutes] = useState([]);
   const [selectedCustomer, setSelectedCustomer] = useState(null);
@@ -172,19 +171,6 @@ const CustomersView = () => {
     setSelectedGroup(e.target.value);
   };
 
-  const groups = [
-    { id: 0, name: "No group" },
-    { id: 1, name: "Redirect" },
-    { id: 2, name: "Efoods" },
-    { id: 3, name: "Market" },
-    { id: 4, name: "UFC" },
-  ];
-
-  const getGroupNameById = (groupId) => {
-    const group = groups.find((group) => group.id === groupId);
-    return group ? group.name : "Unknown";
-  };
-
   return (
     <Layout>
       <div>
@@ -197,13 +183,13 @@ const CustomersView = () => {
             New Customer
           </Link>
         </div>
-        <div className="flex relative items-center justify-center mb-16 mt-2 mr-5 ml-5 ">
+        <div className="flex relative items-center justify-center mb-16 mt-2 mr-5 ml-2 ">
           <input
             type="text"
             placeholder="Search customers by name"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="border p-2 rounded-xl w-[80%] pl-10 max-w-[72%]"
+            className=" p-3 rounded-full w-[80%] pl-10 max-w-[72%] bg-[#f4f5fb]"
           />
           <select
             value={status}
@@ -235,10 +221,14 @@ const CustomersView = () => {
             className="ml-2 border p-2 rounded-md"
           >
             <option value="">All groups</option>
-            {groups.map((group) => (
-              <option key={group.id} value={group.name}>
-                {group.name}
-              </option>
+            {[
+              ...new Set(
+                customers.map((customer) =>
+                  customer.group !== null ? customer.group : "No group"
+                )
+              ),
+            ].map((uniqueGroup) => (
+              <option key={uniqueGroup}>{uniqueGroup}</option>
             ))}
           </select>
         </div>
@@ -264,7 +254,8 @@ const CustomersView = () => {
                       customer.stateCustomer_id === 2)) &&
                   (!selectedRoute || customer.route === selectedRoute) &&
                   (!selectedGroup ||
-                    getGroupNameById(customer.group_id) === selectedGroup);
+                    (selectedGroup === "No group" && !customer.group) ||
+                    (customer.group && customer.group === selectedGroup));
                 if (shouldShow) {
                   return (
                     <tr
@@ -308,7 +299,7 @@ const CustomersView = () => {
                           );
                         }}
                       >
-                        {getGroupNameById(customer.group_id)}
+                        {customer.group !== null ? customer.group : "No group"}
                       </td>
                       <td
                         className="py-4"
