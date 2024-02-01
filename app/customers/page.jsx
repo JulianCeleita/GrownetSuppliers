@@ -94,11 +94,7 @@ const CustomersView = () => {
   const [status, setStatus] = useState("all");
   const [filteredRoutes, setFilteredRoutes] = useState([]);
   const [selectedCustomer, setSelectedCustomer] = useState(null);
-  const { user, setUser } = useUserStore();
-  useEffect(() => {
-    var localStorageUser = JSON.parse(localStorage.getItem("user"));
-    setUser(localStorageUser);
-  }, [setUser]);
+  const { user } = useUserStore();
 
   useEffect(() => {
     if (user && user.rol_name === "AdminGrownet") {

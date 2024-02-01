@@ -1,17 +1,27 @@
 import { create } from "zustand";
 
-const useTokenStore = create((set) => ({
-  token: null,
+const useTokenStore = create((set) => {
+  let storedToken = null;
 
-  setToken: (newToken) => set({ token: newToken }),
+  if (typeof window !== "undefined") {
+    storedToken = localStorage.getItem("token");
+  }
 
+  return {
+    token: storedToken || null,
+    setToken: (newToken) => {
+      set({ token: newToken });
+      if (typeof window !== "undefined") {
+        localStorage.setItem("token", newToken);
+      }
+    },
+    removeToken: () => {
+      set({ token: null });
+      if (typeof window !== "undefined") {
+        localStorage.removeItem("token");
+      }
+    },
+  };
+});
 
-}));
 export default useTokenStore;
-
-// Nuevo token
-// token: "1846|frQSf3ZxPsiwEUfx5INSMvsjQcJhScLy6L0B1Tna",
-// export default useTokenStore;
-
-// TOKEN ORIGINAL
-// 1322|D0wbgSlhEIZthyIl9gsH4YSVqw5mowyrkldqHFhF

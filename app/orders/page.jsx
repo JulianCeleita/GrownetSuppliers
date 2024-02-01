@@ -80,10 +80,9 @@ const countOrdersForDate = (orders, dateFilter) => {
   }).length;
 };
 const formatDate = (dateString) => {
-  const formattedDate = format(new Date(dateString), 'yyyy-MM-dd');
+  const formattedDate = format(new Date(dateString), "yyyy-MM-dd");
   return formattedDate;
 };
-
 
 const OrderView = () => {
   const router = useRouter();
@@ -97,18 +96,19 @@ const OrderView = () => {
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [today, setToday] = useState(formatDate(new Date()));
-  const [tomorrow, setTomorrow] = useState(formatDate(new Date(new Date().getTime() + 24 * 60 * 60 * 1000)));
-  const [dayAfterTomorrow, setdayAfterTomorrow] = useState(formatDate(new Date(new Date().getTime() + 2 * 24 * 60 * 60 * 1000)));;
-
+  const [tomorrow, setTomorrow] = useState(
+    formatDate(new Date(new Date().getTime() + 24 * 60 * 60 * 1000))
+  );
+  const [dayAfterTomorrow, setdayAfterTomorrow] = useState(
+    formatDate(new Date(new Date().getTime() + 2 * 24 * 60 * 60 * 1000))
+  );
 
   const todayOrdersCount = countOrdersForDate(orders, "today");
   const tomorrowOrdersCount = countOrdersForDate(orders, "tomorrow");
-  const dayAfterTomorrowOrdersCount = countOrdersForDate(orders, "dayAfterTomorrow");
-
-  useEffect(() => {
-    var localStorageUser = JSON.parse(localStorage.getItem("user"));
-    setUser(localStorageUser);
-  }, [setUser]);
+  const dayAfterTomorrowOrdersCount = countOrdersForDate(
+    orders,
+    "dayAfterTomorrow"
+  );
 
   useEffect(() => {
     if (user && user.rol_name === "AdminGrownet") {
@@ -116,7 +116,6 @@ const OrderView = () => {
     } else {
       fetchOrdersSupplier(token, user, setOrders, setIsLoading);
     }
-
 
     const handleOutsideClick = (e) => {
       if (showDatePicker && !e.target.closest(".react-datepicker")) {
@@ -171,9 +170,7 @@ const OrderView = () => {
 
   const totalOrders = orders.length;
 
-  const filteredOrders = orders.filter((order) =>
-    filterOrdersByDate(order)
-  );
+  const filteredOrders = orders.filter((order) => filterOrdersByDate(order));
 
   const sortedOrders = filteredOrders.slice().sort((a, b) => {
     const orderNameA =
@@ -197,7 +194,9 @@ const OrderView = () => {
         </div>
         <div className="flex items-center justify-center space-x-4">
           <button
-            className={`text-dark-blue border-b-2 border-stone-100 cursor-pointer rounded-xl p-1 ${showAllOrders ? "font-semibold bg-blue-300 transition-all" : ""}`}
+            className={`text-dark-blue border-b-2 border-stone-100 cursor-pointer rounded-xl p-1 ${
+              showAllOrders ? "font-semibold bg-blue-300 transition-all" : ""
+            }`}
             onClick={() => {
               setDateFilter("");
               setShowAllOrders(true);
@@ -206,12 +205,16 @@ const OrderView = () => {
             All ({totalOrders})
           </button>
           <button
-            className={`text-dark-blue border-b-2 border-stone-100 cursor-pointer rounded-xl p-1 ${dateFilter === "today" ? "font-semibold bg-blue-300  transition-all" : ""}`}
+            className={`text-dark-blue border-b-2 border-stone-100 cursor-pointer rounded-xl p-1 ${
+              dateFilter === "today"
+                ? "font-semibold bg-blue-300  transition-all"
+                : ""
+            }`}
             onClick={() => {
-              const currentDate = new Date;
+              const currentDate = new Date();
               const today = new Date(currentDate);
               today.setDate(currentDate.getDate());
-              setSelectedDate(today)
+              setSelectedDate(today);
               setDateFilter("today");
               setShowAllOrders(false);
             }}
@@ -219,12 +222,16 @@ const OrderView = () => {
             {today} ({todayOrdersCount})
           </button>
           <button
-            className={`text-dark-blue border-b-2 border-stone-100 cursor-pointer rounded-xl p-1 ${dateFilter === "tomorrow" ? "font-semibold bg-blue-300 transition-all" : ""}`}
+            className={`text-dark-blue border-b-2 border-stone-100 cursor-pointer rounded-xl p-1 ${
+              dateFilter === "tomorrow"
+                ? "font-semibold bg-blue-300 transition-all"
+                : ""
+            }`}
             onClick={() => {
-              const currentDate = new Date;
+              const currentDate = new Date();
               const tomorrow = new Date(currentDate);
               tomorrow.setDate(currentDate.getDate() + 1);
-              setSelectedDate(tomorrow)
+              setSelectedDate(tomorrow);
               setDateFilter("tomorrow");
               setShowAllOrders(false);
             }}
@@ -232,12 +239,16 @@ const OrderView = () => {
             {tomorrow} ({tomorrowOrdersCount})
           </button>
           <button
-            className={`text-dark-blue border-b-2 border-stone-100 cursor-pointer rounded-xl p-1 ${dateFilter === "dayAfterTomorrow" ? "font-semibold bg-blue-300 transition-all" : ""}`}
+            className={`text-dark-blue border-b-2 border-stone-100 cursor-pointer rounded-xl p-1 ${
+              dateFilter === "dayAfterTomorrow"
+                ? "font-semibold bg-blue-300 transition-all"
+                : ""
+            }`}
             onClick={() => {
-              const currentDate = new Date;
+              const currentDate = new Date();
               const dayAfterTomorrow = new Date(currentDate);
               dayAfterTomorrow.setDate(currentDate.getDate() + 2);
-              setSelectedDate(dayAfterTomorrow)
+              setSelectedDate(dayAfterTomorrow);
               setDateFilter("dayAfterTomorrow");
               setShowAllOrders(false);
             }}
@@ -245,11 +256,12 @@ const OrderView = () => {
             {dayAfterTomorrow} ({dayAfterTomorrowOrdersCount})
           </button>
           <button
-            className={`text-dark-blue border-b-2 border-stone-100 cursor-pointer rounded-xl p-1 ${showDatePicker ? 'disabled' : ''}`}
+            className={`text-dark-blue border-b-2 border-stone-100 cursor-pointer rounded-xl p-1 ${
+              showDatePicker ? "disabled" : ""
+            }`}
             onClick={() => {
-              setShowDatePicker(!showDatePicker)
-              setDateFilter("calendarDate")
-
+              setShowDatePicker(!showDatePicker);
+              setDateFilter("calendarDate");
             }}
             disabled={showDatePicker}
           >
@@ -283,7 +295,9 @@ const OrderView = () => {
                   className="text-dark-blue border-b-2 border-stone-100 cursor-pointer"
                   onClick={(e) => {
                     e.preventDefault();
-                    router.push(`/order/${order.reference}`, undefined, { shallow: true });
+                    router.push(`/order/${order.reference}`, undefined, {
+                      shallow: true,
+                    });
                   }}
                 >
                   <td className="py-4">{order.accountName}</td>

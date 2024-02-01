@@ -1,12 +1,11 @@
 "use client";
-import { Inter } from "next/font/google";
+
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import "./globals.css";
 import Home from "./page";
 import useTokenStore from "./store/useTokenStore";
 import "./style.css";
-const inter = Inter({ subsets: ["latin"] });
 
 const metadata = {
   title: "Grownet Suppliers",
@@ -20,19 +19,13 @@ export const getMetadata = () => {
 
 export default function RootLayout({ children }) {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const { token, setToken } = useTokenStore();
+  const { token } = useTokenStore();
 
-  // const router = useRouter();
-  const router = useRouter();
   useEffect(() => {
     const handleRouter = async () => {
-      const localStorageToken = localStorage.getItem("token");
-
-      setToken(localStorageToken);
-
-      if (localStorageToken || token) {
+      if (token) {
         setIsLoggedIn(true);
-      } else if (!token) {
+      } else {
         setIsLoggedIn(false);
       }
     };
@@ -42,7 +35,7 @@ export default function RootLayout({ children }) {
         handleRouter();
       }
     }, 50);
-  }, [token, setToken, isLoggedIn]);
+  }, [token]);
 
   return (
     <html lang="es">
