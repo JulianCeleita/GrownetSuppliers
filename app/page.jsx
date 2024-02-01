@@ -1,10 +1,7 @@
 "use client";
-import axios from "axios";
-import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import LoginForm from "./components/LoginForm";
 import OrderView from "./orders/page";
-import CustomersView from "./customers/page";
 import useTokenStore from "./store/useTokenStore";
 
 function Home() {
@@ -18,7 +15,7 @@ function Home() {
   if (!hasMounted) {
     return null;
   }
-  console.log("token", token);
+
   return (
     <>
       {token ? (

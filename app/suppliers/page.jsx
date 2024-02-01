@@ -2,7 +2,7 @@
 import {
   PencilSquareIcon,
   PlusCircleIcon,
-  TrashIcon
+  TrashIcon,
 } from "@heroicons/react/24/outline";
 import axios from "axios";
 import { useEffect, useState } from "react";
@@ -12,6 +12,7 @@ import ModalDelete from "../components/ModalDelete";
 import NewSupplier from "../components/NewSupplier";
 import Layout from "../layoutS";
 import useTokenStore from "../store/useTokenStore";
+import useUserStore from "../store/useUserStore";
 
 export const fetchSuppliers = async (token, setSuppliers, setIsLoading) => {
   try {
@@ -38,6 +39,7 @@ export const fetchSuppliers = async (token, setSuppliers, setIsLoading) => {
 
 function Suppliers() {
   const { token } = useTokenStore();
+  const { user } = useUserStore();
   const [showNewSupplier, setShowNewSupplier] = useState(false);
   const [showEditSupplier, setShowEditSupplier] = useState(false);
   const [selectedSupplier, setSelectedSupplier] = useState(null);
@@ -67,6 +69,16 @@ function Suppliers() {
         console.error("Error al eliminar el proveedor:", error);
       });
   };
+  if (user?.rol_name !== "AdminGrownet") {
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <div className="text-center">
+          <h1 className="text-9xl font-bold ">404</h1>
+          <p className="text-2xl mt-2">Page Not Found</p>
+        </div>
+      </div>
+    );
+  }
   return (
     <Layout>
       <div>

@@ -6,7 +6,7 @@ import useTokenStore from "@/app/store/useTokenStore";
 import {
   PencilSquareIcon,
   PlusCircleIcon,
-  TrashIcon
+  TrashIcon,
 } from "@heroicons/react/24/outline";
 import axios from "axios";
 import { useEffect, useState } from "react";
@@ -15,9 +15,11 @@ import ModalDelete from "../components/ModalDelete";
 import NewProduct from "../components/NewProduct";
 import Layout from "../layoutS";
 import useCategoryStore from "../store/useCategoryStore";
+import useUserStore from "../store/useUserStore";
 
 function Products() {
   const { token } = useTokenStore();
+  const { user } = useUserStore();
   const { setCategories } = useCategoryStore();
   const [showNewProduct, setShowNewProduct] = useState(false);
   const [showEditProduct, setShowEditProduct] = useState(false);
@@ -74,6 +76,17 @@ function Products() {
     setShowDeleteModal(false);
     fetchProducts(token, setProducts, setIsLoading);
   };
+
+  if (user?.rol_name !== "AdminGrownet") {
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <div className="text-center">
+          <h1 className="text-9xl font-bold">404</h1>
+          <p className="text-2xl mt-2">Page Not Found</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <Layout>
