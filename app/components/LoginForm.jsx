@@ -3,17 +3,53 @@
 import Image from "next/image";
 import { useState } from "react";
 import logo_blancov2 from "../img/logo_blancov2.svg";
+import { loginUrl } from "../config/urls.config";
+import Swal from "sweetalert2";
+import axios from "axios";
+import useTokenStore from "../store/useTokenStore";
+import useUserStore from "../store/useUserStore";
 
-function LoginForm({
-  username,
-  setUsername,
-  password,
-  setPassword,
-  enviarData,
-  loading,
-}) {
-  const [isButtonDisabled, setIsButtonDisabled] = useState(true);
+function LoginForm() {
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const { setToken } = useTokenStore();
+  const { setUser } = useUserStore();
 
+  // Función para enviar datos de inicio de sesión
+  const enviarData = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setError(null);
+
+    const postData = {
+      email: username,
+      password: password,
+    };
+    axios
+      .post(loginUrl, postData)
+      .then((response) => {
+        if (response.data.status === 200) {
+          localStorage.setItem("token", response.data.token);
+          localStorage.setItem("user", JSON.stringify(response.data.user));
+          setToken(response.data.token);
+          setUser(response.data.user);
+          setLoading(false);
+        } else {
+          Swal.fire({
+            icon: "error",
+            title: "Error",
+            text: `${response.data.message}`,
+          });
+        }
+        setUsername("");
+        setPassword("");
+      })
+      .catch((error) => {
+        console.error("Error al iniciar sesión: ", error);
+      });
+  };
   return (
     <body className="overflow-hidden">
       <div className="min-h-screen flex flex-col items-center justify-center font-poppins bg-blue-500">
@@ -53,11 +89,11 @@ function LoginForm({
               </button>
             </div>
           </form>
+          {error && <p className="text-red-500">{error}</p>}
         </div>
       </div>
     </body>
   );
 }
-
 
 export default LoginForm;
