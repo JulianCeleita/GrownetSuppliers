@@ -97,6 +97,16 @@ const PricesView = () => {
 
         return result.toFixed(2);
     };
+    const calculateUtilityValue = (cost, percentage) => {
+        const costValue = parseFloat(cost);
+        const percentageValue = parseFloat(percentage);
+
+        const calculatedBand = costValue + (costValue * (percentageValue / 100));
+
+        const result = calculatedBand - costValue;
+
+        return result.toFixed(2);
+    };
 
     const getBandColorClass = (bandId) => {
         switch (bandId) {
@@ -182,7 +192,8 @@ const PricesView = () => {
                                 <th className="py-4">Band 5</th>
                                 {/* TODO: si se decide implementar la columna price descomentar este codigo */}
                                 {/* <th className="py-4">Price</th> */}
-                                <th className="py-4">Utility</th>
+                                <th className="py-4">Utility %</th>
+                                <th className="py-4">Utility $</th>
                                 {/* <th className="py-4">Status</th> */}
                                 <th className="py-4">Delete</th>
                             </tr>
@@ -266,6 +277,12 @@ const PricesView = () => {
                                             router.push(`/price/${price.id}`, undefined, { shallow: true });
                                         }}
                                     >{price.utility}%</td>
+                                    <td className="py-4"
+                                        onClick={(e) => {
+                                            e.preventDefault();
+                                            router.push(`/price/${price.id}`, undefined, { shallow: true });
+                                        }}
+                                    >{calculateUtilityValue(price.cost, price.utility)}$</td>
                                     <td>
                                         <button
                                             onClick={() => {
