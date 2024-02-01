@@ -278,7 +278,6 @@ const CustomersView = () => {
                         key={customer.id}
                         className="text-dark-blue border-b-2 border-stone-100 cursor-pointer"
                       >
-                        {console.log(sortedCustomers, "hola")}
                         <td
                           className="py-4"
                           onClick={(e) => {

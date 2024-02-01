@@ -26,7 +26,6 @@ export const fetchPrices = async (
                 },
             }
         );
-        console.log("🚀 ~ response:", response)
 
         const newPrice = Array.isArray(response.data.prices)
             ? response.data.prices
@@ -100,7 +99,6 @@ const PricesView = () => {
     };
 
     const getBandColorClass = (bandId) => {
-        console.log(bandId)
         switch (bandId) {
             case 1:
                 return 'bg-green px-1';
@@ -118,9 +116,6 @@ const PricesView = () => {
     };
 
     const enviarData = (price, band_id) => {
-        console.log("🚀 ~ enviarData ~ band_id:", band_id)
-        console.log(price)
-
         const postData = {
             customers_accountNumber: price.customers_accountNumber,
             price: price.price,
@@ -128,7 +123,6 @@ const PricesView = () => {
             presentations_id: price.presentations_id,
             products_id: price.products_id,
         };
-        console.log("🚀 ~ enviarData ~ postData:", postData)
         axios
             .post(`${priceUpdate}${price.id}`, postData, {
                 headers: {
