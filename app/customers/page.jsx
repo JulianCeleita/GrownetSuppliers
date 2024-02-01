@@ -1,5 +1,9 @@
 "use client";
-import { TrashIcon } from "@heroicons/react/24/outline";
+import {
+  TrashIcon,
+  ExclamationCircleIcon,
+  MagnifyingGlassIcon,
+} from "@heroicons/react/24/outline";
 import axios from "axios";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -184,13 +188,18 @@ const CustomersView = () => {
           </Link>
         </div>
         <div className="flex relative items-center justify-center mb-16 mt-2 mr-5 ml-2 ">
-          <input
-            type="text"
-            placeholder="Search customers by name"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className=" p-3 rounded-full w-[80%] pl-10 max-w-[72%] bg-[#f4f5fb]"
-          />
+          <div className="relative w-[72%] max-w-[72%]">
+            <input
+              type="text"
+              placeholder="Search customers by name"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="p-3 rounded-full w-full bg-[#f4f5fb] pl-10"
+            />
+            <div className="absolute left-3 top-1/2 transform -translate-y-1/2">
+              <MagnifyingGlassIcon class="h-5 w-5 text-gray mr-5" />
+            </div>
+          </div>
           <select
             value={status}
             onChange={handleStatusChange}
@@ -246,110 +255,125 @@ const CustomersView = () => {
               </tr>
             </thead>
             <tbody>
-              {sortedCustomers.map((customer) => {
-                const shouldShow =
-                  (status === "all" ||
-                    (status === "active" && customer.stateCustomer_id === 1) ||
-                    (status === "inactive" &&
-                      customer.stateCustomer_id === 2)) &&
-                  (!selectedRoute || customer.route === selectedRoute) &&
-                  (!selectedGroup ||
-                    (selectedGroup === "No group" && !customer.group) ||
-                    (customer.group && customer.group === selectedGroup));
-                if (shouldShow) {
-                  return (
-                    <tr
-                      key={customer.id}
-                      className="text-dark-blue border-b-2 border-stone-100 cursor-pointer"
-                    >
-                      <td
-                        className="py-4"
-                        onClick={(e) => {
-                          e.preventDefault();
-                          router.push(
-                            `/customer/${customer.accountNumber}`,
-                            undefined,
-                            { shallow: true }
-                          );
-                        }}
+              {sortedCustomers.length === 0 && !isLoading ? (
+                <tr>
+                  <td colSpan="7" className="text-center">
+                    <p className="flex items-center justify-center text-gray my-10">
+                      <ExclamationCircleIcon class="h-12 w-12 mr-10 text-gray" />
+                      Results not found. Try a different search!
+                    </p>
+                  </td>
+                </tr>
+              ) : (
+                sortedCustomers.map((customer) => {
+                  const shouldShow =
+                    (status === "all" ||
+                      (status === "active" &&
+                        customer.stateCustomer_id === 1) ||
+                      (status === "inactive" &&
+                        customer.stateCustomer_id === 2)) &&
+                    (!selectedRoute || customer.route === selectedRoute) &&
+                    (!selectedGroup ||
+                      (selectedGroup === "No group" && !customer.group) ||
+                      (customer.group && customer.group === selectedGroup));
+                  if (shouldShow) {
+                    return (
+                      <tr
+                        key={customer.id}
+                        className="text-dark-blue border-b-2 border-stone-100 cursor-pointer"
                       >
-                        {customer.accountName}
-                      </td>
-                      <td
-                        className="py-4"
-                        onClick={(e) => {
-                          e.preventDefault();
-                          router.push(
-                            `/customer/${customer.accountNumber}`,
-                            undefined,
-                            { shallow: true }
-                          );
-                        }}
-                      >
-                        {customer.telephone}
-                      </td>
-                      <td
-                        className="py-4"
-                        onClick={(e) => {
-                          e.preventDefault();
-                          router.push(
-                            `/customer/${customer.accountNumber}`,
-                            undefined,
-                            { shallow: true }
-                          );
-                        }}
-                      >
-                        {customer.group !== null ? customer.group : "No group"}
-                      </td>
-                      <td
-                        className="py-4"
-                        onClick={(e) => {
-                          e.preventDefault();
-                          router.push(
-                            `/customer/${customer.accountNumber}`,
-                            undefined,
-                            { shallow: true }
-                          );
-                        }}
-                      >
-                        {customer.route}
-                      </td>
-                      <td
-                        className="py-4"
-                        onClick={(e) => {
-                          e.preventDefault();
-                          router.push(
-                            `/customer/${customer.accountNumber}`,
-                            undefined,
-                            { shallow: true }
-                          );
-                        }}
-                      >
-                        {customer.postCode}
-                      </td>
-                      <td className="py-4">
-                        {customer.stateCustomer_id === 1 ? (
-                          <span style={{ color: "green" }}>Active</span>
-                        ) : (
-                          <span style={{ color: "red" }}>Inactive</span>
-                        )}
-                      </td>
-                      <button
-                        onClick={() => {
-                          setSelectedCustomer(customer);
-                          setShowDeleteModal(true);
-                        }}
-                        className="flex justify-center text-primary-blue font-medium hover:scale-110 mt-4 ml-6 transition-all hover:text-danger hover:border-danger"
-                      >
-                        <TrashIcon className="h-6 w-6 mr-1" />
-                        Delete
-                      </button>
-                    </tr>
-                  );
-                }
+                        {console.log(sortedCustomers, "hola")}
+                        <td
+                          className="py-4"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            router.push(
+                              `/customer/${customer.accountNumber}`,
+                              undefined,
+                              { shallow: true }
+                            );
+                          }}
+                        >
+                          {customer.accountName}
+                        </td>
+                        <td
+                          className="py-4"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            router.push(
+                              `/customer/${customer.accountNumber}`,
+                              undefined,
+                              { shallow: true }
+                            );
+                          }}
+                        >
+                          {customer.telephone}
+                        </td>
+                        <td
+                          className="py-4"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            router.push(
+                              `/customer/${customer.accountNumber}`,
+                              undefined,
+                              { shallow: true }
+                            );
+                          }}
+                        >
+                          {customer.group !== null
+                            ? customer.group
+                            : "No group"}
+                        </td>
+                        <td
+                          className="py-4"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            router.push(
+                              `/customer/${customer.accountNumber}`,
+                              undefined,
+                              { shallow: true }
+                            );
+                          }}
+                        >
+                          {customer.route}
+                        </td>
+                        <td
+                          className="py-4"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            router.push(
+                              `/customer/${customer.accountNumber}`,
+                              undefined,
+                              { shallow: true }
+                            );
+                          }}
+                        >
+                          {customer.postCode}
+                        </td>
+                        <td className="py-4">
+                          {customer.stateCustomer_id === 1 ? (
+                            <span style={{ color: "green" }}>Active</span>
+                          ) : (
+                            <span style={{ color: "red" }}>Inactive</span>
+                          )}
+                        </td>
+                        <button
+                          onClick={() => {
+                            setSelectedCustomer(customer);
+                            setShowDeleteModal(true);
+                          }}
+                          className="flex justify-center text-primary-blue font-medium hover:scale-110 mt-4 ml-6 transition-all hover:text-danger hover:border-danger"
+                        >
+                          <TrashIcon className="h-6 w-6 mr-1" />
+                          Delete
+                        </button>
+                      </tr>
+                    );
+                  }
 
-                return null;
-              })}
+                  return null;
+                })
+              )}
             </tbody>
           </table>
         </div>
