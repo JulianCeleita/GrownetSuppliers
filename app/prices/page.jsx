@@ -6,142 +6,131 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import Swal from "sweetalert2";
 import ModalDelete from "../components/ModalDelete";
-import { priceDelete, pricesBySupplier, pricesUrl, priceUpdate } from "../config/urls.config";
+import {
+  priceDelete,
+  pricesBySupplier,
+  pricesUrl,
+  priceUpdate,
+} from "../config/urls.config";
 import Layout from "../layoutS";
 import useTokenStore from "../store/useTokenStore";
 import useUserStore from "../store/useUserStore";
+import { ChevronDoubleDownIcon } from "@heroicons/react/24/solid";
 
-export const fetchPrices = async (
-    token,
-    user,
-    setPrices,
-    setIsLoading,
-) => {
-    try {
-        const response = await axios.get(
-            pricesUrl,
-            {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
-            }
-        );
+export const fetchPrices = async (token, user, setPrices, setIsLoading) => {
+  try {
+    const response = await axios.get(pricesUrl, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
 
-        const newPrice = Array.isArray(response.data.prices)
-            ? response.data.prices
-            : [];
-        setPrices(newPrice);
-        setIsLoading(false);
-    } catch (error) {
-        console.error("Error al obtener los prices:", error);
-    }
+    const newPrice = Array.isArray(response.data.prices)
+      ? response.data.prices
+      : [];
+    setPrices(newPrice);
+    setIsLoading(false);
+  } catch (error) {
+    console.error("Error al obtener los prices:", error);
+  }
 };
 
 export const fetchPricesBySupplier = async (
-    token,
-    user,
-    setPrices,
-    setIsLoading
+  token,
+  user,
+  setPrices,
+  setIsLoading
 ) => {
-    try {
-        const response = await axios.get(
-            `${pricesBySupplier}${user.id_supplier}`,
-            {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
-            }
-        );
-        console.log("🚀 ~ response by supplier:", response)
+  try {
+    const response = await axios.get(`${pricesBySupplier}${user.id_supplier}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    console.log("🚀 ~ response by supplier:", response);
 
-        const newPrice = Array.isArray(response.data.price)
-            ? response.data.price
-            : [];
-        setPrices(newPrice);
-        setIsLoading(false);
-    } catch (error) {
-        console.error("Error al obtener los prices:", error);
-    }
+    const newPrice = Array.isArray(response.data.price)
+      ? response.data.price
+      : [];
+    setPrices(newPrice);
+    setIsLoading(false);
+  } catch (error) {
+    console.error("Error al obtener los prices:", error);
+  }
 };
 
 const PricesView = () => {
-    const router = useRouter();
-    const { token } = useTokenStore();
-    const [searchTerm, setSearchTerm] = useState("");
-    const [isLoading, setIsLoading] = useState(true);
-    const [prices, setPrices] = useState([]);
-    const [showNewCustomers, setShowNewCustomers] = useState(false);
-    const [status, setStatus] = useState('all');
-    const [selectedPrice, setSelectedPrice] = useState(null);
-    const { user, setUser } = useUserStore();
-    const [editedPrices, setEditedPrices] = useState({});
+  const router = useRouter();
+  const { token } = useTokenStore();
+  const [searchTerm, setSearchTerm] = useState("");
+  const [isLoading, setIsLoading] = useState(true);
+  const [prices, setPrices] = useState([]);
+  const [showNewCustomers, setShowNewCustomers] = useState(false);
+  const [status, setStatus] = useState("all");
+  const [selectedPrice, setSelectedPrice] = useState(null);
+  const { user } = useUserStore();
+  const [editedPrices, setEditedPrices] = useState({});
+  const [showTableBody, setShowTableBody] = useState(false);
 
-    const handlePriceChange = (priceId, newValue) => {
-        setEditedPrices((prevEditedPrices) => ({
-            ...prevEditedPrices,
-            [priceId]: newValue,
-        }));
-    };
+  const handlePriceChange = (priceId, newValue) => {
+    setEditedPrices((prevEditedPrices) => ({
+      ...prevEditedPrices,
+      [priceId]: newValue,
+    }));
+  };
 
-    useEffect(() => {
-        var localStorageUser = JSON.parse(localStorage.getItem("user"));
-        setUser(localStorageUser);
-    }, [setUser]);
+  useEffect(() => {
+    if (user?.rol_name == "AdminGrownet") {
+      fetchPrices(token, user, setPrices, setIsLoading);
+    } else {
+      fetchPricesBySupplier(token, user, setPrices, setIsLoading);
+    }
+  }, [user, token]);
 
-    useEffect(() => {
-        console.log(user)
-        if (user.rol_name == "AdminGrownet") {
-            fetchPrices(token, user, setPrices, setIsLoading);
-        } else {
-            fetchPricesBySupplier(token, user, setPrices, setIsLoading)
-        }
-    }, [user, token]);
+  const filteredPrices = prices.filter((price) => {
+    return price.customers_accountNumber.toLowerCase().includes(searchTerm);
+  });
 
-    const filteredPrices = prices.filter((price) => {
-        return price.customers_accountNumber.toLowerCase().includes(searchTerm);
-    });
+  const sortedPrices = filteredPrices.slice().sort((a, b) => {
+    const priceNameA = prices.find((o) => o.id === a.id)?.accountName || "";
+    const priceNameB = prices.find((o) => o.id === b.id)?.accountName || "";
 
-    const sortedPrices = filteredPrices.slice().sort((a, b) => {
-        const priceNameA =
-            prices.find((o) => o.id === a.id)?.accountName || "";
-        const priceNameB =
-            prices.find((o) => o.id === b.id)?.accountName || "";
+    return priceNameA.localeCompare(priceNameB);
+  });
 
-        return priceNameA.localeCompare(priceNameB);
-    });
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
 
-    const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const handleDeletePrice = (price) => {
+    const { id } = price;
+    axios
+      .post(`${priceDelete}${id}`, null, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+      .then((response) => {
+        setShowDeleteModal(false);
+        fetchPrices(token, user, setPrices, setIsLoading);
+      })
+      .catch((error) => {
+        console.error("Error al eliminar el price: ", error);
+      });
+  };
 
-    const handleDeletePrice = (price) => {
-        const { id } = price;
-        axios
-            .post(`${priceDelete}${id}`, null, {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
-            })
-            .then((response) => {
-                setShowDeleteModal(false);
-                fetchPrices(token, user, setPrices, setIsLoading);
-            })
-            .catch((error) => {
-                console.error("Error al eliminar el price: ", error);
-            });
-    };
+  const calculateBandValue = (cost, percentage) => {
+    const costValue = parseFloat(cost);
+    const percentageValue = parseFloat(percentage);
 
-    const calculateBandValue = (cost, percentage) => {
-        const costValue = parseFloat(cost);
-        const percentageValue = parseFloat(percentage);
+    const markupMargin =
+      (costValue * percentageValue) / (100 - percentageValue);
 
-        const markupMargin = (costValue * percentageValue) / (100 - percentageValue);
+    const result = costValue + markupMargin;
 
-        const result = costValue + markupMargin;
-
-        return result.toFixed(2);
-    };
-    const calculateUtilityValue = (price, cost, percentage, bands_id) => {
-        const costValue = parseFloat(cost);
-        const percentageValue = parseFloat(percentage);
+    return result.toFixed(2);
+  };
+  const calculateUtilityValue = (price, cost, percentage, bands_id) => {
+    const costValue = parseFloat(cost);
+    const percentageValue = parseFloat(percentage);
 
         if (!bands_id) {
             // Si bands_id es null o vacío, calcular utility en porcentaje y en $
@@ -154,81 +143,82 @@ const PricesView = () => {
             };
         }
 
-        // Calcular el markup margin
-        const markupMargin = (costValue * percentageValue) / (100 - percentageValue);
-        return markupMargin.toFixed(2);
+    // Calcular el markup margin
+    const markupMargin =
+      (costValue * percentageValue) / (100 - percentageValue);
+    return markupMargin.toFixed(2);
+  };
+
+  const getBandColorClass = (bandId) => {
+    switch (bandId) {
+      case 1:
+        return "bg-green px-1";
+      case 2:
+        return "bg-green px-1";
+      case 3:
+        return "bg-green px-1";
+      case 4:
+        return "bg-green px-1";
+      case 5:
+        return "bg-green px-1";
+      default:
+        return "";
+    }
+  };
+
+  const enviarData = (price, band_id) => {
+    const priceId = price.price_id;
+    const postData = {
+      customers_accountNumber: price.customers_accountNumber,
+      price: editedPrices[priceId] || price.price,
+      bands_id: band_id,
+      presentations_id: price.presentations_id,
+      products_id: price.products_id,
     };
+    console.log("postData", postData);
+    axios
+      .post(`${priceUpdate}${price.price_id}`, postData, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+      .then((response) => {
+        Swal.fire({
+          position: "top-end",
+          icon: "success",
+          title: "Price update successfully",
+          showConfirmButton: false,
+          timer: 1500,
+        });
+        fetchPrices(token, user, setPrices, setIsLoading);
+      })
+      .catch((error) => {
+        console.error("Error al editar el customer: ", error);
+      });
+  };
 
-    const getBandColorClass = (bandId) => {
-        switch (bandId) {
-            case 1:
-                return 'bg-green px-1';
-            case 2:
-                return 'bg-green px-1';
-            case 3:
-                return 'bg-green px-1';
-            case 4:
-                return 'bg-green px-1';
-            case 5:
-                return 'bg-green px-1';
-            default:
-                return '';
-        }
-    };
+  return (
+    <Layout>
+      <div>
+        <div className="flex justify-between p-8 bg-primary-blue">
+          <h1 className="text-2xl text-white font-semibold">Prices list</h1>
+          <Link
+            className="flex bg-green py-3 px-4 rounded-lg text-white font-medium transition-all hover:bg-dark-blue hover:scale-110 "
+            href="/prices/create-price"
+          >
+            New Presentation
+          </Link>
+        </div>
 
-    const enviarData = (price, band_id) => {
-        const priceId = price.id;
-        const postData = {
-            customers_accountNumber: price.customers_accountNumber,
-            price: editedPrices[priceId] || price.price,
-            bands_id: band_id,
-            presentations_id: price.presentations_id,
-            products_id: price.products_id,
-        };
-        axios
-            .post(`${priceUpdate}${price.id}`, postData, {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
-            })
-            .then((response) => {
-                Swal.fire({
-                    position: "top-end",
-                    icon: "success",
-                    title: "Price update successfully",
-                    showConfirmButton: false,
-                    timer: 1500
-                });
-                fetchPrices(token, user, setPrices, setIsLoading);
-            })
-            .catch((error) => {
-                console.error("Error al editar el customer: ", error);
-            });
-    };
-
-
-    return (
-        <Layout>
-            <div>
-                <div className="flex justify-between p-8 bg-primary-blue">
-                    <h1 className="text-2xl text-white font-semibold">Prices list</h1>
-                    <Link
-                        className="flex bg-green py-3 px-4 rounded-lg text-white font-medium transition-all hover:bg-dark-blue hover:scale-110 "
-                        href="/prices/create-price"
-                    >
-                        New Presentation
-                    </Link>
-                </div>
-
-                <div className="flex relative items-center justify-center ml-5 ">
-                    <input
-                        type="text"
-                        placeholder="Search prices by customer number"
-                        value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
-                        className="border p-2 rounded-xl w-[40%] pl-10 max-w-[72%]"
-                    />
-                </div>
+        <div className="flex relative items-center justify-center ml-5 ">
+          <input
+            type="text"
+            placeholder="Search prices by customer number"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="border p-2 rounded-xl w-[40%] pl-10 max-w-[72%]"
+          />
+        </div>
 
                 <div className="flex items-center justify-center mb-20">
                     <table className="w-[90%] bg-white rounded-2xl text-center shadow-[0_8px_30px_rgb(0,0,0,0.12)]">
