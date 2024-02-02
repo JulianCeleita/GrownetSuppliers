@@ -282,7 +282,7 @@ const OrderView = () => {
           <table className="w-[90%] bg-white rounded-2xl text-center shadow-[0_8px_30px_rgb(0,0,0,0.12)]">
             <thead className="sticky top-0 bg-white shadow-[0px_11px_15px_-3px_#edf2f7] ">
               <tr className="border-b-2 border-stone-100 text-dark-blue">
-                <th className="py-4 rounded-tl-lg">Restaurant</th>
+                <th className="py-4 rounded-tl-lg">Customer</th>
                 <th className="py-4">Order date</th>
                 <th className="py-4">Delivery date</th>
                 <th className="py-4">Order status</th>

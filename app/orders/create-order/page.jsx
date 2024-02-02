@@ -80,7 +80,7 @@ const CreateOrderView = () => {
       }
     };
 
-    if (user.rol_name !== "AdminGrownet") {
+    if (user?.ron_name !== "AdminGrownet") {
       fetchDataBySupplier();
     } else {
       fetchData();

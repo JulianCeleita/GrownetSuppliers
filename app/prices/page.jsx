@@ -139,9 +139,20 @@ const PricesView = () => {
 
         return result.toFixed(2);
     };
-    const calculateUtilityValue = (cost, percentage) => {
+    const calculateUtilityValue = (price, cost, percentage, bands_id) => {
         const costValue = parseFloat(cost);
         const percentageValue = parseFloat(percentage);
+
+        if (!bands_id) {
+            // Si bands_id es null o vacío, calcular utility en porcentaje y en $
+            const utilityPercentage = ((price.price - costValue) / costValue) * 100;
+            const utilityDollars = price.price - costValue;
+
+            return {
+                percentage: utilityPercentage.toFixed(2),
+                dollars: utilityDollars.toFixed(2),
+            };
+        }
 
         // Calcular el markup margin
         const markupMargin = (costValue * percentageValue) / (100 - percentageValue);
@@ -205,7 +216,7 @@ const PricesView = () => {
                         className="flex bg-green py-3 px-4 rounded-lg text-white font-medium transition-all hover:bg-dark-blue hover:scale-110 "
                         href="/prices/create-price"
                     >
-                        New Price
+                        New Presentation
                     </Link>
                 </div>
 
@@ -223,19 +234,20 @@ const PricesView = () => {
                     <table className="w-[90%] bg-white rounded-2xl text-center shadow-[0_8px_30px_rgb(0,0,0,0.12)]">
                         <thead className="sticky top-0 bg-white">
                             <tr className="border-b-2 border-stone-100 text-dark-blue">
-                                <th className="py-4">Presentation</th>
-                                <th className="py-4 rounded-tl-lg">Customer Account</th>
+                                <th className="py-4">Code</th>
+                                <th className="py-4">Products</th>
+                                <th className="py-4">UOM</th>
                                 <th className="py-4">Cost</th>
-                                <th className="py-4">Band 1</th>
+                                <th className="py-4">Profit %</th>
+                                <th className="py-4">Profit $</th>
+                                {/* <th className="py-4">Band 1</th>
                                 <th className="py-4">Band 2</th>
                                 <th className="py-4">Band 3</th>
                                 <th className="py-4">Band 4</th>
-                                <th className="py-4">Band 5</th>
+                                <th className="py-4">Band 5</th> */}
                                 <th className="py-4">Arbitrary</th>
                                 {/* TODO: si se decide implementar la columna price descomentar este codigo */}
                                 {/* <th className="py-4">Price</th> */}
-                                <th className="py-4">Utility %</th>
-                                <th className="py-4">Utility $</th>
                                 {/* <th className="py-4">Status</th> */}
                                 <th className="py-4">Delete</th>
                             </tr>
@@ -252,14 +264,19 @@ const PricesView = () => {
                                             e.preventDefault();
                                             router.push(`/price/${price.id}`, undefined, { shallow: true });
                                         }}
+                                    >5PP</td>
+                                    <td className="py-4"
+                                        onClick={(e) => {
+                                            e.preventDefault();
+                                            router.push(`/price/${price.id}`, undefined, { shallow: true });
+                                        }}
                                     >{price.product} - {price.presentation}</td>
                                     <td className="py-4"
                                         onClick={(e) => {
                                             e.preventDefault();
                                             router.push(`/price/${price.id}`, undefined, { shallow: true });
                                         }}
-                                    >{price.customers_accountNumber
-                                        }</td>
+                                    >kl</td>
                                     <td className="py-4"
                                         onClick={(e) => {
                                             e.preventDefault();
@@ -273,7 +290,7 @@ const PricesView = () => {
                                             router.push(`/price/${price.id}`, undefined, { shallow: true });
                                         }}
                                     >{price.price}</td> */}
-                                    <td className={`py-4 ${getBandColorClass(price.bands_id)}`}
+                                    {/* <td className={`py-4 ${getBandColorClass(price.bands_id)}`}
                                         onClick={(e) => {
                                             e.preventDefault();
                                             enviarData(price, 1);
@@ -312,7 +329,20 @@ const PricesView = () => {
                                         }}
                                     >
                                         <div className="border-b-black bg-white">{calculateBandValue(price.cost, 50)}</div>
-                                    </td>
+                                    </td> */}
+                                    
+                                    <td className="py-4"
+                                        onClick={(e) => {
+                                            e.preventDefault();
+                                            router.push(`/price/${price.id}`, undefined, { shallow: true });
+                                        }}
+                                    >{calculateUtilityValue(price, price.cost, price.utility, price.bands_id).percentage ? calculateUtilityValue(price, price.cost, price.utility, price.bands_id).percentage : price.utility}%</td>
+                                    <td className="py-4"
+                                        onClick={(e) => {
+                                            e.preventDefault();
+                                            router.push(`/price/${price.id}`, undefined, { shallow: true });
+                                        }}
+                                    >{calculateUtilityValue(price, price.cost, price.utility, price.bands_id).dollars ?  calculateUtilityValue(price, price.cost, price.utility, price.bands_id).dollars: calculateUtilityValue(price, price.cost, price.utility, price.bands_id)}$</td>
                                     <td
                                         onClick={(e) => {
                                             e.preventDefault();
@@ -325,18 +355,6 @@ const PricesView = () => {
                                             className="border-b-black bg-white p-1"
                                         />
                                     </td>
-                                    <td className="py-4"
-                                        onClick={(e) => {
-                                            e.preventDefault();
-                                            router.push(`/price/${price.id}`, undefined, { shallow: true });
-                                        }}
-                                    >{price.utility}%</td>
-                                    <td className="py-4"
-                                        onClick={(e) => {
-                                            e.preventDefault();
-                                            router.push(`/price/${price.id}`, undefined, { shallow: true });
-                                        }}
-                                    >{calculateUtilityValue(price.cost, price.utility)}$</td>
                                     <td>
                                         <button
                                             onClick={() => {

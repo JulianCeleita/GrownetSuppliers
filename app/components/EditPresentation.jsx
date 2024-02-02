@@ -165,7 +165,7 @@ function EditPresentation({
         },
       });
 
-      if (user && user.rol_name !== "AdminGrownet") {
+      if (user && user?.ron_name !== "AdminGrownet") {
         fetchPresentationsSupplier(token, user, setPresentations, setIsLoading);
       } else {
         fetchPresentations(token, setPresentations, setIsLoading);
