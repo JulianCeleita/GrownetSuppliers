@@ -93,19 +93,19 @@ const PricesView = () => {
         const costValue = parseFloat(cost);
         const percentageValue = parseFloat(percentage);
 
-        const result = costValue + (costValue * (percentageValue / 100));
+        const markupMargin = (costValue * percentageValue) / (100 - percentageValue);
+
+        const result = costValue + markupMargin;
 
         return result.toFixed(2);
     };
     const calculateUtilityValue = (cost, percentage) => {
         const costValue = parseFloat(cost);
         const percentageValue = parseFloat(percentage);
-
-        const calculatedBand = costValue + (costValue * (percentageValue / 100));
-
-        const result = calculatedBand - costValue;
-
-        return result.toFixed(2);
+    
+        // Calcular el markup margin
+        const markupMargin = (costValue * percentageValue) / (100 - percentageValue);
+        return markupMargin.toFixed(2);
     };
 
     const getBandColorClass = (bandId) => {
