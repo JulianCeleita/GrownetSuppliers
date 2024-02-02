@@ -18,9 +18,9 @@ const SideBar = () => {
   const { user, removeUser, setUser } = useUserStore();
 
   const handleLogout = () => {
+    router.push("/");
     removeToken();
     removeUser();
-    router.push("/");
   };
 
   const handleButtonOpen = async () => {

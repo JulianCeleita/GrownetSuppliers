@@ -68,7 +68,7 @@ const PricesView = () => {
   const [showNewCustomers, setShowNewCustomers] = useState(false);
   const [status, setStatus] = useState("all");
   const [selectedPrice, setSelectedPrice] = useState(null);
-  const { user, setUser } = useUserStore();
+  const { user } = useUserStore();
   const [editedPrices, setEditedPrices] = useState({});
   const [showTableBody, setShowTableBody] = useState(false);
 
@@ -80,13 +80,7 @@ const PricesView = () => {
   };
 
   useEffect(() => {
-    var localStorageUser = JSON.parse(localStorage.getItem("user"));
-    setUser(localStorageUser);
-  }, [setUser]);
-
-  useEffect(() => {
-    console.log(user);
-    if (user.rol_name == "AdminGrownet") {
+    if (user?.rol_name == "AdminGrownet") {
       fetchPrices(token, user, setPrices, setIsLoading);
     } else {
       fetchPricesBySupplier(token, user, setPrices, setIsLoading);
@@ -162,7 +156,7 @@ const PricesView = () => {
   };
 
   const enviarData = (price, band_id) => {
-    const priceId = price.id;
+    const priceId = price.price_id;
     const postData = {
       customers_accountNumber: price.customers_accountNumber,
       price: editedPrices[priceId] || price.price,
@@ -170,8 +164,9 @@ const PricesView = () => {
       presentations_id: price.presentations_id,
       products_id: price.products_id,
     };
+    console.log("postData", postData);
     axios
-      .post(`${priceUpdate}${price.id}`, postData, {
+      .post(`${priceUpdate}${price.price_id}`, postData, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -350,14 +345,10 @@ const PricesView = () => {
                     >
                       <input
                         type="text"
-                        value={
-                          editedPrices[price.id] !== undefined
-                            ? editedPrices[price.id]
-                            : price.price
-                        }
-                        onChange={(e) =>
-                          handlePriceChange(price.id, e.target.value)
-                        }
+                        value={editedPrices[price.price_id] || price.price}
+                        onChange={(e) => {
+                          handlePriceChange(price.price_id, e.target.value);
+                        }}
                         className="border-b-black bg-white p-1"
                       />
                     </td>
