@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import Swal from "sweetalert2";
 import ModalDelete from "../components/ModalDelete";
-import { priceDelete, pricesUrl, priceUpdate } from "../config/urls.config";
+import { priceDelete, pricesBySupplier, pricesUrl, priceUpdate } from "../config/urls.config";
 import Layout from "../layoutS";
 import useTokenStore from "../store/useTokenStore";
 import useUserStore from "../store/useUserStore";
@@ -26,9 +26,37 @@ export const fetchPrices = async (
                 },
             }
         );
+        console.log("🚀 ~ response:", response)
 
         const newPrice = Array.isArray(response.data.prices)
             ? response.data.prices
+            : [];
+        setPrices(newPrice);
+        setIsLoading(false);
+    } catch (error) {
+        console.error("Error al obtener los prices:", error);
+    }
+};
+
+export const fetchPricesBySupplier = async (
+    token,
+    user,
+    setPrices,
+    setIsLoading
+) => {
+    try {
+        const response = await axios.get(
+            `${pricesBySupplier}${user.id_supplier}`,
+            {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            }
+        );
+        console.log("🚀 ~ response by supplier:", response)
+
+        const newPrice = Array.isArray(response.data.price)
+            ? response.data.price
             : [];
         setPrices(newPrice);
         setIsLoading(false);
@@ -54,7 +82,12 @@ const PricesView = () => {
     }, [setUser]);
 
     useEffect(() => {
-        fetchPrices(token, user, setPrices, setIsLoading);
+        console.log(user)
+        if (user.rol_name == "AdminGrownet") {
+            fetchPrices(token, user, setPrices, setIsLoading);
+        } else {
+            fetchPricesBySupplier(token, user, setPrices, setIsLoading)
+        }
     }, [user, token]);
 
     const filteredPrices = prices.filter((price) => {
@@ -93,19 +126,19 @@ const PricesView = () => {
         const costValue = parseFloat(cost);
         const percentageValue = parseFloat(percentage);
 
-        const result = costValue + (costValue * (percentageValue / 100));
+        const markupMargin = (costValue * percentageValue) / (100 - percentageValue);
+
+        const result = costValue + markupMargin;
 
         return result.toFixed(2);
     };
     const calculateUtilityValue = (cost, percentage) => {
         const costValue = parseFloat(cost);
         const percentageValue = parseFloat(percentage);
-
-        const calculatedBand = costValue + (costValue * (percentageValue / 100));
-
-        const result = calculatedBand - costValue;
-
-        return result.toFixed(2);
+    
+        // Calcular el markup margin
+        const markupMargin = (costValue * percentageValue) / (100 - percentageValue);
+        return markupMargin.toFixed(2);
     };
 
     const getBandColorClass = (bandId) => {
