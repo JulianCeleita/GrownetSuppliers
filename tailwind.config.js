@@ -17,7 +17,8 @@ module.exports = {
         green: "#62C471",
         danger: "#EE6055",
         "light-blue": "#F3F9FF",
-        "dark-green": "#00783E"
+        "dark-green": "#00783E",
+        "gray-grownet": "#969696",
       },
     },
   },

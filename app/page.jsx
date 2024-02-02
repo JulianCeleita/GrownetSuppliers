@@ -1,101 +1,28 @@
 "use client";
-import axios from "axios";
-import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import Swal from "sweetalert2";
 import LoginForm from "./components/LoginForm";
-import { loginUrl } from "./config/urls.config";
 import OrderView from "./orders/page";
 import useTokenStore from "./store/useTokenStore";
-import useUserStore from "./store/useUserStore";
 
 function Home() {
   const [hasMounted, setHasMounted] = useState(false);
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
-  const { token, setToken } = useTokenStore();
-  const { user, setUser } = useUserStore();
-  const router = useRouter();
+  const { token } = useTokenStore();
 
   useEffect(() => {
     setHasMounted(true);
-  }, []);
-
-  useEffect(() => {
-    setHasMounted(true);
-    const storedToken = localStorage.getItem("token");
-    if (storedToken) {
-      setIsLoggedIn(true);
-      setToken(storedToken);
-    }
-  }, [setToken]);
-
-  useEffect(() => {
-    if (isLoggedIn) {
-      router.push("/orders");
-    }
-  }, [isLoggedIn, router]);
+  }, [token]);
 
   if (!hasMounted) {
     return null;
   }
 
-  // Función para enviar datos de inicio de sesión
-  const enviarData = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-    setError(null);
-
-    const postData = {
-      email: username,
-      password: password,
-    };
-    axios.post(loginUrl, postData, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    })
-      .then((response) => {
-        if (response.data.status === 200) {
-          setUsername("");
-          setPassword("");
-          setIsLoggedIn(true);
-          setToken(response.data.token);
-          setUser(response.data.user);
-          localStorage.setItem("token", response.data.token);
-          localStorage.setItem("user", JSON.stringify(response.data.user));
-        } else {
-          setLoading(false);
-          Swal.fire({
-            icon: "error",
-            title: "Error",
-            text: `${response.data.message}`,
-          });
-        }
-      })
-      .catch((error) => {
-        console.error("Error al iniciar sesión: ", error);
-      });
-  };
-
   return (
     <>
-      {isLoggedIn ? (
+      {token ? (
         <OrderView />
       ) : (
         <div className="min-h-screen flex flex-col items-center justify-center bg-blue-500">
-          <LoginForm
-            username={username}
-            setUsername={setUsername}
-            password={password}
-            setPassword={setPassword}
-            enviarData={enviarData}
-            loading={loading}
-          />
-          {error && <p className="text-red-500">{error}</p>}
+          <LoginForm />
         </div>
       )}
     </>

@@ -4,8 +4,9 @@ import axios from "axios";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import Swal from "sweetalert2";
 import ModalDelete from "../components/ModalDelete";
-import { priceDelete, pricesUrl } from "../config/urls.config";
+import { priceDelete, pricesUrl, priceUpdate } from "../config/urls.config";
 import Layout from "../layoutS";
 import useTokenStore from "../store/useTokenStore";
 import useUserStore from "../store/useUserStore";
@@ -56,7 +57,11 @@ const PricesView = () => {
         fetchPrices(token, user, setPrices, setIsLoading);
     }, [user, token]);
 
-    const sortedPrices = prices.slice().sort((a, b) => {
+    const filteredPrices = prices.filter((price) => {
+        return price.customers_accountNumber.toLowerCase().includes(searchTerm);
+    });
+
+    const sortedPrices = filteredPrices.slice().sort((a, b) => {
         const priceNameA =
             prices.find((o) => o.id === a.id)?.accountName || "";
         const priceNameB =
@@ -84,6 +89,70 @@ const PricesView = () => {
             });
     };
 
+    const calculateBandValue = (cost, percentage) => {
+        const costValue = parseFloat(cost);
+        const percentageValue = parseFloat(percentage);
+
+        const result = costValue + (costValue * (percentageValue / 100));
+
+        return result.toFixed(2);
+    };
+    const calculateUtilityValue = (cost, percentage) => {
+        const costValue = parseFloat(cost);
+        const percentageValue = parseFloat(percentage);
+
+        const calculatedBand = costValue + (costValue * (percentageValue / 100));
+
+        const result = calculatedBand - costValue;
+
+        return result.toFixed(2);
+    };
+
+    const getBandColorClass = (bandId) => {
+        switch (bandId) {
+            case 1:
+                return 'bg-green px-1';
+            case 2:
+                return 'bg-green px-1';
+            case 3:
+                return 'bg-green px-1';
+            case 4:
+                return 'bg-green px-1';
+            case 5:
+                return 'bg-green px-1';
+            default:
+                return '';
+        }
+    };
+
+    const enviarData = (price, band_id) => {
+        const postData = {
+            customers_accountNumber: price.customers_accountNumber,
+            price: price.price,
+            bands_id: band_id,
+            presentations_id: price.presentations_id,
+            products_id: price.products_id,
+        };
+        axios
+            .post(`${priceUpdate}${price.id}`, postData, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            })
+            .then((response) => {
+                Swal.fire({
+                    position: "top-end",
+                    icon: "success",
+                    title: "Price update successfully",
+                    showConfirmButton: false,
+                    timer: 1500
+                });
+                fetchPrices(token, user, setPrices, setIsLoading);
+            })
+            .catch((error) => {
+                console.error("Error al editar el customer: ", error);
+            });
+    };
 
 
     return (
@@ -99,13 +168,32 @@ const PricesView = () => {
                     </Link>
                 </div>
 
+                <div className="flex relative items-center justify-center ml-5 ">
+                    <input
+                        type="text"
+                        placeholder="Search prices by customer number"
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                        className="border p-2 rounded-xl w-[40%] pl-10 max-w-[72%]"
+                    />
+                </div>
+
                 <div className="flex items-center justify-center mb-20">
                     <table className="w-[90%] bg-white rounded-2xl text-center shadow-[0_8px_30px_rgb(0,0,0,0.12)]">
-                        <thead className="sticky top-0 bg-white shadow-[0px_11px_15px_-3px_#edf2f7] ">
+                        <thead className="sticky top-0 bg-white">
                             <tr className="border-b-2 border-stone-100 text-dark-blue">
-                                <th className="py-4 rounded-tl-lg">Customer Number</th>
                                 <th className="py-4">Presentation</th>
-                                <th className="py-4">Price</th>
+                                <th className="py-4 rounded-tl-lg">Customer Account</th>
+                                <th className="py-4">Cost</th>
+                                <th className="py-4">Band 1</th>
+                                <th className="py-4">Band 2</th>
+                                <th className="py-4">Band 3</th>
+                                <th className="py-4">Band 4</th>
+                                <th className="py-4">Band 5</th>
+                                {/* TODO: si se decide implementar la columna price descomentar este codigo */}
+                                {/* <th className="py-4">Price</th> */}
+                                <th className="py-4">Utility %</th>
+                                <th className="py-4">Utility $</th>
                                 {/* <th className="py-4">Status</th> */}
                                 <th className="py-4">Delete</th>
                             </tr>
@@ -122,6 +210,12 @@ const PricesView = () => {
                                             e.preventDefault();
                                             router.push(`/price/${price.id}`, undefined, { shallow: true });
                                         }}
+                                    >{price.product} - {price.presentation}</td>
+                                    <td className="py-4"
+                                        onClick={(e) => {
+                                            e.preventDefault();
+                                            router.push(`/price/${price.id}`, undefined, { shallow: true });
+                                        }}
                                     >{price.customers_accountNumber
                                         }</td>
                                     <td className="py-4"
@@ -129,13 +223,66 @@ const PricesView = () => {
                                             e.preventDefault();
                                             router.push(`/price/${price.id}`, undefined, { shallow: true });
                                         }}
-                                    >{price.product} - {price.presentation}</td>
+                                    >{price.cost}</td>
+                                    {/* TODO: si se decide implementar la columna price descomentar este codigo */}
+                                    {/* <td className="py-4"
+                                        onClick={(e) => {
+                                            e.preventDefault();
+                                            router.push(`/price/${price.id}`, undefined, { shallow: true });
+                                        }}
+                                    >{price.price}</td> */}
+                                    <td className={`py-4 ${getBandColorClass(price.bands_id)}`}
+                                        onClick={(e) => {
+                                            e.preventDefault();
+                                            enviarData(price, 1);
+                                        }}
+                                    >
+                                        <div className="border-b-black bg-white">{calculateBandValue(price.cost, 10)}</div>
+                                    </td>
+                                    <td className={`py-4`}
+                                        onClick={(e) => {
+                                            e.preventDefault();
+                                            enviarData(price, 2);
+                                        }}
+                                    >
+                                        <div className="border-b-black bg-white">{calculateBandValue(price.cost, 20)}</div>
+                                    </td>
+                                    <td
+                                        onClick={(e) => {
+                                            e.preventDefault();
+                                            enviarData(price, 3);
+                                        }}
+                                    >
+                                        <div className="border-b-black bg-white">{calculateBandValue(price.cost, 30)}</div>
+                                    </td>
+                                    <td
+                                        onClick={(e) => {
+                                            e.preventDefault();
+                                            enviarData(price, 4);
+                                        }}
+                                    >
+                                        <div className="border-b-black bg-white">{calculateBandValue(price.cost, 40)}</div>
+                                    </td>
+                                    <td
+                                        onClick={(e) => {
+                                            e.preventDefault();
+                                            enviarData(price, 5);
+                                        }}
+                                    >
+                                        <div className="border-b-black bg-white">{calculateBandValue(price.cost, 50)}</div>
+                                    </td>
                                     <td className="py-4"
                                         onClick={(e) => {
                                             e.preventDefault();
                                             router.push(`/price/${price.id}`, undefined, { shallow: true });
                                         }}
-                                    >{price.price}</td>
+                                    >{price.utility}%</td>
+                                    <td className="py-4"
+                                        onClick={(e) => {
+                                            e.preventDefault();
+                                            router.push(`/price/${price.id}`, undefined, { shallow: true });
+                                        }}
+                                    >{calculateUtilityValue(price.cost, price.utility)}$</td>
                                     <td>
                                         <button
                                             onClick={() => {
