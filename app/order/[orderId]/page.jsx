@@ -15,6 +15,7 @@ import axios from "axios";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
 
 export const fetchOrderDetail = async (
   token,
@@ -69,7 +70,7 @@ const OrderDetailPage = () => {
   const [orderDate, setOrderDate] = useState(getCurrentDate());
   const [mouseCoords, setMouseCoords] = useState({ x: 0, y: 0 });
   const [selectedDate, setSelectedDate] = useState("");
-
+  const router = useRouter();
   const { user, setUser } = useUserStore();
 
   const [isLoading, setIsLoading] = useState(false);

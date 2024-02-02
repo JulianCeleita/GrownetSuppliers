@@ -100,7 +100,7 @@ const CustomersView = () => {
   const { user } = useUserStore();
 
   useEffect(() => {
-    if (user && user.rol_name === "AdminGrownet") {
+    if (user && user?.rol_name === "AdminGrownet") {
       fetchCustomers(token, user, setCustomers, setIsLoading);
     } else {
       fetchCustomersSupplier(token, user, setCustomers, setIsLoading);
@@ -121,11 +121,11 @@ const CustomersView = () => {
   });
 
   const sortedCustomers = filteredCustomers.slice().sort((a, b) => {
-    const routeA = a.route.toUpperCase();
-    const routeB = b.route.toUpperCase();
+    const routeA = a.route?.toUpperCase();
+    const routeB = b.route?.toUpperCase();
 
-    const numberA = parseInt(routeA.substring(1));
-    const numberB = parseInt(routeB.substring(1));
+    const numberA = parseInt(routeA?.substring(1));
+    const numberB = parseInt(routeB?.substring(1));
 
     if (numberA < numberB) {
       return -1;
@@ -134,7 +134,7 @@ const CustomersView = () => {
       return 1;
     }
 
-    return routeA.localeCompare(routeB);
+    return routeA?.localeCompare(routeB);
   });
 
   const [showDeleteModal, setShowDeleteModal] = useState(false);
@@ -247,7 +247,6 @@ const CustomersView = () => {
                 <th className="py-4">Route</th>
                 <th className="py-4">Post Code</th>
                 <th className="py-4">Status</th>
-                <th className="py-4">Delete</th>
               </tr>
             </thead>
             <tbody>
@@ -352,16 +351,6 @@ const CustomersView = () => {
                             <span style={{ color: "red" }}>Inactive</span>
                           )}
                         </td>
-                        <button
-                          onClick={() => {
-                            setSelectedCustomer(customer);
-                            setShowDeleteModal(true);
-                          }}
-                          className="flex justify-center text-primary-blue font-medium hover:scale-110 mt-4 ml-6 transition-all hover:text-danger hover:border-danger"
-                        >
-                          <TrashIcon className="h-6 w-6 mr-1" />
-                          Delete
-                        </button>
                       </tr>
                     );
                   }

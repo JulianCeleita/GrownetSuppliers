@@ -197,7 +197,7 @@ const CustomerDetailPage = () => {
         };
 
 
-        if (user.rol_name !== "AdminGrownet") {
+        if (user?.rol_name !== "AdminGrownet") {
             fetchDataBySupplier();
         } else {
             fetchData();

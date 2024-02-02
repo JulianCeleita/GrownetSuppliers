@@ -102,6 +102,7 @@ const CreatePriceView = () => {
                         Authorization: `Bearer ${token}`,
                     },
                 });
+                console.log("🚀 ~ fetchDataBySupplier ~ customerSupplier:", responseRestaurants)
 
                 const sortedRestaurants = responseRestaurants.data.customers.sort(
                     (a, b) => a.accountName.localeCompare(b.accountName)
@@ -113,7 +114,7 @@ const CreatePriceView = () => {
             }
         };
 
-        if (user.rol_name !== "AdminGrownet") {
+        if (user?.ron_name !== "AdminGrownet") {
             fetchDataBySupplier();
         } else {
             fetchData();
