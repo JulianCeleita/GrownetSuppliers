@@ -1,8 +1,9 @@
 "use client";
 import EditTable from "@/app/components/EditTable";
 import {
-  customersData, orderDetail,
-  restaurantsData
+  customersData,
+  orderDetail,
+  restaurantsData,
 } from "@/app/config/urls.config";
 import RootLayout from "@/app/layout";
 import Layout from "@/app/layoutS";
@@ -89,15 +90,11 @@ const OrderDetailPage = () => {
     return `${year}-${month}-${day}`;
   }
   useEffect(() => {
-    const storedToken = localStorage.getItem("token");
-    if (!storedToken) {
+    if (!token) {
       router.push("/");
     } else {
-      if (storedToken != null) {
-        setToken(storedToken);
-        if (token !== null && orderId !== null) {
-          fetchOrderDetail(token, setOrderDetail, setIsLoading, orderId);
-        }
+      if (token !== null && orderId !== null) {
+        fetchOrderDetail(token, setOrderDetail, setIsLoading, orderId);
       }
     }
   }, [orderId, setOrderDetail, token, setToken]);
@@ -114,8 +111,6 @@ const OrderDetailPage = () => {
   }, [orderDetail]);
 
   useEffect(() => {
-    const storedUser = localStorage.getItem("user");
-    setUser(storedUser);
     const fetchData = async () => {
       try {
         const responseRestaurants = await axios.get(restaurantsData, {
@@ -255,7 +250,8 @@ const OrderDetailPage = () => {
               className="flex bg-dark-blue py-3 px-4 rounded-lg text-white font-medium transition-all hover:scale-110 "
               href="/"
             >
-              <ArrowLeftIcon className="w-5 h-5 mt-0.5 mr-1 inline-block" /> Orders
+              <ArrowLeftIcon className="w-5 h-5 mt-0.5 mr-1 inline-block" />{" "}
+              Orders
             </Link>
           </div>
           <div className="grid grid-cols-3 gap-4 p-6 shadow-lg bg-primary-blue pb-20">
