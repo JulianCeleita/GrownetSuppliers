@@ -179,12 +179,20 @@ const PricesView = () => {
           showConfirmButton: false,
           timer: 1500,
         });
-        fetchPrices(token, user, setPrices, setIsLoading);
+
+        if (user?.rol_name == "AdminGrownet") {
+          fetchPrices(token, user, setPrices, setIsLoading);
+        } else {
+          fetchPricesBySupplier(token, user, setPrices, setIsLoading);
+        }
       })
       .catch((error) => {
         console.error("Error al editar el customer: ", error);
       });
   };
+  //   console.log("editedPrices", editedPrices);
+  //   console.log("sortedPrices", sortedPrices);
+  //   console.log("prices", prices);
 
   return (
     <Layout>
@@ -243,14 +251,14 @@ const PricesView = () => {
               {showTableBody &&
                 sortedPrices.map((price) => (
                   <tr
-                    key={price.id}
+                    key={price.price_id}
                     className="text-dark-blue border-b-2 border-stone-100 cursor-pointer"
                   >
                     <td
                       className="py-4"
                       onClick={(e) => {
                         e.preventDefault();
-                        router.push(`/price/${price.id}`, undefined, {
+                        router.push(`/price/${price.price_id}`, undefined, {
                           shallow: true,
                         });
                       }}
@@ -261,7 +269,7 @@ const PricesView = () => {
                       className="py-4"
                       onClick={(e) => {
                         e.preventDefault();
-                        router.push(`/price/${price.id}`, undefined, {
+                        router.push(`/price/${price.price_id}`, undefined, {
                           shallow: true,
                         });
                       }}
@@ -272,7 +280,7 @@ const PricesView = () => {
                       className="py-4"
                       onClick={(e) => {
                         e.preventDefault();
-                        router.push(`/price/${price.id}`, undefined, {
+                        router.push(`/price/${price.price_id}`, undefined, {
                           shallow: true,
                         });
                       }}
@@ -347,8 +355,11 @@ const PricesView = () => {
                         type="text"
                         value={editedPrices[price.price_id] || price.price}
                         onChange={(e) => {
-                          handlePriceChange(price.price_id, e.target.value);
+                          if (price.price_id !== undefined) {
+                            handlePriceChange(price.price_id, e.target.value);
+                          }
                         }}
+                        onBlur={() => enviarData(price, "")}
                         className="border-b-black bg-white p-1"
                       />
                     </td>
@@ -356,7 +367,7 @@ const PricesView = () => {
                       className="py-4"
                       onClick={(e) => {
                         e.preventDefault();
-                        router.push(`/price/${price.id}`, undefined, {
+                        router.push(`/price/${price.price_id}`, undefined, {
                           shallow: true,
                         });
                       }}
@@ -367,7 +378,7 @@ const PricesView = () => {
                       className="py-4"
                       onClick={(e) => {
                         e.preventDefault();
-                        router.push(`/price/${price.id}`, undefined, {
+                        router.push(`/price/${price.price_id}`, undefined, {
                           shallow: true,
                         });
                       }}
