@@ -15,7 +15,7 @@ export const fetchPrices = async (
     token,
     user,
     setPrices,
-    setIsLoading
+    setIsLoading,
 ) => {
     try {
         const response = await axios.get(
@@ -26,7 +26,6 @@ export const fetchPrices = async (
                 },
             }
         );
-        console.log("🚀 ~ response:", response)
 
         const newPrice = Array.isArray(response.data.prices)
             ? response.data.prices
@@ -75,6 +74,14 @@ const PricesView = () => {
     const [status, setStatus] = useState('all');
     const [selectedPrice, setSelectedPrice] = useState(null);
     const { user, setUser } = useUserStore();
+    const [editedPrices, setEditedPrices] = useState({});
+
+    const handlePriceChange = (priceId, newValue) => {
+        setEditedPrices((prevEditedPrices) => ({
+            ...prevEditedPrices,
+            [priceId]: newValue,
+        }));
+    };
 
     useEffect(() => {
         var localStorageUser = JSON.parse(localStorage.getItem("user"));
@@ -135,7 +142,7 @@ const PricesView = () => {
     const calculateUtilityValue = (cost, percentage) => {
         const costValue = parseFloat(cost);
         const percentageValue = parseFloat(percentage);
-    
+
         // Calcular el markup margin
         const markupMargin = (costValue * percentageValue) / (100 - percentageValue);
         return markupMargin.toFixed(2);
@@ -159,9 +166,10 @@ const PricesView = () => {
     };
 
     const enviarData = (price, band_id) => {
+        const priceId = price.id;
         const postData = {
             customers_accountNumber: price.customers_accountNumber,
-            price: price.price,
+            price: editedPrices[priceId] || price.price,
             bands_id: band_id,
             presentations_id: price.presentations_id,
             products_id: price.products_id,
@@ -223,6 +231,7 @@ const PricesView = () => {
                                 <th className="py-4">Band 3</th>
                                 <th className="py-4">Band 4</th>
                                 <th className="py-4">Band 5</th>
+                                <th className="py-4">Arbitrary</th>
                                 {/* TODO: si se decide implementar la columna price descomentar este codigo */}
                                 {/* <th className="py-4">Price</th> */}
                                 <th className="py-4">Utility %</th>
@@ -303,6 +312,18 @@ const PricesView = () => {
                                         }}
                                     >
                                         <div className="border-b-black bg-white">{calculateBandValue(price.cost, 50)}</div>
+                                    </td>
+                                    <td
+                                        onClick={(e) => {
+                                            e.preventDefault();
+                                        }}
+                                    >
+                                        <input
+                                            type="text"
+                                            value={editedPrices[price.id] !== undefined ? editedPrices[price.id] : price.price}
+                                            onChange={(e) => handlePriceChange(price.id, e.target.value)}
+                                            className="border-b-black bg-white p-1"
+                                        />
                                     </td>
                                     <td className="py-4"
                                         onClick={(e) => {
