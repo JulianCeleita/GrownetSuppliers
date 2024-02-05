@@ -16,48 +16,12 @@ import Layout from "../layoutS";
 import useTokenStore from "../store/useTokenStore";
 import useUserStore from "../store/useUserStore";
 import { ChevronDoubleDownIcon } from "@heroicons/react/24/solid";
-
-export const fetchPrices = async (token, user, setPrices, setIsLoading) => {
-  try {
-    const response = await axios.get(pricesUrl, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
-
-    const newPrice = Array.isArray(response.data.prices)
-      ? response.data.prices
-      : [];
-    setPrices(newPrice);
-    setIsLoading(false);
-  } catch (error) {
-    console.error("Error al obtener los prices:", error);
-  }
-};
-
-export const fetchPricesBySupplier = async (
-  token,
-  user,
-  setPrices,
-  setIsLoading
-) => {
-  try {
-    const response = await axios.get(`${pricesBySupplier}${user.id_supplier}`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
-    console.log("🚀 ~ response by supplier:", response);
-
-    const newPrice = Array.isArray(response.data.price)
-      ? response.data.price
-      : [];
-    setPrices(newPrice);
-    setIsLoading(false);
-  } catch (error) {
-    console.error("Error al obtener los prices:", error);
-  }
-};
+import {
+  fetchCustomerBySupplier,
+  fetchPrices,
+  fetchPricesBySupplier,
+} from "../functions/catalogFunctions";
+import Select from "react-select";
 
 const PricesView = () => {
   const router = useRouter();
@@ -71,6 +35,17 @@ const PricesView = () => {
   const { user } = useUserStore();
   const [editedPrices, setEditedPrices] = useState({});
   const [showTableBody, setShowTableBody] = useState(false);
+  const [customerList, setCustomerList] = useState([]);
+  const [selectedAccountName, setSelectedAccountName] = useState("");
+  console.log("customerList", customerList);
+
+  const options = customerList.map((customer) => ({
+    value: customer.accountName,
+    label: customer.accountName,
+  }));
+  const handleChange = (selectedOption) => {
+    setSelectedAccountName(selectedOption.value);
+  };
 
   const handlePriceChange = (priceId, newValue) => {
     setEditedPrices((prevEditedPrices) => ({
@@ -82,21 +57,27 @@ const PricesView = () => {
   useEffect(() => {
     if (user?.rol_name == "AdminGrownet") {
       fetchPrices(token, user, setPrices, setIsLoading);
+      fetchCustomerBySupplier(token, setCustomerList, setIsLoading);
     } else {
       fetchPricesBySupplier(token, user, setPrices, setIsLoading);
+      fetchCustomerBySupplier(token, setCustomerList, setIsLoading);
     }
   }, [user, token]);
 
   const filteredPrices = prices.filter((price) => {
     return price.customers_accountNumber.toLowerCase().includes(searchTerm);
   });
-
-  const sortedPrices = filteredPrices.slice().sort((a, b) => {
-    const priceNameA = prices.find((o) => o.id === a.id)?.accountName || "";
-    const priceNameB = prices.find((o) => o.id === b.id)?.accountName || "";
-
-    return priceNameA.localeCompare(priceNameB);
-  });
+  const sortedPrices = filteredPrices
+    .filter(
+      (price) =>
+        selectedAccountName === "" || price.accountName === selectedAccountName
+    )
+    .slice()
+    .sort((a, b) => {
+      const priceNameA = a.accountName || "";
+      const priceNameB = b.accountName || "";
+      return priceNameA.localeCompare(priceNameB);
+    });
 
   const [showDeleteModal, setShowDeleteModal] = useState(false);
 
@@ -190,7 +171,11 @@ const PricesView = () => {
           showConfirmButton: false,
           timer: 1500,
         });
-        fetchPrices(token, user, setPrices, setIsLoading);
+        if (user?.rol_name == "AdminGrownet") {
+          fetchPrices(token, user, setPrices, setIsLoading);
+        } else {
+          fetchPricesBySupplier(token, user, setPrices, setIsLoading);
+        }
       })
       .catch((error) => {
         console.error("Error al editar el customer: ", error);
@@ -201,7 +186,7 @@ const PricesView = () => {
     <Layout>
       <div>
         <div className="flex justify-between p-8 bg-primary-blue">
-          <h1 className="text-2xl text-white font-semibold">Prices list</h1>
+          <h1 className="text-2xl text-white font-semibold">Catalogue</h1>
           <Link
             className="flex bg-green py-3 px-4 rounded-lg text-white font-medium transition-all hover:bg-dark-blue hover:scale-110 "
             href="/prices/create-price"
@@ -217,6 +202,13 @@ const PricesView = () => {
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className="border p-2 rounded-xl w-[40%] pl-10 max-w-[72%]"
+          />
+          <Select
+            options={options}
+            onChange={handleChange}
+            placeholder="select a customer"
+            className="text-black"
+            classNamePrefix="select"
           />
         </div>
 
@@ -238,13 +230,13 @@ const PricesView = () => {
                 <th className="py-4">UOM</th>
                 <th className="py-4">Cost</th>
                 <th className="py-4">Profit %</th>
-                <th className="py-4">Profit $</th>
+                <th className="py-4">Profit £</th>
                 {/* <th className="py-4">Band 1</th>
                                 <th className="py-4">Band 2</th>
                                 <th className="py-4">Band 3</th>
                                 <th className="py-4">Band 4</th>
                                 <th className="py-4">Band 5</th> */}
-                <th className="py-4">Arbitrary</th>
+                <th className="py-4">Arbitrary £</th>
                 {/* TODO: si se decide implementar la columna price descomentar este codigo */}
                 {/* <th className="py-4">Price</th> */}
                 {/* <th className="py-4">Status</th> */}
@@ -255,14 +247,14 @@ const PricesView = () => {
               {showTableBody &&
                 sortedPrices.map((price) => (
                   <tr
-                    key={price.id}
+                    key={price.price_id}
                     className="text-dark-blue border-b-2 border-stone-100 cursor-pointer"
                   >
                     <td
                       className="py-4"
                       onClick={(e) => {
                         e.preventDefault();
-                        router.push(`/price/${price.id}`, undefined, {
+                        router.push(`/price/${price.price_id}`, undefined, {
                           shallow: true,
                         });
                       }}
@@ -273,7 +265,7 @@ const PricesView = () => {
                       className="py-4"
                       onClick={(e) => {
                         e.preventDefault();
-                        router.push(`/price/${price.id}`, undefined, {
+                        router.push(`/price/${price.price_id}`, undefined, {
                           shallow: true,
                         });
                       }}
@@ -284,7 +276,7 @@ const PricesView = () => {
                       className="py-4"
                       onClick={(e) => {
                         e.preventDefault();
-                        router.push(`/price/${price.id}`, undefined, {
+                        router.push(`/price/${price.price_id}`, undefined, {
                           shallow: true,
                         });
                       }}
@@ -295,7 +287,7 @@ const PricesView = () => {
                       className="py-4"
                       onClick={(e) => {
                         e.preventDefault();
-                        router.push(`/price/${price.id}`, undefined, {
+                        router.push(`/price/${price.price_id}`, undefined, {
                           shallow: true,
                         });
                       }}
@@ -354,7 +346,7 @@ const PricesView = () => {
                       className="py-4"
                       onClick={(e) => {
                         e.preventDefault();
-                        router.push(`/price/${price.id}`, undefined, {
+                        router.push(`/price/${price.price_id}`, undefined, {
                           shallow: true,
                         });
                       }}
@@ -378,7 +370,7 @@ const PricesView = () => {
                       className="py-4"
                       onClick={(e) => {
                         e.preventDefault();
-                        router.push(`/price/${price.id}`, undefined, {
+                        router.push(`/price/${price.price_id}`, undefined, {
                           shallow: true,
                         });
                       }}
@@ -411,12 +403,12 @@ const PricesView = () => {
                       <input
                         type="text"
                         value={
-                          editedPrices[price.id] !== undefined
-                            ? editedPrices[price.id]
+                          editedPrices[price.price_id] !== undefined
+                            ? editedPrices[price.price_id]
                             : price.price
                         }
                         onChange={(e) =>
-                          handlePriceChange(price.id, e.target.value)
+                          handlePriceChange(price.price_id, e.target.value)
                         }
                         className="border-b-black bg-white p-1"
                       />
