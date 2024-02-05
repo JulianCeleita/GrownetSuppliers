@@ -6,7 +6,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import Swal from "sweetalert2";
-import { createCustomer, groupsUrl, routesUrl } from "../../config/urls.config";
+import { assignCustomer, createCustomer, groupsUrl, routesUrl } from "../../config/urls.config";
 import Layout from "../../layoutS";
 import useTokenStore from "../../store/useTokenStore";
 
@@ -101,35 +101,51 @@ const CreateOrderView = () => {
     }, [])
 
 
+
     const handleRouteCheckboxChange = (routeId, day) => {
         setSelectedRoutes((prevSelectedRoutes) => {
             const updatedRoutes = { ...prevSelectedRoutes };
 
-            if (!updatedRoutes[day]) {
-                updatedRoutes[day] = {};
-            }
-
-            updatedRoutes[day][routeId] = !updatedRoutes[day][routeId];
-
-            // Si la ruta ha sido deseleccionada, elimínala del objeto para permitir deselección
-            if (!updatedRoutes[day][routeId]) {
-                delete updatedRoutes[day][routeId];
-            }
-
-            // Si no hay rutas seleccionadas para el día, elimina la entrada del día
-            if (Object.keys(updatedRoutes[day]).length === 0) {
-                delete updatedRoutes[day];
-            }
+            // Toggle the selected checkbox for the current route and day
+            updatedRoutes[day] = { [routeId]: !updatedRoutes[day]?.[routeId] };
 
             return updatedRoutes;
         });
+
+        console.log(selectedRoutes);
     };
+
+
     const prepareDataForBackend = () => {
         const daysData = {};
+
         Object.keys(selectedRoutes).forEach((day) => {
-            daysData[day] = selectedRoutes[day];
+            const routeId = Object.keys(selectedRoutes[day])[0];
+            const dayNumber = getDayNumber(day);
+
+            if (routeId && dayNumber) {
+                daysData[dayNumber] = routeId;
+            }
         });
-        return { days: daysData };
+
+        return { days_routes: daysData };
+    };
+
+    const getDayNumber = (day) => {
+        switch (day.toLowerCase()) {
+            case 'lunes':
+                return "1";
+            case 'martes':
+                return "2";
+            case 'miercoles':
+                return "3";
+            case 'jueves':
+                return "4";
+            case 'viernes':
+                return "5";
+            default:
+                return null;
+        }
     };
 
     const handleImageChange = (e) => {
@@ -189,7 +205,6 @@ const CreateOrderView = () => {
 
     const enviarData = (e) => {
         e.preventDefault();
-        console.log(...prepareDataForBackend())
         const postData = {
             accountNumber: accountNumber,
             accountName: accountName,
@@ -211,6 +226,10 @@ const CreateOrderView = () => {
             delivery_window: `${startHour} - ${endHour}`,
             group_id: selectedGroup
         };
+        const postDataAssign = {
+            ...prepareDataForBackend()
+        };
+        console.log(postDataAssign);
         axios
             .post(createCustomer, postData, {
                 headers: {
@@ -218,19 +237,36 @@ const CreateOrderView = () => {
                 },
             })
             .then((response) => {
-                Swal.fire({
-                    position: "top-end",
-                    icon: "success",
-                    title: "Client created successfully",
-                    showConfirmButton: false,
-                    timer: 1500
-                });
-                setTimeout(() => {
-                    router.push("/customers")
-                }, 1500);
+                console.log(response)
+                const customerAccountNumber = response?.data?.accountNumber;
+                postDataAssign.customer = customerAccountNumber;
+                axios
+                    .post(assignCustomer, postDataAssign, {
+                        headers: {
+                            Authorization: `Bearer ${token}`,
+                        },
+                    })
+                    .then((assignResponse) => {
+                        console.log(assignResponse);
+
+                        Swal.fire({
+                            position: "top-end",
+                            icon: "success",
+                            title: "Client created successfully",
+                            showConfirmButton: false,
+                            timer: 1500
+                        });
+
+                        setTimeout(() => {
+                            router.push("/customers");
+                        }, 1500);
+                    })
+                    .catch((assignError) => {
+                        console.error("Error en la asignación del cliente: ", assignError);
+                    });
             })
             .catch((error) => {
-                console.error("Error al agregar el nuevo customer: ", error);
+                console.error("Error al agregar el nuevo cliente: ", error);
             });
     };
 
@@ -470,6 +506,7 @@ const CreateOrderView = () => {
                                     </tr>
                                 </thead>
                                 <tbody>
+
                                     {['lunes', 'martes', 'miercoles', 'jueves', 'viernes'].map((day) => (
                                         <tr key={day}>
                                             <td>{day}</td>
