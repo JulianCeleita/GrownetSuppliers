@@ -93,12 +93,44 @@ const CreateOrderView = () => {
     const [startHour, setStartHour] = useState('');
     const [endHour, setEndHour] = useState('');
     const [error, setError] = useState('');
+    const [selectedRoutes, setSelectedRoutes] = useState({});
 
     useEffect(() => {
         fetchRoutes(token, user, setRoutes, setIsLoading);
         fetchGroups(token, user, setGroups, setIsLoading);
     }, [])
 
+
+    const handleRouteCheckboxChange = (routeId, day) => {
+        setSelectedRoutes((prevSelectedRoutes) => {
+            const updatedRoutes = { ...prevSelectedRoutes };
+
+            if (!updatedRoutes[day]) {
+                updatedRoutes[day] = {};
+            }
+
+            updatedRoutes[day][routeId] = !updatedRoutes[day][routeId];
+
+            // Si la ruta ha sido deseleccionada, elimínala del objeto para permitir deselección
+            if (!updatedRoutes[day][routeId]) {
+                delete updatedRoutes[day][routeId];
+            }
+
+            // Si no hay rutas seleccionadas para el día, elimina la entrada del día
+            if (Object.keys(updatedRoutes[day]).length === 0) {
+                delete updatedRoutes[day];
+            }
+
+            return updatedRoutes;
+        });
+    };
+    const prepareDataForBackend = () => {
+        const daysData = {};
+        Object.keys(selectedRoutes).forEach((day) => {
+            daysData[day] = selectedRoutes[day];
+        });
+        return { days: daysData };
+    };
 
     const handleImageChange = (e) => {
         const file = e.target.files[0];
@@ -157,6 +189,7 @@ const CreateOrderView = () => {
 
     const enviarData = (e) => {
         e.preventDefault();
+        console.log(...prepareDataForBackend())
         const postData = {
             accountNumber: accountNumber,
             accountName: accountName,
@@ -176,8 +209,7 @@ const CreateOrderView = () => {
             crates: cratesSelected,
             vip: vipSelected,
             delivery_window: `${startHour} - ${endHour}`,
-            group_id: selectedGroup,
-            route_id: selectedRoute
+            group_id: selectedGroup
         };
         axios
             .post(createCustomer, postData, {
@@ -427,19 +459,33 @@ const CreateOrderView = () => {
                             </select>
                         </div>
                         <div className="flex items-center mb-4">
-                            <label className="mr-2">Route:</label>
-                            <select
-                                value={selectedRoute}
-                                onChange={handleRouteChange}
-                                className="ml-2 border p-2 rounded-md"
-                            >
-                                <option value="">Select Route</option>
-                                {routes && routes.map((route) => (
-                                    <option key={route.id} value={route.id}>
-                                        {route.name}
-                                    </option>
-                                ))}
-                            </select>
+                            <label className="mr-2">Routes:</label>
+                            <table className="ml-2 border p-2 rounded-md">
+                                <thead>
+                                    <tr>
+                                        <th></th>
+                                        {routes.map((route) => (
+                                            <th className="p-1" key={route.id}>{route.name}</th>
+                                        ))}
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {['lunes', 'martes', 'miercoles', 'jueves', 'viernes'].map((day) => (
+                                        <tr key={day}>
+                                            <td>{day}</td>
+                                            {routes.map((route) => (
+                                                <td key={route.id}>
+                                                    <input
+                                                        type="checkbox"
+                                                        checked={selectedRoutes[day]?.[route.id] || false}
+                                                        onChange={() => handleRouteCheckboxChange(route.id, day)}
+                                                    />
+                                                </td>
+                                            ))}
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
                         </div>
                     </div>
                     <div className="mt-3 text-center">
