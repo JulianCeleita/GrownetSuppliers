@@ -190,7 +190,11 @@ const PricesView = () => {
           showConfirmButton: false,
           timer: 1500,
         });
-        fetchPrices(token, user, setPrices, setIsLoading);
+        if (user?.rol_name == "AdminGrownet") {
+          fetchPrices(token, user, setPrices, setIsLoading);
+        } else {
+          fetchPricesBySupplier(token, user, setPrices, setIsLoading);
+        }
       })
       .catch((error) => {
         console.error("Error al editar el customer: ", error);
@@ -201,7 +205,7 @@ const PricesView = () => {
     <Layout>
       <div>
         <div className="flex justify-between p-8 bg-primary-blue">
-          <h1 className="text-2xl text-white font-semibold">Prices list</h1>
+          <h1 className="text-2xl text-white font-semibold">Catalogue</h1>
           <Link
             className="flex bg-green py-3 px-4 rounded-lg text-white font-medium transition-all hover:bg-dark-blue hover:scale-110 "
             href="/prices/create-price"
@@ -255,14 +259,14 @@ const PricesView = () => {
               {showTableBody &&
                 sortedPrices.map((price) => (
                   <tr
-                    key={price.id}
+                    key={price.price_id}
                     className="text-dark-blue border-b-2 border-stone-100 cursor-pointer"
                   >
                     <td
                       className="py-4"
                       onClick={(e) => {
                         e.preventDefault();
-                        router.push(`/price/${price.id}`, undefined, {
+                        router.push(`/price/${price.price_id}`, undefined, {
                           shallow: true,
                         });
                       }}
@@ -273,7 +277,7 @@ const PricesView = () => {
                       className="py-4"
                       onClick={(e) => {
                         e.preventDefault();
-                        router.push(`/price/${price.id}`, undefined, {
+                        router.push(`/price/${price.price_id}`, undefined, {
                           shallow: true,
                         });
                       }}
@@ -284,7 +288,7 @@ const PricesView = () => {
                       className="py-4"
                       onClick={(e) => {
                         e.preventDefault();
-                        router.push(`/price/${price.id}`, undefined, {
+                        router.push(`/price/${price.price_id}`, undefined, {
                           shallow: true,
                         });
                       }}
@@ -295,7 +299,7 @@ const PricesView = () => {
                       className="py-4"
                       onClick={(e) => {
                         e.preventDefault();
-                        router.push(`/price/${price.id}`, undefined, {
+                        router.push(`/price/${price.price_id}`, undefined, {
                           shallow: true,
                         });
                       }}
@@ -354,7 +358,7 @@ const PricesView = () => {
                       className="py-4"
                       onClick={(e) => {
                         e.preventDefault();
-                        router.push(`/price/${price.id}`, undefined, {
+                        router.push(`/price/${price.price_id}`, undefined, {
                           shallow: true,
                         });
                       }}
@@ -378,7 +382,7 @@ const PricesView = () => {
                       className="py-4"
                       onClick={(e) => {
                         e.preventDefault();
-                        router.push(`/price/${price.id}`, undefined, {
+                        router.push(`/price/${price.price_id}`, undefined, {
                           shallow: true,
                         });
                       }}
@@ -411,12 +415,12 @@ const PricesView = () => {
                       <input
                         type="text"
                         value={
-                          editedPrices[price.id] !== undefined
-                            ? editedPrices[price.id]
+                          editedPrices[price.price_id] !== undefined
+                            ? editedPrices[price.price_id]
                             : price.price
                         }
                         onChange={(e) =>
-                          handlePriceChange(price.id, e.target.value)
+                          handlePriceChange(price.price_id, e.target.value)
                         }
                         className="border-b-black bg-white p-1"
                       />
