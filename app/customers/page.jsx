@@ -17,72 +17,11 @@ import {
 import Layout from "../layoutS";
 import useTokenStore from "../store/useTokenStore";
 import useUserStore from "../store/useUserStore";
-
-export const fetchCustomers = async (
-  token,
-  user,
-  setCustomers,
-  setIsLoading
-) => {
-  try {
-    const response = await axios.get(customersUrl, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
-
-    const newCustomer = Array.isArray(response.data.customers)
-      ? response.data.customers
-      : [];
-    setCustomers(newCustomer);
-    setIsLoading(false);
-  } catch (error) {
-    console.error("Error al obtener los customers:", error);
-  }
-};
-
-export const fetchCustomersSupplier = async (
-  token,
-  user,
-  setCustomers,
-  setIsLoading
-) => {
-  try {
-    const response = await axios.get(
-      `${customersSupplierUrl}${user.id_supplier}`,
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    );
-
-    const newCustomer = Array.isArray(response.data.customers)
-      ? response.data.customers
-      : [];
-    setCustomers(newCustomer);
-    setIsLoading(false);
-  } catch (error) {
-    console.error("Error al obtener los customers:", error);
-  }
-};
-export const fetchRoutes = async (token, user, setRoutes, setIsLoading) => {
-  try {
-    const response = await axios.get(routesUrl, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
-
-    const newRoute = Array.isArray(response.data.routes)
-      ? response.data.routes
-      : [];
-    setRoutes(newRoute);
-    setIsLoading(false);
-  } catch (error) {
-    console.error("Error al obtener los routes:", error);
-  }
-};
+import {
+  fetchCustomers,
+  fetchCustomersSupplier,
+  fetchRoutes,
+} from "../axiosRequests/customerRequest";
 
 const CustomersView = () => {
   const router = useRouter();
