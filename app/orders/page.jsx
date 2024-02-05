@@ -289,9 +289,9 @@ const OrderView = () => {
               </tr>
             </thead>
             <tbody>
-              {sortedOrders.map((order) => (
+              {sortedOrders.map((order, index) => (
                 <tr
-                  key={order.reference}
+                  key={index}
                   className="text-dark-blue border-b-2 border-stone-100 cursor-pointer"
                   onClick={(e) => {
                     e.preventDefault();
