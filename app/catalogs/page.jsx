@@ -6,12 +6,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import Swal from "sweetalert2";
 import ModalDelete from "../components/ModalDelete";
-import {
-  priceDelete,
-  pricesBySupplier,
-  pricesUrl,
-  priceUpdate,
-} from "../config/urls.config";
+import { priceDelete, priceUpdate } from "../config/urls.config";
 import Layout from "../layoutS";
 import useTokenStore from "../store/useTokenStore";
 import useUserStore from "../store/useUserStore";
@@ -20,7 +15,7 @@ import {
   fetchCustomerBySupplier,
   fetchPrices,
   fetchPricesBySupplier,
-} from "../functions/catalogFunctions";
+} from "../axiosRequests/catalogRequest";
 import Select from "react-select";
 
 const PricesView = () => {
@@ -37,7 +32,6 @@ const PricesView = () => {
   const [showTableBody, setShowTableBody] = useState(false);
   const [customerList, setCustomerList] = useState([]);
   const [selectedAccountName, setSelectedAccountName] = useState("");
-  console.log("customerList", customerList);
 
   const options = customerList.map((customer) => ({
     value: customer.accountName,
@@ -78,7 +72,7 @@ const PricesView = () => {
       const priceNameB = b.accountName || "";
       return priceNameA.localeCompare(priceNameB);
     });
-
+  console.log("sortedPrices", sortedPrices);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
 
   const handleDeletePrice = (price) => {

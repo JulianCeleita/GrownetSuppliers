@@ -16,35 +16,7 @@ import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-
-export const fetchOrderDetail = async (
-  token,
-  setOrderDetail,
-  setIsLoading,
-  orderId,
-  user,
-  router
-) => {
-  try {
-    const response = await axios.get(`${orderDetail}${orderId}`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
-
-    if (
-      user?.id_suppliers == orderDetail.id_suppliers &&
-      user?.rol_name === "AdminGrownet"
-    ) {
-      setOrderDetail(response.data.order);
-      setIsLoading(false);
-    } else {
-      router?.push("/");
-    }
-  } catch (error) {
-    console.error("Error al obtener el detalle:", error);
-  }
-};
+import { fetchOrderDetail } from "@/app/axiosRequests/ordersRequest";
 
 const OrderDetailPage = () => {
   const [hasMounted, setHasMounted] = useState(false);
