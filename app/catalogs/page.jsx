@@ -16,48 +16,12 @@ import Layout from "../layoutS";
 import useTokenStore from "../store/useTokenStore";
 import useUserStore from "../store/useUserStore";
 import { ChevronDoubleDownIcon } from "@heroicons/react/24/solid";
-
-export const fetchPrices = async (token, user, setPrices, setIsLoading) => {
-  try {
-    const response = await axios.get(pricesUrl, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
-
-    const newPrice = Array.isArray(response.data.prices)
-      ? response.data.prices
-      : [];
-    setPrices(newPrice);
-    setIsLoading(false);
-  } catch (error) {
-    console.error("Error al obtener los prices:", error);
-  }
-};
-
-export const fetchPricesBySupplier = async (
-  token,
-  user,
-  setPrices,
-  setIsLoading
-) => {
-  try {
-    const response = await axios.get(`${pricesBySupplier}${user.id_supplier}`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
-    console.log("🚀 ~ response by supplier:", response);
-
-    const newPrice = Array.isArray(response.data.price)
-      ? response.data.price
-      : [];
-    setPrices(newPrice);
-    setIsLoading(false);
-  } catch (error) {
-    console.error("Error al obtener los prices:", error);
-  }
-};
+import {
+  fetchCustomerBySupplier,
+  fetchPrices,
+  fetchPricesBySupplier,
+} from "../functions/catalogFunctions";
+import Select from "react-select";
 
 const PricesView = () => {
   const router = useRouter();
@@ -71,6 +35,17 @@ const PricesView = () => {
   const { user } = useUserStore();
   const [editedPrices, setEditedPrices] = useState({});
   const [showTableBody, setShowTableBody] = useState(false);
+  const [customerList, setCustomerList] = useState([]);
+  const [selectedAccountName, setSelectedAccountName] = useState("");
+  console.log("customerList", customerList);
+
+  const options = customerList.map((customer) => ({
+    value: customer.accountName,
+    label: customer.accountName,
+  }));
+  const handleChange = (selectedOption) => {
+    setSelectedAccountName(selectedOption.value);
+  };
 
   const handlePriceChange = (priceId, newValue) => {
     setEditedPrices((prevEditedPrices) => ({
@@ -82,21 +57,27 @@ const PricesView = () => {
   useEffect(() => {
     if (user?.rol_name == "AdminGrownet") {
       fetchPrices(token, user, setPrices, setIsLoading);
+      fetchCustomerBySupplier(token, setCustomerList, setIsLoading);
     } else {
       fetchPricesBySupplier(token, user, setPrices, setIsLoading);
+      fetchCustomerBySupplier(token, setCustomerList, setIsLoading);
     }
   }, [user, token]);
 
   const filteredPrices = prices.filter((price) => {
     return price.customers_accountNumber.toLowerCase().includes(searchTerm);
   });
-
-  const sortedPrices = filteredPrices.slice().sort((a, b) => {
-    const priceNameA = prices.find((o) => o.id === a.id)?.accountName || "";
-    const priceNameB = prices.find((o) => o.id === b.id)?.accountName || "";
-
-    return priceNameA.localeCompare(priceNameB);
-  });
+  const sortedPrices = filteredPrices
+    .filter(
+      (price) =>
+        selectedAccountName === "" || price.accountName === selectedAccountName
+    )
+    .slice()
+    .sort((a, b) => {
+      const priceNameA = a.accountName || "";
+      const priceNameB = b.accountName || "";
+      return priceNameA.localeCompare(priceNameB);
+    });
 
   const [showDeleteModal, setShowDeleteModal] = useState(false);
 
@@ -221,6 +202,13 @@ const PricesView = () => {
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className="border p-2 rounded-xl w-[40%] pl-10 max-w-[72%]"
+          />
+          <Select
+            options={options}
+            onChange={handleChange}
+            placeholder="select a customer"
+            className="text-black"
+            classNamePrefix="select"
           />
         </div>
 
