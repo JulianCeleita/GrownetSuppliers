@@ -8,12 +8,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import ModalDelete from "../components/ModalDelete";
-import {
-  customersSupplierUrl,
-  customersUrl,
-  deleteCustomer,
-  routesUrl,
-} from "../config/urls.config";
+import { deleteCustomer } from "../config/urls.config";
 import Layout from "../layoutS";
 import useTokenStore from "../store/useTokenStore";
 import useUserStore from "../store/useUserStore";
@@ -145,7 +140,7 @@ const CustomersView = () => {
             <option value="inactive">Inactive</option>
           </select>
 
-          {/* <select
+          <select
             value={selectedRoute}
             onChange={handleRouteChange}
             className="ml-2 border p-2 rounded-md"
@@ -157,7 +152,7 @@ const CustomersView = () => {
                   {route.name}
                 </option>
               ))}
-          </select> */}
+          </select>
           <select
             value={selectedGroup}
             onChange={handleGroupChange}
@@ -182,7 +177,7 @@ const CustomersView = () => {
                 <th className="py-4 rounded-tl-lg">Name</th>
                 <th className="py-4">Telephone</th>
                 <th className="py-4">Group</th>
-                {/* <th className="py-4">Route</th> */}
+                <th className="py-4">Routes</th>
                 <th className="py-4">Post Code</th>
                 <th className="py-4">Status</th>
               </tr>
@@ -205,7 +200,10 @@ const CustomersView = () => {
                         customer.stateCustomer_id === 1) ||
                       (status === "inactive" &&
                         customer.stateCustomer_id === 2)) &&
-                    (!selectedRoute || customer.route === selectedRoute) &&
+                    (!selectedRoute ||
+                      customer.routes.some(
+                        (route) => route.name === selectedRoute
+                      )) &&
                     (!selectedGroup ||
                       (selectedGroup === "No group" && !customer.group) ||
                       (customer.group && customer.group === selectedGroup));
@@ -256,7 +254,7 @@ const CustomersView = () => {
                             ? customer.group
                             : "No group"}
                         </td>
-                        {/* <td
+                        <td
                           className="py-4"
                           onClick={(e) => {
                             e.preventDefault();
@@ -267,8 +265,17 @@ const CustomersView = () => {
                             );
                           }}
                         >
-                          {customer.route}
-                        </td> */}
+                          {customer.routes && customer.routes.length > 0 ? (
+                            customer.routes.map((route, index) => (
+                              <span key={route.id}>
+                                {route.name}
+                                {index < customer.routes.length - 1 && " - "}
+                              </span>
+                            ))
+                          ) : (
+                            <span>No routes</span>
+                          )}
+                        </td>
                         <td
                           className="py-4"
                           onClick={(e) => {

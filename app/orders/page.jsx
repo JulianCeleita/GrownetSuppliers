@@ -18,7 +18,7 @@ const formatDate = (dateString) => {
   const formattedDate = format(new Date(dateString), "yyyy-MM-dd");
   return formattedDate;
 };
-
+// TODO: revisar por qué se dañó la filtracion por fechas y calendario
 const OrderView = () => {
   const router = useRouter();
   const { token } = useTokenStore();
@@ -83,6 +83,7 @@ const OrderView = () => {
       return tomorrow.toDateString() === deliveryDate.toDateString();
     } else if (dateFilter === "dayAfterTomorrow") {
       const dayAfterTomorrow = new Date(currentDate);
+      console.log(dayAfterTomorrow)
       dayAfterTomorrow.setDate(currentDate.getDate() + 1);
       return dayAfterTomorrow.toDateString() === deliveryDate.toDateString();
     } else if (dateFilter === "calendarDate") {

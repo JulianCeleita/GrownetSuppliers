@@ -6,7 +6,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import Swal from "sweetalert2";
-import { createCustomer, groupsUrl, routesUrl } from "../../config/urls.config";
+import { assignCustomer, createCustomer, groupsUrl, routesUrl } from "../../config/urls.config";
 import Layout from "../../layoutS";
 import useTokenStore from "../../store/useTokenStore";
 
@@ -93,12 +93,60 @@ const CreateOrderView = () => {
     const [startHour, setStartHour] = useState('');
     const [endHour, setEndHour] = useState('');
     const [error, setError] = useState('');
+    const [selectedRoutes, setSelectedRoutes] = useState({});
 
     useEffect(() => {
         fetchRoutes(token, user, setRoutes, setIsLoading);
         fetchGroups(token, user, setGroups, setIsLoading);
     }, [])
 
+
+
+    const handleRouteCheckboxChange = (routeId, day) => {
+        setSelectedRoutes((prevSelectedRoutes) => {
+            const updatedRoutes = { ...prevSelectedRoutes };
+
+            // Toggle the selected checkbox for the current route and day
+            updatedRoutes[day] = { [routeId]: !updatedRoutes[day]?.[routeId] };
+
+            return updatedRoutes;
+        });
+
+        console.log(selectedRoutes);
+    };
+
+
+    const prepareDataForBackend = () => {
+        const daysData = {};
+
+        Object.keys(selectedRoutes).forEach((day) => {
+            const routeId = Object.keys(selectedRoutes[day])[0];
+            const dayNumber = getDayNumber(day);
+
+            if (routeId && dayNumber) {
+                daysData[dayNumber] = routeId;
+            }
+        });
+
+        return { days_routes: daysData };
+    };
+
+    const getDayNumber = (day) => {
+        switch (day.toLowerCase()) {
+            case 'lunes':
+                return "1";
+            case 'martes':
+                return "2";
+            case 'miercoles':
+                return "3";
+            case 'jueves':
+                return "4";
+            case 'viernes':
+                return "5";
+            default:
+                return null;
+        }
+    };
 
     const handleImageChange = (e) => {
         const file = e.target.files[0];
@@ -176,9 +224,12 @@ const CreateOrderView = () => {
             crates: cratesSelected,
             vip: vipSelected,
             delivery_window: `${startHour} - ${endHour}`,
-            group_id: selectedGroup,
-            route_id: selectedRoute
+            group_id: selectedGroup
         };
+        const postDataAssign = {
+            ...prepareDataForBackend()
+        };
+        console.log(postDataAssign);
         axios
             .post(createCustomer, postData, {
                 headers: {
@@ -186,19 +237,36 @@ const CreateOrderView = () => {
                 },
             })
             .then((response) => {
-                Swal.fire({
-                    position: "top-end",
-                    icon: "success",
-                    title: "Client created successfully",
-                    showConfirmButton: false,
-                    timer: 1500
-                });
-                setTimeout(() => {
-                    router.push("/customers")
-                }, 1500);
+                console.log(response)
+                const customerAccountNumber = response?.data?.accountNumber;
+                postDataAssign.customer = customerAccountNumber;
+                axios
+                    .post(assignCustomer, postDataAssign, {
+                        headers: {
+                            Authorization: `Bearer ${token}`,
+                        },
+                    })
+                    .then((assignResponse) => {
+                        console.log(assignResponse);
+
+                        Swal.fire({
+                            position: "top-end",
+                            icon: "success",
+                            title: "Client created successfully",
+                            showConfirmButton: false,
+                            timer: 1500
+                        });
+
+                        setTimeout(() => {
+                            router.push("/customers");
+                        }, 1500);
+                    })
+                    .catch((assignError) => {
+                        console.error("Error en la asignación del cliente: ", assignError);
+                    });
             })
             .catch((error) => {
-                console.error("Error al agregar el nuevo customer: ", error);
+                console.error("Error al agregar el nuevo cliente: ", error);
             });
     };
 
@@ -427,19 +495,34 @@ const CreateOrderView = () => {
                             </select>
                         </div>
                         <div className="flex items-center mb-4">
-                            <label className="mr-2">Route:</label>
-                            <select
-                                value={selectedRoute}
-                                onChange={handleRouteChange}
-                                className="ml-2 border p-2 rounded-md"
-                            >
-                                <option value="">Select Route</option>
-                                {routes && routes.map((route) => (
-                                    <option key={route.id} value={route.id}>
-                                        {route.name}
-                                    </option>
-                                ))}
-                            </select>
+                            <label className="mr-2">Routes:</label>
+                            <table className="ml-2 border p-2 rounded-md">
+                                <thead>
+                                    <tr>
+                                        <th></th>
+                                        {routes.map((route) => (
+                                            <th className="p-1" key={route.id}>{route.name}</th>
+                                        ))}
+                                    </tr>
+                                </thead>
+                                <tbody>
+
+                                    {['lunes', 'martes', 'miercoles', 'jueves', 'viernes'].map((day) => (
+                                        <tr key={day}>
+                                            <td>{day}</td>
+                                            {routes.map((route) => (
+                                                <td key={route.id}>
+                                                    <input
+                                                        type="checkbox"
+                                                        checked={selectedRoutes[day]?.[route.id] || false}
+                                                        onChange={() => handleRouteCheckboxChange(route.id, day)}
+                                                    />
+                                                </td>
+                                            ))}
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
                         </div>
                     </div>
                     <div className="mt-3 text-center">

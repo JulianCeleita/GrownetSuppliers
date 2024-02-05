@@ -224,13 +224,13 @@ const PricesView = () => {
                 <th className="py-4">UOM</th>
                 <th className="py-4">Cost</th>
                 <th className="py-4">Profit %</th>
-                <th className="py-4">Profit $</th>
+                <th className="py-4">Profit £</th>
                 {/* <th className="py-4">Band 1</th>
                                 <th className="py-4">Band 2</th>
                                 <th className="py-4">Band 3</th>
                                 <th className="py-4">Band 4</th>
                                 <th className="py-4">Band 5</th> */}
-                <th className="py-4">Arbitrary</th>
+                <th className="py-4">Arbitrary £</th>
                 {/* TODO: si se decide implementar la columna price descomentar este codigo */}
                 {/* <th className="py-4">Price</th> */}
                 {/* <th className="py-4">Status</th> */}

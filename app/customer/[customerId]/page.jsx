@@ -2,14 +2,9 @@
 import {
   fetchCustomerDetail,
   fetchGroups,
+  fetchRoutes,
 } from "@/app/axiosRequests/customerRequest";
-import {
-  customerDetail,
-  customerUpdate,
-  groupsUrl,
-  routesUrl,
-} from "@/app/config/urls.config";
-import { fetchRoutes } from "@/app/customers/page";
+import { customerUpdate } from "@/app/config/urls.config";
 import RootLayout from "@/app/layout";
 import Layout from "@/app/layoutS";
 import useTokenStore from "@/app/store/useTokenStore";
@@ -69,6 +64,7 @@ const CustomerDetailPage = () => {
   const [startHour, setStartHour] = useState("");
   const [endHour, setEndHour] = useState("");
   const [error, setError] = useState("");
+  const [selectedRoutes, setSelectedRoutes] = useState({});
 
   const params = useParams();
 
@@ -131,6 +127,51 @@ const CustomerDetailPage = () => {
   const extraerHoras = (deliveryWindow) => {
     const [inicio, fin] = deliveryWindow.split(" - ");
     return { inicio, fin };
+  };
+
+  const handleRouteCheckboxChange = (routeId, day) => {
+    setSelectedRoutes((prevSelectedRoutes) => {
+      const updatedRoutes = { ...prevSelectedRoutes };
+
+      // Toggle the selected checkbox for the current route and day
+      updatedRoutes[day] = { [routeId]: !updatedRoutes[day]?.[routeId] };
+
+      return updatedRoutes;
+    });
+
+    console.log(selectedRoutes);
+  };
+
+  const prepareDataForBackend = () => {
+    const daysData = {};
+
+    Object.keys(selectedRoutes).forEach((day) => {
+      const routeId = Object.keys(selectedRoutes[day])[0];
+      const dayNumber = getDayNumber(day);
+
+      if (routeId && dayNumber) {
+        daysData[dayNumber] = routeId;
+      }
+    });
+
+    return { days_routes: daysData };
+  };
+
+  const getDayNumber = (day) => {
+    switch (day.toLowerCase()) {
+      case "lunes":
+        return "1";
+      case "martes":
+        return "2";
+      case "miercoles":
+        return "3";
+      case "jueves":
+        return "4";
+      case "viernes":
+        return "5";
+      default:
+        return null;
+    }
   };
 
   const handleRouteChange = (e) => {
@@ -248,6 +289,7 @@ const CustomerDetailPage = () => {
               Customers
             </Link>
           </div>
+
           <div className="flex flex-col items-center justify-center">
             {isLoading && (
               <div className="flex justify-center items-center mb-10 mt-20">
@@ -471,19 +513,45 @@ const CustomerDetailPage = () => {
                     </select>
                   </div>
                   <div className="flex items-center mb-4">
-                    <label className="mr-2">Route:</label>
-                    <select
-                      value={selectedRoute}
-                      onChange={handleRouteChange}
-                      className="ml-2 border p-2 rounded-md"
-                    >
-                      {routes &&
-                        routes.map((route) => (
-                          <option key={route.id} value={route.id}>
-                            {route.name}
-                          </option>
+                    <label className="mr-2">Routes:</label>
+                    <table className="ml-2 border p-2 rounded-md">
+                      <thead>
+                        <tr>
+                          <th></th>
+                          {routes.map((route) => (
+                            <th className="p-1" key={route.id}>
+                              {route.name}
+                            </th>
+                          ))}
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {[
+                          "lunes",
+                          "martes",
+                          "miercoles",
+                          "jueves",
+                          "viernes",
+                        ].map((day) => (
+                          <tr key={day}>
+                            <td>{day}</td>
+                            {routes.map((route) => (
+                              <td key={route.id}>
+                                <input
+                                  type="checkbox"
+                                  checked={
+                                    selectedRoutes[day]?.[route.id] || false
+                                  }
+                                  onChange={() =>
+                                    handleRouteCheckboxChange(route.id, day)
+                                  }
+                                />
+                              </td>
+                            ))}
+                          </tr>
                         ))}
-                    </select>
+                      </tbody>
+                    </table>
                   </div>
                 </div>
                 <div className="mt-3 text-center">
