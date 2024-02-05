@@ -61,6 +61,7 @@ export const fetchCustomersSupplier = async (
       ? response.data.customers
       : [];
     setCustomers(newCustomer);
+    console.log("🚀 ~ response.data.customers:", response.data.customers)
     setIsLoading(false);
   } catch (error) {
     console.error("Error al obtener los customers:", error);
@@ -206,7 +207,7 @@ const CustomersView = () => {
             <option value="inactive">Inactive</option>
           </select>
 
-          {/* <select
+          <select
             value={selectedRoute}
             onChange={handleRouteChange}
             className="ml-2 border p-2 rounded-md"
@@ -218,7 +219,7 @@ const CustomersView = () => {
                   {route.name}
                 </option>
               ))}
-          </select> */}
+          </select>
           <select
             value={selectedGroup}
             onChange={handleGroupChange}
@@ -243,7 +244,7 @@ const CustomersView = () => {
                 <th className="py-4 rounded-tl-lg">Name</th>
                 <th className="py-4">Telephone</th>
                 <th className="py-4">Group</th>
-                {/* <th className="py-4">Route</th> */}
+                <th className="py-4">Routes</th>
                 <th className="py-4">Post Code</th>
                 <th className="py-4">Status</th>
               </tr>
@@ -262,11 +263,9 @@ const CustomersView = () => {
                 sortedCustomers.map((customer) => {
                   const shouldShow =
                     (status === "all" ||
-                      (status === "active" &&
-                        customer.stateCustomer_id === 1) ||
-                      (status === "inactive" &&
-                        customer.stateCustomer_id === 2)) &&
-                    (!selectedRoute || customer.route === selectedRoute) &&
+                      (status === "active" && customer.stateCustomer_id === 1) ||
+                      (status === "inactive" && customer.stateCustomer_id === 2)) &&
+                    (!selectedRoute || customer.routes.some((route) => route.name === selectedRoute)) &&
                     (!selectedGroup ||
                       (selectedGroup === "No group" && !customer.group) ||
                       (customer.group && customer.group === selectedGroup));
@@ -317,7 +316,7 @@ const CustomersView = () => {
                             ? customer.group
                             : "No group"}
                         </td>
-                        {/* <td
+                        <td
                           className="py-4"
                           onClick={(e) => {
                             e.preventDefault();
@@ -328,8 +327,17 @@ const CustomersView = () => {
                             );
                           }}
                         >
-                          {customer.route}
-                        </td> */}
+                          {customer.routes && customer.routes.length > 0 ? (
+                            customer.routes.map((route, index) => (
+                              <span key={route.id}>
+                                {route.name}
+                                {index < customer.routes.length - 1 && ' - '}
+                              </span>
+                            ))
+                          ) : (
+                            <span>No routes</span>
+                          )}
+                        </td>
                         <td
                           className="py-4"
                           onClick={(e) => {
