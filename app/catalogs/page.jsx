@@ -1,7 +1,6 @@
 "use client";
-import { TrashIcon } from "@heroicons/react/24/outline";
+import { PlusCircleIcon, TrashIcon } from "@heroicons/react/24/outline";
 import axios from "axios";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import Swal from "sweetalert2";
@@ -17,7 +16,11 @@ import {
   fetchPricesBySupplier,
 } from "../api/catalogRequest";
 import Select from "react-select";
+
+import CreateProduct from "../components/CreateProduct";
+
 import ModalPrices from "../components/ModalPrices";
+
 
 const PricesView = () => {
   const router = useRouter();
@@ -33,6 +36,10 @@ const PricesView = () => {
   const [showTableBody, setShowTableBody] = useState(false);
   const [customerList, setCustomerList] = useState([]);
   const [selectedAccountName, setSelectedAccountName] = useState("");
+
+  const [showNewPresentations, setShowNewPresentations] = useState(false);
+  const [products, setProducts] = useState([]);
+
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedCatalog, setSelectedCatalog] = useState(null);
 
@@ -44,6 +51,7 @@ const PricesView = () => {
   const closeModal = () => {
     setIsModalOpen(false);
   };
+
 
 
   const options = customerList.map((customer) => ({
@@ -194,12 +202,14 @@ const PricesView = () => {
       <div>
         <div className="flex justify-between p-8 bg-primary-blue">
           <h1 className="text-2xl text-white font-semibold">Catalogue</h1>
-          <Link
-            className="flex bg-green py-3 px-4 rounded-lg text-white font-medium transition-all hover:bg-dark-blue hover:scale-110 "
-            href="/catalogs/create-catalogue"
+          <button
+            className="flex bg-green py-3 px-4 rounded-lg text-white font-medium hover:bg-dark-blue hover:scale-110 "
+            type="button"
+            onClick={() => setShowNewPresentations(true)}
           >
-            New Presentation
-          </Link>
+            <PlusCircleIcon className="h-6 w-6 mr-3 font-bold" />
+            New Product
+          </button>
         </div>
 
         <div className="flex relative items-center justify-center ml-5 ">
@@ -442,6 +452,12 @@ const PricesView = () => {
             </tbody>
           </table>
         </div>
+        <CreateProduct
+          isvisible={showNewPresentations}
+          onClose={() => setShowNewPresentations(false)}
+          setProducts={setProducts}
+          setIsLoading={setIsLoading}
+        />
         <ModalDelete
           isvisible={showDeleteModal}
           onClose={() => setShowDeleteModal(false)}

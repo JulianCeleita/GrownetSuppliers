@@ -7,7 +7,6 @@ import {
 import axios from "axios";
 import { useEffect, useState } from "react";
 import EditPresentation from "../../app/components/EditPresentation";
-import NewPresentation from "../../app/components/NewPresentation";
 import { deletePresentationUrl } from "../../app/config/urls.config";
 import useTokenStore from "../../app/store/useTokenStore";
 import ModalDelete from "../components/ModalDelete";
@@ -17,6 +16,7 @@ import {
   fetchPresentations,
   fetchPresentationsSupplier,
 } from "../api/presentationsRequest";
+import CreateProduct from "../components/CreateProduct";
 
 function Presentations() {
   const { token } = useTokenStore();
@@ -28,7 +28,7 @@ function Presentations() {
   const { user, setUser } = useUserStore();
 
   //Api
-  const [presentations, setPresentations] = useState([]);
+  const [products, setProducts] = useState([]);
 
   useEffect(() => {
     var localStorageUser = JSON.parse(localStorage.getItem("user"));
@@ -37,9 +37,9 @@ function Presentations() {
 
   useEffect(() => {
     if (user && user.rol_name === "AdminGrownet") {
-      fetchPresentations(token, setPresentations, setIsLoading);
+      fetchPresentations(token, setProducts, setIsLoading);
     } else {
-      fetchPresentationsSupplier(token, user, setPresentations, setIsLoading);
+      fetchPresentationsSupplier(token, user, setProducts, setIsLoading);
     }
   }, [user, token]);
 
@@ -57,14 +57,9 @@ function Presentations() {
       .then((response) => {
         setShowDeleteModal(false);
         if (user && user.rol_name === "super") {
-          fetchPresentations(token, setPresentations, setIsLoading);
+          fetchPresentations(token, setProducts, setIsLoading);
         } else {
-          fetchPresentationsSupplier(
-            token,
-            user,
-            setPresentations,
-            setIsLoading
-          );
+          fetchPresentationsSupplier(token, user, setProducts, setIsLoading);
         }
       })
       .catch((error) => {
@@ -72,7 +67,7 @@ function Presentations() {
       });
   };
 
-  const sortedPresentations = presentations.slice().sort((a, b) => {
+  const sortedPresentations = products.slice().sort((a, b) => {
     const presentationProductNameA = a.product_name || "";
     const presentationProductNameB = b.product_name || "";
     return presentationProductNameA.localeCompare(presentationProductNameB);
@@ -155,13 +150,13 @@ function Presentations() {
           isvisible={showEditPresentations}
           onClose={() => setShowEditPresentations(false)}
           presentation={selectedPresentation}
-          setPresentations={setPresentations}
+          setPresentations={setProducts}
           setIsLoading={setIsLoading}
         />
-        <NewPresentation
+        <CreateProduct
           isvisible={showNewPresentations}
           onClose={() => setShowNewPresentations(false)}
-          setPresentations={setPresentations}
+          setProducts={setProducts}
           setIsLoading={setIsLoading}
         />
         {isLoading && (
