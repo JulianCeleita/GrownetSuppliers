@@ -5,7 +5,11 @@ import axios from "axios";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import Select from "react-select";
-import { customersData, customerSupplier, restaurantsData } from "../../config/urls.config";
+import {
+  customersData,
+  customerSupplier,
+  restaurantsData,
+} from "../../config/urls.config";
 import Layout from "../../layoutS";
 import { useTableStore } from "../../store/useTableStore";
 import useTokenStore from "../../store/useTokenStore";
@@ -64,11 +68,14 @@ const CreateOrderView = () => {
 
     const fetchDataBySupplier = async () => {
       try {
-        const responseRestaurants = await axios.get(`${customerSupplier}${user.id_supplier}`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
+        const responseRestaurants = await axios.get(
+          `${customerSupplier}${user.id_supplier}`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
 
         const sortedRestaurants = responseRestaurants.data.customers.sort(
           (a, b) => a.accountName.localeCompare(b.accountName)
@@ -80,15 +87,19 @@ const CreateOrderView = () => {
       }
     };
 
-    if (user.rol_name !== "AdminGrownet") {
+    if (user?.ron_name !== "AdminGrownet") {
       fetchDataBySupplier();
     } else {
       fetchData();
     }
 
     if (selectedAccNumber) {
+      setSelectedAccName(null);
       fetchDataAccNumber();
-    } else if (selectedAccName) {
+    }
+
+    if (selectedAccName) {
+      setSelectedAccNumber(null);
       fetchDataAccName();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -119,11 +130,11 @@ const CreateOrderView = () => {
         }
       );
 
-
       const updatedCustomers = {
         ...responseAccNumber.data.customer,
         orderDate: orderDate,
       };
+
       setCustomers(updatedCustomers);
     } catch (error) {
       console.error("Error fetching AccNumber data", error);
@@ -184,7 +195,7 @@ const CreateOrderView = () => {
   };
 
   const resetStates = () => {
-    setCustomers("")
+    setCustomers("");
   };
 
   useEffect(() => {
@@ -194,6 +205,7 @@ const CreateOrderView = () => {
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
   return (
     <Layout>
       <div className="flex p-6 pb-0 bg-primary-blue">
@@ -223,8 +235,8 @@ const CreateOrderView = () => {
                 value={{
                   value: selectedAccNumber,
                   label:
-                    customers && customers.accountName
-                      ? customers.accountName
+                    customers && customers[0].accountName
+                      ? customers[0].accountName
                       : "Search...",
                 }}
                 isSearchable
@@ -247,8 +259,8 @@ const CreateOrderView = () => {
                 value={{
                   value: selectedAccNumber,
                   label:
-                    customers && customers.accountNumber
-                      ? customers.accountNumber
+                    customers && customers[0].accountNumber
+                      ? customers[0].accountNumber
                       : "Search...",
                 }}
                 isSearchable
@@ -259,27 +271,31 @@ const CreateOrderView = () => {
             <div className="grid grid-cols-2">
               <h3>Post Code:</h3>
               <h3 className="underline decoration-2 decoration-green">
-                {customers && customers.postCode ? customers.postCode : ""}
+                {customers && customers[0].postCode
+                  ? customers[0].postCode
+                  : ""}
               </h3>
             </div>
             <div className="grid grid-cols-2">
               <h3>Telephone:</h3>
               <h3 className="underline decoration-2 decoration-green">
                 {" "}
-                {customers && customers.telephone ? customers.telephone : ""}
+                {customers && customers[0].telephone
+                  ? customers[0].telephone
+                  : ""}
               </h3>
             </div>
           </div>
           <div className="flex mb-2">
             <h3 className="w-[20%]">Address:</h3>
             <h3 className="underline decoration-2 decoration-green w-[80%]">
-              {customers && customers.address ? customers.address : ""}
+              {customers && customers[0].address ? customers[0].address : ""}
             </h3>
           </div>
           <div className="flex mb-2">
             <h3 className="w-[20%]">Contact:</h3>
             <h3 className="underline decoration-2 decoration-green w-[80%]">
-              {customers && customers.email ? customers.email : ""}
+              {customers && customers[0].email ? customers[0].email : ""}
             </h3>
           </div>
         </div>
