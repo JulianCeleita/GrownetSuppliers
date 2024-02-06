@@ -4,7 +4,7 @@ import {
   fetchGroups,
   fetchRoutes,
 } from "@/app/api/customerRequest";
-import { customerUpdate } from "@/app/config/urls.config";
+import { assignCustomer, customerUpdate } from "@/app/config/urls.config";
 import RootLayout from "@/app/layout";
 import Layout from "@/app/layoutS";
 import useTokenStore from "@/app/store/useTokenStore";
@@ -23,31 +23,16 @@ const CustomerDetailPage = () => {
   const { user } = useUserStore();
   const [isLoading, setIsLoading] = useState(true);
   const [detailCustomer, setDetailCustomer] = useState();
-  const [accountNumber, setAccountNumber] = useState(
-    detailCustomer ? detailCustomer.accountNumber : ""
-  );
-  const [accountName, setAccountName] = useState(
-    detailCustomer ? detailCustomer.accountName : ""
-  );
-  const [emailCustomer, setEmailCustomer] = useState(
-    detailCustomer ? detailCustomer.email : ""
-  );
-  const [marketingEmail, setMarketingEmail] = useState(
-    detailCustomer ? detailCustomer.marketing_email : ""
-  );
-  const [addressCustomer, setAddressCustomer] = useState(
-    detailCustomer ? detailCustomer.address : ""
-  );
-  const [telephoneCustomer, setTelephoneCustomer] = useState(
-    detailCustomer ? detailCustomer.telephone : ""
-  );
-  const [postCode, setPostCode] = useState(
-    detailCustomer ? detailCustomer.postCode : ""
-  );
-  const [specialInstructions, setSpecialInstructions] = useState(
-    detailCustomer ? detailCustomer.specialInstructions : ""
-  );
+  const [accountNumber, setAccountNumber] = useState("");
+  const [accountName, setAccountName] = useState(""  );
+  const [emailCustomer, setEmailCustomer] = useState("");
+  const [marketingEmail, setMarketingEmail] = useState("");
+  const [addressCustomer, setAddressCustomer] = useState("");
+  const [telephoneCustomer, setTelephoneCustomer] = useState("");
+  const [postCode, setPostCode] = useState("");
+  const [specialInstructions, setSpecialInstructions] = useState("");
   const [mainContact, setMainContact] = useState("");
+  const [countriesIndicative, setCountriesIndicative] = useState("");
   const [accountEmail, setAccountEmail] = useState("");
   const [drop, setDrop] = useState("");
   const [crates, setCrates] = useState("");
@@ -95,35 +80,65 @@ const CustomerDetailPage = () => {
   }, [customerId, setDetailCustomer, token, setToken]);
 
   useEffect(() => {
-    setAccountNumber(detailCustomer?.accountNumber);
-    setAccountName(detailCustomer?.accountName);
-    setEmailCustomer(detailCustomer?.email);
-    setMarketingEmail(detailCustomer?.marketing_email);
-    setAddressCustomer(detailCustomer?.address);
-    setTelephoneCustomer(detailCustomer?.telephone);
-    setPostCode(detailCustomer?.postCode);
-    setSpecialInstructions(detailCustomer?.specialInstructions);
-    setMainContact(detailCustomer?.main_contact);
-    setAccountEmail(detailCustomer?.account_email);
-    setDrop(detailCustomer?.drop);
-    setDeliveryWindow(detailCustomer?.delivery_window);
-    setCrates(detailCustomer?.crates === 1 ? "yes" : "no");
-    setVip(detailCustomer?.vip === 1 ? "yes" : "no");
-    setCratesSelected(detailCustomer?.crates);
-    setVipSelected(detailCustomer?.vip);
-    setSelectedRoute(detailCustomer?.route_id);
-    setSelectedGroup(detailCustomer?.group_id);
-    setRouteName(detailCustomer?.route);
-    setGroupName(detailCustomer?.group);
-    const { inicio, fin } = extraerHoras(detailCustomer?.delivery_window || "");
-    setStartHour(inicio);
-    setEndHour(fin);
+    if (detailCustomer && detailCustomer.length > 0) {
+      setAccountNumber(detailCustomer[0]?.accountNumber);
+      setAccountName(detailCustomer[0]?.accountName);
+      setEmailCustomer(detailCustomer[0]?.email);
+      setCountriesIndicative(detailCustomer[0]?.countries_indicative);
+      setMarketingEmail(detailCustomer[0]?.marketing_email);
+      setAddressCustomer(detailCustomer[0]?.address);
+      setTelephoneCustomer(detailCustomer[0]?.telephone);
+      setPostCode(detailCustomer[0]?.postCode);
+      setSpecialInstructions(detailCustomer[0]?.specialInstructions);
+      setMainContact(detailCustomer[0]?.main_contact);
+      setAccountEmail(detailCustomer[0]?.account_email);
+      setDrop(detailCustomer[0]?.drop);
+      setDeliveryWindow(detailCustomer[0]?.delivery_window);
+      setCrates(detailCustomer[0]?.crates === 1 ? "yes" : "no");
+      setVip(detailCustomer[0]?.vip === 1 ? "yes" : "no");
+      setCratesSelected(detailCustomer[0]?.crates);
+      setVipSelected(detailCustomer[0]?.vip);
+      setSelectedGroup(detailCustomer[0]?.group_id);
+      setRouteName(detailCustomer[0]?.route);
+      setGroupName(detailCustomer[0]?.group);
+      const { inicio, fin } = extraerHoras(detailCustomer[0]?.delivery_window || "");
+      setStartHour(inicio);
+      setEndHour(fin);
+      const selectedRoutesData = {};
+      detailCustomer[0].routes.forEach((route) => {
+        const day = mapDayNumberToName(route.days_id);
+        const routeId = route.route_id.toString();
+
+        if (!selectedRoutesData[day]) {
+          selectedRoutesData[day] = {};
+        }
+        selectedRoutesData[day][routeId] = true;
+      });
+
+      setSelectedRoutes(selectedRoutesData);
+    }
   }, [detailCustomer]);
 
   useEffect(() => {
     setHasMounted(true);
   }, []);
 
+  const mapDayNumberToName = (dayNumber) => {
+    switch (dayNumber) {
+      case 1:
+        return "lunes";
+      case 2:
+        return "martes";
+      case 3:
+        return "miercoles";
+      case 4:
+        return "jueves";
+      case 5:
+        return "viernes";
+      default:
+        return "";
+    }
+  };
   const extraerHoras = (deliveryWindow) => {
     const [inicio, fin] = deliveryWindow.split(" - ");
     return { inicio, fin };
@@ -133,28 +148,26 @@ const CustomerDetailPage = () => {
     setSelectedRoutes((prevSelectedRoutes) => {
       const updatedRoutes = { ...prevSelectedRoutes };
 
-      // Toggle the selected checkbox for the current route and day
       updatedRoutes[day] = { [routeId]: !updatedRoutes[day]?.[routeId] };
 
       return updatedRoutes;
     });
-
-    console.log(selectedRoutes);
   };
 
   const prepareDataForBackend = () => {
     const daysData = {};
 
     Object.keys(selectedRoutes).forEach((day) => {
-      const routeId = Object.keys(selectedRoutes[day])[0];
-      const dayNumber = getDayNumber(day);
-
-      if (routeId && dayNumber) {
-        daysData[dayNumber] = routeId;
+      const routesForDay = Object.values(selectedRoutes[day]);
+      if (routesForDay.some(isSelected => isSelected)) {
+        daysData[getDayNumber(day)] = Object.entries(selectedRoutes[day])
+          .filter(([_, isSelected]) => isSelected)
+          .map(([routeId, _]) => routeId)
+          .join(',');
       }
     });
 
-    return { days_routes: daysData };
+    return { customer: customerId, days_routes: daysData };
   };
 
   const getDayNumber = (day) => {
@@ -237,7 +250,7 @@ const CustomerDetailPage = () => {
       telephone: telephoneCustomer,
       email: emailCustomer,
       marketing_email: marketingEmail,
-      countries_indicative: detailCustomer.countries_indicative,
+      countries_indicative: countriesIndicative,
       stateCustomer_id: 1,
       image: "",
       main_contact: mainContact,
@@ -247,7 +260,10 @@ const CustomerDetailPage = () => {
       vip: vipSelected,
       delivery_window: `${startHour} - ${endHour}`,
       group_id: selectedGroup,
-      route_id: parseInt(selectedRoute),
+    };
+    const postDataAssign = {
+      customer: customerId,
+      ...prepareDataForBackend()
     };
     axios
       .post(`${customerUpdate}${customerId}`, postData, {
@@ -256,19 +272,31 @@ const CustomerDetailPage = () => {
         },
       })
       .then((response) => {
-        Swal.fire({
-          position: "top-end",
-          icon: "success",
-          title: "Client update successfully",
-          showConfirmButton: false,
-          timer: 1500,
-        });
-        setTimeout(() => {
-          router.push("/customers");
-        }, 1500);
+        axios
+          .post(assignCustomer, postDataAssign, {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          })
+          .then((assignResponse) => {
+            Swal.fire({
+              position: "top-end",
+              icon: "success",
+              title: "Client created successfully",
+              showConfirmButton: false,
+              timer: 1500
+            });
+
+            setTimeout(() => {
+              router.push("/customers");
+            }, 1500);
+          })
+          .catch((assignError) => {
+            console.error("Error en la asignación del cliente: ", assignError);
+          });
       })
       .catch((error) => {
-        console.error("Error al editar el customer: ", error);
+        console.error("Error al agregar el nuevo cliente: ", error);
       });
   };
 
@@ -558,9 +586,8 @@ const CustomerDetailPage = () => {
                   <button
                     type="submit"
                     value="Submit"
-                    className={`bg-primary-blue py-3 px-4 rounded-lg text-white font-medium mr-3 ${
-                      isLoading === true ? "bg-gray-500/50" : ""
-                    }`}
+                    className={`bg-primary-blue py-3 px-4 rounded-lg text-white font-medium mr-3 ${isLoading === true ? "bg-gray-500/50" : ""
+                      }`}
                     disabled={isLoading}
                   >
                     Edit customer
