@@ -16,7 +16,11 @@ import {
   fetchPricesBySupplier,
 } from "../api/catalogRequest";
 import Select from "react-select";
+
 import CreateProduct from "../components/CreateProduct";
+
+import ModalPrices from "../components/ModalPrices";
+
 
 const PricesView = () => {
   const router = useRouter();
@@ -32,8 +36,23 @@ const PricesView = () => {
   const [showTableBody, setShowTableBody] = useState(false);
   const [customerList, setCustomerList] = useState([]);
   const [selectedAccountName, setSelectedAccountName] = useState("");
+
   const [showNewPresentations, setShowNewPresentations] = useState(false);
   const [products, setProducts] = useState([]);
+
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedCatalog, setSelectedCatalog] = useState(null);
+
+  const openModal = (catalog) => {
+    setSelectedCatalog(catalog);
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+  };
+
+
 
   const options = customerList.map((customer) => ({
     value: customer.accountName,
@@ -74,7 +93,7 @@ const PricesView = () => {
       const priceNameB = b.accountName || "";
       return priceNameA.localeCompare(priceNameB);
     });
-  console.log("sortedPrices", sortedPrices);
+  // console.log("sortedPrices", sortedPrices);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
 
   const handleDeletePrice = (price) => {
@@ -152,7 +171,7 @@ const PricesView = () => {
       presentations_id: price.presentations_id,
       products_id: price.products_id,
     };
-    console.log("postData", postData);
+    // console.log("postData", postData);
     axios
       .post(`${priceUpdate}${price.price_id}`, postData, {
         headers: {
@@ -216,9 +235,8 @@ const PricesView = () => {
               <th className={`py-4  ${showTableBody ? "" : "absolute"}`}>
                 <button onClick={() => setShowTableBody(!showTableBody)}>
                   <ChevronDoubleDownIcon
-                    className={`transform transition-transform duration-500 h-5 w-5 ${
-                      showTableBody ? "rotate-0" : "rotate-180"
-                    }`}
+                    className={`transform transition-transform duration-500 h-5 w-5 ${showTableBody ? "rotate-0" : "rotate-180"
+                      }`}
                   />
                 </button>
               </th>
@@ -356,11 +374,11 @@ const PricesView = () => {
                         price.bands_id
                       ).percentage
                         ? calculateUtilityValue(
-                            price,
-                            price.cost,
-                            price.utility,
-                            price.bands_id
-                          ).percentage
+                          price,
+                          price.cost,
+                          price.utility,
+                          price.bands_id
+                        ).percentage
                         : price.utility}
                       %
                     </td>
@@ -380,17 +398,17 @@ const PricesView = () => {
                         price.bands_id
                       ).dollars
                         ? calculateUtilityValue(
-                            price,
-                            price.cost,
-                            price.utility,
-                            price.bands_id
-                          ).dollars
+                          price,
+                          price.cost,
+                          price.utility,
+                          price.bands_id
+                        ).dollars
                         : calculateUtilityValue(
-                            price,
-                            price.cost,
-                            price.utility,
-                            price.bands_id
-                          )}
+                          price,
+                          price.cost,
+                          price.utility,
+                          price.bands_id
+                        )}
                       $
                     </td>
                     <td
@@ -408,8 +426,14 @@ const PricesView = () => {
                         onChange={(e) =>
                           handlePriceChange(price.price_id, e.target.value)
                         }
-                        className="border-b-black bg-white p-1"
+                        className="w-24 border-b-black bg-white p-1"
                       />
+                      <button
+                        onClick={() => openModal(price)}
+                        className="ml-2 text-sm bg-blue-500 hover:bg-blue-700 text-white py-2 px-4 rounded"
+                      >
+                        Recommendations
+                      </button>
                     </td>
                     <td>
                       <button
@@ -443,6 +467,14 @@ const PricesView = () => {
           <div className="flex justify-center items-center mb-20">
             <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-primary-blue"></div>
           </div>
+        )}
+        {isModalOpen && (
+          <ModalPrices
+            isvisible={isModalOpen}
+            onClose={() => setIsModalOpen(false)}
+            setIsLoading={setIsLoading}
+            price={selectedCatalog}
+          />
         )}
       </div>
     </Layout>
