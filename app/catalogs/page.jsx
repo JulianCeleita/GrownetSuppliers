@@ -183,7 +183,7 @@ const PricesView = () => {
           <h1 className="text-2xl text-white font-semibold">Catalogue</h1>
           <Link
             className="flex bg-green py-3 px-4 rounded-lg text-white font-medium transition-all hover:bg-dark-blue hover:scale-110 "
-            href="/prices/create-price"
+            href="/catalogs/create-catalogue"
           >
             New Presentation
           </Link>
