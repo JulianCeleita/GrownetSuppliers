@@ -384,7 +384,7 @@ const OrderDetailPage = () => {
           <div className="-mt-20">
             {isLoading ? (
               <div className="flex justify-center items-center mt-24">
-                <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-primary-blue"></div>
+                <div class="loader"></div>
               </div>
             ) : (
               orderId && (
