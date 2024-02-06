@@ -18,9 +18,9 @@ const SideBar = () => {
   const { user, removeUser, setUser } = useUserStore();
 
   const handleLogout = () => {
+    router.push("/");
     removeToken();
     removeUser();
-    router.push("/");
   };
 
   const handleButtonOpen = async () => {
@@ -288,21 +288,23 @@ const SideBar = () => {
                       )}
                       {user && user.rol_name === "Administrador" && (
                         <Link
-                          href="/prices"
+                          href="/catalogs"
                           className="relative group text-black rounded m-2 py-2 transition-all hover:text-dark-green hover:scale-110"
                         >
                           <h3
-                            className={activeLink === "prices" ? "active" : ""}
-                            onClick={() => setActiveLink("prices")}
+                            className={
+                              activeLink === "catalogs" ? "active" : ""
+                            }
+                            onClick={() => setActiveLink("catalogs")}
                           >
-                            Prices
+                            Catalogs
                           </h3>
 
-                          {activeLink === "prices" && (
+                          {activeLink === "catalogs" && (
                             <span className="absolute bottom-0 left-0 h-0.5 bg-light-green w-full transition-all duration-300 ease-in-out"></span>
                           )}
 
-                          {activeLink !== "prices" && (
+                          {activeLink !== "catalogs" && (
                             <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-white group-hover:w-full transition-all duration-300 ease-in-out"></span>
                           )}
                         </Link>

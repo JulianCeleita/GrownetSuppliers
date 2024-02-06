@@ -10,12 +10,12 @@ import {
 } from "@heroicons/react/24/outline";
 import axios from "axios";
 import { useEffect, useState } from "react";
-import { fetchCategories } from "../categories/page";
 import ModalDelete from "../components/ModalDelete";
 import NewProduct from "../components/NewProduct";
 import Layout from "../layoutS";
 import useCategoryStore from "../store/useCategoryStore";
 import useUserStore from "../store/useUserStore";
+import { fetchCategories } from "../api/categoriesRequest";
 
 function Products() {
   const { token } = useTokenStore();

@@ -13,29 +13,7 @@ import NewSupplier from "../components/NewSupplier";
 import Layout from "../layoutS";
 import useTokenStore from "../store/useTokenStore";
 import useUserStore from "../store/useUserStore";
-
-export const fetchSuppliers = async (token, setSuppliers, setIsLoading) => {
-  try {
-    const response = await axios.get(suppliersUrl, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
-
-    const newSuppliers = Array.isArray(response.data.suppliers)
-      ? response.data.suppliers
-      : [];
-
-    const sortedSuppliers = newSuppliers.sort((a, b) =>
-      a.name.localeCompare(b.name)
-    );
-
-    setSuppliers(sortedSuppliers);
-    setIsLoading(false);
-  } catch (error) {
-    console.error("Error al obtener las proveedores:", error);
-  }
-};
+import { fetchSuppliers } from "../api/suppliersRequest";
 
 function Suppliers() {
   const { token } = useTokenStore();

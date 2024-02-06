@@ -8,82 +8,15 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import ModalDelete from "../components/ModalDelete";
-import {
-  customersSupplierUrl,
-  customersUrl,
-  deleteCustomer,
-  routesUrl,
-} from "../config/urls.config";
+import { deleteCustomer } from "../config/urls.config";
 import Layout from "../layoutS";
 import useTokenStore from "../store/useTokenStore";
 import useUserStore from "../store/useUserStore";
-
-export const fetchCustomers = async (
-  token,
-  user,
-  setCustomers,
-  setIsLoading
-) => {
-  try {
-    const response = await axios.get(customersUrl, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
-
-    const newCustomer = Array.isArray(response.data.customers)
-      ? response.data.customers
-      : [];
-    setCustomers(newCustomer);
-    setIsLoading(false);
-  } catch (error) {
-    console.error("Error al obtener los customers:", error);
-  }
-};
-
-export const fetchCustomersSupplier = async (
-  token,
-  user,
-  setCustomers,
-  setIsLoading
-) => {
-  try {
-    const response = await axios.get(
-      `${customersSupplierUrl}${user.id_supplier}`,
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    );
-
-    const newCustomer = Array.isArray(response.data.customers)
-      ? response.data.customers
-      : [];
-    setCustomers(newCustomer);
-    console.log("🚀 ~ response.data.customers:", response.data.customers)
-    setIsLoading(false);
-  } catch (error) {
-    console.error("Error al obtener los customers:", error);
-  }
-};
-export const fetchRoutes = async (token, user, setRoutes, setIsLoading) => {
-  try {
-    const response = await axios.get(routesUrl, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
-
-    const newRoute = Array.isArray(response.data.routes)
-      ? response.data.routes
-      : [];
-    setRoutes(newRoute);
-    setIsLoading(false);
-  } catch (error) {
-    console.error("Error al obtener los routes:", error);
-  }
-};
+import {
+  fetchCustomers,
+  fetchCustomersSupplier,
+  fetchRoutes,
+} from "../api/customerRequest";
 
 const CustomersView = () => {
   const router = useRouter();
@@ -263,9 +196,14 @@ const CustomersView = () => {
                 sortedCustomers.map((customer) => {
                   const shouldShow =
                     (status === "all" ||
-                      (status === "active" && customer.stateCustomer_id === 1) ||
-                      (status === "inactive" && customer.stateCustomer_id === 2)) &&
-                    (!selectedRoute || customer.routes.some((route) => route.name === selectedRoute)) &&
+                      (status === "active" &&
+                        customer.stateCustomer_id === 1) ||
+                      (status === "inactive" &&
+                        customer.stateCustomer_id === 2)) &&
+                    (!selectedRoute ||
+                      customer.routes.some(
+                        (route) => route.name === selectedRoute
+                      )) &&
                     (!selectedGroup ||
                       (selectedGroup === "No group" && !customer.group) ||
                       (customer.group && customer.group === selectedGroup));
@@ -331,7 +269,7 @@ const CustomersView = () => {
                             customer.routes.map((route, index) => (
                               <span key={route.id}>
                                 {route.name}
-                                {index < customer.routes.length - 1 && ' - '}
+                                {index < customer.routes.length - 1 && " - "}
                               </span>
                             ))
                           ) : (

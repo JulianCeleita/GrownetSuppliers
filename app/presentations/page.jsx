@@ -2,68 +2,21 @@
 import {
   PencilSquareIcon,
   PlusCircleIcon,
-  TrashIcon
+  TrashIcon,
 } from "@heroicons/react/24/outline";
 import axios from "axios";
 import { useEffect, useState } from "react";
 import EditPresentation from "../../app/components/EditPresentation";
 import NewPresentation from "../../app/components/NewPresentation";
-import {
-  deletePresentationUrl, presentationsSupplierUrl, presentationsUrl
-} from "../../app/config/urls.config";
+import { deletePresentationUrl } from "../../app/config/urls.config";
 import useTokenStore from "../../app/store/useTokenStore";
 import ModalDelete from "../components/ModalDelete";
 import Layout from "../layoutS";
 import useUserStore from "../store/useUserStore";
-
-
-
-export const fetchPresentations = async (
-  token,
-  setPresentations,
-  setIsLoading
-) => {
-  try {
-    const response = await axios.get(presentationsUrl, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
-
-    const newPresentation = Array.isArray(response?.data?.presentations)
-      ? response?.data?.presentations
-      : [];
-    setPresentations(newPresentation);
-    setIsLoading(false);
-  } catch (error) {
-    console.error("Error al obtener las presentaciones:", error);
-  }
-};
-
-
-
-export const fetchPresentationsSupplier = async (
-  token,
-  user,
-  setPresentations,
-  setIsLoading
-) => {
-  try {
-    const response = await axios.get(`${presentationsSupplierUrl}${user.id_supplier}`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
-
-    const newPresentation = Array.isArray(response.data.presentations)
-      ? response.data.presentations
-      : [];
-    setPresentations(newPresentation);
-    setIsLoading(false);
-  } catch (error) {
-    console.error("Error al obtener las presentaciones:", error);
-  }
-};
+import {
+  fetchPresentations,
+  fetchPresentationsSupplier,
+} from "../api/presentationsRequest";
 
 function Presentations() {
   const { token } = useTokenStore();
@@ -106,7 +59,12 @@ function Presentations() {
         if (user && user.rol_name === "super") {
           fetchPresentations(token, setPresentations, setIsLoading);
         } else {
-          fetchPresentationsSupplier(token, user, setPresentations, setIsLoading);
+          fetchPresentationsSupplier(
+            token,
+            user,
+            setPresentations,
+            setIsLoading
+          );
         }
       })
       .catch((error) => {

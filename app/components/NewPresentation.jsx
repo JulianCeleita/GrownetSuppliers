@@ -4,11 +4,16 @@ import { useEffect, useState } from "react";
 import ReactCountryFlag from "react-country-flag";
 import {
   addPresentationUrl,
-  productsUrl, taxexUrl, uomUrl
+  productsUrl,
+  taxexUrl,
+  uomUrl,
 } from "../config/urls.config";
-import { fetchPresentations, fetchPresentationsSupplier } from "../presentations/page";
 import useTokenStore from "../store/useTokenStore";
 import useUserStore from "../store/useUserStore";
+import {
+  fetchPresentations,
+  fetchPresentationsSupplier,
+} from "../api/presentationsRequest";
 
 function NewPresentation({
   isvisible,
@@ -119,7 +124,7 @@ function NewPresentation({
       cost: costPresentation,
       code: codePresentation,
       tax: selectedTax,
-      supplier_id: user.id_supplier
+      supplier_id: user.id_supplier,
     };
     axios
       .post(addPresentationUrl, postData, {
@@ -129,7 +134,12 @@ function NewPresentation({
       })
       .then((response) => {
         if (user.id_supplier) {
-          fetchPresentationsSupplier(token, user, setPresentations, setIsLoading);
+          fetchPresentationsSupplier(
+            token,
+            user,
+            setPresentations,
+            setIsLoading
+          );
         } else {
           fetchPresentations(token, setPresentations, setIsLoading);
         }
@@ -203,13 +213,13 @@ function NewPresentation({
               <option value="" disabled selected>
                 Select tax
               </option>
-              {tax.map((tax) => (
+              {tax.map((tax) =>
                 tax.countries_indicative === 44 ? (
                   <option key={tax.id} value={tax.id}>
                     {tax.name}
                   </option>
                 ) : null
-              ))}
+              )}
             </select>
           </div>
           <div>

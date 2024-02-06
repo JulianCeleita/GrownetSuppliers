@@ -3,12 +3,17 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import ReactCountryFlag from "react-country-flag";
 import {
-  productsUrl, taxexUrl, uomUrl,
-  updatePresentationUrl
+  productsUrl,
+  taxexUrl,
+  uomUrl,
+  updatePresentationUrl,
 } from "../config/urls.config";
-import { fetchPresentations, fetchPresentationsSupplier } from "../presentations/page";
 import useTokenStore from "../store/useTokenStore";
 import useUserStore from "../store/useUserStore";
+import {
+  fetchPresentations,
+  fetchPresentationsSupplier,
+} from "../api/presentationsRequest";
 
 function EditPresentation({
   isvisible,
@@ -159,13 +164,17 @@ function EditPresentation({
     };
 
     try {
-      const response = await axios.post(`${updatePresentationUrl}${presentation.id}`, postData, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const response = await axios.post(
+        `${updatePresentationUrl}${presentation.id}`,
+        postData,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
 
-      if (user && user.rol_name !== "AdminGrownet") {
+      if (user && user?.ron_name !== "AdminGrownet") {
         fetchPresentationsSupplier(token, user, setPresentations, setIsLoading);
       } else {
         fetchPresentations(token, setPresentations, setIsLoading);
@@ -250,14 +259,13 @@ function EditPresentation({
               <option value="" disabled>
                 Select tax
               </option>
-              {tax.map((tax) => (
+              {tax.map((tax) =>
                 tax.countries_indicative === 44 ? (
                   <option key={tax.id} value={tax.id}>
                     {tax.name}
                   </option>
                 ) : null
-              ))}
-
+              )}
             </select>
           </div>
           <div>
@@ -339,4 +347,3 @@ function EditPresentation({
   );
 }
 export default EditPresentation;
-

@@ -1,89 +1,24 @@
 "use client";
-import axios from "axios";
 import { format } from "date-fns";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { ordersSupplierUrl, ordersUrl } from "../config/urls.config";
 import Layout from "../layoutS";
 import useTokenStore from "../store/useTokenStore";
 import useUserStore from "../store/useUserStore";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
+import {
+  countOrdersForDate,
+  fetchOrders,
+  fetchOrdersSupplier,
+} from "../api/ordersRequest";
 
-export const fetchOrders = async (token, setOrders, setIsLoading) => {
-  try {
-    const response = await axios.get(ordersUrl, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
-
-    const newOrder = Array.isArray(response.data.orders)
-      ? response.data.orders
-      : [];
-    setOrders(newOrder);
-    setIsLoading(false);
-  } catch (error) {
-    console.error("Error al obtener las ordenes:", error);
-  }
-};
-
-export const fetchOrdersSupplier = async (
-  token,
-  user,
-  setOrders,
-  setIsLoading
-) => {
-  try {
-    const response = await axios.get(
-      `${ordersSupplierUrl}${user?.id_supplier}`,
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    );
-
-    const newOrder = Array.isArray(response.data.orders)
-      ? response.data.orders
-      : [];
-    setOrders(newOrder);
-    setIsLoading(false);
-  } catch (error) {
-    console.error("Error al obtener las ordenes por supplier:", error);
-  }
-};
-
-const countOrdersForDate = (orders, dateFilter) => {
-  const currentDate = new Date();
-
-  return orders.filter((order) => {
-    const deliveryDate = new Date(order.date_delivery);
-
-    switch (dateFilter) {
-      case "today":
-        const today = new Date(currentDate);
-        today.setDate(currentDate.getDate() - 1);
-        return today.toDateString() === deliveryDate.toDateString();
-      case "tomorrow":
-        const tomorrow = new Date();
-        tomorrow.setDate(currentDate.getDate());
-        return tomorrow.toDateString() === deliveryDate.toDateString();
-      case "dayAfterTomorrow":
-        const dayAfterTomorrow = new Date();
-        dayAfterTomorrow.setDate(currentDate.getDate() + 1);
-        return dayAfterTomorrow.toDateString() === deliveryDate.toDateString();
-      default:
-        return false;
-    }
-  }).length;
-};
 const formatDate = (dateString) => {
   const formattedDate = format(new Date(dateString), "yyyy-MM-dd");
   return formattedDate;
 };
-
+// TODO: revisar por qué se dañó la filtracion por fechas y calendario
 const OrderView = () => {
   const router = useRouter();
   const { token } = useTokenStore();
@@ -282,16 +217,16 @@ const OrderView = () => {
           <table className="w-[90%] bg-white rounded-2xl text-center shadow-[0_8px_30px_rgb(0,0,0,0.12)]">
             <thead className="sticky top-0 bg-white shadow-[0px_11px_15px_-3px_#edf2f7] ">
               <tr className="border-b-2 border-stone-100 text-dark-blue">
-                <th className="py-4 rounded-tl-lg">Restaurant</th>
+                <th className="py-4 rounded-tl-lg">Customer</th>
                 <th className="py-4">Order date</th>
                 <th className="py-4">Delivery date</th>
                 <th className="py-4">Order status</th>
               </tr>
             </thead>
             <tbody>
-              {sortedOrders.map((order) => (
+              {sortedOrders.map((order, index) => (
                 <tr
-                  key={order.reference}
+                  key={index}
                   className="text-dark-blue border-b-2 border-stone-100 cursor-pointer"
                   onClick={(e) => {
                     e.preventDefault();
