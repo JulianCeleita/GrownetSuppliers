@@ -83,7 +83,6 @@ const OrderView = () => {
       return tomorrow.toDateString() === deliveryDate.toDateString();
     } else if (dateFilter === "dayAfterTomorrow") {
       const dayAfterTomorrow = new Date(currentDate);
-      console.log(dayAfterTomorrow)
       dayAfterTomorrow.setDate(currentDate.getDate() + 1);
       return dayAfterTomorrow.toDateString() === deliveryDate.toDateString();
     } else if (dateFilter === "calendarDate") {

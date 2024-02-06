@@ -19,7 +19,6 @@ export const fetchCustomerDetail = async (
         Authorization: `Bearer ${token}`,
       },
     });
-
     setDetailCustomer(response.data.customer);
     setIsLoading(false);
   } catch (error) {

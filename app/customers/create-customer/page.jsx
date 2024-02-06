@@ -111,8 +111,6 @@ const CreateOrderView = () => {
 
             return updatedRoutes;
         });
-
-        console.log(selectedRoutes);
     };
 
 
@@ -120,11 +118,12 @@ const CreateOrderView = () => {
         const daysData = {};
 
         Object.keys(selectedRoutes).forEach((day) => {
-            const routeId = Object.keys(selectedRoutes[day])[0];
-            const dayNumber = getDayNumber(day);
-
-            if (routeId && dayNumber) {
-                daysData[dayNumber] = routeId;
+            const routesForDay = Object.values(selectedRoutes[day]);
+            if (routesForDay.some(isSelected => isSelected)) {
+                daysData[getDayNumber(day)] = Object.entries(selectedRoutes[day])
+                    .filter(([_, isSelected]) => isSelected)
+                    .map(([routeId, _]) => routeId)
+                    .join(',');
             }
         });
 
@@ -229,7 +228,6 @@ const CreateOrderView = () => {
         const postDataAssign = {
             ...prepareDataForBackend()
         };
-        console.log(postDataAssign);
         axios
             .post(createCustomer, postData, {
                 headers: {
@@ -237,7 +235,6 @@ const CreateOrderView = () => {
                 },
             })
             .then((response) => {
-                console.log(response)
                 const customerAccountNumber = response?.data?.accountNumber;
                 postDataAssign.customer = customerAccountNumber;
                 axios
@@ -247,8 +244,6 @@ const CreateOrderView = () => {
                         },
                     })
                     .then((assignResponse) => {
-                        console.log(assignResponse);
-
                         Swal.fire({
                             position: "top-end",
                             icon: "success",
