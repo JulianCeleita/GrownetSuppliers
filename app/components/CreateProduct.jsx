@@ -30,7 +30,10 @@ function CreateProduct({ isvisible, onClose, setProducts, setIsLoading }) {
   const [tax, setTax] = useState([]);
   const [selectedTax, setSelectedTax] = useState("");
   const { user, setUser } = useUserStore();
-  const [bulk, setBulk] = useState(false);
+  const [bulk, setBulk] = useState(true);
+  const toggleBulk = () => {
+    setBulk((current) => !current);
+  };
 
   // Taxes
   useEffect(() => {
@@ -157,7 +160,7 @@ function CreateProduct({ isvisible, onClose, setProducts, setIsLoading }) {
         </h1>
         <div className="flex">
           <button
-            onClick={() => setBulk(true)}
+            onClick={toggleBulk}
             className={`${
               bulk
                 ? "bg-blue-500 hover:bg-blue-700 text-white"
@@ -167,7 +170,7 @@ function CreateProduct({ isvisible, onClose, setProducts, setIsLoading }) {
             Bulk
           </button>{" "}
           <button
-            onClick={() => setBulk(false)}
+            onClick={toggleBulk}
             className={`${
               !bulk
                 ? "bg-blue-500 hover:bg-blue-700 text-white"
