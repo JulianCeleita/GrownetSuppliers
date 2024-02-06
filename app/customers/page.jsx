@@ -16,7 +16,7 @@ import {
   fetchCustomers,
   fetchCustomersSupplier,
   fetchRoutes,
-} from "../axiosRequests/customerRequest";
+} from "../api/customerRequest";
 
 const CustomersView = () => {
   const router = useRouter();

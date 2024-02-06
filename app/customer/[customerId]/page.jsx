@@ -3,7 +3,7 @@ import {
   fetchCustomerDetail,
   fetchGroups,
   fetchRoutes,
-} from "@/app/axiosRequests/customerRequest";
+} from "@/app/api/customerRequest";
 import { customerUpdate } from "@/app/config/urls.config";
 import RootLayout from "@/app/layout";
 import Layout from "@/app/layoutS";

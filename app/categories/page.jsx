@@ -13,7 +13,7 @@ import EditCategory from "../components/EditCategory";
 import ModalDelete from "../components/ModalDelete";
 import NewCategory from "../components/NewCategory";
 import Layout from "../layoutS";
-import { fetchCategories } from "../axiosRequests/categoriesRequest";
+import { fetchCategories } from "../api/categoriesRequest";
 
 function Categories() {
   const { token } = useTokenStore();

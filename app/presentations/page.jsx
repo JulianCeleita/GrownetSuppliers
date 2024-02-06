@@ -16,7 +16,7 @@ import useUserStore from "../store/useUserStore";
 import {
   fetchPresentations,
   fetchPresentationsSupplier,
-} from "../axiosRequests/presentationsRequest";
+} from "../api/presentationsRequest";
 
 function Presentations() {
   const { token } = useTokenStore();

@@ -13,7 +13,7 @@ import NewSupplier from "../components/NewSupplier";
 import Layout from "../layoutS";
 import useTokenStore from "../store/useTokenStore";
 import useUserStore from "../store/useUserStore";
-import { fetchSuppliers } from "../axiosRequests/suppliersRequest";
+import { fetchSuppliers } from "../api/suppliersRequest";
 
 function Suppliers() {
   const { token } = useTokenStore();

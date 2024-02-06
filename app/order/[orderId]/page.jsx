@@ -16,7 +16,7 @@ import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { fetchOrderDetail } from "@/app/axiosRequests/ordersRequest";
+import { fetchOrderDetail } from "@/app/api/ordersRequest";
 
 const OrderDetailPage = () => {
   const [hasMounted, setHasMounted] = useState(false);

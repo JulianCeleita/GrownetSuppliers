@@ -12,7 +12,7 @@ import {
   countOrdersForDate,
   fetchOrders,
   fetchOrdersSupplier,
-} from "../axiosRequests/ordersRequest";
+} from "../api/ordersRequest";
 
 const formatDate = (dateString) => {
   const formattedDate = format(new Date(dateString), "yyyy-MM-dd");

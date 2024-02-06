@@ -15,7 +15,7 @@ import {
   fetchCustomerBySupplier,
   fetchPrices,
   fetchPricesBySupplier,
-} from "../axiosRequests/catalogRequest";
+} from "../api/catalogRequest";
 import Select from "react-select";
 
 const PricesView = () => {
