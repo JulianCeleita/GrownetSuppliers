@@ -324,7 +324,7 @@ function EditPresentation({
               value="Submit"
               className="bg-primary-blue py-3 px-4 rounded-lg text-white font-medium mr-3 "
             >
-              Adit Presentation
+              Edit Presentation
             </button>
             <button
               onClick={() => onClose()}
