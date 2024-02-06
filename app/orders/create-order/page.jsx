@@ -206,11 +206,6 @@ const CreateOrderView = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  console.log("customers", customers);
-
-  console.log("selectedAccName", selectedAccName);
-  console.log("selectedAccNumber", selectedAccNumber);
-
   return (
     <Layout>
       <div className="flex p-6 pb-0 bg-primary-blue">
