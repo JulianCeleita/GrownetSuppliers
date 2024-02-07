@@ -106,7 +106,7 @@ function ModalPrices({
                 <h1 className="text-2xl font-bold text-dark-blue mb-2">
                     Recommended prices
                 </h1>
-                <p className="text-lg mb-4">Price actual: {price.price}</p>
+                <p className="text-lg mb-4">Actual price: {price.price}</p>
                 <div className="grid grid-rows-2 grid-cols-5 gap-4 w-full">
                     {bands.map((band) => (
                         <div key={band.id} className="flex flex-col items-center">

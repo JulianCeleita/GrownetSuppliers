@@ -26,26 +26,15 @@ const OrderView = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [orders, setOrders] = useState([]);
   const { user, setUser } = useUserStore();
-  const [dateFilter, setDateFilter] = useState("");
-  const [showAllOrders, setShowAllOrders] = useState(true);
+  const [dateFilter, setDateFilter] = useState("today");
+  const [showAllOrders, setShowAllOrders] = useState(false);
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [selectedDate, setSelectedDate] = useState(new Date());
-  const [today, setToday] = useState(formatDate(new Date()));
-  const [tomorrow, setTomorrow] = useState(
-    formatDate(new Date(new Date().getTime() + 24 * 60 * 60 * 1000))
-  );
-  const [dayAfterTomorrow, setdayAfterTomorrow] = useState(
-    formatDate(new Date(new Date().getTime() + 2 * 24 * 60 * 60 * 1000))
-  );
-
+  const [startDate, setStartDate] = useState(null);
+  const [endDate, setEndDate] = useState(null);
   const [selectedOrders, setSelectedOrders] = useState({});
 
-  const todayOrdersCount = countOrdersForDate(orders, "today");
-  const tomorrowOrdersCount = countOrdersForDate(orders, "tomorrow");
-  const dayAfterTomorrowOrdersCount = countOrdersForDate(
-    orders,
-    "dayAfterTomorrow"
-  );
+  const [filterType, setFilterType] = useState('range');
 
   useEffect(() => {
     if (user && user.rol_name === "AdminGrownet") {
@@ -67,37 +56,39 @@ const OrderView = () => {
     };
   }, [user, token, showDatePicker]);
 
+  const subtractDays = (date, days) => {
+    const result = new Date(date);
+    result.setDate(result.getDate() - days);
+    return result;
+  };
 
   const filterOrdersByDate = (order) => {
     if (showAllOrders) {
       return true;
     }
 
-    const currentDate = new Date();
     const deliveryDate = new Date(order.date_delivery);
+    deliveryDate.setHours(0, 0, 0, 0);
 
     if (dateFilter === "today") {
-      const today = new Date(currentDate);
-      today.setDate(currentDate.getDate() - 1);
-      return today.toDateString() === deliveryDate.toDateString();
-    } else if (dateFilter === "tomorrow") {
-      const tomorrow = new Date(currentDate);
-      tomorrow.setDate(currentDate.getDate());
-      return tomorrow.toDateString() === deliveryDate.toDateString();
-    } else if (dateFilter === "dayAfterTomorrow") {
-      const dayAfterTomorrow = new Date(currentDate);
-      dayAfterTomorrow.setDate(currentDate.getDate() + 1);
-      return dayAfterTomorrow.toDateString() === deliveryDate.toDateString();
-    } else if (dateFilter === "calendarDate") {
-      const selectedDateMinusOne = new Date(selectedDate);
-      selectedDateMinusOne.setDate(selectedDate.getDate() - 1);
-
-      return (
-        selectedDateMinusOne.toDateString() === deliveryDate.toDateString()
-      );
-    } else {
-      return false;
+      const today = subtractDays(new Date(), 1);
+      return isSameDay(deliveryDate, today);
     }
+    if (dateFilter === "range" && startDate && endDate) {
+      const start = new Date(startDate);
+      const startFormatted = subtractDays(start, 1);
+      startFormatted.setHours(0, 0, 0, 0);
+      const end = new Date(endDate);
+      const endFormatted = subtractDays(end, 1)
+      endFormatted.setHours(23, 59, 59, 999);
+      return deliveryDate >= startFormatted && deliveryDate <= endFormatted;
+    }
+
+    return false;
+  };
+
+  const isSameDay = (date1, date2) => {
+    return date1.toDateString() === date2.toDateString();
   };
 
   const handleDateChange = (date) => {
@@ -141,13 +132,28 @@ const OrderView = () => {
 
   const filteredOrders = orders.filter((order) => filterOrdersByDate(order));
 
-  const sortedOrders = filteredOrders.slice().sort((a, b) => {
-    const orderNameA =
-      orders.find((o) => o.id === a.orders_id)?.accountName || "";
-    const orderNameB =
-      orders.find((o) => o.id === b.orders_id)?.accountName || "";
-    return orderNameA.localeCompare(orderNameB);
-  });
+  const sortedOrders = orders
+    .filter((order) => filterOrdersByDate(order))
+    .sort((a, b) => {
+      const dateA = new Date(a.date_delivery);
+      const dateB = new Date(b.date_delivery);
+      return dateA - dateB;
+    });
+
+  const statusColorClass = (status) => {
+    switch (status) {
+      case 'Delivered':
+        return 'bg-green';
+      case 'Dispute':
+        return 'bg-red-500';
+      case 'Generated':
+        return 'bg-orange-500';
+      case 'Preparing':
+        return 'bg-orange-500';
+      default:
+        return 'bg-gray-500';
+    }
+  };
 
   return (
     <Layout>
@@ -161,100 +167,80 @@ const OrderView = () => {
             New Order
           </Link>
         </div>
-        <div className="flex items-center justify-center space-x-4">
-          <button
-            className={`text-dark-blue border-b-2 border-stone-100 cursor-pointer rounded-xl p-1 ${showAllOrders ? "font-semibold bg-blue-300 transition-all" : ""
-              }`}
-            onClick={() => {
-              setDateFilter("");
-              setShowAllOrders(true);
-            }}
+        <div className="flex justify-center items-center space-x-4">
+          <select
+            value={filterType}
+            onChange={(e) => setFilterType(e.target.value)}
+            className="form-select px-4 py-3 rounded-md border border-gray-300"
           >
-            All ({totalOrders})
-          </button>
-          <button
-            className={`text-dark-blue border-b-2 border-stone-100 cursor-pointer rounded-xl p-1 ${dateFilter === "today"
-              ? "font-semibold bg-blue-300  transition-all"
-              : ""
-              }`}
-            onClick={() => {
-              const currentDate = new Date();
-              const today = new Date(currentDate);
-              today.setDate(currentDate.getDate());
-              setSelectedDate(today);
-              setDateFilter("today");
-              setShowAllOrders(false);
-            }}
-          >
-            {today} ({todayOrdersCount})
-          </button>
-          <button
-            className={`text-dark-blue border-b-2 border-stone-100 cursor-pointer rounded-xl p-1 ${dateFilter === "tomorrow"
-              ? "font-semibold bg-blue-300 transition-all"
-              : ""
-              }`}
-            onClick={() => {
-              const currentDate = new Date();
-              const tomorrow = new Date(currentDate);
-              tomorrow.setDate(currentDate.getDate() + 1);
-              setSelectedDate(tomorrow);
-              setDateFilter("tomorrow");
-              setShowAllOrders(false);
-            }}
-          >
-            {tomorrow} ({tomorrowOrdersCount})
-          </button>
-          <button
-            className={`text-dark-blue border-b-2 border-stone-100 cursor-pointer rounded-xl p-1 ${dateFilter === "dayAfterTomorrow"
+            <option value="range">Filter by range</option>
+            <option value="date">Filter per date</option>
+          </select>
+          {filterType === 'range' && (
+            <>
+              <DatePicker
+                selected={startDate}
+                onChange={(date) => {
+                  setStartDate(date);
+                  setEndDate((currentEndDate) => {
+                    if (date && currentEndDate) {
+                      setDateFilter("range");
+                    }
+                    return currentEndDate;
+                  });
+                }}
+                selectsStart
+                startDate={startDate}
+                endDate={endDate}
+                className="form-input px-4 py-3 rounded-md border border-gray-300"
+                placeholderText="mm/dd/yyyy"
+              />
+              <DatePicker
+                selected={endDate}
+                onChange={(date) => {
+                  setEndDate(date);
+                  setStartDate((currentStartDate) => {
+                    if (currentStartDate && date) {
+                      setDateFilter("range");
+                    }
+                    return currentStartDate;
+                  });
+                }}
+                selectsEnd
+                startDate={startDate}
+                endDate={endDate}
+                minDate={startDate}
+                className="form-input px-4 py-3 rounded-md border border-gray-300"
+                placeholderText="mm/dd/yyyy"
+              />
+            </>
+          )}
 
-              ? "font-semibold bg-blue-300 transition-all"
-              : ""
-              }`}
-            onClick={() => {
-              const currentDate = new Date();
-              const dayAfterTomorrow = new Date(currentDate);
-              dayAfterTomorrow.setDate(currentDate.getDate() + 2);
-              setSelectedDate(dayAfterTomorrow);
-              setDateFilter("dayAfterTomorrow");
-              setShowAllOrders(false);
-            }}
-          >
-            {dayAfterTomorrow} ({dayAfterTomorrowOrdersCount})
-          </button>
-          <button
-            className={`text-dark-blue border-b-2 border-stone-100 cursor-pointer rounded-xl p-1 ${showDatePicker ? "disabled" : ""
-              }`}
-            onClick={() => {
-              setShowDatePicker(!showDatePicker);
-              setDateFilter("calendarDate");
-            }}
-            disabled={showDatePicker}
-          >
-            +
-          </button>
-
+          {filterType === 'date' && (
+            <DatePicker
+              selected={selectedDate}
+              onChange={(date) => {
+                setSelectedDate(date);
+                setStartDate(date);
+                setEndDate(date);
+                setDateFilter("range")
+              }}
+              className="form-input px-4 py-3 rounded-md border border-gray-300"
+              placeholderText="Select a date"
+            />
+          )}
           <button
             className="text-white bg-primary-blue border-b-2 border-stone-100 cursor-pointer rounded-xl px-5"
             onClick={() => printOrders()}
           >
             Print
           </button>
-
-          {showDatePicker && (
-            <div className="flex mt-64 absolute z-50">
-              <DatePicker
-                selected={selectedDate}
-                onChange={handleDateChange}
-                inline
-              />
-            </div>
-          )}
         </div>
         <div className="flex items-center justify-center mb-20">
-          <table className="w-[90%] bg-white rounded-2xl text-center shadow-[0_8px_30px_rgb(0,0,0,0.12)]">
-            <thead className="sticky top-0 bg-white shadow-[0px_11px_15px_-3px_#edf2f7] ">
-              <tr className="border-b-2 border-stone-100 text-dark-blue">
-                <th className="py-4 rounded-tl-lg flex items-center justify-center">
+          <table className="w-[90%] bg-white rounded-2xl text-center border-b-0">
+            <thead className="sticky top-0 bg-white rounded-tl-lg">
+              <tr className="border-2 border-stone-100 border-b-0 text-dark-blue rounded-t-3xl">
+                <th className="py-4 flex items-center justify-center">
                   Select all
                   <label className="inline-flex items-center ml-3">
                     <input
@@ -264,8 +250,12 @@ const OrderView = () => {
                     />
                   </label>
                 </th>
+                <th className="py-4"># Invoice</th>
                 <th className="py-4">Customer</th>
-                <th className="py-4">Order date</th>
+                <th className="py-4">Amount</th>
+                <th className="py-4">Profit</th>
+                <th className="py-4">Route</th>
+                <th className="py-4">Responsable</th>
                 <th className="py-4">Delivery date</th>
                 <th className="py-4">Order status</th>
               </tr>
@@ -274,7 +264,13 @@ const OrderView = () => {
               {sortedOrders.map((order, index) => (
                 <tr
                   key={index}
-                  className="text-dark-blue border-b-2 border-stone-100"
+                  className="text-dark-blue border-2 border-stone-100 border-t-0  cursor-pointer"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    router.push(`/order/${order.reference}`, undefined, {
+                      shallow: true,
+                    });
+                  }}
                 >
                   <td className="py-4">
                     <label className="inline-flex items-center">
@@ -292,9 +288,17 @@ const OrderView = () => {
                   >
                     {order.accountName}
                   </td>
-                  <td className="py-4">{formatDate(order.created_date)}</td>
+                  <td className="py-4">#5</td>
+                  <td className="py-4">Amount</td>
+                  <td className="py-4">10%</td>
+                  <td className="py-4">R1</td>
+                  <td className="py-4">Santiago Arango</td>
                   <td className="py-4">{order.date_delivery}</td>
-                  <td className="py-4">{order.name_status}</td>
+                  <td className="py-4 flex gap-2 justify-center">
+                    <div className={`inline-block mt-1 rounded-full text-white ${statusColorClass(order.name_status)} w-3 h-3 flex items-center justify-center`}>
+                    </div>
+                    {order.name_status}
+                  </td>
                 </tr>
               ))}
             </tbody>
