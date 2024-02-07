@@ -21,7 +21,7 @@ export const fetchOrderDetail = async (
   setIsLoading,
   orderId
 ) => {
-  setIsLoading(true)
+  setIsLoading(true);
   try {
     const response = await axios.get(`${orderDetail}${orderId}`, {
       headers: {
@@ -134,10 +134,13 @@ export default function EditTable({ orderId, dateDelivery }) {
   const lastActiveColumn = initialColumns[initialColumns.length - 1];
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [showErrorOrderModal, setShowErrorOrderModal] = useState(false);
-  const [specialRequirements, setSpecialRequirements] = useState(orderDetail.observation ? orderDetail.observation : "");
+  const [specialRequirements, setSpecialRequirements] = useState(
+    orderDetail.observation ? orderDetail.observation : ""
+  );
   const [mouseCoords, setMouseCoords] = useState({ x: 0, y: 0 });
   const { user, setUser } = useUserStore();
   const router = useRouter();
+  const [isReadOnly, setIsReadOnly] = useState(true);
 
   const columns = [
     "Code",
@@ -603,16 +606,17 @@ export default function EditTable({ orderId, dateDelivery }) {
                           <th
                             key={index}
                             scope="col"
-                            className={`py-2 px-2 bg-dark-blue rounded-lg capitalize ${column === "quantity" ||
+                            className={`py-2 px-2 bg-dark-blue rounded-lg capitalize ${
+                              column === "quantity" ||
                               column === "Code" ||
                               column === "VAT %" ||
                               column === "UOM" ||
                               column === "Net"
-                              ? "w-20"
-                              : column === "Packsize"
+                                ? "w-20"
+                                : column === "Packsize"
                                 ? "w-40"
                                 : ""
-                              }`}
+                            }`}
                             onContextMenu={(e) => handleContextMenu(e)}
                             style={{
                               boxShadow:
@@ -634,8 +638,9 @@ export default function EditTable({ orderId, dateDelivery }) {
                           initialColumns.includes(column) && (
                             <React.Fragment key={columnIndex}>
                               <td
-                                className={`px-3 py-2 border-r-2 border-r-[#0c547a] border-[#808e94] ${rowIndex === 0 ? "border-t-0" : "border-t-2"
-                                  } `}
+                                className={`px-3 py-2 border-r-2 border-r-[#0c547a] border-[#808e94] ${
+                                  rowIndex === 0 ? "border-t-0" : "border-t-2"
+                                } `}
                                 tabIndex={0}
                                 style={{ overflow: "visible" }}
                               >
@@ -665,7 +670,8 @@ export default function EditTable({ orderId, dateDelivery }) {
                                     {column === "Total Price" &&
                                       calculateTotalPrice(row)}
                                     {column === "Unit Cost" && row[column]}
-                                    {column === "Profit" && calculateProfit(row)}
+                                    {column === "Profit" &&
+                                      calculateProfit(row)}
                                     {column === "Price Band" && row[column]}
                                     {column === "Total Cost" &&
                                       calculateTotalCost(row)}
@@ -676,10 +682,10 @@ export default function EditTable({ orderId, dateDelivery }) {
                                         options={
                                           DescriptionData
                                             ? DescriptionData.map((item) => ({
-                                              value: item.productName,
-                                              label: item.concatenatedName,
-                                              code: item.code,
-                                            }))
+                                                value: item.productName,
+                                                label: item.concatenatedName,
+                                                code: item.code,
+                                              }))
                                             : []
                                         }
                                         value={{
@@ -728,14 +734,17 @@ export default function EditTable({ orderId, dateDelivery }) {
                                     type={inputTypes[column]}
                                     ref={inputRefs[column][rowIndex]}
                                     data-field-name={column}
-                                    className={`pl-2 h-[30px] outline-none w-full ${inputTypes[column] === "number"
-                                      ? "hide-number-arrows"
-                                      : ""
-                                      }`}
+                                    className={`pl-2 h-[30px] outline-none w-full ${
+                                      inputTypes[column] === "number"
+                                        ? "hide-number-arrows"
+                                        : ""
+                                    }`}
                                     value={row[column] || ""}
                                     onChange={(e) => {
                                       if (column === "Net") {
-                                        let newValue = parseFloat(e.target.value);
+                                        let newValue = parseFloat(
+                                          e.target.value
+                                        );
 
                                         newValue = newValue.toFixed(2);
                                       }
@@ -755,7 +764,10 @@ export default function EditTable({ orderId, dateDelivery }) {
                                       handleKeyDown(e, rowIndex, column)
                                     }
                                     onKeyPress={(e) => {
-                                      if (column === "Net" && e.charCode === 46) {
+                                      if (
+                                        column === "Net" &&
+                                        e.charCode === 46
+                                      ) {
                                         return;
                                       }
                                       if (
@@ -765,6 +777,9 @@ export default function EditTable({ orderId, dateDelivery }) {
                                         e.preventDefault();
                                       }
                                     }}
+                                    readOnly={column === "Net" && isReadOnly}
+                                    onDoubleClick={() => setIsReadOnly(false)}
+                                    onBlur={() => setIsReadOnly(true)}
                                   />
                                 )}
                               </td>
