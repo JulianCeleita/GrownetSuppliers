@@ -254,7 +254,9 @@ const OrderDetailPage = () => {
 
                     <h3>Post Code:</h3>
                     <h3 className="underline decoration-2 decoration-green">
-                      {customers && customers.postCode ? customers.postCode : ""}
+                      {customers && customers.postCode
+                        ? customers.postCode
+                        : ""}
                     </h3>
                   </div>
                   <div className="grid grid-cols-2 m-3 gap-2">
@@ -348,7 +350,9 @@ const OrderDetailPage = () => {
                           type="checkbox"
                           id={column.name}
                           checked={initialTotalRows.includes(column.name)}
-                          onChange={() => handleCheckboxChangeTotal(column.name)}
+                          onChange={() =>
+                            handleCheckboxChangeTotal(column.name)
+                          }
                         />
                         <label htmlFor={column.name} className="ml-2">
                           {column.name}
@@ -369,7 +373,7 @@ const OrderDetailPage = () => {
           <div className="-mt-20">
             {isLoading ? (
               <div className="flex justify-center items-center mt-24">
-                <div class="loader"></div>
+                <div className="loader"></div>
               </div>
             ) : (
               orderId && (
