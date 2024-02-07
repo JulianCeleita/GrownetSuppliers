@@ -255,7 +255,6 @@ const OrderDetailPage = () => {
                       {customers && customers.postCode
                         ? customers.postCode
                         : ""}
-
                     </h3>
                   </div>
                   <div className="grid grid-cols-2 m-3 gap-2">
