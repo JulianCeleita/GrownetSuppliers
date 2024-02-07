@@ -18,7 +18,7 @@ const formatDate = (dateString) => {
   const formattedDate = format(new Date(dateString), "yyyy-MM-dd");
   return formattedDate;
 };
-// TODO: revisar por qué se dañó la filtracion por fechas y calendario
+// TODO: revisar por qué se dañó la filtración por fechas y calendario
 const OrderView = () => {
   const router = useRouter();
   const { token } = useTokenStore();
@@ -243,7 +243,7 @@ const OrderView = () => {
         </div>
         {isLoading && (
           <div className="flex justify-center items-center mb-20">
-            <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-primary-blue"></div>
+            <div className="loader"></div>
           </div>
         )}
       </div>
