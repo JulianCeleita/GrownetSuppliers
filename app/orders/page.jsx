@@ -206,6 +206,7 @@ const OrderView = () => {
           </button>
           <button
             className={`text-dark-blue border-b-2 border-stone-100 cursor-pointer rounded-xl p-1 ${dateFilter === "dayAfterTomorrow"
+
               ? "font-semibold bg-blue-300 transition-all"
               : ""
               }`}
@@ -301,7 +302,7 @@ const OrderView = () => {
         </div>
         {isLoading && (
           <div className="flex justify-center items-center mb-20">
-            <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-primary-blue"></div>
+            <div className="loader"></div>
           </div>
         )}
       </div>

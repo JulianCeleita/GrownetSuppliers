@@ -50,7 +50,7 @@ describe("EditPresentation component", () => {
     // Simula el envío del formulario
     act(() => {
       fireEvent.submit(
-        screen.getByRole("button", { name: "Adit Presentation" })
+        screen.getByRole("button", { name: "Edit Presentation" })
       );
     });
 
