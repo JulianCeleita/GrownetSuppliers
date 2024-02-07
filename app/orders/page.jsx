@@ -160,7 +160,7 @@ const OrderView = () => {
     <Layout>
       <div className="-mt-24">
         <div className="flex gap-6 p-8">
-          <h1 className="text-2xl text-green font-semibold mt-1 ml-24">Orders <span className="text-white">list</span></h1>
+          <h1 className="text-2xl text-light-green font-semibold mt-1 ml-24">Orders <span className="text-white">list</span></h1>
           <Link
             className="flex bg-green py-3 px-4 rounded-full text-white font-medium transition-all hover:bg-dark-blue hover:scale-110 "
             href="/orders/create-order"
