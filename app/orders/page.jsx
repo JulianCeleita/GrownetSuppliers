@@ -18,7 +18,7 @@ const formatDate = (dateString) => {
   const formattedDate = format(new Date(dateString), "yyyy-MM-dd");
   return formattedDate;
 };
-// TODO: revisar por qué se dañó la filtracion por fechas y calendario
+// TODO: revisar por qué se dañó la filtración por fechas y calendario
 const OrderView = () => {
   const router = useRouter();
   const { token } = useTokenStore();
@@ -32,6 +32,8 @@ const OrderView = () => {
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
+  const [selectedOrders, setSelectedOrders] = useState({});
+
   const [filterType, setFilterType] = useState('range');
 
   useEffect(() => {
@@ -95,6 +97,37 @@ const OrderView = () => {
     setSelectedDate(date);
   };
 
+  const goToOrder = (e, order) => {
+    e.preventDefault();
+    router.push(`/order/${order.reference}`, undefined, {
+      shallow: true,
+    });
+  }
+
+  const handleOrderSelect = (order, checked) => {
+    setSelectedOrders(prevState => ({
+      ...prevState,
+      [order.reference]: checked
+    }));
+  };
+
+  const selectAll = (checked) => {
+    const newSelectedOrders = {};
+    sortedOrders.forEach((order) => {
+      newSelectedOrders[order.reference] = checked;
+    });
+    setSelectedOrders(newSelectedOrders);
+  };
+
+  const printOrders = () => {
+    const ordersToPrint = Object.entries(selectedOrders)
+      .filter(([reference, checked]) => checked)
+      .map(([reference]) => reference);
+
+    console.log('ordersToPrint', ordersToPrint);
+    //TODO: implementar lógica para imprimir las ordenes seleccionadas
+  }
+
   const totalOrders = orders.length;
 
   const filteredOrders = orders.filter((order) => filterOrdersByDate(order));
@@ -149,7 +182,6 @@ const OrderView = () => {
                 selected={startDate}
                 onChange={(date) => {
                   setStartDate(date);
-                  // Mover la comprobación y el setDateFilter al callback de setState
                   setEndDate((currentEndDate) => {
                     if (date && currentEndDate) {
                       setDateFilter("range");
@@ -197,11 +229,27 @@ const OrderView = () => {
               placeholderText="Select a date"
             />
           )}
+          <button
+            className="text-white bg-primary-blue border-b-2 border-stone-100 cursor-pointer rounded-xl px-5"
+            onClick={() => printOrders()}
+          >
+            Print
+          </button>
         </div>
         <div className="flex items-center justify-center mb-20">
           <table className="w-[90%] bg-white rounded-2xl text-center border-b-0">
             <thead className="sticky top-0 bg-white rounded-tl-lg">
               <tr className="border-2 border-stone-100 border-b-0 text-dark-blue rounded-t-3xl">
+                <th className="py-4 flex items-center justify-center">
+                  Select all
+                  <label className="inline-flex items-center ml-3">
+                    <input
+                      type="checkbox"
+                      className="form-checkbox h-5 w-5 text-blue-500"
+                      onChange={(e) => selectAll(e.target.checked)}
+                    />
+                  </label>
+                </th>
                 <th className="py-4"># Invoice</th>
                 <th className="py-4">Customer</th>
                 <th className="py-4">Amount</th>
@@ -224,8 +272,23 @@ const OrderView = () => {
                     });
                   }}
                 >
+                  <td className="py-4">
+                    <label className="inline-flex items-center">
+                      <input
+                        type="checkbox"
+                        className="form-checkbox h-5 w-5 text-blue-500"
+                        checked={!!selectedOrders[order.reference]}
+                        onChange={(e) => handleOrderSelect(order, e.target.checked)}
+                      />
+                    </label>
+                  </td>
+                  <td
+                    className="py-4 cursor-pointer hover:bg-primary-blue hover:text-white"
+                    onClick={(e) => goToOrder(e, order)}
+                  >
+                    {order.accountName}
+                  </td>
                   <td className="py-4">#5</td>
-                  <td className="py-4">{order.accountName}</td>
                   <td className="py-4">Amount</td>
                   <td className="py-4">10%</td>
                   <td className="py-4">R1</td>
@@ -243,11 +306,11 @@ const OrderView = () => {
         </div>
         {isLoading && (
           <div className="flex justify-center items-center mb-20">
-            <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-primary-blue"></div>
+            <div className="loader"></div>
           </div>
         )}
       </div>
-    </Layout>
+    </Layout >
   );
 };
 export default OrderView;

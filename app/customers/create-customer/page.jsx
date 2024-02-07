@@ -228,6 +228,7 @@ const CreateOrderView = () => {
         const postDataAssign = {
             ...prepareDataForBackend()
         };
+        console.log(postDataAssign);
         axios
             .post(createCustomer, postData, {
                 headers: {
