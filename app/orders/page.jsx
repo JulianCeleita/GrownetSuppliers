@@ -13,6 +13,7 @@ import {
   fetchOrders,
   fetchOrdersSupplier,
 } from "../api/ordersRequest";
+import { PlusCircleIcon } from "@heroicons/react/24/outline";
 
 const formatDate = (dateString) => {
   const formattedDate = format(new Date(dateString), "yyyy-MM-dd");
@@ -151,14 +152,14 @@ const OrderView = () => {
 
   return (
     <Layout>
-      <div>
-        <div className="flex justify-between p-8 bg-primary-blue">
-          <h1 className="text-2xl text-white font-semibold">Orders list</h1>
+      <div className="-mt-24">
+        <div className="flex gap-6 p-8">
+          <h1 className="text-2xl text-green font-semibold mt-1 ml-24">Orders <span className="text-white">list</span></h1>
           <Link
-            className="flex bg-green py-3 px-4 rounded-lg text-white font-medium transition-all hover:bg-dark-blue hover:scale-110 "
+            className="flex bg-green py-3 px-4 rounded-full text-white font-medium transition-all hover:bg-dark-blue hover:scale-110 "
             href="/orders/create-order"
           >
-            New Order
+            <PlusCircleIcon className="h-6 w-6 mr-1" /> New Order
           </Link>
         </div>
         <div className="flex items-center justify-center space-x-4">
