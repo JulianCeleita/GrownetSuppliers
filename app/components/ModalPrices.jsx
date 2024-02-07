@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import ReactCountryFlag from "react-country-flag";
 import {
     addPresentationUrl,
+    priceUpdate,
     productsUrl,
     taxexUrl,
     uomUrl,
@@ -14,35 +15,83 @@ import {
     fetchPresentations,
     fetchPresentationsSupplier,
 } from "../api/presentationsRequest";
+import { fetchPrices, fetchPricesBySupplier } from "../api/catalogRequest";
+import Swal from "sweetalert2";
 
 function ModalPrices({
     isvisible,
     onClose,
     price,
     setIsLoading,
+    setPrices
 }) {
     const { token } = useTokenStore();
+    const { user } = useUserStore();
 
-    // useEffect(() => {
-    //     console.log(price)
-    // }, [])
 
-    const calculateBandValue = (cost, percentage) => {
-        const costValue = parseFloat(cost);
-        const percentageValue = parseFloat(percentage);
+    useEffect(() => {
+        console.log(price)
+    }, [])
 
-        const markupMargin =
-            (costValue * percentageValue) / (100 - percentageValue);
-
-        const result = costValue + markupMargin;
-
-        return result.toFixed(2);
+    const enviarData = (price, band_id, newPrice) => {
+        const priceId = price.price_id;
+        const postData = {
+            customers_accountNumber: price.customers_accountNumber,
+            price: newPrice,
+            bands_id: null,
+            presentations_id: price.presentations_id,
+            products_id: price.products_id,
+        };
+        // console.log("postData", postData);
+        axios
+            .post(`${priceUpdate}${price.price_id}`, postData, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            })
+            .then((response) => {
+                Swal.fire({
+                    position: "top-end",
+                    icon: "success",
+                    title: "Price update successfully",
+                    showConfirmButton: false,
+                    timer: 1500,
+                });
+                if (user?.rol_name == "AdminGrownet") {
+                    fetchPrices(token, user, setPrices, setIsLoading);
+                } else {
+                    fetchPricesBySupplier(token, user, setPrices, setIsLoading);
+                }
+                setTimeout(() => {
+                    onClose(true);
+                }, 1000);
+            })
+            .catch((error) => {
+                console.error("Error al editar el customer: ", error);
+            });
     };
 
-    const bands = [1, 2, 3, 4, 5].map((band) => ({
-        id: band,
-        value: calculateBandValue(price.cost, band)
-    }));
+    const calculateBandValue = (cost, marginPercentage) => {
+        const costValue = parseFloat(cost);
+        const marginDecimal = marginPercentage / 100;
+
+        const revenue = costValue / (1 - marginDecimal);
+        const profit = revenue - costValue;
+
+        return {
+            revenue: revenue.toFixed(2),
+            profit: profit.toFixed(2)
+        };
+    };
+
+    const bands = [5, 10, 15, 20, 25, 30, 35, 40, 45, 50].map((marginPercentage) => {
+        const { revenue, profit } = calculateBandValue(price.cost, marginPercentage);
+        return {
+            id: marginPercentage,
+            value: revenue,
+            profit: profit
+        };
+    });
 
 
     return (
@@ -58,18 +107,30 @@ function ModalPrices({
                     Recommended prices
                 </h1>
                 <p className="text-lg mb-4">Price actual: {price.price}</p>
-                {bands.map((band) => (
-                    <button
-                        key={band.id}
-                        className="text-lg py-2 px-4 mb-2 bg-blue-500 text-white rounded hover:bg-blue-700"
-                        // onClick={(e) => {
-                        //     e.preventDefault();
-                        //     enviarData(price, band.id);
-                        // }}
-                    >
-                        Band {band.id}: {band.value}
-                    </button>
-                ))}
+                <div className="grid grid-rows-2 grid-cols-5 gap-4 w-full">
+                    {bands.map((band) => (
+                        <div key={band.id} className="flex flex-col items-center">
+                            <button
+                                className="text-sm py-1 w-full bg-blue-500 text-white rounded-t transition-all hover:bg-blue-700"
+                                onClick={(e) => {
+                                    e.preventDefault();
+                                    enviarData(price, band.id, band.value);
+                                }}
+                            >
+                                {band.id}%
+                            </button>
+                            <button
+                                className="text-lg py-2 w-full bg-blue-500 text-white rounded-b transition-all hover:bg-blue-700"
+                                onClick={(e) => {
+                                    e.preventDefault();
+                                    enviarData(price, band.id, band.value);
+                                }}
+                            >
+                                {band.value}
+                            </button>
+                        </div>
+                    ))}
+                </div>
             </div>
         </div>
     );

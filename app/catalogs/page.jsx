@@ -474,6 +474,7 @@ const PricesView = () => {
             onClose={() => setIsModalOpen(false)}
             setIsLoading={setIsLoading}
             price={selectedCatalog}
+            setPrices={setPrices}
           />
         )}
       </div>
