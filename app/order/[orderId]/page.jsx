@@ -44,8 +44,7 @@ const OrderDetailPage = () => {
   const [selectedDate, setSelectedDate] = useState("");
   const router = useRouter();
   const { user, setUser } = useUserStore();
-
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
   const [accName, setAccName] = useState("");
   const params = useParams();
 
