@@ -113,18 +113,28 @@ function CreateProduct({ isvisible, onClose, setProducts, setIsLoading }) {
   }
 
   //Add presentation api
-  const enviarData = (e) => {
+  const SendData = (e) => {
     e.preventDefault();
-    const postData = {
-      uoms_id: selecteUomsStatus,
-      products_id: selecteProductsStatus,
-      quantity: quantityPresentation,
-      name: `${namePresentation} ${selecteUomsStatus2}`,
-      cost: costPresentation,
-      code: codePresentation,
-      tax: selectedTax,
-      supplier_id: user.id_supplier,
-    };
+    const postData = bulk
+      ? {
+          uoms_id: selecteUomsStatus,
+          products_id: selecteProductsStatus,
+          quantity: quantityPresentation,
+          name: `${namePresentation} ${selecteUomsStatus2}`,
+          cost: costPresentation,
+          code: codePresentation,
+          tax: selectedTax,
+          supplier_id: user.id_supplier,
+        }
+      : {
+          uoms_id: selecteUomsStatus,
+          products_id: selecteProductsStatus,
+          quantity: quantityPresentation,
+          name: `${namePresentation} ${selecteUomsStatus2}`,
+          cost: costPresentation,
+          code: codePresentation,
+          supplier_id: user.id_supplier,
+        };
     axios
       .post(addPresentationUrl, postData, {
         headers: {
@@ -182,7 +192,7 @@ function CreateProduct({ isvisible, onClose, setProducts, setIsLoading }) {
         </div>
 
         {bulk ? (
-          <form className="text-left  flex flex-col" onSubmit={enviarData}>
+          <form className="text-left  flex flex-col" onSubmit={SendData}>
             <label htmlFor="produvt" className="mt-2">
               Product:
             </label>
@@ -310,9 +320,9 @@ function CreateProduct({ isvisible, onClose, setProducts, setIsLoading }) {
             </div>
           </form>
         ) : (
-          <form className="text-left  flex flex-col" onSubmit={enviarData}>
+          <form className="text-left  flex flex-col" onSubmit={SendData}>
             <label htmlFor="produvt" className="mt-2">
-              Sub Product:
+              Sub product:
             </label>
             <select
               id="produvt"
@@ -324,11 +334,11 @@ function CreateProduct({ isvisible, onClose, setProducts, setIsLoading }) {
               <option disabled selected>
                 Select product
               </option>
-              {products2.map((product) => (
+              {/* {products2.map((product) => (
                 <option key={product.id} value={product.id}>
                   {product.name}
                 </option>
-              ))}
+              ))} */}
             </select>
             <div>
               <label>Unit of measurement: </label>
@@ -347,25 +357,6 @@ function CreateProduct({ isvisible, onClose, setProducts, setIsLoading }) {
                     {uom.name}
                   </option>
                 ))}
-              </select>
-              <label htmlFor="taxes">Product taxes: </label>
-              <select
-                id="taxes"
-                name="taxes"
-                className="border p-3 rounded-md mr-3 mt-3"
-                required
-                onChange={(e) => setSelectedTax(e.target.value)}
-              >
-                <option value="" disabled selected>
-                  Select tax
-                </option>
-                {tax.map((tax) =>
-                  tax.countries_indicative === 44 ? (
-                    <option key={tax.id} value={tax.id}>
-                      {tax.name}
-                    </option>
-                  ) : null
-                )}
               </select>
             </div>
             <div>
