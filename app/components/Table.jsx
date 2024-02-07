@@ -12,6 +12,7 @@ import Select from "react-select";
 import useUserStore from "../store/useUserStore";
 import ModalOrderError from "./ModalOrderError";
 import ModalSuccessfull from "./ModalSuccessfull";
+import { motion, AnimatePresence } from "framer-motion";
 
 const initialRowsState = {
   Code: "",
@@ -107,6 +108,7 @@ export default function Table() {
   const [mouseCoords, setMouseCoords] = useState({ x: 0, y: 0 });
   const { user, setUser } = useUserStore();
   const [isReadOnly, setIsReadOnly] = useState(true);
+  const [confirmCreateOrder, setConfirmCreateOrder] = useState(false);
 
   const columns = [
     "Code",
@@ -466,8 +468,9 @@ export default function Table() {
           Authorization: `Bearer ${token}`,
         },
       });
-
+      console.log("response", response);
       setShowConfirmModal(true);
+      setConfirmCreateOrder(false);
       setRows(Array.from({ length: 5 }, () => ({ ...initialRowsState })));
       setSpecialRequirements("");
       setProducts([]);
@@ -495,6 +498,11 @@ export default function Table() {
       });
       setRows(updatedRows);
     }
+  };
+  const modalVariants = {
+    hidden: { opacity: 0, scale: 1 },
+    visible: { opacity: 1, scale: 1, transition: { duration: 0.3 } },
+    exit: { opacity: 0, scale: 0.8, transition: { duration: 0.3 } },
   };
 
   return (
@@ -737,20 +745,45 @@ export default function Table() {
           placeholder="Write your comments here"
         />
         <button
-          onClick={createOrder}
+          onClick={() => setConfirmCreateOrder(true)}
           className="bg-primary-blue py-2 px-4 rounded-lg text-white font-medium mr-2 w-[15%]"
         >
           Send order
         </button>
       </div>
-      <ModalSuccessfull
-        isvisible={showConfirmModal}
-        onClose={() => setShowConfirmModal(false)}
-      />
-      <ModalOrderError
-        isvisible={showErrorOrderModal}
-        onClose={() => setShowErrorOrderModal(false)}
-      />
+      <AnimatePresence mode="wait">
+        <ModalSuccessfull
+          isvisible={showConfirmModal}
+          onClose={() => setShowConfirmModal(false)}
+          title="Congratulations"
+          text="Your order has been shipped, thank you for using"
+          textGrownet="Grownet"
+          button=" Close"
+        />
+        {confirmCreateOrder && (
+          <motion.div
+            initial="hidden"
+            animate="visible"
+            exit="exit"
+            variants={modalVariants}
+          >
+            <ModalSuccessfull
+              isvisible={confirmCreateOrder}
+              onClose={() => setConfirmCreateOrder(false)}
+              title="Confirmation!"
+              text="Are you sure about creating this order?"
+              textGrownet=""
+              button="Confirm"
+              sendOrder={createOrder}
+            />
+          </motion.div>
+        )}
+
+        <ModalOrderError
+          isvisible={showErrorOrderModal}
+          onClose={() => setShowErrorOrderModal(false)}
+        />
+      </AnimatePresence>
     </div>
   );
 }
