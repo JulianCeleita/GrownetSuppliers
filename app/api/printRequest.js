@@ -1,11 +1,9 @@
 import axios from "axios";
 import { printOrdersUrl } from "../config/urls.config";
 
-export const printOrders = async (token, orders) => {
+export const fetchPrintOrders = async (token, orders) => {
   try {
-    const response = await axios.post(
-      printOrdersUrl,
-      { orders },
+    const response = await axios.post(printOrdersUrl, { orders },
       {
         headers: {
           Authorization: `Bearer ${token}`,
