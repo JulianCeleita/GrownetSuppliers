@@ -106,6 +106,7 @@ export default function Table() {
   const [specialRequirements, setSpecialRequirements] = useState("");
   const [mouseCoords, setMouseCoords] = useState({ x: 0, y: 0 });
   const { user, setUser } = useUserStore();
+  const [isReadOnly, setIsReadOnly] = useState(true);
 
   const columns = [
     "Code",
@@ -677,6 +678,9 @@ export default function Table() {
                                     e.preventDefault();
                                   }
                                 }}
+                                readOnly={column === "Net" && isReadOnly}
+                                onDoubleClick={() => setIsReadOnly(false)}
+                                onBlur={() => setIsReadOnly(true)}
                               />
                             )}
                           </td>
