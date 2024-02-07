@@ -332,7 +332,7 @@ function CreateProduct({ isvisible, onClose, setProducts, setIsLoading }) {
               required
             >
               <option disabled selected>
-                Select product
+                Select sub product
               </option>
               {/* {products2.map((product) => (
                 <option key={product.id} value={product.id}>
@@ -418,7 +418,7 @@ function CreateProduct({ isvisible, onClose, setProducts, setIsLoading }) {
                 value="Submit"
                 className="bg-primary-blue py-3 px-4 rounded-lg text-white font-medium mr-3 "
               >
-                Add Product
+                Add Sub Product
               </button>
               <button
                 onClick={() => onClose()}
