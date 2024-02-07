@@ -12,7 +12,6 @@ import Select from "react-select";
 import useUserStore from "../store/useUserStore";
 import ModalOrderError from "./ModalOrderError";
 import ModalSuccessfull from "./ModalSuccessfull";
-import { motion, AnimatePresence } from "framer-motion";
 
 const initialRowsState = {
   Code: "",
@@ -104,6 +103,7 @@ export default function Table() {
   const [DescriptionData, setDescriptionData] = useState(null);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [showErrorOrderModal, setShowErrorOrderModal] = useState(false);
+  const [orderError, setOrderError] = useState("");
   const [specialRequirements, setSpecialRequirements] = useState("");
   const [mouseCoords, setMouseCoords] = useState({ x: 0, y: 0 });
   const { user, setUser } = useUserStore();
@@ -438,6 +438,14 @@ export default function Table() {
 
   const createOrder = async () => {
     try {
+      if (!customers) {
+        setShowErrorOrderModal(true);
+        setOrderError(
+          "Please select the customer you want to create the order for."
+        );
+        setConfirmCreateOrder(false);
+        return;
+      }
       const filteredProducts = rows
         .filter((row) => parseFloat(row.quantity) > 0)
         .map((row) => {
@@ -452,10 +460,16 @@ export default function Table() {
           };
         });
 
+      if (!filteredProducts || filteredProducts.length === 0) {
+        setShowErrorOrderModal(true);
+        setOrderError("Please choose a product for your order.");
+        setConfirmCreateOrder(false);
+        return;
+      }
       const jsonOrderData = {
-        accountNumber_customers: customers?.accountNumber,
-        address_delivery: customers?.address,
-        date_delivery: customers?.orderDate,
+        accountNumber_customers: customers[0]?.accountNumber,
+        address_delivery: customers[0]?.address,
+        date_delivery: customers.orderDate,
         id_suppliers: user?.id_supplier,
         net: parseFloat(totalNetSum),
         observation: specialRequirements,
@@ -463,6 +477,8 @@ export default function Table() {
         total_tax: parseFloat(totalTaxSum),
         products: filteredProducts,
       };
+
+      console.log("jsonOrderData", jsonOrderData);
       const response = await axios.post(createStorageOrder, jsonOrderData, {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -498,11 +514,6 @@ export default function Table() {
       });
       setRows(updatedRows);
     }
-  };
-  const modalVariants = {
-    hidden: { opacity: 0, scale: 1 },
-    visible: { opacity: 1, scale: 1, transition: { duration: 0.3 } },
-    exit: { opacity: 0, scale: 0.8, transition: { duration: 0.3 } },
   };
 
   return (
@@ -751,39 +762,32 @@ export default function Table() {
           Send order
         </button>
       </div>
-      <AnimatePresence mode="wait">
-        <ModalSuccessfull
-          isvisible={showConfirmModal}
-          onClose={() => setShowConfirmModal(false)}
-          title="Congratulations"
-          text="Your order has been shipped, thank you for using"
-          textGrownet="Grownet"
-          button=" Close"
-        />
-        {confirmCreateOrder && (
-          <motion.div
-            initial="hidden"
-            animate="visible"
-            exit="exit"
-            variants={modalVariants}
-          >
-            <ModalSuccessfull
-              isvisible={confirmCreateOrder}
-              onClose={() => setConfirmCreateOrder(false)}
-              title="Confirmation!"
-              text="Are you sure about creating this order?"
-              textGrownet=""
-              button="Confirm"
-              sendOrder={createOrder}
-            />
-          </motion.div>
-        )}
 
-        <ModalOrderError
-          isvisible={showErrorOrderModal}
-          onClose={() => setShowErrorOrderModal(false)}
+      <ModalSuccessfull
+        isvisible={showConfirmModal}
+        onClose={() => setShowConfirmModal(false)}
+        title="Congratulations"
+        text="Your order has been shipped, thank you for using"
+        textGrownet="Grownet"
+        button=" Close"
+      />
+      {confirmCreateOrder && (
+        <ModalSuccessfull
+          isvisible={confirmCreateOrder}
+          onClose={() => setConfirmCreateOrder(false)}
+          title="Confirmation!"
+          text="Are you sure about creating this order?"
+          textGrownet=""
+          button="Confirm"
+          sendOrder={createOrder}
         />
-      </AnimatePresence>
+      )}
+
+      <ModalOrderError
+        isvisible={showErrorOrderModal}
+        onClose={() => setShowErrorOrderModal(false)}
+        error={orderError}
+      />
     </div>
   );
 }
