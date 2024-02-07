@@ -1,5 +1,5 @@
 "use client";
-import { PlusCircleIcon, TrashIcon } from "@heroicons/react/24/outline";
+import { InformationCircleIcon, PlusCircleIcon, TrashIcon } from "@heroicons/react/24/outline";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -415,25 +415,28 @@ const PricesView = () => {
                       onClick={(e) => {
                         e.preventDefault();
                       }}
+                      className="flex justify-center items-center"
                     >
-                      <input
-                        type="text"
-                        value={
-                          editedPrices[price.price_id] !== undefined
-                            ? editedPrices[price.price_id]
-                            : price.price
-                        }
-                        onChange={(e) =>
-                          handlePriceChange(price.price_id, e.target.value)
-                        }
-                        className="w-24 border-b-black bg-white p-1"
-                      />
-                      <button
-                        onClick={() => openModal(price)}
-                        className="ml-2 text-sm bg-blue-500 hover:bg-blue-700 text-white py-2 px-4 rounded"
-                      >
-                        Recommendations
-                      </button>
+                      <div className="mt-2.5 flex">
+                        <input
+                          type="text"
+                          value={
+                            editedPrices[price.price_id] !== undefined
+                              ? editedPrices[price.price_id]
+                              : price.price
+                          }
+                          onChange={(e) =>
+                            handlePriceChange(price.price_id, e.target.value)
+                          }
+                          className="w-24 border-b-black bg-white p-1"
+                        />
+                        <button
+                          onClick={() => openModal(price)}
+                          className="ml-2 text-sm bg-blue-500 hover:bg-blue-700 text-white p-0.5 rounded"
+                        >
+                          <InformationCircleIcon className="h-7 w-7 font-bold" />
+                        </button>
+                      </div>
                     </td>
                     <td>
                       <button
