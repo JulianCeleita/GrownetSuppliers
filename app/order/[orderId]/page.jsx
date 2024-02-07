@@ -44,7 +44,6 @@ const OrderDetailPage = () => {
   const [selectedDate, setSelectedDate] = useState("");
   const router = useRouter();
   const { user, setUser } = useUserStore();
-
   const [isLoading, setIsLoading] = useState(false);
   const [accName, setAccName] = useState("");
   const params = useParams();
@@ -228,143 +227,157 @@ const OrderDetailPage = () => {
             </Link>
           </div>
           <div className="grid grid-cols-3 gap-4 p-6 shadow-lg bg-primary-blue pb-20">
-            <div className="grid grid-cols-2 bg-white p-4 rounded-lg shadow-lg text-dark-blue">
-              <h3 className="m-3">Account Name:</h3>
-              <div className="relative ml-3">
-                <h3 className="underline decoration-2 decoration-green mt-3">
-                  {" "}
-                  {orderDetail && orderDetail.accountName
-                    ? orderDetail.accountName
-                    : ""}
-                </h3>
-              </div>
+            {!isLoading && (
+              <>
+                <div className="grid grid-cols-2 bg-white p-4 rounded-lg shadow-lg text-dark-blue">
+                  <h3 className="m-3">Account Name:</h3>
+                  <div className="relative ml-3">
+                    <h3 className="underline decoration-2 decoration-green mt-3">
+                      {" "}
+                      {orderDetail && orderDetail.accountName
+                        ? orderDetail.accountName
+                        : ""}
+                    </h3>
+                  </div>
 
-              <div className="grid grid-cols-2 m-3 gap-2">
-                <h3>Account Number:</h3>
-                <div className="relative">
-                  <h3 className="underline decoration-2 decoration-green">
-                    {" "}
-                    {orderDetail && orderDetail.accountNumber
-                      ? orderDetail.accountNumber
-                      : ""}
+                  <div className="grid grid-cols-2 m-3 gap-2">
+                    <h3>Account Number:</h3>
+                    <div className="relative">
+                      <h3 className="underline decoration-2 decoration-green">
+                        {" "}
+                        {orderDetail && orderDetail.accountNumber
+                          ? orderDetail.accountNumber
+                          : ""}
+                      </h3>
+                    </div>
+
+                    <h3>Post Code:</h3>
+                    <h3 className="underline decoration-2 decoration-green">
+                      {customers && customers.postCode
+                        ? customers.postCode
+                        : ""}
+                    </h3>
+                  </div>
+                  <div className="grid grid-cols-2 m-3 gap-2">
+                    <h3>Address:</h3>
+                    <h3 className="underline decoration-2 decoration-green">
+                      {orderDetail && orderDetail.address_delivery
+                        ? orderDetail.address_delivery
+                        : ""}
+                    </h3>
+                    <h3>Telephone:</h3>
+                    <h3 className="underline decoration-2 decoration-green">
+                      {" "}
+                      {orderDetail && orderDetail.telephone_customer
+                        ? orderDetail.telephone_customer
+                        : ""}
+                    </h3>
+                  </div>
+                  <h3 className="ml-3">Contact:</h3>
+                  <h3 className="underline decoration-2 decoration-green ml-3">
+                    {orderDetail && orderDetail.email ? orderDetail.email : ""}
                   </h3>
                 </div>
-
-                <h3>Post Code:</h3>
-                <h3 className="underline decoration-2 decoration-green">
-                  {customers && customers.postCode ? customers.postCode : ""}
-                </h3>
-              </div>
-              <div className="grid grid-cols-2 m-3 gap-2">
-                <h3>Address:</h3>
-                <h3 className="underline decoration-2 decoration-green">
-                  {orderDetail && orderDetail.address_delivery
-                    ? orderDetail.address_delivery
-                    : ""}
-                </h3>
-                <h3>Telephone:</h3>
-                <h3 className="underline decoration-2 decoration-green">
-                  {" "}
-                  {orderDetail && orderDetail.telephone_customer
-                    ? orderDetail.telephone_customer
-                    : ""}
-                </h3>
-              </div>
-              <h3 className="ml-3">Contact:</h3>
-              <h3 className="underline decoration-2 decoration-green ml-3">
-                {orderDetail && orderDetail.email ? orderDetail.email : ""}
-              </h3>
-            </div>
-            <div className="bg-white p-2 pr-9 pl-9 rounded-lg flex flex-col justify-center">
-              <div className="flex items-center mb-3">
-                <label>Date: </label>
-                <input
-                  type="date"
-                  className="border ml-2 p-1.5 rounded-md w-[100%] "
-                  value={selectedDate}
-                  onChange={handleDateChange}
-                />
-                <label className="ml-3">Inv. No.: </label>
-                <input
-                  type="text"
-                  value="Order"
-                  readOnly
-                  className="border ml-2 p-1.5 rounded-md w-[100%]"
-                />
-              </div>
-              <div className="grid grid-cols-2">
-                <label>Order No.: </label>
-                <input type="text" className="border p-2 rounded-md mb-2" />
-
-                <h3>Round:</h3>
-                <h3 className="underline decoration-2 decoration-green mb-2">
-                  1056
-                </h3>
-                {/*<h3>Drop:</h3>
-          <h3 className="underline decoration-2 decoration-green">{""}</h3>*/}
-              </div>
-            </div>
-            <div
-              className="bg-white p-2 pr-9 pl-9 rounded-lg flex flex-col justify-center"
-              onContextMenu={(e) => handleContextMenuTotal(e)}
-            >
-              <h1 className="text-lg text-primary-blue font-semibold ml-5">
-                Payment details
-              </h1>
-              {columnsTotal.map(
-                (column, index) =>
-                  initialTotalRows.includes(column.name) && (
-                    <div className=" flex items-center" key={column.name}>
-                      <h1 className="text-lg text-dark-blue font-semibold w-[60%] ml-5">
-                        {column.name}
-                      </h1>
-                      <p className="text-dark-blue text-lg w-[40%]">
-                        {column.price}
-                      </p>
-                    </div>
-                  )
-              )}
-            </div>
-            {showCheckboxColumnTotal === true && (
-              <div
-                ref={menuRefTotal}
-                className="absolute w-[40%] bg-white p-3 border rounded-xl"
-                style={{
-                  top: `${mouseCoords.y}px`,
-                  left: `${mouseCoords.x}px`,
-                }}
-              >
-                <h4 className="font-bold mb-2 text-dark-blue">
-                  Show/Hide Columns
-                </h4>
-                {columnsTotal.map((column) => (
-                  <div
-                    key={column.name}
-                    className="flex items-center text-dark-blue"
-                  >
+                <div className="bg-white p-2 pr-9 pl-9 rounded-lg flex flex-col justify-center">
+                  <div className="flex items-center mb-3">
+                    <label>Date: </label>
                     <input
-                      type="checkbox"
-                      id={column.name}
-                      checked={initialTotalRows.includes(column.name)}
-                      onChange={() => handleCheckboxChangeTotal(column.name)}
+                      type="date"
+                      className="border ml-2 p-1.5 rounded-md w-[100%] "
+                      value={selectedDate}
+                      onChange={handleDateChange}
                     />
-                    <label htmlFor={column.name} className="ml-2">
-                      {column.name}
-                    </label>
+                    <label className="ml-3">Inv. No.: </label>
+                    <input
+                      type="text"
+                      value="Order"
+                      readOnly
+                      className="border ml-2 p-1.5 rounded-md w-[100%]"
+                    />
                   </div>
-                ))}
-                <button
-                  className="mt-2 text-danger"
-                  onClick={() => setShowCheckboxColumnTotal(false)}
+                  <div className="grid grid-cols-2">
+                    <label>Order No.: </label>
+                    <input type="text" className="border p-2 rounded-md mb-2" />
+
+                    <h3>Round:</h3>
+                    <h3 className="underline decoration-2 decoration-green mb-2">
+                      1056
+                    </h3>
+                    {/*<h3>Drop:</h3>
+          <h3 className="underline decoration-2 decoration-green">{""}</h3>*/}
+                  </div>
+                </div>
+                <div
+                  className="bg-white p-2 pr-9 pl-9 rounded-lg flex flex-col justify-center"
+                  onContextMenu={(e) => handleContextMenuTotal(e)}
                 >
-                  Close
-                </button>
-              </div>
+                  <h1 className="text-lg text-primary-blue font-semibold ml-5">
+                    Payment details
+                  </h1>
+                  {columnsTotal.map(
+                    (column, index) =>
+                      initialTotalRows.includes(column.name) && (
+                        <div className=" flex items-center" key={column.name}>
+                          <h1 className="text-lg text-dark-blue font-semibold w-[60%] ml-5">
+                            {column.name}
+                          </h1>
+                          <p className="text-dark-blue text-lg w-[40%]">
+                            {column.price}
+                          </p>
+                        </div>
+                      )
+                  )}
+                </div>
+                {showCheckboxColumnTotal === true && (
+                  <div
+                    ref={menuRefTotal}
+                    className="absolute w-[40%] bg-white p-3 border rounded-xl"
+                    style={{
+                      top: `${mouseCoords.y}px`,
+                      left: `${mouseCoords.x}px`,
+                    }}
+                  >
+                    <h4 className="font-bold mb-2 text-dark-blue">
+                      Show/Hide Columns
+                    </h4>
+                    {columnsTotal.map((column) => (
+                      <div
+                        key={column.name}
+                        className="flex items-center text-dark-blue"
+                      >
+                        <input
+                          type="checkbox"
+                          id={column.name}
+                          checked={initialTotalRows.includes(column.name)}
+                          onChange={() =>
+                            handleCheckboxChangeTotal(column.name)
+                          }
+                        />
+                        <label htmlFor={column.name} className="ml-2">
+                          {column.name}
+                        </label>
+                      </div>
+                    ))}
+                    <button
+                      className="mt-2 text-danger"
+                      onClick={() => setShowCheckboxColumnTotal(false)}
+                    >
+                      Close
+                    </button>
+                  </div>
+                )}
+              </>
             )}
           </div>
           <div className="-mt-20">
-            {orderId && (
-              <EditTable orderId={orderId} dateDelivery={selectedDate} />
+            {isLoading ? (
+              <div className="flex justify-center items-center mt-24">
+                <div className="loader"></div>
+              </div>
+            ) : (
+              orderId && (
+                <EditTable orderId={orderId} dateDelivery={selectedDate} />
+              )
             )}
           </div>
         </Layout>
