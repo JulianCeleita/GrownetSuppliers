@@ -265,13 +265,7 @@ const OrderView = () => {
               {sortedOrders.map((order, index) => (
                 <tr
                   key={index}
-                  className="text-dark-blue border-2 border-stone-100 border-t-0  cursor-pointer"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    router.push(`/order/${order.reference}`, undefined, {
-                      shallow: true,
-                    });
-                  }}
+                  className="text-dark-blue border-2 border-stone-100 border-t-0"
                 >
                   <td className="py-4">
                     <label className="inline-flex items-center">
