@@ -239,7 +239,6 @@ const OrderDetailPage = () => {
                         : ""}
                     </h3>
                   </div>
-
                   <div className="grid grid-cols-2 m-3 gap-2">
                     <h3>Account Number:</h3>
                     <div className="relative">
@@ -256,6 +255,7 @@ const OrderDetailPage = () => {
                       {customers && customers.postCode
                         ? customers.postCode
                         : ""}
+
                     </h3>
                   </div>
                   <div className="grid grid-cols-2 m-3 gap-2">

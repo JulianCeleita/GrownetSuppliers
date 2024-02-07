@@ -18,7 +18,7 @@ const formatDate = (dateString) => {
   const formattedDate = format(new Date(dateString), "yyyy-MM-dd");
   return formattedDate;
 };
-// TODO: revisar por qué se dañó la filtracion por fechas y calendario
+// TODO: revisar por qué se dañó la filtración por fechas y calendario
 const OrderView = () => {
   const router = useRouter();
   const { token } = useTokenStore();
@@ -129,9 +129,8 @@ const OrderView = () => {
         </div>
         <div className="flex items-center justify-center space-x-4">
           <button
-            className={`text-dark-blue border-b-2 border-stone-100 cursor-pointer rounded-xl p-1 ${
-              showAllOrders ? "font-semibold bg-blue-300 transition-all" : ""
-            }`}
+            className={`text-dark-blue border-b-2 border-stone-100 cursor-pointer rounded-xl p-1 ${showAllOrders ? "font-semibold bg-blue-300 transition-all" : ""
+              }`}
             onClick={() => {
               setDateFilter("");
               setShowAllOrders(true);
@@ -140,11 +139,10 @@ const OrderView = () => {
             All ({totalOrders})
           </button>
           <button
-            className={`text-dark-blue border-b-2 border-stone-100 cursor-pointer rounded-xl p-1 ${
-              dateFilter === "today"
+            className={`text-dark-blue border-b-2 border-stone-100 cursor-pointer rounded-xl p-1 ${dateFilter === "today"
                 ? "font-semibold bg-blue-300  transition-all"
                 : ""
-            }`}
+              }`}
             onClick={() => {
               const currentDate = new Date();
               const today = new Date(currentDate);
@@ -157,11 +155,10 @@ const OrderView = () => {
             {today} ({todayOrdersCount})
           </button>
           <button
-            className={`text-dark-blue border-b-2 border-stone-100 cursor-pointer rounded-xl p-1 ${
-              dateFilter === "tomorrow"
+            className={`text-dark-blue border-b-2 border-stone-100 cursor-pointer rounded-xl p-1 ${dateFilter === "tomorrow"
                 ? "font-semibold bg-blue-300 transition-all"
                 : ""
-            }`}
+              }`}
             onClick={() => {
               const currentDate = new Date();
               const tomorrow = new Date(currentDate);
@@ -174,11 +171,10 @@ const OrderView = () => {
             {tomorrow} ({tomorrowOrdersCount})
           </button>
           <button
-            className={`text-dark-blue border-b-2 border-stone-100 cursor-pointer rounded-xl p-1 ${
-              dateFilter === "dayAfterTomorrow"
+            className={`text-dark-blue border-b-2 border-stone-100 cursor-pointer rounded-xl p-1 ${dateFilter === "dayAfterTomorrow"
                 ? "font-semibold bg-blue-300 transition-all"
                 : ""
-            }`}
+              }`}
             onClick={() => {
               const currentDate = new Date();
               const dayAfterTomorrow = new Date(currentDate);
@@ -191,9 +187,8 @@ const OrderView = () => {
             {dayAfterTomorrow} ({dayAfterTomorrowOrdersCount})
           </button>
           <button
-            className={`text-dark-blue border-b-2 border-stone-100 cursor-pointer rounded-xl p-1 ${
-              showDatePicker ? "disabled" : ""
-            }`}
+            className={`text-dark-blue border-b-2 border-stone-100 cursor-pointer rounded-xl p-1 ${showDatePicker ? "disabled" : ""
+              }`}
             onClick={() => {
               setShowDatePicker(!showDatePicker);
               setDateFilter("calendarDate");
@@ -246,7 +241,7 @@ const OrderView = () => {
         </div>
         {isLoading && (
           <div className="flex justify-center items-center mb-20">
-            <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-primary-blue"></div>
+            <div class="loader"></div>
           </div>
         )}
       </div>

@@ -24,7 +24,7 @@ const CustomerDetailPage = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [detailCustomer, setDetailCustomer] = useState();
   const [accountNumber, setAccountNumber] = useState("");
-  const [accountName, setAccountName] = useState(""  );
+  const [accountName, setAccountName] = useState("");
   const [emailCustomer, setEmailCustomer] = useState("");
   const [marketingEmail, setMarketingEmail] = useState("");
   const [addressCustomer, setAddressCustomer] = useState("");
@@ -101,7 +101,9 @@ const CustomerDetailPage = () => {
       setSelectedGroup(detailCustomer[0]?.group_id);
       setRouteName(detailCustomer[0]?.route);
       setGroupName(detailCustomer[0]?.group);
-      const { inicio, fin } = extraerHoras(detailCustomer[0]?.delivery_window || "");
+      const { inicio, fin } = extraerHoras(
+        detailCustomer[0]?.delivery_window || ""
+      );
       setStartHour(inicio);
       setEndHour(fin);
       const selectedRoutesData = {};
@@ -159,11 +161,11 @@ const CustomerDetailPage = () => {
 
     Object.keys(selectedRoutes).forEach((day) => {
       const routesForDay = Object.values(selectedRoutes[day]);
-      if (routesForDay.some(isSelected => isSelected)) {
+      if (routesForDay.some((isSelected) => isSelected)) {
         daysData[getDayNumber(day)] = Object.entries(selectedRoutes[day])
           .filter(([_, isSelected]) => isSelected)
           .map(([routeId, _]) => routeId)
-          .join(',');
+          .join(",");
       }
     });
 
@@ -263,7 +265,7 @@ const CustomerDetailPage = () => {
     };
     const postDataAssign = {
       customer: customerId,
-      ...prepareDataForBackend()
+      ...prepareDataForBackend(),
     };
     axios
       .post(`${customerUpdate}${customerId}`, postData, {
@@ -284,7 +286,7 @@ const CustomerDetailPage = () => {
               icon: "success",
               title: "Client created successfully",
               showConfirmButton: false,
-              timer: 1500
+              timer: 1500,
             });
 
             setTimeout(() => {
@@ -320,8 +322,8 @@ const CustomerDetailPage = () => {
 
           <div className="flex flex-col items-center justify-center">
             {isLoading && (
-              <div className="flex justify-center items-center mb-10 mt-20">
-                <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-primary-blue"></div>
+              <div className="flex justify-center items-center mb-20">
+                <div class="loader"></div>
               </div>
             )}
             {!isLoading && (
@@ -586,8 +588,9 @@ const CustomerDetailPage = () => {
                   <button
                     type="submit"
                     value="Submit"
-                    className={`bg-primary-blue py-3 px-4 rounded-lg text-white font-medium mr-3 ${isLoading === true ? "bg-gray-500/50" : ""
-                      }`}
+                    className={`bg-primary-blue py-3 px-4 rounded-lg text-white font-medium mr-3 ${
+                      isLoading === true ? "bg-gray-500/50" : ""
+                    }`}
                     disabled={isLoading}
                   >
                     Edit customer
