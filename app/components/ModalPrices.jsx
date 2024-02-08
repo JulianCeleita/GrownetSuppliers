@@ -96,39 +96,39 @@ function ModalPrices({
 
     return (
         <div className={`fixed inset-0 bg-black bg-opacity-25 backdrop-blur-sm flex justify-center items-center ${isvisible ? '' : 'hidden'}`}>
-            <div className="bg-white p-8 rounded-2xl w-[800px] flex flex-col items-center">
+            <div className="bg-white p-8 rounded-2xl w-[1200px] flex flex-col items-center pb-20">
                 <button
                     className="self-end mb-4"
                     onClick={() => onClose()}
                 >
                     <XMarkIcon className="h-6 w-6 text-gray-500" />
                 </button>
-                <h1 className="text-2xl font-bold text-dark-blue mb-2">
-                    Recommended prices
+                <h1 className="text-2xl font-bold text-dark-blue">
+                    Recommended <span className="text-primary-blue">prices</span>
                 </h1>
-                <p className="text-lg mb-4">Current price: £{price.price}</p>
-                <div className="grid grid-rows-2 grid-cols-5 gap-4 w-full">
+                <p className="text-lg my-4">Current price: <span className="p-1 bg-light-green rounded">£{price.price}</span> </p>
+                <div className="grid grid-rows-2 grid-cols-5 gap-4">
                     {bands.map((band) => (
-                        <div key={band.id} className="flex flex-col items-center">
-                            <button
-                                className="text-sm py-1 w-full bg-blue-500 text-white rounded-t transition-all hover:bg-blue-700"
-                                onClick={(e) => {
-                                    e.preventDefault();
-                                    enviarData(price, band.id, band.value);
-                                }}
+                        <button
+                            key={band.id}
+                            className="grid grid-cols-2 items-center border border-gray-input rounded-md hover:scale-110 transition-all"
+                            onClick={(e) => {
+                                e.preventDefault();
+                                enviarData(price, band.id, band.value);
+                            }}
+                        >
+                            <div
+                                className="text-lg px-2 py-3 bg-primary-blue text-white rounded-l transition-all"
+
                             >
-                                {band.id}%
-                            </button>
-                            <button
-                                className="text-lg py-2 w-full bg-blue-500 text-white rounded-b transition-all hover:bg-blue-700"
-                                onClick={(e) => {
-                                    e.preventDefault();
-                                    enviarData(price, band.id, band.value);
-                                }}
+                                Band {band.id}%
+                            </div>
+                            <div
+                                className="text-lg px-1 py-3 bg-white text-black rounded-r transition-all"
                             >
                                 £{band.value}
-                            </button>
-                        </div>
+                            </div>
+                        </button>
                     ))}
                 </div>
             </div>

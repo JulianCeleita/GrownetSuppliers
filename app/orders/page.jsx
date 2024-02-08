@@ -10,6 +10,7 @@ import { fetchOrders, fetchOrdersSupplier } from "../api/ordersRequest";
 import Layout from "../layoutS";
 import useTokenStore from "../store/useTokenStore";
 import useUserStore from "../store/useUserStore";
+import Select from "react-select";
 
 const formatDate = (dateString) => {
   const formattedDate = format(new Date(dateString), "yyyy-MM-dd");
@@ -30,7 +31,7 @@ const OrderView = () => {
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
   const [selectedOrders, setSelectedOrders] = useState({});
-
+  const [selectedRoute, setSelectedRoute] = useState("");
   const [filterType, setFilterType] = useState("range");
 
   useEffect(() => {
@@ -125,10 +126,6 @@ const OrderView = () => {
     //TODO: implementar lógica para imprimir las ordenes seleccionadas
   };
 
-  const totalOrders = orders.length;
-
-  const filteredOrders = orders.filter((order) => filterOrdersByDate(order));
-
   const sortedOrders = orders
     .filter((order) => filterOrdersByDate(order))
     .sort((a, b) => {
@@ -136,6 +133,23 @@ const OrderView = () => {
       const dateB = new Date(b.date_delivery);
       return dateA - dateB;
     });
+
+  const uniqueRoutesArray = [
+    ...new Set(sortedOrders.map((order) => order.route)),
+  ];
+  const options = [
+    { value: "", label: "All routes" },
+    ...uniqueRoutesArray.map((route) => ({ value: route, label: route })),
+  ];
+
+  const handleRouteSelection = (option) => {
+    setSelectedRoute(option.value);
+  };
+  const filteredOrders = selectedRoute
+    ? sortedOrders.filter(
+        (order) => order.route.toLowerCase() === selectedRoute.toLowerCase()
+      )
+    : sortedOrders;
 
   const statusColorClass = (status) => {
     switch (status) {
@@ -228,6 +242,11 @@ const OrderView = () => {
               placeholderText="Select a date"
             />
           )}
+          <Select
+            options={options}
+            onChange={handleRouteSelection}
+            placeholder="Select route"
+          />
           <button
             className="flex bg-primary-blue text-white py-3 px-4 rounded-full font-medium transition-all cursor-pointer hover:bg-dark-blue hover:scale-110"
             onClick={() => printOrders()}
@@ -256,6 +275,7 @@ const OrderView = () => {
               </div>
             </div>
 
+{/* TODO AGREGAR EN ESTE DIV EL PORCENTAJE DE LOADING PARA RUTA SELECCIONADA */}
             <div className="flex col-span-1 items-center justify-center">
               <div className="flex items-center justify-center bg-primary-blue rounded-full w-16 h-16">
                 <img
@@ -313,7 +333,7 @@ const OrderView = () => {
               </tr>
             </thead>
             <tbody>
-              {sortedOrders.map((order, index) => (
+              {filteredOrders.map((order, index) => (
                 <tr
                   key={index}
                   className="text-dark-blue border-2 border-stone-100 border-t-0"
@@ -339,7 +359,7 @@ const OrderView = () => {
                   </td>
                   <td className="py-4">Amount</td>
                   <td className="py-4">10%</td>
-                  <td className="py-4">R1</td>
+                  <td className="py-4">{order.route}</td>
                   <td className="py-4">Santiago Arango</td>
                   <td className="py-4">{order.date_delivery}</td>
                   <td className="py-4 flex gap-2 justify-center">
