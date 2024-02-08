@@ -1,6 +1,6 @@
 import { FaceFrownIcon, XMarkIcon } from "@heroicons/react/24/outline";
 
-function ModalOrderError({ isvisible, onClose }) {
+function ModalOrderError({ isvisible, onClose, error }) {
   if (!isvisible) {
     return null;
   }
@@ -15,9 +15,7 @@ function ModalOrderError({ isvisible, onClose }) {
         </button>
         <FaceFrownIcon className="h-12 w-12 text-danger mb-2" />
         <h1 className="text-2xl font-medium text-danger mb-2">Sorry</h1>
-        <p className="text-dark-blue text-lg text-center">
-          We were unable to ship your order, please try again.
-        </p>
+        <p className="text-dark-blue text-lg text-center">{error}</p>
         <button
           onClick={() => onClose()}
           className="bg-primary-blue py-3 px-4 rounded-lg text-white font-medium mr-3 hover:bg-green mt-5"
