@@ -6,11 +6,11 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
+import Select from "react-select";
 import { fetchOrders, fetchOrdersSupplier } from "../api/ordersRequest";
 import Layout from "../layoutS";
 import useTokenStore from "../store/useTokenStore";
 import useUserStore from "../store/useUserStore";
-import Select from "react-select";
 
 const formatDate = (dateString) => {
   const formattedDate = format(new Date(dateString), "yyyy-MM-dd");
@@ -180,7 +180,7 @@ const OrderView = () => {
             <PlusCircleIcon className="h-6 w-6 mr-1" /> New Order
           </Link>
         </div>
-        <div className="flex justify-center items-center space-x-4">
+        <div className="flex ml-24 mb-3 items-center space-x-4">
           <select
             value={filterType}
             onChange={(e) => setFilterType(e.target.value)}
@@ -254,61 +254,67 @@ const OrderView = () => {
             <PrinterIcon className="h-6 w-6" />
           </button>
         </div>
-        <div className="flex mb-10 gap-2">
-          <div className="grid grid-cols-3 px-1 py-3 shadow-sm rounded-3xl shadow-slate-400">
-            <div className="col-span-2">
-              <h1 className="flex text-xl font-bold items-center justify-center text-black">
-                Today
-              </h1>
-              <div className="grid grid-cols-2 pl-2 justify-center text-center">
-                <div className="flex items-center justify-end pr-1">
-                  <p className="text-5xl font-bold text-primary-blue">20</p>
-                </div>
-                <div className="grid grid-cols-1 text-left">
-                  <h2 className="text-sm text-black px-1 font-semibold">
-                    Orders
-                  </h2>
-                  <h2 className="flex items-center text-green-500 text-center px-2 rounded-full text-sm bg-light-green text-dark-green">
-                    06/02/24
-                  </h2>
+        {/* FIJAR ESTE DIV A LA DERECHA Y ARRIBA */}
+        <section className="fixed top-0 right-10 mt-8">
+          <div className="flex gap-4">
+            <div className="grid grid-cols-3 px-1 py-3 shadow-sm rounded-3xl shadow-slate-400 bg-white">
+              <div className="col-span-2">
+                <h1 className="flex text-xl font-bold items-center justify-center text-black">
+                  Today
+                </h1>
+                <div className="grid grid-cols-2 pl-2 justify-center text-center">
+                  <div className="flex items-center justify-end pr-1">
+                    <p className="text-5xl font-bold text-primary-blue">20</p>
+                  </div>
+                  <div className="grid grid-cols-1 text-left">
+                    <h2 className="text-sm text-black px-1 font-semibold">
+                      Orders
+                    </h2>
+                    <h2 className="flex items-center text-green-500 text-center px-2 rounded-full text-sm bg-light-green text-dark-green">
+                      06/02/24
+                    </h2>
+                  </div>
                 </div>
               </div>
-            </div>
 
-{/* TODO AGREGAR EN ESTE DIV EL PORCENTAJE DE LOADING PARA RUTA SELECCIONADA */}
-            <div className="flex col-span-1 items-center justify-center">
-              <div className="flex items-center justify-center bg-primary-blue rounded-full w-16 h-16">
-                <img
-                  src="./loadingBlanco.png"
-                  alt="Percent"
-                  className="w-10 h-7"
-                />
-              </div>
-            </div>
-          </div>
-          <div className="grid grid-cols-2 gap-3 px-3 py-3 items-center justify-center shadow-sm rounded-3xl shadow-slate-400">
-            <div>
-              <h1 className="flex text-xl font-bold items-center justify-center text-black">
-                Total net
-              </h1>
-              <div className="flex justify-center text-center">
-                <div className="flex items-center">
-                  <p className="text-4xl font-bold text-primary-blue">£1,000</p>
+              {/* TODO AGREGAR EN ESTE DIV EL PORCENTAJE DE LOADING PARA RUTA SELECCIONADA */}
+              <div className="flex col-span-1 items-center justify-center">
+                <div className="flex items-center justify-center bg-primary-blue rounded-full w-16 h-16">
+                  <img
+                    src="./loadingBlanco.png"
+                    alt="Percent"
+                    className="w-10 h-7"
+                  />
                 </div>
               </div>
             </div>
-            <div className="border-l border-gray-400">
-              <h1 className="flex text-xl font-bold items-center justify-center text-black">
-                Profit
-              </h1>
-              <div className="flex justify-center text-center">
-                <div>
-                  <p className="text-4xl font-bold text-primary-blue">18%</p>
+            <div className="grid grid-cols-2 gap-3 px-3 py-3 items-center justify-center shadow-sm rounded-3xl bg-white shadow-slate-400">
+              <div>
+                <h1 className="flex text-xl font-bold items-center justify-center text-black">
+                  Total net
+                </h1>
+                <div className="flex justify-center text-center">
+                  <div className="flex items-center">
+                    <p className="text-4xl font-bold text-primary-blue">
+                      £1,000
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <div className="border-l border-gray-400">
+                <h1 className="flex text-xl font-bold items-center justify-center text-black">
+                  Profit
+                </h1>
+                <div className="flex justify-center text-center">
+                  <div>
+                    <p className="text-4xl font-bold text-primary-blue">18%</p>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
-        </div>
+        </section>
+
         <div className="flex items-center justify-center mb-20">
           <table className="w-[90%] bg-white rounded-2xl text-center border-b-0">
             <thead className="sticky top-0 bg-white rounded-tl-lg">
