@@ -613,7 +613,7 @@ export default function EditTable({ orderId, dateDelivery }) {
                           <th
                             key={index}
                             scope="col"
-                            className={`py-2 px-2 bg-dark-blue rounded-lg capitalize ${
+                            className={`py-3 px-2 bg-white capitalize ${
                               column === "quantity" ||
                               column === "Code" ||
                               column === "VAT %" ||
@@ -626,18 +626,14 @@ export default function EditTable({ orderId, dateDelivery }) {
                                 : ""
                             }`}
                             onContextMenu={(e) => handleContextMenu(e)}
-                            style={{
-                              boxShadow:
-                                "0px 5px 5px rgba(0, 0, 0, 0.5), 0px 0px 0px rgba(0, 0, 0, 0.2)",
-                            }}
                           >
-                            <p className="text-lg text-white">{column}</p>
+                            <p className="text-lg text-dark-blue">{column}</p>
                           </th>
                         )
                     )}
                   </tr>
                 </thead>
-                <tbody className="shadow-[rgba(0,_0,_0,_0.24)_0px_3px_8px] rounded-xl">
+                <tbody className="border border-1 bg-white">
                   {rows.map((row, rowIndex) => (
                     <tr key={rowIndex}>
                       {/* CODIGO DE PRODUCTO */}
@@ -646,9 +642,7 @@ export default function EditTable({ orderId, dateDelivery }) {
                           initialColumns.includes(column) && (
                             <React.Fragment key={columnIndex}>
                               <td
-                                className={`px-3 py-2 border-r-2 border-r-[#0c547a] border-[#808e94] ${
-                                  rowIndex === 0 ? "border-t-0" : "border-t-2"
-                                } `}
+                                className={`px-3 py-2 border border-1 border-x-0 `}
                                 tabIndex={0}
                                 style={{ overflow: "visible" }}
                               >
