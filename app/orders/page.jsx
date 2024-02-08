@@ -114,8 +114,8 @@ const OrderView = () => {
     deliveryDate.setHours(0, 0, 0, 0);
 
     if (dateFilter === "today") {
-      const today = subtractDays(new Date(), 1);
-      return isSameDay(deliveryDate, today);
+      const workDateFormatted = new Date(workDate);
+      return isSameDay(deliveryDate, workDateFormatted);
     }
     if (dateFilter === "range" && startDate && endDate) {
       const start = new Date(startDate);
@@ -378,10 +378,10 @@ const OrderView = () => {
         </section>
 
         <div className="flex items-center justify-center mb-20">
-          <table className="w-[90%] bg-white rounded-2xl text-center border-b-0">
-            <thead className="sticky top-0 bg-white rounded-tl-lg">
-              <tr className="border-2 border-stone-100 border-b-0 text-dark-blue rounded-t-3xl">
-                <th className="py-4 flex items-center justify-center">
+          <table className="w-[90%] bg-white text-center border-b-0">
+            <thead className="sticky top-0 bg-white">
+              <tr className="border-2 border-stone-100 border-b-0 text-dark-blue">
+                <th className="py-4 flex items-center justify-center rounded-tl-lg">
                   <label className="inline-flex items-center">
                     <input
                       type="checkbox"
@@ -397,9 +397,10 @@ const OrderView = () => {
                 <th className="py-4">Route</th>
                 <th className="py-4">Responsable</th>
                 <th className="py-4">Delivery date</th>
-                <th className="py-4">Status</th>
+                <th className="py-4 rounded-tr-lg">Status</th>
               </tr>
             </thead>
+
             <tbody>
               {filteredOrders.map((order, index) => (
                 <tr
