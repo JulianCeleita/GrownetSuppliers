@@ -2,6 +2,7 @@
 import {
   ExclamationCircleIcon,
   MagnifyingGlassIcon,
+  PlusCircleIcon,
 } from "@heroicons/react/24/outline";
 import axios from "axios";
 import Link from "next/link";
@@ -106,14 +107,14 @@ const CustomersView = () => {
 
   return (
     <Layout>
-      <div>
-        <div className="flex justify-between p-8 bg-primary-blue">
-          <h1 className="text-2xl text-white font-semibold">Customers list</h1>
+      <div className="-mt-16">
+        <div className="flex gap-4 mt-2">
+          <h1 className="text-2xl text-white font-semibold ml-28">Customers <span className="text-light-green">list</span></h1>
           <Link
-            className="flex bg-green py-3 px-4 rounded-lg text-white font-medium transition-all hover:bg-dark-blue hover:scale-110 "
+            className="flex bg-green -mt-1 mb-4 py-2 px-4 rounded-full text-white font-medium transition-all hover:bg-dark-blue hover:scale-110"
             href="/customers/create-customer"
           >
-            New Customer
+           <PlusCircleIcon className="h-6 w-6 mr-1" /> New Customer
           </Link>
         </div>
         <div className="flex relative items-center justify-center mb-16 mt-2 mr-5 ml-2 ">
