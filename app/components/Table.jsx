@@ -540,7 +540,7 @@ export default function Table() {
                           column === "UOM" ||
                           column === "Net"
                             ? "w-20"
-                            : column === "Packsize"
+                            : column === "Packsize" || column === "Total Price"
                             ? "w-40"
                             : ""
                         }`}
