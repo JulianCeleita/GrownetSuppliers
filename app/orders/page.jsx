@@ -256,6 +256,7 @@ const OrderView = () => {
               </div>
             </div>
 
+{/* TODO AGREGAR EN ESTE DIV EL PORCENTAJE DE LOADING PARA RUTA SELECCIONADA */}
             <div className="flex col-span-1 items-center justify-center">
               <div className="flex items-center justify-center bg-primary-blue rounded-full w-16 h-16">
                 <img
