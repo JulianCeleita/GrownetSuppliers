@@ -141,6 +141,8 @@ export default function EditTable({ orderId, dateDelivery }) {
   const { user, setUser } = useUserStore();
   const router = useRouter();
   const [isReadOnly, setIsReadOnly] = useState(true);
+  const [confirmCreateOrder, setConfirmCreateOrder] = useState(false);
+  const [orderError, setOrderError] = useState("");
 
   const columns = [
     "Code",
@@ -533,6 +535,12 @@ export default function EditTable({ orderId, dateDelivery }) {
             price: Number(row.Net),
           };
         });
+      if (!filteredProducts || filteredProducts.length === 0) {
+        setShowErrorOrderModal(true);
+        setOrderError("You must leave at least one product in the order.");
+        setConfirmCreateOrder(false);
+        return;
+      }
 
       const jsonOrderData = {
         date_delivery: dateDelivery,
@@ -543,6 +551,7 @@ export default function EditTable({ orderId, dateDelivery }) {
         total_tax: parseFloat(totalTaxSum),
         products: filteredProducts,
       };
+      console.log("jsonOrderData", jsonOrderData);
       const response = await axios.post(
         `${editStorageOrder}${orderDetail.reference}`,
         jsonOrderData,
@@ -552,9 +561,13 @@ export default function EditTable({ orderId, dateDelivery }) {
           },
         }
       );
+      console.log("response", response);
       setSpecialRequirements("");
-
-      router.push("/");
+      setShowConfirmModal(true);
+      setConfirmCreateOrder(false);
+      setTimeout(() => {
+        router.push("/");
+      }, 1000);
     } catch (error) {
       setShowErrorOrderModal(true);
     }
@@ -836,7 +849,7 @@ export default function EditTable({ orderId, dateDelivery }) {
               placeholder="Write your comments here"
             />
             <button
-              onClick={editOrder}
+              onClick={() => setConfirmCreateOrder(true)}
               className="bg-primary-blue py-2 px-4 rounded-lg text-white font-medium mr-2 w-[15%]"
             >
               Edit order
@@ -847,10 +860,27 @@ export default function EditTable({ orderId, dateDelivery }) {
       <ModalSuccessfull
         isvisible={showConfirmModal}
         onClose={() => setShowConfirmModal(false)}
+        title="Congratulations"
+        text="Your request has been edited, thank you for using"
+        textGrownet="Grownet"
+        button=" Close"
       />
+      {confirmCreateOrder && (
+        <ModalSuccessfull
+          isvisible={confirmCreateOrder}
+          onClose={() => setConfirmCreateOrder(false)}
+          title="Confirmation!"
+          text="Are you sure to edit this order?"
+          textGrownet=""
+          button="Confirm"
+          sendOrder={editOrder}
+        />
+      )}
+
       <ModalOrderError
         isvisible={showErrorOrderModal}
         onClose={() => setShowErrorOrderModal(false)}
+        error={orderError}
       />
     </div>
   );
