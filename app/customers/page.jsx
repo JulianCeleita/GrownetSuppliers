@@ -126,14 +126,14 @@ const CustomersView = () => {
             <PlusCircleIcon className="h-6 w-6 mr-1" /> New Customer
           </Link>
         </div>
-        <div className="flex relative items-center justify-center mb-16 mt-2 mr-5 ml-2 ">
+        <div className="flex relative items-center justify-center mb-16 mt-2 mr-5 ml-2">
           <div className="relative w-[55%] max-w-[65%]">
             <input
               type="text"
               placeholder="Search customers by name"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-12 pr-4 py-3 w-full rounded-lg border border-gray-200 bg-white text-gray-700 placeholder-gray-400 focus:outline-none shadow-md hover:shadow-lg transition-shadow duration-150 ease-in-out"
+              className="pl-12 pr-4 py-3 h-[45px] w-full rounded-lg border border-gray-200 bg-white text-gray-700 placeholder-gray-400 focus:outline-none shadow-md hover:shadow-lg transition-shadow duration-150 ease-in-out"
             />
             <div className="absolute left-3 top-1/2 transform -translate-y-1/2">
               <MagnifyingGlassIcon class="h-5 w-5 text-gray-400 mr-5" />
