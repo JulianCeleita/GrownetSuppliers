@@ -112,9 +112,6 @@ export default function EditTable({ orderId, dateDelivery }) {
   const {
     initialColumns,
     toggleColumnVisibility,
-    initialTotalRows,
-    toggleTotalRowVisibility,
-    customers,
     setTotalNetSum,
     setTotalPriceSum,
     setTotalTaxSum,
@@ -124,21 +121,18 @@ export default function EditTable({ orderId, dateDelivery }) {
     orderDetail,
     setOrderDetail,
   } = useTableStore();
-  const [showCheckboxColumnTotal, setShowCheckboxColumnTotal] = useState(false);
+
   const menuRef = useRef(null);
-  const menuRefTotal = useRef(null);
   const [showCheckboxColumn, setShowCheckboxColumn] = useState(false);
   const [currentValues, setCurrentValues] = useState({});
   const [productByCode, setProductByCode] = useState({});
   const [DescriptionData, setDescriptionData] = useState(null);
-  const lastActiveColumn = initialColumns[initialColumns.length - 1];
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [showErrorOrderModal, setShowErrorOrderModal] = useState(false);
   const [specialRequirements, setSpecialRequirements] = useState(
     orderDetail.observation ? orderDetail.observation : ""
   );
   const [mouseCoords, setMouseCoords] = useState({ x: 0, y: 0 });
-  const { user, setUser } = useUserStore();
   const router = useRouter();
   const [isReadOnly, setIsReadOnly] = useState(true);
   const [confirmCreateOrder, setConfirmCreateOrder] = useState(false);
@@ -626,7 +620,8 @@ export default function EditTable({ orderId, dateDelivery }) {
                               column === "UOM" ||
                               column === "Net"
                                 ? "w-20"
-                                : column === "Packsize"
+                                : column === "Packsize" ||
+                                  column === "Total Price"
                                 ? "w-40"
                                 : ""
                             }`}
