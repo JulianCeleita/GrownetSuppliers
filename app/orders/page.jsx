@@ -11,7 +11,6 @@ import { fetchOrders, fetchOrdersSupplier } from "../api/ordersRequest";
 import Layout from "../layoutS";
 import useTokenStore from "../store/useTokenStore";
 import useUserStore from "../store/useUserStore";
-import Select from "react-select";
 import { CircleProgressBar } from "../components/CircleProgressBar";
 import useWorkDateStore from "../store/useWorkDateStore";
 
