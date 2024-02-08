@@ -13,6 +13,7 @@ import useTokenStore from "../store/useTokenStore";
 import useUserStore from "../store/useUserStore";
 import { CircleProgressBar } from "../components/CircleProgressBar";
 import useWorkDateStore from "../store/useWorkDateStore";
+import usePercentageStore from "../store/usePercentageStore";
 
 const formatDate = (dateString) => {
   const formattedDate = format(new Date(dateString), "yyyy-MM-dd");
@@ -36,7 +37,9 @@ export const customStyles = {
 const OrderView = () => {
   const router = useRouter();
   const { token } = useTokenStore();
-  const { workDate, setFetchWorkDate } = useWorkDateStore()
+  const { workDate, setFetchWorkDate } = useWorkDateStore();
+  const { routePercentages, setRoutePercentages, setFetchRoutePercentages } =
+    usePercentageStore();
   const [searchTerm, setSearchTerm] = useState("");
   const [isLoading, setIsLoading] = useState(true);
   const [orders, setOrders] = useState([]);
@@ -50,12 +53,13 @@ const OrderView = () => {
   const [selectedOrders, setSelectedOrders] = useState({});
   const [selectedRoute, setSelectedRoute] = useState("");
   const [filterType, setFilterType] = useState("range");
+  const [showPercentage, setShowPercentage] = useState(null);
 
   const formatDateToShow = (dateString) => {
     if (!dateString) return "Loading...";
     const date = new Date(dateString);
-    const day = String(date.getDate()).padStart(2, '0');
-    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, "0");
+    const month = String(date.getMonth() + 1).padStart(2, "0");
     const year = String(date.getFullYear()).slice(-2);
     return `${day}/${month}/${year}`;
   };
@@ -81,9 +85,25 @@ const OrderView = () => {
   }, [user, token, showDatePicker]);
 
   useEffect(() => {
-    setFetchWorkDate(token, user.id_supplier)
-  }, [user])
+    setFetchWorkDate(token, user.id_supplier);
+  }, [user]);
 
+  useEffect(() => {
+    if (routePercentages) {
+      const result = routePercentages.find(
+        (item) => item.nameRoute === selectedRoute
+      );
+      if (result) {
+        setShowPercentage(
+          result.percentage_loading > 0
+            ? result.percentage_loading
+            : result.percentage_packing
+        );
+      } else {
+        setShowPercentage(null);
+      }
+    }
+  }, [routePercentages]);
 
   const subtractDays = (date, days) => {
     const result = new Date(date);
@@ -100,8 +120,8 @@ const OrderView = () => {
     deliveryDate.setHours(0, 0, 0, 0);
 
     if (dateFilter === "today") {
-      const today = subtractDays(new Date(), 1);
-      return isSameDay(deliveryDate, today);
+      const workDateFormatted = new Date(workDate);
+      return isSameDay(deliveryDate, workDateFormatted);
     }
     if (dateFilter === "range" && startDate && endDate) {
       const start = new Date(startDate);
@@ -168,19 +188,27 @@ const OrderView = () => {
   const uniqueRoutesArray = [
     ...new Set(sortedOrders.map((order) => order.route)),
   ];
+
   const options = [
     { value: "", label: "All routes" },
     ...uniqueRoutesArray.map((route) => ({ value: route, label: route })),
   ];
 
-  const handleRouteSelection = (option) => {
+  const getPercentages = async (value) => {
+    if (value !== "" || value !== null || value !== undefined) {
+      await setFetchRoutePercentages(token, workDate);
+    }
+  };
+
+  const handleRouteSelection = async (option) => {
     setSelectedRoute(option.value);
+    await getPercentages(option.value);
   };
 
   const filteredOrders = selectedRoute
     ? sortedOrders.filter(
-      (order) => order.route.toLowerCase() === selectedRoute.toLowerCase()
-    )
+        (order) => order.route.toLowerCase() === selectedRoute.toLowerCase()
+      )
     : sortedOrders;
 
   const statusColorClass = (status) => {
@@ -307,22 +335,25 @@ const OrderView = () => {
                       Orders
                     </h2>
                     <h2 className="flex items-center text-green-500 text-center px-2 rounded-full text-sm bg-light-green text-dark-green">
-                      06/02/24
+                      {formatDateToShow(workDate)}
                     </h2>
                   </div>
                 </div>
               </div>
               {/* TODO AGREGAR EN ESTE DIV EL PORCENTAJE DE LOADING PARA RUTA SELECCIONADA */}
               <div className="flex col-span-1 items-center justify-center">
-                <div className="flex items-center justify-center bg-primary-blue rounded-full w-16 h-16">
-                  <img
-                    src="./loadingBlanco.png"
-                    alt="Percent"
-                    className="w-10 h-7"
-                  />
-                </div>
+                {showPercentage === null ? (
+                  <div className="flex items-center justify-center bg-primary-blue rounded-full w-16 h-16">
+                    <img
+                      src="./loadingBlanco.png"
+                      alt="Percent"
+                      className="w-10 h-7"
+                    />
+                  </div>
+                ) : (
+                  <CircleProgressBar percentage={showPercentage} />
+                )}
               </div>
-              {/* <CircleProgressBar percentage={48} /> */}
             </div>
             <div className="grid grid-cols-2 gap-3 px-3 py-3 items-center justify-center shadow-sm rounded-3xl bg-white shadow-slate-400">
               <div>
@@ -351,11 +382,11 @@ const OrderView = () => {
           </div>
         </section>
 
-        <div className="flex items-center justify-center mb-20">
-          <table className="w-[90%] bg-white rounded-2xl text-center border-b-0">
-            <thead className="sticky top-0 bg-white rounded-tl-lg">
-              <tr className="border-2 border-stone-100 border-b-0 text-dark-blue rounded-t-3xl">
-                <th className="py-4 flex items-center justify-center">
+        <div className="flex items-center justify-center mb-20  p-2">
+          <table className="w-[90%] bg-white first-line:bg-white rounded-2xl text-center shadow-[rgba(17,_17,_26,_0.1)_0px_0px_16px]">
+            <thead className="sticky top-0  shadow-[0px_11px_15px_-3px_#edf2f7]">
+              <tr className="  text-dark-blue">
+                <th className="py-4 flex items-center justify-center rounded-tl-lg">
                   <label className="inline-flex items-center">
                     <input
                       type="checkbox"
@@ -371,15 +402,13 @@ const OrderView = () => {
                 <th className="py-4">Route</th>
                 <th className="py-4">Responsable</th>
                 <th className="py-4">Delivery date</th>
-                <th className="py-4">Status</th>
+                <th className="py-4 rounded-tr-lg">Status</th>
               </tr>
             </thead>
+
             <tbody>
               {filteredOrders.map((order, index) => (
-                <tr
-                  key={index}
-                  className="text-dark-blue border-2 border-stone-100 border-t-0"
-                >
+                <tr key={index} className="text-dark-blue border-b-[1.5px]">
                   <td className="py-4">
                     <label className="inline-flex items-center">
                       <input
@@ -394,7 +423,7 @@ const OrderView = () => {
                   </td>
                   <td className="py-4">#5</td>
                   <td
-                    className="py-4 cursor-pointer hover:bg-primary-blue hover:text-white"
+                    className="py-4 cursor-pointer hover:bg-light-blue"
                     onClick={(e) => goToOrder(e, order)}
                   >
                     {order.accountName}

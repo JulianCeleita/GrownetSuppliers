@@ -607,30 +607,29 @@ export default function EditTable({ orderId, dateDelivery }) {
               <table className="w-full text-sm text-center table-auto">
                 <thead className="text-white">
                   <tr>
-                    {columns.map(
-                      (column, index) =>
-                        initialColumns.includes(column) && (
+                    {columns.map((column, index) => {
+                      const isColumnVisible = initialColumns.includes(column);
+                      const firstVisibleColumnIndex = columns.findIndex(col => initialColumns.includes(col));
+                      const lastVisibleColumnIndex = columns.length - 1 - [...columns].reverse().findIndex(col => initialColumns.includes(col));
+
+                      return (
+                        isColumnVisible && (
                           <th
                             key={index}
                             scope="col"
-                            className={`py-3 px-2 bg-white capitalize ${
-                              column === "quantity" ||
-                              column === "Code" ||
-                              column === "VAT %" ||
-                              column === "UOM" ||
-                              column === "Net"
-                                ? "w-20"
-                                : column === "Packsize" ||
-                                  column === "Total Price"
-                                ? "w-40"
-                                : ""
-                            }`}
+                            className={`py-3 px-2 bg-white capitalize ${index === firstVisibleColumnIndex ? "rounded-tl-lg" : ""
+                              } ${index === lastVisibleColumnIndex ? "rounded-tr-lg" : ""
+                              } ${column === "quantity" || column === "Code" || column === "VAT %" || column === "UOM" || column === "Net" ? "w-20" :
+                                column === "Packsize" || column === "Total Price" ? "w-40" : ""
+                              }`}
                             onContextMenu={(e) => handleContextMenu(e)}
                           >
                             <p className="text-lg text-dark-blue">{column}</p>
                           </th>
+
                         )
-                    )}
+                      );
+                    })}
                   </tr>
                 </thead>
                 <tbody className="border border-1 bg-white">
@@ -684,10 +683,10 @@ export default function EditTable({ orderId, dateDelivery }) {
                                         options={
                                           DescriptionData
                                             ? DescriptionData.map((item) => ({
-                                                value: item.productName,
-                                                label: item.concatenatedName,
-                                                code: item.code,
-                                              }))
+                                              value: item.productName,
+                                              label: item.concatenatedName,
+                                              code: item.code,
+                                            }))
                                             : []
                                         }
                                         value={{
@@ -736,11 +735,10 @@ export default function EditTable({ orderId, dateDelivery }) {
                                     type={inputTypes[column]}
                                     ref={inputRefs[column][rowIndex]}
                                     data-field-name={column}
-                                    className={`pl-2 h-[30px] outline-none w-full ${
-                                      inputTypes[column] === "number"
-                                        ? "hide-number-arrows"
-                                        : ""
-                                    }`}
+                                    className={`pl-2 h-[30px] outline-none w-full ${inputTypes[column] === "number"
+                                      ? "hide-number-arrows"
+                                      : ""
+                                      }`}
                                     value={row[column] || ""}
                                     onChange={(e) => {
                                       if (column === "Net") {
