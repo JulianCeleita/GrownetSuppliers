@@ -27,20 +27,9 @@ function Header() {
   }, [pathname, router]);
 
   return (
-    <div className="flex justify-between items-center bg-primary-blue p-4">
+    <div className="flex justify-between items-center bg-primary-blue rounded-b-3xl border-red-700 p-4">
       <div className="flex mx-5">
         <SideBar />
-      </div>
-      <div className="mx-5">
-        <Link href="#">
-          <Image
-            src="/logoGrownetBlanco.svg"
-            width={180}
-            height={180}
-            alt="Logo Grownet"
-            priority={true}
-          />
-        </Link>
       </div>
     </div>
 

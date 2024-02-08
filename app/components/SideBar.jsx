@@ -65,7 +65,7 @@ const SideBar = () => {
   return (
     <div>
       <button
-        className={`${open && "hidden"} ml-4`}
+        className="ml-4"
         onClick={() => setOpen(true)}
       >
         <Bars3Icon className="h-10 w-10 mr-6 text-white font-bold" />
