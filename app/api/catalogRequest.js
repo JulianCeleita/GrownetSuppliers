@@ -35,7 +35,6 @@ export const fetchPricesBySupplier = async (
         Authorization: `Bearer ${token}`,
       },
     });
-    console.log("🚀 ~ response by supplier:", response);
 
     const newPrice = Array.isArray(response.data.price)
       ? response.data.price
@@ -58,7 +57,6 @@ export const fetchCustomerBySupplier = async (
         Authorization: `Bearer ${token}`,
       },
     });
-    console.log("🚀 ~ response by customersSupplierUrl:", response.data);
 
     const customerAccountNames = response.data.customers.map((customer) => ({
       accountName: customer.accountName,
