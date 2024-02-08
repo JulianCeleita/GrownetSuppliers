@@ -153,17 +153,10 @@ const CustomersView = () => {
             focus:outline-none focus:shadow-outline text-gray-400 hover:border-gray-300 shadow-md hover:shadow-lg transition-shadow duration-150 ease-in-out"
           >
             <option value="all">Select status</option>
-            <option value="active" className="text-black">
-              Active
-            </option>
-            <option value="blocked" className="text-black">
-              Blocked
-            </option>
-            <option value="inactive" className="text-black">
-              Inactive
-            </option>
+            <option value="active" className="text-black">Active</option>
+            <option value="blocked" className="text-black">Blocked</option>
+            <option value="inactive" className="text-black">Inactive</option>
           </select>
-
           <select
             value={selectedRoute}
             onChange={handleRouteChange}
@@ -174,11 +167,7 @@ const CustomersView = () => {
             <option value="">All Routes</option>
             {routes &&
               routes.map((route) => (
-                <option
-                  key={route.id}
-                  value={route.name}
-                  className="text-black"
-                >
+                <option key={route.id} value={route.name} className="text-black">
                   {route.name}
                 </option>
               ))}
@@ -198,9 +187,7 @@ const CustomersView = () => {
                 )
               ),
             ].map((uniqueGroup) => (
-              <option key={uniqueGroup} className="text-black">
-                {uniqueGroup}
-              </option>
+              <option key={uniqueGroup} className="text-black">{uniqueGroup}</option>
             ))}
           </select>
         </div>
@@ -219,10 +206,7 @@ const CustomersView = () => {
             <tbody>
               {sortedCustomers.length === 0 && !isLoading ? (
                 <tr>
-                  <td
-                    colSpan="7"
-                    className="text-dark-blue border-2 border-stone-100 border-t-0"
-                  >
+                  <td colSpan="7" className="text-dark-blue border-2 border-stone-100 border-t-0">
                     <p className="flex items-center justify-center text-gray my-10">
                       <ExclamationCircleIcon class="h-12 w-12 mr-10 text-gray" />
                       Results not found. Try a different search!

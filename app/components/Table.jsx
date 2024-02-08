@@ -516,6 +516,24 @@ export default function Table() {
     }
   };
 
+  const placeholders = {
+    Code: "Enter code",
+    Description: "Enter description",
+    Packsize: "Enter pack size",
+    UOM: "Enter unit of measure",
+    quantity: "Enter quantity",
+    price: "Enter price",
+    Net: "Enter net",
+    "Total Net": "Enter total net",
+    "VAT %": "Enter VAT %",
+    "VAT £": "Enter VAT £",
+    "Total Price": "Enter total price",
+    "Unit Cost": "Enter unit cost",
+    Profit: "Enter profit",
+    "Price Band": "Enter price band",
+    "Total Cost": "Enter total cost",
+  };
+
   return (
     <div className="flex flex-col p-8">
       <div className="overflow-x-auto">
@@ -533,41 +551,35 @@ export default function Table() {
                       <th
                         key={index}
                         scope="col"
-                        className={`py-2 px-2 bg-dark-blue rounded-lg capitalize ${
-                          column === "quantity" ||
+                        className={`py-2 px-2 bg-white capitalize ${column === "quantity" ||
                           column === "Code" ||
                           column === "VAT %" ||
                           column === "UOM" ||
                           column === "Net"
-                            ? "w-20"
-                            : column === "Packsize" || column === "Total Price"
+                          ? "w-20"
+                          : column === "Packsize" || column === "Total Price"
                             ? "w-40"
                             : ""
-                        }`}
+                          }`}
                         onContextMenu={(e) => handleContextMenu(e)}
-                        style={{
-                          boxShadow:
-                            "0px 5px 5px rgba(0, 0, 0, 0.5), 0px 0px 0px rgba(0, 0, 0, 0.2)",
-                        }}
                       >
-                        <p className="text-lg text-white">{column}</p>
+                        <p className="text-lg text-dark-blue">{column}</p>
                       </th>
                     )
                 )}
               </tr>
             </thead>
-            <tbody className="shadow-[rgba(0,_0,_0,_0.24)_0px_3px_8px] rounded-xl">
+            <tbody className="border border-1 bg-white">
               {rows.map((row, rowIndex) => (
                 <tr key={rowIndex}>
                   {/* CODIGO DE PRODUCTO */}
                   {columns.map(
-                    (column, columnIndex) =>
+                    (column, columnIndex) => {
+                      const isFirstRow = rowIndex === 0;
                       initialColumns.includes(column) && (
                         <React.Fragment key={columnIndex}>
                           <td
-                            className={`px-3 py-2 border-r-2 border-r-[#0c547a] border-[#808e94] ${
-                              rowIndex === 0 ? "border-t-0" : "border-t-2"
-                            } `}
+                            className={`px-3 py-3 border border-1 border-x-0`}
                             tabIndex={0}
                             style={{ overflow: "visible" }}
                           >
@@ -608,10 +620,10 @@ export default function Table() {
                                     options={
                                       DescriptionData
                                         ? DescriptionData.map((item) => ({
-                                            value: item.productName,
-                                            label: item.concatenatedName,
-                                            code: item.code,
-                                          }))
+                                          value: item.productName,
+                                          label: item.concatenatedName,
+                                          code: item.code,
+                                        }))
                                         : []
                                     }
                                     value={{
@@ -660,11 +672,10 @@ export default function Table() {
                                 type={inputTypes[column]}
                                 ref={inputRefs[column][rowIndex]}
                                 data-field-name={column}
-                                className={`pl-2 h-[30px] outline-none w-full ${
-                                  inputTypes[column] === "number"
-                                    ? "hide-number-arrows"
-                                    : ""
-                                }`}
+                                className={`pl-2 h-[30px] outline-none w-full ${inputTypes[column] === "number"
+                                  ? "hide-number-arrows"
+                                  : ""
+                                  }`}
                                 value={row[column] || ""}
                                 onChange={(e) => {
                                   if (column === "Net") {
@@ -705,6 +716,7 @@ export default function Table() {
                           </td>
                         </React.Fragment>
                       )
+                    }
                   )}
                 </tr>
               ))}
@@ -721,7 +733,7 @@ export default function Table() {
               }}
             >
               <h4 className="font-bold mb-2">Show/Hide Columns</h4>
-              {columns.map((column) => (
+              {columns.map((column, columnIndex) => (
                 <div key={column} className={`flex items-center`}>
                   <input
                     type="checkbox"
