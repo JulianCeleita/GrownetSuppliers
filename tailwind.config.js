@@ -20,7 +20,7 @@ module.exports = {
         "dark-green": "#00783E",
         "gray-grownet": "#969696",
         "orange-grownet": "#FF8A00",
-        "bg-green": "#D5FEDD",
+        "background-green": "#D5FEDD",
         "bg-red": "#FCE5E4",
         "gray-input": "#A7A7A7",
       },

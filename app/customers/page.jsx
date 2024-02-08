@@ -5,7 +5,6 @@ import {
   PlusCircleIcon,
 } from "@heroicons/react/24/outline";
 import axios from "axios";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import ModalDelete from "../components/ModalDelete";
@@ -18,6 +17,9 @@ import {
   fetchCustomersSupplier,
   fetchRoutes,
 } from "../api/customerRequest";
+import NewCustomer from "../components/NewCustomer";
+import CustomerDetailPage from "../customer/[customerId]/page";
+import Editcustomer from "../components/EditCustomer";
 
 const CustomersView = () => {
   const router = useRouter();
@@ -32,6 +34,8 @@ const CustomersView = () => {
   const [filteredRoutes, setFilteredRoutes] = useState([]);
   const [selectedCustomer, setSelectedCustomer] = useState(null);
   const { user } = useUserStore();
+  const [showNewCustomers, setShowNewCustomers] = useState(false);
+  const [showEditCustomer, setShowEditCustomer] = useState(false);
 
   useEffect(() => {
     if (user && user?.rol_name === "AdminGrownet") {
@@ -118,13 +122,15 @@ const CustomersView = () => {
     <Layout>
       <div className="-mt-16">
         <div className="flex gap-4 mt-2">
-          <h1 className="text-2xl text-white font-semibold ml-28">Customers <span className="text-light-green">list</span></h1>
-          <Link
-            className="flex bg-green -mt-1 mb-8 py-2 px-4 rounded-full text-white font-medium transition-all hover:bg-dark-blue hover:scale-110"
-            href="/customers/create-customer"
+          <h1 className="text-2xl text-white font-semibold ml-28 mr-2">
+            Customers <span className="text-light-green">list</span>
+          </h1>
+          <button
+            className="flex bg-green mb-4 py-2 px-4 rounded-full text-white font-medium transition-all hover:bg-dark-blue hover:scale-110"
+            onClick={() => setShowNewCustomers(true)}
           >
             <PlusCircleIcon className="h-6 w-6 mr-1" /> New Customer
-          </Link>
+          </button>
         </div>
         <div className="flex relative items-center justify-center mb-16 mt-2 mr-5 ml-2">
           <div className="relative w-[55%] max-w-[65%]">
@@ -147,9 +153,15 @@ const CustomersView = () => {
             focus:outline-none focus:shadow-outline text-gray-400 hover:border-gray-300 shadow-md hover:shadow-lg transition-shadow duration-150 ease-in-out"
           >
             <option value="all">Select status</option>
-            <option value="active" className="text-black">Active</option>
-            <option value="blocked" className="text-black">Blocked</option>
-            <option value="inactive" className="text-black">Inactive</option>
+            <option value="active" className="text-black">
+              Active
+            </option>
+            <option value="blocked" className="text-black">
+              Blocked
+            </option>
+            <option value="inactive" className="text-black">
+              Inactive
+            </option>
           </select>
 
           <select
@@ -162,7 +174,11 @@ const CustomersView = () => {
             <option value="">All Routes</option>
             {routes &&
               routes.map((route) => (
-                <option key={route.id} value={route.name} className="text-black">
+                <option
+                  key={route.id}
+                  value={route.name}
+                  className="text-black"
+                >
                   {route.name}
                 </option>
               ))}
@@ -182,7 +198,9 @@ const CustomersView = () => {
                 )
               ),
             ].map((uniqueGroup) => (
-              <option key={uniqueGroup} className="text-black">{uniqueGroup}</option>
+              <option key={uniqueGroup} className="text-black">
+                {uniqueGroup}
+              </option>
             ))}
           </select>
         </div>
@@ -201,7 +219,10 @@ const CustomersView = () => {
             <tbody>
               {sortedCustomers.length === 0 && !isLoading ? (
                 <tr>
-                  <td colSpan="7" className="text-dark-blue border-2 border-stone-100 border-t-0">
+                  <td
+                    colSpan="7"
+                    className="text-dark-blue border-2 border-stone-100 border-t-0"
+                  >
                     <p className="flex items-center justify-center text-gray my-10">
                       <ExclamationCircleIcon class="h-12 w-12 mr-10 text-gray" />
                       Results not found. Try a different search!
@@ -327,6 +348,15 @@ const CustomersView = () => {
             </tbody>
           </table>
         </div>
+        <NewCustomer
+          isvisible={showNewCustomers}
+          onClose={() => setShowNewCustomers(false)}
+        />
+        <Editcustomer
+          isvisible={showEditCustomer}
+          onClose={() => setShowEditCustomer(false)}
+          customer={selectedCustomer}
+        />
         <ModalDelete
           isvisible={showDeleteModal}
           onClose={() => setShowDeleteModal(false)}
