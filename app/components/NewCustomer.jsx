@@ -1,57 +1,19 @@
 import useUserStore from "@/app/store/useUserStore";
-import { ArrowLeftIcon, XMarkIcon } from "@heroicons/react/24/outline";
+import { XMarkIcon } from "@heroicons/react/24/outline";
 import axios from "axios";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import Swal from "sweetalert2";
-import { fetchCustomers, fetchCustomersSupplier } from "../api/customerRequest";
 import {
-  assignCustomer,
-  createCustomer,
-  groupsUrl,
-  routesUrl,
-} from "../config/urls.config";
+  fetchCustomers,
+  fetchCustomersSupplier,
+  fetchGroups,
+  fetchRoutes,
+} from "../api/customerRequest";
+import { assignCustomer, createCustomer } from "../config/urls.config";
 import useTokenStore from "../store/useTokenStore";
 
-export const fetchRoutes = async (token, user, setRoutes, setIsLoading) => {
-  try {
-    const response = await axios.get(routesUrl, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
-
-    const newRoute = Array.isArray(response.data.routes)
-      ? response.data.routes
-      : [];
-    setRoutes(newRoute);
-    setIsLoading(false);
-  } catch (error) {
-    console.error("Error al obtener los routes:", error);
-  }
-};
-
-export const fetchGroups = async (token, user, setGroups, setIsLoading) => {
-  try {
-    const response = await axios.get(groupsUrl, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
-
-    const newGroup = Array.isArray(response.data.groups)
-      ? response.data.groups
-      : [];
-    setGroups(newGroup);
-    setIsLoading(false);
-  } catch (error) {
-    console.error("Error al obtener los groups:", error);
-  }
-};
-
-function NewCustomer({ isvisible, onClose, setSuppliers }) {
-  const router = useRouter();
+function NewCustomer({ isvisible, onClose, setUpdateCustomers }) {
   const { token } = useTokenStore();
   const [isLoading, setIsLoading] = useState(false);
   const [accountName, setAccountName] = useState("");
@@ -62,7 +24,6 @@ function NewCustomer({ isvisible, onClose, setSuppliers }) {
   const [telephoneCustomer, setTelephoneCustomer] = useState("");
   const [postCode, setPostCode] = useState("");
   const [specialInstructions, setSpecialInstructions] = useState("");
-  const [selectedImage, setSelectedImage] = useState(null);
   const [mainContact, setMainContact] = useState("");
   const [accountEmail, setAccountEmail] = useState("");
   const [drop, setDrop] = useState("");
@@ -70,12 +31,8 @@ function NewCustomer({ isvisible, onClose, setSuppliers }) {
   const [cratesSelected, setCratesSelected] = useState("");
   const [vip, setVip] = useState("");
   const [vipSelected, setVipSelected] = useState("");
-  const [deliveryWindow, setDeliveryWindow] = useState("");
-  const [group, setGroup] = useState("");
-  const [route, setRoute] = useState("");
   const [routes, setRoutes] = useState([]);
   const [groups, setGroups] = useState([]);
-  const [selectedRoute, setSelectedRoute] = useState(null);
   const [selectedGroup, setSelectedGroup] = useState(null);
   const { user, setUser } = useUserStore();
   const [startHour, setStartHour] = useState("");
@@ -137,16 +94,16 @@ function NewCustomer({ isvisible, onClose, setSuppliers }) {
     }
   };
 
-  const handleImageChange = (e) => {
-    const file = e.target.files[0];
-    setSelectedImage(file);
-  };
-  const handleRouteChange = (e) => {
-    setSelectedRoute(e.target.value);
-  };
-  const handleGroupChange = (e) => {
-    setSelectedGroup(e.target.value);
-  };
+  // const handleImageChange = (e) => {
+  //   const file = e.target.files[0];
+  //   setSelectedImage(file);
+  // };
+  // const handleRouteChange = (e) => {
+  //   setSelectedRoute(e.target.value);
+  // };
+  // const handleGroupChange = (e) => {
+  //   setSelectedGroup(e.target.value);
+  // };
 
   const handleCratesChange = (e) => {
     const value = e.target.value;
@@ -215,7 +172,7 @@ function NewCustomer({ isvisible, onClose, setSuppliers }) {
       delivery_window: `${startHour} - ${endHour}`,
       group_id: selectedGroup,
     };
-    console.log("🚀 ~ enviarData ~ postData:", postData);
+    console.log("postData :", postData);
     const postDataAssign = {
       ...prepareDataForBackend(),
     };
@@ -252,6 +209,8 @@ function NewCustomer({ isvisible, onClose, setSuppliers }) {
               showConfirmButton: false,
               timer: 1500,
             });
+
+            setUpdateCustomers(true);
             onClose();
           })
           .catch((assignError) => {
@@ -265,7 +224,7 @@ function NewCustomer({ isvisible, onClose, setSuppliers }) {
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-25 backdrop-blur-sm flex flex-col justify-center items-center">
-      <div className="bg-white p-8 rounded-2xl w-[900px] flex flex-col items-center">
+      <div className="bg-white p-8 rounded-2xl w-[900px] flex flex-col items-center overflow-y-auto max-h-screen">
         <button
           className="text-dark-blue place-self-end "
           onClick={() => {

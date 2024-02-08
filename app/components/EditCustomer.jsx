@@ -6,21 +6,23 @@ import {
 } from "@/app/api/customerRequest";
 import { assignCustomer, customerUpdate } from "@/app/config/urls.config";
 import RootLayout from "@/app/layout";
-import Layout from "@/app/layoutS";
 import useTokenStore from "@/app/store/useTokenStore";
 import useUserStore from "@/app/store/useUserStore";
-import { ArrowLeftIcon } from "@heroicons/react/24/outline";
 import axios from "axios";
-import Link from "next/link";
-import { useParams, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import Swal from "sweetalert2";
 import { XMarkIcon } from "@heroicons/react/24/outline";
 
-const CustomerDetailPage = ({ isvisible, onClose, customer }) => {
+const CustomerDetailPage = ({
+  isvisible,
+  onClose,
+  customer,
+  setUpdateCustomers,
+}) => {
   const router = useRouter();
   const [hasMounted, setHasMounted] = useState(false);
-  const { token, setToken } = useTokenStore();
+  const { token } = useTokenStore();
   const { user } = useUserStore();
   const [isLoading, setIsLoading] = useState(true);
   const [detailCustomer, setDetailCustomer] = useState();
@@ -52,29 +54,18 @@ const CustomerDetailPage = ({ isvisible, onClose, customer }) => {
   const [error, setError] = useState("");
   const [selectedRoutes, setSelectedRoutes] = useState({});
 
-  console.log(customer);
+  // console.log(customer)
   const customerId = customer?.accountNumber;
 
   useEffect(() => {
-    const storedToken = localStorage.getItem("token");
-    if (!storedToken) {
+    if (!token) {
       router.push("/");
-    } else {
-      if (storedToken != null) {
-        setToken(storedToken);
-        if (token !== null && customerId !== undefined) {
-          fetchCustomerDetail(
-            token,
-            setDetailCustomer,
-            setIsLoading,
-            customerId
-          );
-          fetchRoutes(token, user, setRoutes, setIsLoading);
-          fetchGroups(token, user, setGroups, setIsLoading);
-        }
-      }
+    } else if (token !== null && customerId !== undefined) {
+      fetchCustomerDetail(token, setDetailCustomer, setIsLoading, customerId);
+      fetchRoutes(token, user, setRoutes, setIsLoading);
+      fetchGroups(token, user, setGroups, setIsLoading);
     }
-  }, [customerId, setDetailCustomer, token, setToken]);
+  }, [customerId, token]);
 
   useEffect(() => {
     if (detailCustomer && detailCustomer.length > 0) {
@@ -293,10 +284,8 @@ const CustomerDetailPage = ({ isvisible, onClose, customer }) => {
               showConfirmButton: false,
               timer: 1500,
             });
-
-            setTimeout(() => {
-              router.push("/customers");
-            }, 1500);
+            setUpdateCustomers(true);
+            onClose();
           })
           .catch((assignError) => {
             console.error("Error en la asignación del cliente: ", assignError);
@@ -315,7 +304,7 @@ const CustomerDetailPage = ({ isvisible, onClose, customer }) => {
     <>
       {token ? (
         <div className="fixed z-50 inset-0 bg-black bg-opacity-25 backdrop-blur-sm flex flex-col justify-center items-center font-poppins">
-          <div className="bg-white p-8 rounded-2xl w-[900px] flex flex-col items-center">
+          <div className="bg-white p-8 rounded-2xl w-[900px] flex flex-col items-center overflow-y-auto max-h-screen">
             <button
               className="text-dark-blue place-self-end "
               onClick={() => {
@@ -428,7 +417,6 @@ const CustomerDetailPage = ({ isvisible, onClose, customer }) => {
                       {groups &&
                         groups.map((group) => (
                           <>
-                            {console.log(group)}
                             <option key={group.id} value={group.id}>
                               {group.group}
                             </option>

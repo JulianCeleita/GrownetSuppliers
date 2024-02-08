@@ -120,8 +120,8 @@ const OrderView = () => {
     deliveryDate.setHours(0, 0, 0, 0);
 
     if (dateFilter === "today") {
-      const today = subtractDays(new Date(), 1);
-      return isSameDay(deliveryDate, today);
+      const workDateFormatted = new Date(workDate);
+      return isSameDay(deliveryDate, workDateFormatted);
     }
     if (dateFilter === "range" && startDate && endDate) {
       const start = new Date(startDate);

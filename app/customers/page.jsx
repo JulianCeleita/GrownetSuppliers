@@ -36,6 +36,7 @@ const CustomersView = () => {
   const { user } = useUserStore();
   const [showNewCustomers, setShowNewCustomers] = useState(false);
   const [showEditCustomer, setShowEditCustomer] = useState(false);
+  const [updateCustomers, setUpdateCustomers] = useState(false);
 
   useEffect(() => {
     if (user && user?.rol_name === "AdminGrownet") {
@@ -44,7 +45,7 @@ const CustomersView = () => {
       fetchCustomersSupplier(token, user, setCustomers, setIsLoading);
     }
     fetchRoutes(token, user, setRoutes, setIsLoading);
-  }, [user, token]);
+  }, [user, token, updateCustomers]);
 
   useEffect(() => {
     const routesMatchingSearchTerm = routes.filter((route) =>
@@ -52,7 +53,7 @@ const CustomersView = () => {
     );
 
     setFilteredRoutes(routesMatchingSearchTerm);
-  }, [searchTerm, routes]);
+  }, [searchTerm, routes, updateCustomers]);
 
   const filteredCustomers = customers.filter((customer) => {
     return customer.accountName.toLowerCase().includes(searchTerm);
@@ -298,11 +299,13 @@ const CustomersView = () => {
         <NewCustomer
           isvisible={showNewCustomers}
           onClose={() => setShowNewCustomers(false)}
+          setUpdateCustomers={setUpdateCustomers}
         />
         <Editcustomer
           isvisible={showEditCustomer}
           onClose={() => setShowEditCustomer(false)}
           customer={selectedCustomer}
+          setUpdateCustomers={setUpdateCustomers}
         />
         <ModalDelete
           isvisible={showDeleteModal}
