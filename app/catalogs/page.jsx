@@ -93,7 +93,7 @@ const PricesView = () => {
       const priceNameB = b.accountName || "";
       return priceNameA.localeCompare(priceNameB);
     });
-  // console.log("sortedPrices", sortedPrices);
+  console.log("sortedPrices", sortedPrices);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
 
   const handleDeletePrice = (price) => {
