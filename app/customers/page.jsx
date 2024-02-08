@@ -36,6 +36,7 @@ const CustomersView = () => {
   const { user } = useUserStore();
   const [showNewCustomers, setShowNewCustomers] = useState(false);
   const [showEditCustomer, setShowEditCustomer] = useState(false);
+  const [updateCustomers, setUpdateCustomers] = useState(false);
 
   useEffect(() => {
     if (user && user?.rol_name === "AdminGrownet") {
@@ -44,7 +45,7 @@ const CustomersView = () => {
       fetchCustomersSupplier(token, user, setCustomers, setIsLoading);
     }
     fetchRoutes(token, user, setRoutes, setIsLoading);
-  }, [user, token]);
+  }, [user, token, updateCustomers]);
 
   useEffect(() => {
     const routesMatchingSearchTerm = routes.filter((route) =>
@@ -52,7 +53,7 @@ const CustomersView = () => {
     );
 
     setFilteredRoutes(routesMatchingSearchTerm);
-  }, [searchTerm, routes]);
+  }, [searchTerm, routes, updateCustomers]);
 
   const filteredCustomers = customers.filter((customer) => {
     return customer.accountName.toLowerCase().includes(searchTerm);
@@ -153,9 +154,15 @@ const CustomersView = () => {
             focus:outline-none focus:shadow-outline text-gray-400 hover:border-gray-300 shadow-md hover:shadow-lg transition-shadow duration-150 ease-in-out"
           >
             <option value="all">Select status</option>
-            <option value="active" className="text-black">Active</option>
-            <option value="blocked" className="text-black">Blocked</option>
-            <option value="inactive" className="text-black">Inactive</option>
+            <option value="active" className="text-black">
+              Active
+            </option>
+            <option value="blocked" className="text-black">
+              Blocked
+            </option>
+            <option value="inactive" className="text-black">
+              Inactive
+            </option>
           </select>
           <select
             value={selectedRoute}
@@ -167,7 +174,11 @@ const CustomersView = () => {
             <option value="">All Routes</option>
             {routes &&
               routes.map((route) => (
-                <option key={route.id} value={route.name} className="text-black">
+                <option
+                  key={route.id}
+                  value={route.name}
+                  className="text-black"
+                >
                   {route.name}
                 </option>
               ))}
@@ -187,7 +198,9 @@ const CustomersView = () => {
                 )
               ),
             ].map((uniqueGroup) => (
-              <option key={uniqueGroup} className="text-black">{uniqueGroup}</option>
+              <option key={uniqueGroup} className="text-black">
+                {uniqueGroup}
+              </option>
             ))}
           </select>
         </div>
@@ -206,7 +219,10 @@ const CustomersView = () => {
             <tbody>
               {sortedCustomers.length === 0 && !isLoading ? (
                 <tr>
-                  <td colSpan="7" className="text-dark-blue border-2 border-stone-100 border-t-0">
+                  <td
+                    colSpan="7"
+                    className="text-dark-blue border-2 border-stone-100 border-t-0"
+                  >
                     <p className="flex items-center justify-center text-gray my-10">
                       <ExclamationCircleIcon class="h-12 w-12 mr-10 text-gray" />
                       Results not found. Try a different search!
@@ -232,32 +248,20 @@ const CustomersView = () => {
                     return (
                       <tr
                         key={customer.id}
-                        onClick={() =>{ 
+                        onClick={() => {
                           setSelectedCustomer(customer);
-                          setShowEditCustomer(true)
+                          setShowEditCustomer(true);
                         }}
                         className="text-dark-blue border-2 border-stone-100 border-t-0 cursor-pointer hover:bg-gray-50 transition-all"
                       >
-                        <td
-                          className="py-4"
-                        >
-                          {customer.accountName}
-                        </td>
-                        <td
-                          className="py-4"
-                        >
-                          {customer.telephone}
-                        </td>
-                        <td
-                          className="py-4"
-                        >
+                        <td className="py-4">{customer.accountName}</td>
+                        <td className="py-4">{customer.telephone}</td>
+                        <td className="py-4">
                           {customer.group !== null
                             ? customer.group
                             : "No group"}
                         </td>
-                        <td
-                          className="py-4"
-                        >
+                        <td className="py-4">
                           {customer.routes && customer.routes.length > 0 ? (
                             customer.routes.map((route, index) => (
                               <span key={route.id}>
@@ -269,11 +273,7 @@ const CustomersView = () => {
                             <span>No routes</span>
                           )}
                         </td>
-                        <td
-                          className="py-4"
-                        >
-                          {customer.postCode}
-                        </td>
+                        <td className="py-4">{customer.postCode}</td>
                         <td className="py-4 flex gap-2 justify-center">
                           <div
                             className={`inline-block mt-1 rounded-full text-white ${statusColorClass(
@@ -299,11 +299,13 @@ const CustomersView = () => {
         <NewCustomer
           isvisible={showNewCustomers}
           onClose={() => setShowNewCustomers(false)}
+          setUpdateCustomers={setUpdateCustomers}
         />
         <Editcustomer
           isvisible={showEditCustomer}
           onClose={() => setShowEditCustomer(false)}
           customer={selectedCustomer}
+          setUpdateCustomers={setUpdateCustomers}
         />
         <ModalDelete
           isvisible={showDeleteModal}
