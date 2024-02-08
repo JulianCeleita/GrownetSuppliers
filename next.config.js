@@ -1,11 +1,9 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   output: "standalone",
-};
-
-module.exports = {
-  nextConfig,
   experimental: {
     forceSwcTransforms: true,
   },
-}
+};
+
+module.exports = nextConfig;

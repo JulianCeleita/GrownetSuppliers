@@ -1,4 +1,3 @@
-"use client";
 import useUserStore from "@/app/store/useUserStore";
 import { ArrowLeftIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import axios from "axios";

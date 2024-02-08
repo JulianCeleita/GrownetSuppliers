@@ -574,12 +574,11 @@ export default function Table() {
                 <tr key={rowIndex}>
                   {/* CODIGO DE PRODUCTO */}
                   {columns.map(
-                    (column, columnIndex) => {
-                      const isFirstRow = rowIndex === 0;
+                    (column, columnIndex) => 
                       initialColumns.includes(column) && (
                         <React.Fragment key={columnIndex}>
                           <td
-                            className={`px-3 py-3 border border-1 border-x-0`}
+                            className={`px-3 py-2 border border-1 border-x-0`}
                             tabIndex={0}
                             style={{ overflow: "visible" }}
                           >
@@ -716,7 +715,6 @@ export default function Table() {
                           </td>
                         </React.Fragment>
                       )
-                    }
                   )}
                 </tr>
               ))}
