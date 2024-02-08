@@ -262,13 +262,13 @@ const CreateOrderView = () => {
           </div>
         </div>
       </div>
-      <Link
+      {/* <Link
         onClick={resetStates}
         className="flex w-[120px] items-center bg-dark-blue py-2.5 px-3 rounded-lg text-white font-medium transition-all hover:scale-110 "
         href="/orders"
       >
         <ArrowLeftIcon className="w-5 h-5 mt-0.5 mr-2 inline-block" /> Go back
-      </Link>
+      </Link> */}
 
       {/* <div className="grid grid-cols-3 gap-4 p-5 shadow-lg bg-primary-blue pb-20">
         <div
@@ -327,7 +327,7 @@ const CreateOrderView = () => {
           </div>
         )}
       </div>*/}
-      <div className="flex items-center ml-2 w-[70%] px-2 py-1 rounded-md">
+      <div className="flex items-center ml-2 mt-5 w-[70%] px-2 py-1 rounded-md">
         <label className="text-dark-blue">Date: </label>
         <input
           type="date"
@@ -382,7 +382,7 @@ const CreateOrderView = () => {
           </h3>
         </div>
       )}
-      <div className="mt-20">
+      <div className="">
         <Table />
       </div>
     </Layout>
