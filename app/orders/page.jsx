@@ -173,7 +173,6 @@ const OrderView = () => {
       .filter(([reference, checked]) => checked)
       .map(([reference]) => reference);
 
-    console.log("ordersToPrint", ordersToPrint);
     //TODO: implementar lógica para imprimir las ordenes seleccionadas
   };
 

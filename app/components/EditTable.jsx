@@ -545,7 +545,6 @@ export default function EditTable({ orderId, dateDelivery }) {
         total_tax: parseFloat(totalTaxSum),
         products: filteredProducts,
       };
-      console.log("jsonOrderData", jsonOrderData);
       const response = await axios.post(
         `${editStorageOrder}${orderDetail.reference}`,
         jsonOrderData,
@@ -555,7 +554,6 @@ export default function EditTable({ orderId, dateDelivery }) {
           },
         }
       );
-      console.log("response", response);
       setSpecialRequirements("");
       setShowConfirmModal(true);
       setConfirmCreateOrder(false);

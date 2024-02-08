@@ -172,11 +172,9 @@ function NewCustomer({ isvisible, onClose, setUpdateCustomers }) {
       delivery_window: `${startHour} - ${endHour}`,
       group_id: selectedGroup,
     };
-    console.log("postData :", postData);
     const postDataAssign = {
       ...prepareDataForBackend(),
     };
-    console.log("🚀 ~ enviarData ~ postDataAssign:", postDataAssign);
     axios
       .post(createCustomer, postData, {
         headers: {
@@ -184,7 +182,6 @@ function NewCustomer({ isvisible, onClose, setUpdateCustomers }) {
         },
       })
       .then((response) => {
-        console.log("🚀 ~ .then ~ response:", response);
         const customerAccountNumber = response?.data?.accountNumber;
         postDataAssign.customer = customerAccountNumber;
         axios
@@ -194,12 +191,9 @@ function NewCustomer({ isvisible, onClose, setUpdateCustomers }) {
             },
           })
           .then((assignResponse) => {
-            console.log("🚀 ~ .then ~ assignResponse:", assignResponse);
             if (user?.rol_name == "AdminGrownet") {
-              console.log("soy grownetAdmin");
               fetchCustomers(token, user, setCustomers, setIsLoading);
             } else {
-              console.log("No soy grownetAdmin");
               fetchCustomersSupplier(token, user, setCustomers, setIsLoading);
             }
             Swal.fire({
