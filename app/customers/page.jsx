@@ -5,7 +5,6 @@ import {
   PlusCircleIcon,
 } from "@heroicons/react/24/outline";
 import axios from "axios";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import ModalDelete from "../components/ModalDelete";
@@ -18,6 +17,9 @@ import {
   fetchCustomersSupplier,
   fetchRoutes,
 } from "../api/customerRequest";
+import NewCustomer from "../components/NewCustomer";
+import CustomerDetailPage from "../customer/[customerId]/page";
+import Editcustomer from "../components/EditCustomer";
 
 const CustomersView = () => {
   const router = useRouter();
@@ -32,6 +34,8 @@ const CustomersView = () => {
   const [filteredRoutes, setFilteredRoutes] = useState([]);
   const [selectedCustomer, setSelectedCustomer] = useState(null);
   const { user } = useUserStore();
+  const [showNewCustomers, setShowNewCustomers] = useState(false);
+  const [showEditCustomer, setShowEditCustomer] = useState(false);
 
   useEffect(() => {
     if (user && user?.rol_name === "AdminGrownet") {
@@ -118,13 +122,15 @@ const CustomersView = () => {
     <Layout>
       <div className="-mt-16">
         <div className="flex gap-4 mt-2">
-          <h1 className="text-2xl text-white font-semibold ml-28">Customers <span className="text-light-green">list</span></h1>
-          <Link
-            className="flex bg-green -mt-1 mb-8 py-2 px-4 rounded-full text-white font-medium transition-all hover:bg-dark-blue hover:scale-110"
-            href="/customers/create-customer"
+          <h1 className="text-2xl text-white font-semibold ml-28 mr-2">
+            Customers <span className="text-light-green">list</span>
+          </h1>
+          <button
+            className="flex bg-green mb-4 py-2 px-4 rounded-full text-white font-medium transition-all hover:bg-dark-blue hover:scale-110"
+            onClick={() => setShowNewCustomers(true)}
           >
             <PlusCircleIcon className="h-6 w-6 mr-1" /> New Customer
-          </Link>
+          </button>
         </div>
         <div className="flex relative items-center justify-center mb-16 mt-2 mr-5 ml-2">
           <div className="relative w-[55%] max-w-[65%]">
@@ -151,7 +157,6 @@ const CustomersView = () => {
             <option value="blocked" className="text-black">Blocked</option>
             <option value="inactive" className="text-black">Inactive</option>
           </select>
-
           <select
             value={selectedRoute}
             onChange={handleRouteChange}
@@ -327,6 +332,15 @@ const CustomersView = () => {
             </tbody>
           </table>
         </div>
+        <NewCustomer
+          isvisible={showNewCustomers}
+          onClose={() => setShowNewCustomers(false)}
+        />
+        <Editcustomer
+          isvisible={showEditCustomer}
+          onClose={() => setShowEditCustomer(false)}
+          customer={selectedCustomer}
+        />
         <ModalDelete
           isvisible={showDeleteModal}
           onClose={() => setShowDeleteModal(false)}
