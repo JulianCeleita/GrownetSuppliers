@@ -124,3 +124,6 @@ export const routesUrl =
 
 // Groups
 export const groupsUrl = "https://api.grownetapp.com/grownet/api/group/all";
+
+export const printOrdersUrl = "https://api.grownetapp.com/grownet/api/";
+
