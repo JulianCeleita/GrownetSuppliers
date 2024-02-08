@@ -208,15 +208,65 @@ const CreateOrderView = () => {
 
   return (
     <Layout>
-      <div className="flex p-6 pb-0 bg-primary-blue">
-        <Link
-          onClick={resetStates}
-          className="flex bg-dark-blue py-3 px-4 rounded-lg text-white font-medium transition-all hover:scale-110 "
-          href="/orders"
-        >
-          <ArrowLeftIcon className="w-5 h-5 mt-0.5 mr-1 inline-block" /> Orders
-        </Link>
+      <div className="max-w-[400px] -mt-[110px] ml-[115px]">
+        <div className="flex mt-1 items-center">
+          <h3 className="w-[38%] text-white">Account Name:</h3>
+          <div className="relative mb-2 w-[62%]">
+            <Select
+              instanceId
+              options={restaurantList.map((restaurant) => ({
+                value: restaurant.accountName,
+                label: restaurant.accountName,
+              }))}
+              onChange={(selectedOption) => {
+                setSelectedAccName(selectedOption.value);
+                setIsDropdownVisible(false);
+              }}
+              value={{
+                value: selectedAccNumber,
+                label:
+                  customers && customers[0].accountName
+                    ? customers[0].accountName
+                    : "Search...",
+              }}
+              isSearchable
+            />
+          </div>
+        </div>
+
+        <div className="flex items-center">
+          <h3 className="w-[38%] text-white">Account Number:</h3>
+          <div className="relative mb-2 w-[62%]">
+            <Select
+              instanceId
+              options={restaurantList.map((restaurant) => ({
+                value: restaurant.accountNumber,
+                label: restaurant.accountNumber,
+              }))}
+              onChange={(selectedOption) => {
+                setSelectedAccNumber(selectedOption.value);
+                setIsDropdownVisible(false);
+              }}
+              value={{
+                value: selectedAccNumber,
+                label:
+                  customers && customers[0].accountNumber
+                    ? customers[0].accountNumber
+                    : "Search...",
+              }}
+              isSearchable
+            />
+          </div>
+        </div>
       </div>
+      <Link
+        onClick={resetStates}
+        className="flex w-[120px] items-center bg-dark-blue py-2.5 px-3 rounded-lg text-white font-medium transition-all hover:scale-110 "
+        href="/orders"
+      >
+        <ArrowLeftIcon className="w-5 h-5 mt-0.5 mr-2 inline-block" /> Go back
+      </Link>
+
       <div className="grid grid-cols-3 gap-4 p-5 shadow-lg bg-primary-blue pb-20">
         <div className="bg-white p-4 rounded-lg shadow-lg text-dark-blue">
           <div className="flex">
