@@ -1,12 +1,38 @@
-import { XMarkIcon } from "@heroicons/react/24/outline";
+import useUserStore from "@/app/store/useUserStore";
+import { ArrowLeftIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import axios from "axios";
-import { useState } from "react";
-import { addSupplierUrl } from "../../app/config/urls.config";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import Swal from "sweetalert2";
+import { fetchCustomers, fetchCustomersSupplier } from "../api/customerRequest";
+import {
+  assignCustomer,
+  createCustomer,
+  groupsUrl,
+  routesUrl,
+} from "../config/urls.config";
 import useTokenStore from "../store/useTokenStore";
-import { fetchSuppliers } from "../suppliers/page";
-import { groupsUrl } from "../../app/config/urls.config";
 
-export const fetchGroups = async (token, setGroups, setIsLoading) => {
+export const fetchRoutes = async (token, user, setRoutes, setIsLoading) => {
+  try {
+    const response = await axios.get(routesUrl, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    const newRoute = Array.isArray(response.data.routes)
+      ? response.data.routes
+      : [];
+    setRoutes(newRoute);
+    setIsLoading(false);
+  } catch (error) {
+    console.error("Error al obtener los routes:", error);
+  }
+};
+
+export const fetchGroups = async (token, user, setGroups, setIsLoading) => {
   try {
     const response = await axios.get(groupsUrl, {
       headers: {
@@ -25,45 +51,121 @@ export const fetchGroups = async (token, setGroups, setIsLoading) => {
 };
 
 function NewCustomer({ isvisible, onClose, setSuppliers }) {
+  const router = useRouter();
   const { token } = useTokenStore();
   const [isLoading, setIsLoading] = useState(false);
   const [accountName, setAccountName] = useState("");
-  const [emailCustomer, setEmailCustomer] = useState("");
-  const [address, setAddress] = useState("");
-  const [postCode, setPostCode] = useState("");
-  const [mainContact, setMainContact] = useState("");
-  const [drop, setDrop] = useState("");
   const [accountNumber, setAccountNumber] = useState("");
+  const [emailCustomer, setEmailCustomer] = useState("");
   const [marketingEmail, setMarketingEmail] = useState("");
+  const [addressCustomer, setAddressCustomer] = useState("");
   const [telephoneCustomer, setTelephoneCustomer] = useState("");
+  const [postCode, setPostCode] = useState("");
   const [specialInstructions, setSpecialInstructions] = useState("");
+  const [selectedImage, setSelectedImage] = useState(null);
+  const [mainContact, setMainContact] = useState("");
   const [accountEmail, setAccountEmail] = useState("");
-  const [startHour, setStartHour] = useState("");
-  const [endHour, setEndHour] = useState("");
+  const [drop, setDrop] = useState("");
+  const [crates, setCrates] = useState("");
+  const [cratesSelected, setCratesSelected] = useState("");
   const [vip, setVip] = useState("");
   const [vipSelected, setVipSelected] = useState("");
+  const [deliveryWindow, setDeliveryWindow] = useState("");
+  const [group, setGroup] = useState("");
+  const [route, setRoute] = useState("");
   const [routes, setRoutes] = useState([]);
   const [groups, setGroups] = useState([]);
-  const [crates, setCrates] = useState("");
   const [selectedRoute, setSelectedRoute] = useState(null);
   const [selectedGroup, setSelectedGroup] = useState(null);
-  const [cratesSelected, setCratesSelected] = useState("");
+  const { user, setUser } = useUserStore();
+  const [startHour, setStartHour] = useState("");
+  const [endHour, setEndHour] = useState("");
+  const [error, setError] = useState("");
+  const [selectedRoutes, setSelectedRoutes] = useState({});
+  const [customers, setCustomers] = useState([]);
+
+  useEffect(() => {
+    fetchRoutes(token, user, setRoutes, setIsLoading);
+    fetchGroups(token, user, setGroups, setIsLoading);
+  }, []);
 
   if (!isvisible) {
     return null;
   }
-  const handleVipChange = (e) => {
-    const value = e.target.value;
-    setVip(value);
-    const isYes = value === "yes";
-    setVipSelected(isYes);
+
+  const handleRouteCheckboxChange = (routeId, day) => {
+    setSelectedRoutes((prevSelectedRoutes) => {
+      const updatedRoutes = { ...prevSelectedRoutes };
+
+      // Toggle the selected checkbox for the current route and day
+      updatedRoutes[day] = { [routeId]: !updatedRoutes[day]?.[routeId] };
+
+      return updatedRoutes;
+    });
   };
+
+  const prepareDataForBackend = () => {
+    const daysData = {};
+
+    Object.keys(selectedRoutes).forEach((day) => {
+      const routesForDay = Object.values(selectedRoutes[day]);
+      if (routesForDay.some((isSelected) => isSelected)) {
+        daysData[getDayNumber(day)] = Object.entries(selectedRoutes[day])
+          .filter(([_, isSelected]) => isSelected)
+          .map(([routeId, _]) => routeId)
+          .join(",");
+      }
+    });
+
+    return { days_routes: daysData };
+  };
+
+  const getDayNumber = (day) => {
+    switch (day.toLowerCase()) {
+      case "mon":
+        return "1";
+      case "tues":
+        return "2";
+      case "wen":
+        return "3";
+      case "truh":
+        return "4";
+      case "frid":
+        return "5";
+      default:
+        return null;
+    }
+  };
+
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    setSelectedImage(file);
+  };
+  const handleRouteChange = (e) => {
+    setSelectedRoute(e.target.value);
+  };
+  const handleGroupChange = (e) => {
+    setSelectedGroup(e.target.value);
+  };
+
   const handleCratesChange = (e) => {
     const value = e.target.value;
     setCrates(value);
     const isYes = value === "yes";
     setCratesSelected(isYes);
   };
+
+  const handleVipChange = (e) => {
+    const value = e.target.value;
+    setVip(value);
+    const isYes = value === "yes";
+    setVipSelected(isYes);
+  };
+
+  const validateHourFormat = (input) => {
+    return /^([01]\d|2[0-3]):([0-5]\d):([0-5]\d)$/.test(input) || input === "";
+  };
+
   const handleStartHourChange = (e) => {
     const input = e.target.value;
     setStartHour(input);
@@ -75,6 +177,7 @@ function NewCustomer({ isvisible, onClose, setSuppliers }) {
     setEndHour(input);
     setError(validateHourFormat(input) ? "" : "Wrong time format");
   };
+
   const handleBlur = () => {
     if (!validateHourFormat(startHour) || !validateHourFormat(endHour)) {
       setError("Both fields must be in valid time format");
@@ -82,42 +185,82 @@ function NewCustomer({ isvisible, onClose, setSuppliers }) {
       setError("");
     }
   };
-  const enviarData = async (e) => {
+
+  const handleDropChange = (e) => {
+    const inputValue = e.target.value;
+    const newValue = inputValue <= 100 ? inputValue : 100;
+    setDrop(newValue);
+  };
+
+  const enviarData = (e) => {
     e.preventDefault();
-    setIsLoading(true);
-
-    const formData = new FormData();
-    formData.append("name", accountName);
-    formData.append("email", emailCustomer);
-    if (selectedImage !== null) {
-      formData.append("image", selectedImage);
-    }
-
-    const formDataObject = {};
-    formData.forEach((value, key) => {
-      formDataObject[key] = value;
-    });
-
-    useEffect(() => {
-      fetchGroups(token, user, setGroups, setIsLoading);
-    }, []);
-    try {
-      const response = await axios.post(addSupplierUrl, formData, {
+    const postData = {
+      accountNumber: accountNumber,
+      accountName: accountName,
+      postCode: postCode,
+      address: addressCustomer,
+      specialInstructions: specialInstructions,
+      typeCustomers_id: 1,
+      deliverysPatterns_id: 1,
+      telephone: telephoneCustomer,
+      email: emailCustomer,
+      marketing_email: marketingEmail,
+      stateCustomer_id: 1,
+      image: "",
+      main_contact: mainContact,
+      account_email: accountEmail,
+      drop: drop,
+      crates: cratesSelected,
+      vip: vipSelected,
+      delivery_window: `${startHour} - ${endHour}`,
+      group_id: selectedGroup,
+    };
+    console.log("🚀 ~ enviarData ~ postData:", postData)
+    const postDataAssign = {
+      ...prepareDataForBackend(),
+    };
+    console.log("🚀 ~ enviarData ~ postDataAssign:", postDataAssign)
+    axios
+      .post(createCustomer, postData, {
         headers: {
           Authorization: `Bearer ${token}`,
-          "Content-Type": "multipart/form-data",
         },
+      })
+      .then((response) => {
+        console.log("🚀 ~ .then ~ response:", response)
+        const customerAccountNumber = response?.data?.accountNumber;
+        postDataAssign.customer = customerAccountNumber;
+        axios
+          .post(assignCustomer, postDataAssign, {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          })
+          .then((assignResponse) => {
+            console.log("🚀 ~ .then ~ assignResponse:", assignResponse)
+            if (user?.rol_name == "AdminGrownet") {
+              console.log("soy grownetAdmin")
+              fetchCustomers(token, user, setCustomers, setIsLoading);
+            } else {
+              console.log("No soy grownetAdmin")
+              fetchCustomersSupplier(token, user, setCustomers, setIsLoading);
+            }
+            Swal.fire({
+              position: "top-end",
+              icon: "success",
+              title: "Client created successfully",
+              showConfirmButton: false,
+              timer: 1500,
+            });
+            onClose();
+          })
+          .catch((assignError) => {
+            console.error("Error en la asignación del cliente: ", assignError);
+          });
+      })
+      .catch((error) => {
+        console.error("Error al agregar el nuevo cliente: ", error);
       });
-
-      fetchSuppliers(token, setSuppliers, setIsLoading);
-      onClose();
-      setAccountName("");
-      setEmailCustomer("");
-      setIsLoading(false);
-    } catch (error) {
-      console.error("Error al agregar el nuevo proveedor:", error);
-      setIsLoading(false);
-    }
   };
 
   return (
@@ -144,7 +287,7 @@ function NewCustomer({ isvisible, onClose, setSuppliers }) {
                 <input
                   className="border p-3 rounded-md w-full"
                   placeholder="Name"
-                  type="text"
+                  maxLength={45}
                   value={accountName}
                   onChange={(e) => setAccountName(e.target.value)}
                   required
@@ -157,6 +300,7 @@ function NewCustomer({ isvisible, onClose, setSuppliers }) {
                   placeholder="test@grownet.com"
                   type="email"
                   value={emailCustomer}
+                  maxLength={85}
                   onChange={(e) => setEmailCustomer(e.target.value)}
                   required
                 />
@@ -167,8 +311,9 @@ function NewCustomer({ isvisible, onClose, setSuppliers }) {
                   className="border p-3 rounded-md w-full"
                   placeholder="test@grownet.com"
                   type="text"
-                  value={address}
-                  onChange={(e) => setAddress(e.target.value)}
+                  maxLength={100}
+                  value={addressCustomer}
+                  onChange={(e) => setAddressCustomer(e.target.value)}
                   required
                 />
               </div>
@@ -204,7 +349,7 @@ function NewCustomer({ isvisible, onClose, setSuppliers }) {
                   type="number"
                   maxLength={3}
                   value={drop}
-                  onChange={(e) => setDrop(e.target.value)}
+                  onChange={handleDropChange}
                   required
                 />
               </div>
@@ -235,7 +380,6 @@ function NewCustomer({ isvisible, onClose, setSuppliers }) {
                   {groups &&
                     groups.map((group) => (
                       <>
-                        {console.log(group)}
                         <option key={group.id} value={group.id}>
                           {group.group}
                         </option>
@@ -381,9 +525,8 @@ function NewCustomer({ isvisible, onClose, setSuppliers }) {
             <button
               type="submit"
               value="Submit"
-              className={`bg-primary-blue py-3 px-4 rounded-lg text-white font-medium mr-3 ${
-                isLoading === true ? "bg-gray-500/50" : ""
-              }`}
+              className={`bg-primary-blue py-3 px-4 rounded-lg text-white font-medium mr-3 ${isLoading === true ? "bg-gray-500/50" : ""
+                }`}
               disabled={isLoading}
             >
               Add customer
