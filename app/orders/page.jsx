@@ -11,6 +11,8 @@ import Layout from "../layoutS";
 import useTokenStore from "../store/useTokenStore";
 import useUserStore from "../store/useUserStore";
 import Select from "react-select";
+import { CircleProgressBar } from "../components/CircleProgressBar";
+import useWorkDateStore from "../store/useWorkDateStore";
 
 const formatDate = (dateString) => {
   const formattedDate = format(new Date(dateString), "yyyy-MM-dd");
@@ -20,6 +22,7 @@ const formatDate = (dateString) => {
 const OrderView = () => {
   const router = useRouter();
   const { token } = useTokenStore();
+  const { workDate, setFetchWorkDate } = useWorkDateStore()
   const [searchTerm, setSearchTerm] = useState("");
   const [isLoading, setIsLoading] = useState(true);
   const [orders, setOrders] = useState([]);
@@ -33,6 +36,15 @@ const OrderView = () => {
   const [selectedOrders, setSelectedOrders] = useState({});
   const [selectedRoute, setSelectedRoute] = useState("");
   const [filterType, setFilterType] = useState("range");
+
+  const formatDateToShow = (dateString) => {
+    if (!dateString) return "Loading...";
+    const date = new Date(dateString);
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const year = String(date.getFullYear()).slice(-2);
+    return `${day}/${month}/${year}`;
+  };
 
   useEffect(() => {
     if (user && user.rol_name === "AdminGrownet") {
@@ -53,6 +65,11 @@ const OrderView = () => {
       document.removeEventListener("mousedown", handleOutsideClick);
     };
   }, [user, token, showDatePicker]);
+
+  useEffect(() => {
+    setFetchWorkDate(token, user.id_supplier)
+  }, [user])
+
 
   const subtractDays = (date, days) => {
     const result = new Date(date);
@@ -145,10 +162,11 @@ const OrderView = () => {
   const handleRouteSelection = (option) => {
     setSelectedRoute(option.value);
   };
+
   const filteredOrders = selectedRoute
     ? sortedOrders.filter(
-        (order) => order.route.toLowerCase() === selectedRoute.toLowerCase()
-      )
+      (order) => order.route.toLowerCase() === selectedRoute.toLowerCase()
+    )
     : sortedOrders;
 
   const statusColorClass = (status) => {
@@ -242,11 +260,13 @@ const OrderView = () => {
               placeholderText="Select a date"
             />
           )}
+
           <Select
             options={options}
             onChange={handleRouteSelection}
             placeholder="Select route"
           />
+
           <button
             className="flex bg-primary-blue text-white py-3 px-4 rounded-full font-medium transition-all cursor-pointer hover:bg-dark-blue hover:scale-110"
             onClick={() => printOrders()}
@@ -269,13 +289,13 @@ const OrderView = () => {
                     Orders
                   </h2>
                   <h2 className="flex items-center text-green-500 text-center px-2 rounded-full text-sm bg-light-green text-dark-green">
-                    06/02/24
+                    {formatDateToShow(workDate)}
                   </h2>
                 </div>
               </div>
             </div>
 
-{/* TODO AGREGAR EN ESTE DIV EL PORCENTAJE DE LOADING PARA RUTA SELECCIONADA */}
+            {/* TODO: AGREGAR EN ESTE DIV EL PORCENTAJE DE LOADING PARA RUTA SELECCIONADA */}
             <div className="flex col-span-1 items-center justify-center">
               <div className="flex items-center justify-center bg-primary-blue rounded-full w-16 h-16">
                 <img
@@ -284,6 +304,7 @@ const OrderView = () => {
                   className="w-10 h-7"
                 />
               </div>
+              {/* <CircleProgressBar percentage={48} /> */}
             </div>
           </div>
           <div className="grid grid-cols-2 gap-3 px-3 py-3 items-center justify-center shadow-sm rounded-3xl shadow-slate-400">
