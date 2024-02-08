@@ -291,7 +291,6 @@ const OrderView = () => {
             <PrinterIcon className="h-6 w-6" />
           </button>
         </div>
-        {/* FIJAR ESTE DIV A LA DERECHA Y ARRIBA */}
         <section className="fixed top-0 right-10 mt-8">
           <div className="flex gap-4">
             <div className="grid grid-cols-3 px-1 py-3 shadow-sm rounded-3xl shadow-slate-400 bg-white">
