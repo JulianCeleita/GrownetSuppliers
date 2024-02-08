@@ -37,8 +37,9 @@ export const customStyles = {
 const OrderView = () => {
   const router = useRouter();
   const { token } = useTokenStore();
-  const { workDate, setFetchWorkDate } = useWorkDateStore()
-  const { routePercentages, setRoutePercentages, setFetchRoutePercentages } = usePercentageStore()
+  const { workDate, setFetchWorkDate } = useWorkDateStore();
+  const { routePercentages, setRoutePercentages, setFetchRoutePercentages } =
+    usePercentageStore();
   const [searchTerm, setSearchTerm] = useState("");
   const [isLoading, setIsLoading] = useState(true);
   const [orders, setOrders] = useState([]);
@@ -57,8 +58,8 @@ const OrderView = () => {
   const formatDateToShow = (dateString) => {
     if (!dateString) return "Loading...";
     const date = new Date(dateString);
-    const day = String(date.getDate()).padStart(2, '0');
-    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, "0");
+    const month = String(date.getMonth() + 1).padStart(2, "0");
     const year = String(date.getFullYear()).slice(-2);
     return `${day}/${month}/${year}`;
   };
@@ -89,15 +90,20 @@ const OrderView = () => {
 
   useEffect(() => {
     if (routePercentages) {
-      const result = routePercentages.find(item => item.nameRoute === selectedRoute);
+      const result = routePercentages.find(
+        (item) => item.nameRoute === selectedRoute
+      );
       if (result) {
-        setShowPercentage(result.percentage_loading > 0 ? result.percentage_loading : result.percentage_packing);
+        setShowPercentage(
+          result.percentage_loading > 0
+            ? result.percentage_loading
+            : result.percentage_packing
+        );
       } else {
         setShowPercentage(null);
       }
     }
   }, [routePercentages]);
-
 
   const subtractDays = (date, days) => {
     const result = new Date(date);
@@ -190,19 +196,19 @@ const OrderView = () => {
 
   const getPercentages = async (value) => {
     if (value !== "" || value !== null || value !== undefined) {
-      await setFetchRoutePercentages(token, workDate)
+      await setFetchRoutePercentages(token, workDate);
     }
-  }
+  };
 
   const handleRouteSelection = async (option) => {
     setSelectedRoute(option.value);
-    await getPercentages(option.value)
+    await getPercentages(option.value);
   };
 
   const filteredOrders = selectedRoute
     ? sortedOrders.filter(
-      (order) => order.route.toLowerCase() === selectedRoute.toLowerCase()
-    )
+        (order) => order.route.toLowerCase() === selectedRoute.toLowerCase()
+      )
     : sortedOrders;
 
   const statusColorClass = (status) => {
@@ -347,7 +353,6 @@ const OrderView = () => {
                 ) : (
                   <CircleProgressBar percentage={showPercentage} />
                 )}
-
               </div>
             </div>
             <div className="grid grid-cols-2 gap-3 px-3 py-3 items-center justify-center shadow-sm rounded-3xl bg-white shadow-slate-400">
@@ -377,10 +382,10 @@ const OrderView = () => {
           </div>
         </section>
 
-        <div className="flex items-center justify-center mb-20">
-          <table className="w-[90%] bg-white text-center border-b-0">
-            <thead className="sticky top-0 bg-white">
-              <tr className="border-2 border-stone-100 border-b-0 text-dark-blue">
+        <div className="flex items-center justify-center mb-20  p-2">
+          <table className="w-[90%] bg-white first-line:bg-white rounded-2xl text-center shadow-[rgba(17,_17,_26,_0.1)_0px_0px_16px]">
+            <thead className="sticky top-0  shadow-[0px_11px_15px_-3px_#edf2f7]">
+              <tr className="  text-dark-blue">
                 <th className="py-4 flex items-center justify-center rounded-tl-lg">
                   <label className="inline-flex items-center">
                     <input
@@ -403,10 +408,7 @@ const OrderView = () => {
 
             <tbody>
               {filteredOrders.map((order, index) => (
-                <tr
-                  key={index}
-                  className="text-dark-blue border-2 border-stone-100 border-t-0"
-                >
+                <tr key={index} className="text-dark-blue border-b-[1.5px]">
                   <td className="py-4">
                     <label className="inline-flex items-center">
                       <input
@@ -421,7 +423,7 @@ const OrderView = () => {
                   </td>
                   <td className="py-4">#5</td>
                   <td
-                    className="py-4 cursor-pointer hover:bg-primary-blue hover:text-white"
+                    className="py-4 cursor-pointer hover:bg-light-blue"
                     onClick={(e) => goToOrder(e, order)}
                   >
                     {order.accountName}

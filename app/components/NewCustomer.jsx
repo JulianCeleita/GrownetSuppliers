@@ -215,11 +215,11 @@ function NewCustomer({ isvisible, onClose, setSuppliers }) {
       delivery_window: `${startHour} - ${endHour}`,
       group_id: selectedGroup,
     };
-    console.log("🚀 ~ enviarData ~ postData:", postData)
+    console.log("🚀 ~ enviarData ~ postData:", postData);
     const postDataAssign = {
       ...prepareDataForBackend(),
     };
-    console.log("🚀 ~ enviarData ~ postDataAssign:", postDataAssign)
+    console.log("🚀 ~ enviarData ~ postDataAssign:", postDataAssign);
     axios
       .post(createCustomer, postData, {
         headers: {
@@ -227,7 +227,7 @@ function NewCustomer({ isvisible, onClose, setSuppliers }) {
         },
       })
       .then((response) => {
-        console.log("🚀 ~ .then ~ response:", response)
+        console.log("🚀 ~ .then ~ response:", response);
         const customerAccountNumber = response?.data?.accountNumber;
         postDataAssign.customer = customerAccountNumber;
         axios
@@ -237,12 +237,12 @@ function NewCustomer({ isvisible, onClose, setSuppliers }) {
             },
           })
           .then((assignResponse) => {
-            console.log("🚀 ~ .then ~ assignResponse:", assignResponse)
+            console.log("🚀 ~ .then ~ assignResponse:", assignResponse);
             if (user?.rol_name == "AdminGrownet") {
-              console.log("soy grownetAdmin")
+              console.log("soy grownetAdmin");
               fetchCustomers(token, user, setCustomers, setIsLoading);
             } else {
-              console.log("No soy grownetAdmin")
+              console.log("No soy grownetAdmin");
               fetchCustomersSupplier(token, user, setCustomers, setIsLoading);
             }
             Swal.fire({
@@ -392,7 +392,7 @@ function NewCustomer({ isvisible, onClose, setSuppliers }) {
               <div className="flex items-center mb-4">
                 <label className="mr-2">Account number:</label>
                 <input
-                  className="border p-3 rounded-md"
+                  className="border p-3 rounded-md w-full"
                   placeholder="RK100"
                   type="text"
                   value={accountNumber}
@@ -462,7 +462,7 @@ function NewCustomer({ isvisible, onClose, setSuppliers }) {
               </div>
               <div className="flex items-center mb-4">
                 <label className="mr-2">Delivery Window:</label>
-                <div className="flex">
+                <div className="flex items-center">
                   <input
                     className="border p-3 rounded-md w-full"
                     placeholder="hh:mm:ss"
@@ -525,8 +525,9 @@ function NewCustomer({ isvisible, onClose, setSuppliers }) {
             <button
               type="submit"
               value="Submit"
-              className={`bg-primary-blue py-3 px-4 rounded-lg text-white font-medium mr-3 ${isLoading === true ? "bg-gray-500/50" : ""
-                }`}
+              className={`bg-primary-blue py-3 px-4 rounded-lg text-white font-medium mr-3 ${
+                isLoading === true ? "bg-gray-500/50" : ""
+              }`}
               disabled={isLoading}
             >
               Add customer

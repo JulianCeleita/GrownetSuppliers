@@ -327,7 +327,7 @@ const CreateOrderView = () => {
           </div>
         )}
       </div>*/}
-      <div className="flex items-center ml-2 mt-5 w-[70%] px-2 py-1 rounded-md">
+      <div className="flex items-center ml-10 mt-5 w-[70%] px-2 py-1 rounded-md">
         <label className="text-dark-blue">Date: </label>
         <input
           type="date"
@@ -363,7 +363,7 @@ const CreateOrderView = () => {
         )}
       </div>
       {details && (
-        <div className="bg-light-blue flex items-center justify-around m-2 px-2 py-1 rounded-md">
+        <div className="bg-light-blue flex items-center justify-around mx-10 mt-2 px-2 py-1 rounded-md">
           <h3>Post Code:</h3>
           <h3 className="underline decoration-2 decoration-green">
             {customers && customers[0].postCode ? customers[0].postCode : ""}

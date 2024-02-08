@@ -52,8 +52,7 @@ const CustomerDetailPage = ({ isvisible, onClose, customer }) => {
   const [error, setError] = useState("");
   const [selectedRoutes, setSelectedRoutes] = useState({});
 
-
-  console.log(customer)
+  console.log(customer);
   const customerId = customer?.accountNumber;
 
   useEffect(() => {
@@ -126,9 +125,6 @@ const CustomerDetailPage = ({ isvisible, onClose, customer }) => {
   if (!isvisible) {
     return null;
   }
-
-
-
 
   const mapDayNumberToName = (dayNumber) => {
     switch (dayNumber) {
@@ -268,12 +264,12 @@ const CustomerDetailPage = ({ isvisible, onClose, customer }) => {
       delivery_window: `${startHour} - ${endHour}`,
       group_id: selectedGroup,
     };
-    console.log("🚀 ~ enviarData ~ postData:", postData)
+    console.log("🚀 ~ enviarData ~ postData:", postData);
     const postDataAssign = {
       customer: customerId,
       ...prepareDataForBackend(),
     };
-    console.log("🚀 ~ enviarData ~ postDataAssign:", postDataAssign)
+    console.log("🚀 ~ enviarData ~ postDataAssign:", postDataAssign);
     axios
       .post(`${customerUpdate}${customerId}`, postData, {
         headers: {
@@ -281,7 +277,7 @@ const CustomerDetailPage = ({ isvisible, onClose, customer }) => {
         },
       })
       .then((response) => {
-        console.log("🚀 ~ .then ~ response:", response)
+        console.log("🚀 ~ .then ~ response:", response);
         axios
           .post(assignCustomer, postDataAssign, {
             headers: {
@@ -289,7 +285,7 @@ const CustomerDetailPage = ({ isvisible, onClose, customer }) => {
             },
           })
           .then((assignResponse) => {
-            console.log("🚀 ~ .then ~ assignResponse:", assignResponse)
+            console.log("🚀 ~ .then ~ assignResponse:", assignResponse);
             Swal.fire({
               position: "top-end",
               icon: "success",
@@ -449,7 +445,7 @@ const CustomerDetailPage = ({ isvisible, onClose, customer }) => {
                       placeholder="RK100"
                       type="text"
                       value={accountNumber}
-                      onChange={(e) => setAccountNumber(e.target.value)}
+                      readOnly
                       required
                     />
                   </div>
@@ -515,7 +511,7 @@ const CustomerDetailPage = ({ isvisible, onClose, customer }) => {
                   </div>
                   <div className="flex items-center mb-4">
                     <label className="mr-2">Delivery Window:</label>
-                    <div className="flex">
+                    <div className="flex items-center">
                       <input
                         className="border p-3 rounded-md w-full"
                         placeholder="hh:mm:ss"
@@ -580,8 +576,9 @@ const CustomerDetailPage = ({ isvisible, onClose, customer }) => {
                 <button
                   type="submit"
                   value="Submit"
-                  className={`bg-primary-blue py-3 px-4 rounded-lg text-white font-medium mr-3 ${isLoading === true ? "bg-gray-500/50" : ""
-                    }`}
+                  className={`bg-primary-blue py-3 px-4 rounded-lg text-white font-medium mr-3 ${
+                    isLoading === true ? "bg-gray-500/50" : ""
+                  }`}
                   disabled={isLoading}
                 >
                   Edit customer
