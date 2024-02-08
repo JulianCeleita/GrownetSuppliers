@@ -232,44 +232,24 @@ const CustomersView = () => {
                     return (
                       <tr
                         key={customer.id}
+                        onClick={() =>{ 
+                          setSelectedCustomer(customer);
+                          setShowEditCustomer(true)
+                        }}
                         className="text-dark-blue border-2 border-stone-100 border-t-0 cursor-pointer hover:bg-gray-50 transition-all"
                       >
                         <td
                           className="py-4"
-                          onClick={(e) => {
-                            e.preventDefault();
-                            router.push(
-                              `/customer/${customer.accountNumber}`,
-                              undefined,
-                              { shallow: true }
-                            );
-                          }}
                         >
                           {customer.accountName}
                         </td>
                         <td
                           className="py-4"
-                          onClick={(e) => {
-                            e.preventDefault();
-                            router.push(
-                              `/customer/${customer.accountNumber}`,
-                              undefined,
-                              { shallow: true }
-                            );
-                          }}
                         >
                           {customer.telephone}
                         </td>
                         <td
                           className="py-4"
-                          onClick={(e) => {
-                            e.preventDefault();
-                            router.push(
-                              `/customer/${customer.accountNumber}`,
-                              undefined,
-                              { shallow: true }
-                            );
-                          }}
                         >
                           {customer.group !== null
                             ? customer.group
@@ -277,14 +257,6 @@ const CustomersView = () => {
                         </td>
                         <td
                           className="py-4"
-                          onClick={(e) => {
-                            e.preventDefault();
-                            router.push(
-                              `/customer/${customer.accountNumber}`,
-                              undefined,
-                              { shallow: true }
-                            );
-                          }}
                         >
                           {customer.routes && customer.routes.length > 0 ? (
                             customer.routes.map((route, index) => (
@@ -299,14 +271,6 @@ const CustomersView = () => {
                         </td>
                         <td
                           className="py-4"
-                          onClick={(e) => {
-                            e.preventDefault();
-                            router.push(
-                              `/customer/${customer.accountNumber}`,
-                              undefined,
-                              { shallow: true }
-                            );
-                          }}
                         >
                           {customer.postCode}
                         </td>
