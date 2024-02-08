@@ -1,7 +1,6 @@
 "use client";
-import { TrashIcon } from "@heroicons/react/24/outline";
+import { InformationCircleIcon, PlusCircleIcon, TrashIcon } from "@heroicons/react/24/outline";
 import axios from "axios";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import Swal from "sweetalert2";
@@ -18,6 +17,11 @@ import {
 } from "../api/catalogRequest";
 import Select from "react-select";
 
+import CreateProduct from "../components/CreateProduct";
+
+import ModalPrices from "../components/ModalPrices";
+
+
 const PricesView = () => {
   const router = useRouter();
   const { token } = useTokenStore();
@@ -32,6 +36,23 @@ const PricesView = () => {
   const [showTableBody, setShowTableBody] = useState(false);
   const [customerList, setCustomerList] = useState([]);
   const [selectedAccountName, setSelectedAccountName] = useState("");
+
+  const [showNewPresentations, setShowNewPresentations] = useState(false);
+  const [products, setProducts] = useState([]);
+
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedCatalog, setSelectedCatalog] = useState(null);
+
+  const openModal = (catalog) => {
+    setSelectedCatalog(catalog);
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+  };
+
+
 
   const options = customerList.map((customer) => ({
     value: customer.accountName,
@@ -150,7 +171,7 @@ const PricesView = () => {
       presentations_id: price.presentations_id,
       products_id: price.products_id,
     };
-    console.log("postData", postData);
+    // console.log("postData", postData);
     axios
       .post(`${priceUpdate}${price.price_id}`, postData, {
         headers: {
@@ -181,12 +202,14 @@ const PricesView = () => {
       <div>
         <div className="flex justify-between p-8 bg-primary-blue">
           <h1 className="text-2xl text-white font-semibold">Catalogue</h1>
-          <Link
-            className="flex bg-green py-3 px-4 rounded-lg text-white font-medium transition-all hover:bg-dark-blue hover:scale-110 "
-            href="/catalogs/create-catalogue"
+          <button
+            className="flex bg-green py-3 px-4 rounded-lg text-white font-medium hover:bg-dark-blue hover:scale-110 "
+            type="button"
+            onClick={() => setShowNewPresentations(true)}
           >
-            New Presentation
-          </Link>
+            <PlusCircleIcon className="h-6 w-6 mr-3 font-bold" />
+            New Product
+          </button>
         </div>
 
         <div className="flex relative items-center justify-center ml-5 ">
@@ -212,9 +235,8 @@ const PricesView = () => {
               <th className={`py-4  ${showTableBody ? "" : "absolute"}`}>
                 <button onClick={() => setShowTableBody(!showTableBody)}>
                   <ChevronDoubleDownIcon
-                    className={`transform transition-transform duration-500 h-5 w-5 ${
-                      showTableBody ? "rotate-0" : "rotate-180"
-                    }`}
+                    className={`transform transition-transform duration-500 h-5 w-5 ${showTableBody ? "rotate-0" : "rotate-180"
+                      }`}
                   />
                 </button>
               </th>
@@ -352,11 +374,11 @@ const PricesView = () => {
                         price.bands_id
                       ).percentage
                         ? calculateUtilityValue(
-                            price,
-                            price.cost,
-                            price.utility,
-                            price.bands_id
-                          ).percentage
+                          price,
+                          price.cost,
+                          price.utility,
+                          price.bands_id
+                        ).percentage
                         : price.utility}
                       %
                     </td>
@@ -376,36 +398,45 @@ const PricesView = () => {
                         price.bands_id
                       ).dollars
                         ? calculateUtilityValue(
-                            price,
-                            price.cost,
-                            price.utility,
-                            price.bands_id
-                          ).dollars
+                          price,
+                          price.cost,
+                          price.utility,
+                          price.bands_id
+                        ).dollars
                         : calculateUtilityValue(
-                            price,
-                            price.cost,
-                            price.utility,
-                            price.bands_id
-                          )}
+                          price,
+                          price.cost,
+                          price.utility,
+                          price.bands_id
+                        )}
                       $
                     </td>
                     <td
                       onClick={(e) => {
                         e.preventDefault();
                       }}
+                      className="flex justify-center items-center"
                     >
-                      <input
-                        type="text"
-                        value={
-                          editedPrices[price.price_id] !== undefined
-                            ? editedPrices[price.price_id]
-                            : price.price
-                        }
-                        onChange={(e) =>
-                          handlePriceChange(price.price_id, e.target.value)
-                        }
-                        className="border-b-black bg-white p-1"
-                      />
+                      <div className="mt-2.5 flex">
+                        <input
+                          type="text"
+                          value={
+                            editedPrices[price.price_id] !== undefined
+                              ? editedPrices[price.price_id]
+                              : price.price
+                          }
+                          onChange={(e) =>
+                            handlePriceChange(price.price_id, e.target.value)
+                          }
+                          className="w-24 border-b-black bg-white p-1"
+                        />
+                        <button
+                          onClick={() => openModal(price)}
+                          className="ml-2 text-sm bg-blue-500 hover:bg-blue-700 text-white p-0.5 rounded"
+                        >
+                          <InformationCircleIcon className="h-7 w-7 font-bold" />
+                        </button>
+                      </div>
                     </td>
                     <td>
                       <button
@@ -424,6 +455,12 @@ const PricesView = () => {
             </tbody>
           </table>
         </div>
+        <CreateProduct
+          isvisible={showNewPresentations}
+          onClose={() => setShowNewPresentations(false)}
+          setProducts={setProducts}
+          setIsLoading={setIsLoading}
+        />
         <ModalDelete
           isvisible={showDeleteModal}
           onClose={() => setShowDeleteModal(false)}
@@ -431,8 +468,17 @@ const PricesView = () => {
         />
         {isLoading && (
           <div className="flex justify-center items-center mb-20">
-            <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-primary-blue"></div>
+            <div class="loader"></div>
           </div>
+        )}
+        {isModalOpen && (
+          <ModalPrices
+            isvisible={isModalOpen}
+            onClose={() => setIsModalOpen(false)}
+            setIsLoading={setIsLoading}
+            price={selectedCatalog}
+            setPrices={setPrices}
+          />
         )}
       </div>
     </Layout>

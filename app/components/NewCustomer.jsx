@@ -4,235 +4,402 @@ import { useState } from "react";
 import { addSupplierUrl } from "../../app/config/urls.config";
 import useTokenStore from "../store/useTokenStore";
 import { fetchSuppliers } from "../suppliers/page";
+import { groupsUrl } from "../../app/config/urls.config";
+
+export const fetchGroups = async (token, setGroups, setIsLoading) => {
+  try {
+    const response = await axios.get(groupsUrl, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    const newGroup = Array.isArray(response.data.groups)
+      ? response.data.groups
+      : [];
+    setGroups(newGroup);
+    setIsLoading(false);
+  } catch (error) {
+    console.error("Error al obtener los groups:", error);
+  }
+};
 
 function NewCustomer({ isvisible, onClose, setSuppliers }) {
-    const { token } = useTokenStore();
-    const [isLoading, setIsLoading] = useState(false);
-    const [addSupplier, setAddSupplier] = useState("");
-    const [emailSupplier, setEmailSupplier] = useState("");
-    const [selectedImage, setSelectedImage] = useState(null);
+  const { token } = useTokenStore();
+  const [isLoading, setIsLoading] = useState(false);
+  const [accountName, setAccountName] = useState("");
+  const [emailCustomer, setEmailCustomer] = useState("");
+  const [address, setAddress] = useState("");
+  const [postCode, setPostCode] = useState("");
+  const [mainContact, setMainContact] = useState("");
+  const [drop, setDrop] = useState("");
+  const [accountNumber, setAccountNumber] = useState("");
+  const [marketingEmail, setMarketingEmail] = useState("");
+  const [telephoneCustomer, setTelephoneCustomer] = useState("");
+  const [specialInstructions, setSpecialInstructions] = useState("");
+  const [accountEmail, setAccountEmail] = useState("");
+  const [startHour, setStartHour] = useState("");
+  const [endHour, setEndHour] = useState("");
+  const [vip, setVip] = useState("");
+  const [vipSelected, setVipSelected] = useState("");
+  const [routes, setRoutes] = useState([]);
+  const [groups, setGroups] = useState([]);
+  const [crates, setCrates] = useState("");
+  const [selectedRoute, setSelectedRoute] = useState(null);
+  const [selectedGroup, setSelectedGroup] = useState(null);
+  const [cratesSelected, setCratesSelected] = useState("");
 
-    if (!isvisible) {
-        return null;
+  if (!isvisible) {
+    return null;
+  }
+  const handleVipChange = (e) => {
+    const value = e.target.value;
+    setVip(value);
+    const isYes = value === "yes";
+    setVipSelected(isYes);
+  };
+  const handleCratesChange = (e) => {
+    const value = e.target.value;
+    setCrates(value);
+    const isYes = value === "yes";
+    setCratesSelected(isYes);
+  };
+  const handleStartHourChange = (e) => {
+    const input = e.target.value;
+    setStartHour(input);
+    setError(validateHourFormat(input) ? "" : "Wrong time format");
+  };
+
+  const handleEndHourChange = (e) => {
+    const input = e.target.value;
+    setEndHour(input);
+    setError(validateHourFormat(input) ? "" : "Wrong time format");
+  };
+  const handleBlur = () => {
+    if (!validateHourFormat(startHour) || !validateHourFormat(endHour)) {
+      setError("Both fields must be in valid time format");
+    } else {
+      setError("");
+    }
+  };
+  const enviarData = async (e) => {
+    e.preventDefault();
+    setIsLoading(true);
+
+    const formData = new FormData();
+    formData.append("name", accountName);
+    formData.append("email", emailCustomer);
+    if (selectedImage !== null) {
+      formData.append("image", selectedImage);
     }
 
-    const handleImageChange = (e) => {
-        const file = e.target.files[0];
-        setSelectedImage(file);
-    };
+    const formDataObject = {};
+    formData.forEach((value, key) => {
+      formDataObject[key] = value;
+    });
 
-    const enviarData = async (e) => {
-        e.preventDefault();
-        setIsLoading(true);
+    useEffect(() => {
+      fetchGroups(token, user, setGroups, setIsLoading);
+    }, []);
+    try {
+      const response = await axios.post(addSupplierUrl, formData, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "multipart/form-data",
+        },
+      });
 
-        const formData = new FormData();
-        formData.append("name", addSupplier);
-        formData.append("email", emailSupplier);
-        if (selectedImage !== null) {
-            formData.append("image", selectedImage);
-        }
+      fetchSuppliers(token, setSuppliers, setIsLoading);
+      onClose();
+      setAccountName("");
+      setEmailCustomer("");
+      setIsLoading(false);
+    } catch (error) {
+      console.error("Error al agregar el nuevo proveedor:", error);
+      setIsLoading(false);
+    }
+  };
 
-        const formDataObject = {};
-        formData.forEach((value, key) => {
-            formDataObject[key] = value;
-        });
-
-
-        try {
-            const response = await axios.post(addSupplierUrl, formData, {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                    "Content-Type": "multipart/form-data",
-                },
-            });
-
-            fetchSuppliers(token, setSuppliers, setIsLoading);
+  return (
+    <div className="fixed inset-0 bg-black bg-opacity-25 backdrop-blur-sm flex flex-col justify-center items-center">
+      <div className="bg-white p-8 rounded-2xl w-[900px] flex flex-col items-center">
+        <button
+          className="text-dark-blue place-self-end "
+          onClick={() => {
+            setAccountName("");
+            setEmailCustomer("");
             onClose();
-            setSelectedImage(null);
-            setAddSupplier("");
-            setEmailSupplier("");
-            setIsLoading(false);
-        } catch (error) {
-            console.error("Error al agregar el nuevo proveedor:", error);
-            setIsLoading(false);
-        }
-    };
-
-    return (
-        <div className="fixed mb-16 inset-0 bg-black bg-opacity-25 backdrop-blur-sm flex flex-col justify-center items-center">
-            <div className="bg-white p-8 rounded-2xl w-[750px] flex flex-col items-center">
-                <button
-                    className="text-dark-blue place-self-end "
-                    onClick={() => {
-                        setSelectedImage(null);
-                        setAddSupplier("");
-                        setEmailSupplier("");
-                        onClose();
-                    }}
+          }}
+        >
+          <XMarkIcon className="h-6 w-6 text-gray-500" />
+        </button>
+        <h1 className="text-2xl font-bold text-dark-blue mb-2">
+          New <span className="text-primary-blue">customer</span>
+        </h1>
+        <form className="text-left " onSubmit={enviarData}>
+          <div className="flex">
+            <div className="flex flex-col  w-[50%]">
+              <div className="flex items-center">
+                <label className="mr-2">Account name:</label>
+                <input
+                  className="border p-3 rounded-md w-full"
+                  placeholder="Name"
+                  type="text"
+                  value={accountName}
+                  onChange={(e) => setAccountName(e.target.value)}
+                  required
+                />
+              </div>
+              <div className="flex mt-3 items-center">
+                <label className="mr-2">Email:</label>
+                <input
+                  className="border p-3 rounded-md w-full"
+                  placeholder="test@grownet.com"
+                  type="email"
+                  value={emailCustomer}
+                  onChange={(e) => setEmailCustomer(e.target.value)}
+                  required
+                />
+              </div>
+              <div className="flex mt-3 items-center">
+                <label className="mr-2">Address:</label>
+                <input
+                  className="border p-3 rounded-md w-full"
+                  placeholder="test@grownet.com"
+                  type="text"
+                  value={address}
+                  onChange={(e) => setAddress(e.target.value)}
+                  required
+                />
+              </div>
+              <div className="flex mt-3 items-center">
+                <label className="mr-2">Post code:</label>
+                <input
+                  className="border p-3 rounded-md w-full"
+                  placeholder="170001"
+                  type="text"
+                  maxLength={45}
+                  value={postCode}
+                  onChange={(e) => setPostCode(e.target.value)}
+                  required
+                />
+              </div>
+              <div className="flex mt-3 items-center">
+                <label className="mr-2">Main Contact:</label>
+                <input
+                  className="border p-3 rounded-md w-full"
+                  placeholder="Your name"
+                  type="text"
+                  maxLength={100}
+                  value={mainContact}
+                  onChange={(e) => setMainContact(e.target.value)}
+                  required
+                />
+              </div>
+              <div className="flex mt-3 items-center">
+                <label className="mr-2">Drop:</label>
+                <input
+                  className="border p-3 rounded-md w-full"
+                  placeholder="5"
+                  type="number"
+                  maxLength={3}
+                  value={drop}
+                  onChange={(e) => setDrop(e.target.value)}
+                  required
+                />
+              </div>
+              <div className="flex mt-3 items-center">
+                <label className="mr-2">VIP:</label>
+                <select
+                  value={vip}
+                  onChange={handleVipChange}
+                  className="ml-2 border p-2 rounded-md w-full"
                 >
-                    <XMarkIcon className="h-6 w-6 text-gray-500" />
-                </button>
-                <h1 className="text-2xl font-bold text-dark-blue mb-2">
-                    Add <span className="text-primary-blue">new customer</span>
-                </h1>
-                <form className="text-left" onSubmit={enviarData}>
-                    <div className="flex flex-wrap gap-3 mt-3">
-                        <div className="flex gap-3">
-                            <div className="flex items-center mb-4">
-                                <label className="mr-2">Name:</label>
-                                <input
-                                    className="border p-3 rounded-md"
-                                    placeholder="test name"
-                                    type="text"
-                                    value={addSupplier}
-                                    onChange={(e) => setAddSupplier(e.target.value)}
-                                    required
-                                />
-                            </div>
-
-                            <div className="flex items-center mb-4">
-                                <label className="mr-2">Email:</label>
-                                <input
-                                    className="border p-3 rounded-md"
-                                    placeholder="test@grownet.com"
-                                    type="email"
-                                    value={emailSupplier}
-                                    onChange={(e) => setEmailSupplier(e.target.value)}
-                                    required
-                                />
-                            </div>
-                        </div>
-
-                        <div className="flex gap-3 justify-between">
-                            <div className="flex items-center mb-4">
-                                <label className="mr-2">Marketing Email:</label>
-                                <input
-                                    className="border p-3 rounded-md"
-                                    placeholder="test_marketing@grownet.com"
-                                    type="email"
-                                    value={emailSupplier}
-                                    onChange={(e) => setEmailSupplier(e.target.value)}
-                                    required
-                                />
-                            </div>
-
-                            <div className="flex items-center mb-4">
-                                <label className="mr-2">Address:</label>
-                                <input
-                                    className="border p-3 rounded-md"
-                                    placeholder="Cl prueba"
-                                    type="text"
-                                    value=""
-                                    // onChange={(e) => setAddressSupplier(e.target.value)}
-                                    required
-                                />
-                            </div>
-                        </div>
-
-                        <div className="flex gap-3">
-                            <div className="flex items-center mb-4">
-                                <label className="mr-2">Telephone number:</label>
-                                <input
-                                    className="border p-3 rounded-md"
-                                    placeholder="31383394455"
-                                    type="number"
-                                    value=""
-                                    // onChange={(e) => setAddressSupplier(e.target.value)}
-                                    required
-                                />
-                            </div>
-
-                            <div className="flex items-center mb-4">
-                                <label className="mr-2">Account Number:</label>
-                                <input
-                                    className="border p-3 rounded-md"
-                                    placeholder="RK100"
-                                    type="text"
-                                    value=""
-                                    // onChange={(e) => setAddressSupplier(e.target.value)}
-                                    required
-                                />
-                            </div>
-                        </div>
-
-                        <div className="flex gap-3">
-                            <div className="flex items-center mb-4">
-                                <label className="mr-2">Account Name:</label>
-                                <input
-                                    className="border p-3 rounded-md"
-                                    placeholder="Rest100"
-                                    type="text"
-                                    value=""
-                                    // onChange={(e) => setAddressSupplier(e.target.value)}
-                                    required
-                                />
-                            </div>
-
-                            <div className="flex items-center mb-4">
-                                <label className="mr-2">Post Code:</label>
-                                <input
-                                    className="border p-3 rounded-md"
-                                    placeholder="170001"
-                                    type="number"
-                                    value=""
-                                    // onChange={(e) => setAddressSupplier(e.target.value)}
-                                    required
-                                />
-                            </div>
-                        </div>
-
-                        <div className="flex gap-3">
-                            <div className="flex items-center mb-4">
-                                <label className="mr-2">Special Instructions:</label>
-                                <input
-                                    className="border p-3 rounded-md"
-                                    placeholder="170001"
-                                    type="number"
-                                    value=""
-                                    // onChange={(e) => setAddressSupplier(e.target.value)}
-                                    required
-                                />
-                            </div>
-
-                            <div className="flex items-center mb-4">
-                                <label className="mr-2">Countries indicative:</label>
-                                <input
-                                    className="border p-3 rounded-md"
-                                    placeholder="57"
-                                    type="number"
-                                    value=""
-                                    // onChange={(e) => setAddressSupplier(e.target.value)}
-                                    required
-                                />
-                            </div>
-                        </div>
-
-                    </div>
-                    <div className="mt-3 text-center">
-                        <button
-                            type="submit"
-                            value="Submit"
-                            className={`bg-primary-blue py-3 px-4 rounded-lg text-white font-medium mr-3 ${isLoading === true ? "bg-gray-500/50" : ""
-                                }`}
-                            disabled={isLoading}
-                        >
-                            Add customer
-                        </button>
-                        <button
-                            onClick={() => {
-                                onClose();
-                                setSelectedImage(null);
-                                setAddSupplier("");
-                                setEmailSupplier("");
-                            }}
-                            className=" py-3 px-4 rounded-lg text-primary-blue border border-primary-blue font-medium"
-                        >
-                            Close
-                        </button>
-                    </div>
-                </form>
+                  <option value="">Select Option</option>
+                  <option key="yes" value="yes">
+                    Yes
+                  </option>
+                  <option key="no" value="no">
+                    No
+                  </option>
+                </select>
+              </div>
+              <div className="flex mt-3 items-center">
+                <label className="mr-2">Group:</label>
+                <select
+                  value={selectedGroup}
+                  onChange={(e) => setSelectedGroup(e.target.value)}
+                  className="ml-2 border p-2 rounded-md w-full"
+                >
+                  <option value="">Select Group</option>
+                  {groups &&
+                    groups.map((group) => (
+                      <>
+                        {console.log(group)}
+                        <option key={group.id} value={group.id}>
+                          {group.group}
+                        </option>
+                      </>
+                    ))}
+                </select>
+              </div>
             </div>
-        </div>
-    );
+            <div className="ml-5 flex flex-col w-[50%] ">
+              <div className="flex items-center mb-4">
+                <label className="mr-2">Account number:</label>
+                <input
+                  className="border p-3 rounded-md"
+                  placeholder="RK100"
+                  type="text"
+                  value={accountNumber}
+                  onChange={(e) => setAccountNumber(e.target.value)}
+                  required
+                />
+              </div>
+              <div className="flex items-center mb-4">
+                <label className="mr-2">Marketing Email:</label>
+                <input
+                  className="border p-3 rounded-md w-full"
+                  placeholder="test_marketing@grownet.com"
+                  type="email"
+                  value={marketingEmail}
+                  onChange={(e) => setMarketingEmail(e.target.value)}
+                  required
+                />
+              </div>
+              <div className="flex items-center mb-4">
+                <label className="mr-2">Telephone number:</label>
+                <input
+                  className="border p-3 rounded-md w-full"
+                  placeholder="31383394455"
+                  type="number"
+                  value={telephoneCustomer}
+                  onChange={(e) => setTelephoneCustomer(e.target.value)}
+                  required
+                />
+              </div>
+              <div className="flex items-center mb-4">
+                <label className="mr-2">Special Instructions:</label>
+                <input
+                  className="border p-3 rounded-md w-full"
+                  placeholder="Special instructions"
+                  type="text"
+                  value={specialInstructions}
+                  onChange={(e) => setSpecialInstructions(e.target.value)}
+                  required
+                />
+              </div>
+              <div className="flex items-center mb-4">
+                <label className="mr-2">Account email:</label>
+                <input
+                  className="border p-3 rounded-md w-full"
+                  placeholder="suppliers@grownet.com"
+                  type="email"
+                  value={accountEmail}
+                  onChange={(e) => setAccountEmail(e.target.value)}
+                  required
+                />
+              </div>
+              <div className="flex items-center mb-4">
+                <label className="mr-2">Crates:</label>
+                <select
+                  value={crates}
+                  onChange={handleCratesChange}
+                  className="ml-2 border p-2 rounded-md w-full"
+                >
+                  <option value="">Select Option</option>
+                  <option key="yes" value="yes">
+                    Yes
+                  </option>
+                  <option key="no" value="no">
+                    No
+                  </option>
+                </select>
+              </div>
+              <div className="flex items-center mb-4">
+                <label className="mr-2">Delivery Window:</label>
+                <div className="flex">
+                  <input
+                    className="border p-3 rounded-md w-full"
+                    placeholder="hh:mm:ss"
+                    type="text"
+                    maxLength={8}
+                    value={startHour}
+                    onChange={handleStartHourChange}
+                    onBlur={handleBlur}
+                    required
+                  />
+                  <span className="mx-2">-</span>
+                  <input
+                    className="border p-3 rounded-md w-full"
+                    placeholder="hh:mm:ss"
+                    type="text"
+                    maxLength={8}
+                    value={endHour}
+                    onChange={handleEndHourChange}
+                    onBlur={handleBlur}
+                    required
+                  />
+                </div>
+              </div>
+              <div className="flex items-center mb-4">
+                <label className="mr-2">Routes:</label>
+                <table className="ml-2 border p-2 rounded-md">
+                  <thead>
+                    <tr>
+                      <th></th>
+                      {routes.map((route) => (
+                        <th className="p-1" key={route.id}>
+                          {route.name}
+                        </th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {["Mon", "Tues", "Wen", "Truh", "Frid"].map((day) => (
+                      <tr key={day}>
+                        <td>{day}</td>
+                        {routes.map((route) => (
+                          <td key={route.id}>
+                            <input
+                              type="checkbox"
+                              checked={selectedRoutes[day]?.[route.id] || false}
+                              onChange={() =>
+                                handleRouteCheckboxChange(route.id, day)
+                              }
+                            />
+                          </td>
+                        ))}
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+          <div className="mt-3 text-center">
+            <button
+              type="submit"
+              value="Submit"
+              className={`bg-primary-blue py-3 px-4 rounded-lg text-white font-medium mr-3 ${
+                isLoading === true ? "bg-gray-500/50" : ""
+              }`}
+              disabled={isLoading}
+            >
+              Add customer
+            </button>
+            <button
+              onClick={() => {
+                onClose();
+              }}
+              className=" py-3 px-4 rounded-lg text-primary-blue border border-primary-blue font-medium"
+            >
+              Close
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
 }
 export default NewCustomer;

@@ -15,8 +15,9 @@ import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import Swal from "sweetalert2";
+import { XMarkIcon } from "@heroicons/react/24/outline";
 
-const CustomerDetailPage = () => {
+const CustomerDetailPage = ({ isvisible, onClose, customer }) => {
   const router = useRouter();
   const [hasMounted, setHasMounted] = useState(false);
   const { token, setToken } = useTokenStore();
@@ -52,7 +53,9 @@ const CustomerDetailPage = () => {
   const [selectedRoutes, setSelectedRoutes] = useState({});
 
   const params = useParams();
-
+  if (!isvisible) {
+    return null;
+  }
   let customerId;
   if (params) {
     customerId = params.customerId;
@@ -309,108 +312,61 @@ const CustomerDetailPage = () => {
   return (
     <>
       {token ? (
-        <Layout>
-          <div className="flex justify-between p-8 bg-primary-blue">
-            <Link
-              className="flex bg-dark-blue py-3 px-4 rounded-lg text-white font-medium transition-all hover:scale-110 "
-              href="/customers"
+        <div className="fixed inset-0 bg-black bg-opacity-25 backdrop-blur-sm flex flex-col justify-center items-center font-poppins">
+          <div className="bg-white p-8 rounded-2xl w-[900px] flex flex-col items-center">
+            <button
+              className="text-dark-blue place-self-end "
+              onClick={() => {
+                setAccountName("");
+                setEmailCustomer("");
+                onClose();
+              }}
             >
-              <ArrowLeftIcon className="w-5 h-5 mt-0.5 mr-1 inline-block" />{" "}
-              Customers
-            </Link>
-          </div>
-
-          <div className="flex flex-col items-center justify-center">
-            {isLoading && (
-              <div className="flex justify-center items-center mb-20">
-                <div class="loader"></div>
-              </div>
-            )}
-            {!isLoading && (
-              <form
-                className="text-left mt-10 w-[80%] mb-20"
-                onSubmit={enviarData}
-              >
-                <div className="flex items-center justify-center">
-                  <h1 className="text-2xl font-bold text-dark-blue mb-2">
-                    Edit <span className="text-primary-blue">customer</span>
-                  </h1>
-                </div>
-                <div className="grid grid-cols-2 gap-3 mt-3">
-                  <div className="flex items-center mb-4">
-                    <label className="mr-2">Account Name:</label>
+              <XMarkIcon className="h-6 w-6 text-gray-500" />
+            </button>
+            <h1 className="text-2xl font-bold text-dark-blue mb-2">
+              Edit <span className="text-primary-blue">customer</span>
+            </h1>
+            <form className="text-left " onSubmit={enviarData}>
+              <div className="flex">
+                <div className="flex flex-col  w-[50%]">
+                  <div className="flex items-center">
+                    <label className="mr-2">Account name:</label>
                     <input
-                      className="border p-3 rounded-md w-[60%]"
-                      placeholder="Rest100"
+                      className="border p-3 rounded-md w-full"
+                      placeholder="Name"
                       type="text"
-                      maxLength={45}
                       value={accountName}
                       onChange={(e) => setAccountName(e.target.value)}
                       required
                     />
                   </div>
-
-                  <div className="flex items-center mb-4">
-                    <label className="mr-2">Account Number:</label>
-                    <h4 className="underline decoration-2 decoration-green">
-                      {accountNumber}
-                    </h4>
-                  </div>
-
-                  <div className="flex items-center mb-4">
+                  <div className="flex mt-3 items-center">
                     <label className="mr-2">Email:</label>
                     <input
-                      className="border p-3 rounded-md w-[60%]"
+                      className="border p-3 rounded-md w-full"
                       placeholder="test@grownet.com"
                       type="email"
                       value={emailCustomer}
-                      maxLength={85}
                       onChange={(e) => setEmailCustomer(e.target.value)}
                       required
                     />
                   </div>
-
-                  <div className="flex items-center mb-4">
-                    <label className="mr-2">Marketing Email:</label>
-                    <input
-                      className="border p-3 rounded-md w-[60%]"
-                      placeholder="test_marketing@grownet.com"
-                      type="email"
-                      value={marketingEmail}
-                      onChange={(e) => setMarketingEmail(e.target.value)}
-                      required
-                    />
-                  </div>
-
-                  <div className="flex items-center mb-4">
+                  <div className="flex mt-3 items-center">
                     <label className="mr-2">Address:</label>
                     <input
-                      className="border p-3 rounded-md w-[60%]"
-                      placeholder="Cl prueba"
+                      className="border p-3 rounded-md w-full"
+                      placeholder="test@grownet.com"
                       type="text"
-                      maxLength={100}
                       value={addressCustomer}
                       onChange={(e) => setAddressCustomer(e.target.value)}
                       required
                     />
                   </div>
-
-                  <div className="flex items-center mb-4">
-                    <label className="mr-2">Telephone number:</label>
+                  <div className="flex mt-3 items-center">
+                    <label className="mr-2">Post code:</label>
                     <input
-                      className="border p-3 rounded-md w-[60%]"
-                      placeholder="31383394455"
-                      type="number"
-                      value={telephoneCustomer}
-                      onChange={(e) => setTelephoneCustomer(e.target.value)}
-                      required
-                    />
-                  </div>
-
-                  <div className="flex items-center mb-4">
-                    <label className="mr-2">Post Code:</label>
-                    <input
-                      className="border p-3 rounded-md w-[60%]"
+                      className="border p-3 rounded-md w-full"
                       placeholder="170001"
                       type="text"
                       maxLength={45}
@@ -419,23 +375,10 @@ const CustomerDetailPage = () => {
                       required
                     />
                   </div>
-
-                  <div className="flex items-center mb-4">
-                    <label className="mr-2">Special Instructions:</label>
-                    <input
-                      className="border p-3 rounded-md w-[60%]"
-                      placeholder="Some special instruction"
-                      type="text"
-                      maxLength={100}
-                      value={specialInstructions}
-                      onChange={(e) => setSpecialInstructions(e.target.value)}
-                      required
-                    />
-                  </div>
-                  <div className="flex items-center mb-4">
+                  <div className="flex mt-3 items-center">
                     <label className="mr-2">Main Contact:</label>
                     <input
-                      className="border p-3 rounded-md w-[60%]"
+                      className="border p-3 rounded-md w-full"
                       placeholder="Your name"
                       type="text"
                       maxLength={100}
@@ -444,36 +387,24 @@ const CustomerDetailPage = () => {
                       required
                     />
                   </div>
-                  <div className="flex items-center mb-4">
-                    <label className="mr-2">Account Email:</label>
-                    <input
-                      className="border p-3 rounded-md w-[60%]"
-                      placeholder="email@gmail.com"
-                      type="email"
-                      maxLength={100}
-                      value={accountEmail}
-                      onChange={(e) => setAccountEmail(e.target.value)}
-                      required
-                    />
-                  </div>
-                  <div className="flex items-center mb-4">
+                  <div className="flex mt-3 items-center">
                     <label className="mr-2">Drop:</label>
                     <input
-                      className="border p-3 rounded-md"
+                      className="border p-3 rounded-md w-full"
                       placeholder="5"
                       type="number"
                       maxLength={3}
                       value={drop}
-                      onChange={handleDropChange}
+                      onChange={(e) => setDrop(e.target.value)}
                       required
                     />
                   </div>
-                  <div className="flex items-center mb-4">
-                    <label className="mr-2">Crates:</label>
+                  <div className="flex mt-3 items-center">
+                    <label className="mr-2">VIP:</label>
                     <select
-                      value={crates}
-                      onChange={handleCratesChange}
-                      className="ml-2 border p-2 rounded-md"
+                      value={vip}
+                      onChange={handleVipChange}
+                      className="ml-2 border p-2 rounded-md w-full"
                     >
                       <option value="">Select Option</option>
                       <option key="yes" value="yes">
@@ -484,12 +415,88 @@ const CustomerDetailPage = () => {
                       </option>
                     </select>
                   </div>
-                  <div className="flex items-center mb-4">
-                    <label className="mr-2">VIP:</label>
+                  <div className="flex mt-3 items-center">
+                    <label className="mr-2">Group:</label>
                     <select
-                      value={vip}
-                      onChange={handleVipChange}
-                      className="ml-2 border p-2 rounded-md"
+                      value={selectedGroup}
+                      onChange={(e) => setSelectedGroup(e.target.value)}
+                      className="ml-2 border p-2 rounded-md w-full"
+                    >
+                      <option value="">Select Group</option>
+                      {groups &&
+                        groups.map((group) => (
+                          <>
+                            {console.log(group)}
+                            <option key={group.id} value={group.id}>
+                              {group.group}
+                            </option>
+                          </>
+                        ))}
+                    </select>
+                  </div>
+                </div>
+                <div className="ml-5 flex flex-col w-[50%] ">
+                  <div className="flex items-center mb-4">
+                    <label className="mr-2">Account number:</label>
+                    <input
+                      className="border p-3 rounded-md"
+                      placeholder="RK100"
+                      type="text"
+                      value={accountNumber}
+                      onChange={(e) => setAccountNumber(e.target.value)}
+                      required
+                    />
+                  </div>
+                  <div className="flex items-center mb-4">
+                    <label className="mr-2">Marketing Email:</label>
+                    <input
+                      className="border p-3 rounded-md w-full"
+                      placeholder="test_marketing@grownet.com"
+                      type="email"
+                      value={marketingEmail}
+                      onChange={(e) => setMarketingEmail(e.target.value)}
+                      required
+                    />
+                  </div>
+                  <div className="flex items-center mb-4">
+                    <label className="mr-2">Telephone number:</label>
+                    <input
+                      className="border p-3 rounded-md w-full"
+                      placeholder="31383394455"
+                      type="number"
+                      value={telephoneCustomer}
+                      onChange={(e) => setTelephoneCustomer(e.target.value)}
+                      required
+                    />
+                  </div>
+                  <div className="flex items-center mb-4">
+                    <label className="mr-2">Special Instructions:</label>
+                    <input
+                      className="border p-3 rounded-md w-full"
+                      placeholder="Special instructions"
+                      type="text"
+                      value={specialInstructions}
+                      onChange={(e) => setSpecialInstructions(e.target.value)}
+                      required
+                    />
+                  </div>
+                  <div className="flex items-center mb-4">
+                    <label className="mr-2">Account email:</label>
+                    <input
+                      className="border p-3 rounded-md w-full"
+                      placeholder="suppliers@grownet.com"
+                      type="email"
+                      value={accountEmail}
+                      onChange={(e) => setAccountEmail(e.target.value)}
+                      required
+                    />
+                  </div>
+                  <div className="flex items-center mb-4">
+                    <label className="mr-2">Crates:</label>
+                    <select
+                      value={crates}
+                      onChange={handleCratesChange}
+                      className="ml-2 border p-2 rounded-md w-full"
                     >
                       <option value="">Select Option</option>
                       <option key="yes" value="yes">
@@ -502,9 +509,9 @@ const CustomerDetailPage = () => {
                   </div>
                   <div className="flex items-center mb-4">
                     <label className="mr-2">Delivery Window:</label>
-                    <div>
+                    <div className="flex">
                       <input
-                        className="border p-3 rounded-md w-[30%]"
+                        className="border p-3 rounded-md w-full"
                         placeholder="hh:mm:ss"
                         type="text"
                         maxLength={8}
@@ -515,7 +522,7 @@ const CustomerDetailPage = () => {
                       />
                       <span className="mx-2">-</span>
                       <input
-                        className="border p-3 rounded-md w-[30%]"
+                        className="border p-3 rounded-md w-full"
                         placeholder="hh:mm:ss"
                         type="text"
                         maxLength={8}
@@ -525,22 +532,6 @@ const CustomerDetailPage = () => {
                         required
                       />
                     </div>
-                    {error && <p className="text-red-500">{error}</p>}
-                  </div>
-                  <div className="flex items-center mb-4">
-                    <label className="mr-2">Group:</label>
-                    <select
-                      value={selectedGroup}
-                      onChange={handleGroupChange}
-                      className="ml-2 border p-2 rounded-md"
-                    >
-                      {groups &&
-                        groups.map((group) => (
-                          <option key={group.id} value={group.id}>
-                            {group.group}
-                          </option>
-                        ))}
-                    </select>
                   </div>
                   <div className="flex items-center mb-4">
                     <label className="mr-2">Routes:</label>
@@ -556,13 +547,7 @@ const CustomerDetailPage = () => {
                         </tr>
                       </thead>
                       <tbody>
-                        {[
-                          "lunes",
-                          "martes",
-                          "miercoles",
-                          "jueves",
-                          "viernes",
-                        ].map((day) => (
+                        {["Mon", "Tues", "Wen", "Truh", "Frid"].map((day) => (
                           <tr key={day}>
                             <td>{day}</td>
                             {routes.map((route) => (
@@ -584,28 +569,30 @@ const CustomerDetailPage = () => {
                     </table>
                   </div>
                 </div>
-                <div className="mt-3 text-center">
-                  <button
-                    type="submit"
-                    value="Submit"
-                    className={`bg-primary-blue py-3 px-4 rounded-lg text-white font-medium mr-3 ${
-                      isLoading === true ? "bg-gray-500/50" : ""
-                    }`}
-                    disabled={isLoading}
-                  >
-                    Edit customer
-                  </button>
-                  <Link
-                    className="py-3 px-4 rounded-lg text-primary-blue border border-primary-blue font-medium "
-                    href="/customers"
-                  >
-                    Cancel
-                  </Link>
-                </div>
-              </form>
-            )}
+              </div>
+              <div className="mt-3 text-center">
+                <button
+                  type="submit"
+                  value="Submit"
+                  className={`bg-primary-blue py-3 px-4 rounded-lg text-white font-medium mr-3 ${
+                    isLoading === true ? "bg-gray-500/50" : ""
+                  }`}
+                  disabled={isLoading}
+                >
+                  Edit customer
+                </button>
+                <button
+                  onClick={() => {
+                    onClose();
+                  }}
+                  className=" py-3 px-4 rounded-lg text-primary-blue border border-primary-blue font-medium"
+                >
+                  Close
+                </button>
+              </div>
+            </form>
           </div>
-        </Layout>
+        </div>
       ) : (
         <RootLayout></RootLayout>
       )}

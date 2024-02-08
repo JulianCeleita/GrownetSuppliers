@@ -103,9 +103,12 @@ export default function Table() {
   const [DescriptionData, setDescriptionData] = useState(null);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [showErrorOrderModal, setShowErrorOrderModal] = useState(false);
+  const [orderError, setOrderError] = useState("");
   const [specialRequirements, setSpecialRequirements] = useState("");
   const [mouseCoords, setMouseCoords] = useState({ x: 0, y: 0 });
   const { user, setUser } = useUserStore();
+  const [isReadOnly, setIsReadOnly] = useState(true);
+  const [confirmCreateOrder, setConfirmCreateOrder] = useState(false);
 
   const columns = [
     "Code",
@@ -435,6 +438,14 @@ export default function Table() {
 
   const createOrder = async () => {
     try {
+      if (!customers) {
+        setShowErrorOrderModal(true);
+        setOrderError(
+          "Please select the customer you want to create the order for."
+        );
+        setConfirmCreateOrder(false);
+        return;
+      }
       const filteredProducts = rows
         .filter((row) => parseFloat(row.quantity) > 0)
         .map((row) => {
@@ -449,10 +460,16 @@ export default function Table() {
           };
         });
 
+      if (!filteredProducts || filteredProducts.length === 0) {
+        setShowErrorOrderModal(true);
+        setOrderError("Please choose a product for your order.");
+        setConfirmCreateOrder(false);
+        return;
+      }
       const jsonOrderData = {
-        accountNumber_customers: customers?.accountNumber,
-        address_delivery: customers?.address,
-        date_delivery: customers?.orderDate,
+        accountNumber_customers: customers[0]?.accountNumber,
+        address_delivery: customers[0]?.address,
+        date_delivery: customers.orderDate,
         id_suppliers: user?.id_supplier,
         net: parseFloat(totalNetSum),
         observation: specialRequirements,
@@ -460,13 +477,16 @@ export default function Table() {
         total_tax: parseFloat(totalTaxSum),
         products: filteredProducts,
       };
+
+      console.log("jsonOrderData", jsonOrderData);
       const response = await axios.post(createStorageOrder, jsonOrderData, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
-
+      console.log("response", response);
       setShowConfirmModal(true);
+      setConfirmCreateOrder(false);
       setRows(Array.from({ length: 5 }, () => ({ ...initialRowsState })));
       setSpecialRequirements("");
       setProducts([]);
@@ -496,6 +516,24 @@ export default function Table() {
     }
   };
 
+  const placeholders = {
+    Code: "Enter code",
+    Description: "Enter description",
+    Packsize: "Enter pack size",
+    UOM: "Enter unit of measure",
+    quantity: "Enter quantity",
+    price: "Enter price",
+    Net: "Enter net",
+    "Total Net": "Enter total net",
+    "VAT %": "Enter VAT %",
+    "VAT £": "Enter VAT £",
+    "Total Price": "Enter total price",
+    "Unit Cost": "Enter unit cost",
+    Profit: "Enter profit",
+    "Price Band": "Enter price band",
+    "Total Cost": "Enter total cost",
+  };
+
   return (
     <div className="flex flex-col p-8">
       <div className="overflow-x-auto">
@@ -513,41 +551,35 @@ export default function Table() {
                       <th
                         key={index}
                         scope="col"
-                        className={`py-2 px-2 bg-dark-blue rounded-lg capitalize ${
-                          column === "quantity" ||
+                        className={`py-2 px-2 bg-white capitalize ${column === "quantity" ||
                           column === "Code" ||
                           column === "VAT %" ||
                           column === "UOM" ||
                           column === "Net"
-                            ? "w-20"
-                            : column === "Packsize"
+                          ? "w-20"
+                          : column === "Packsize" || column === "Total Price"
                             ? "w-40"
                             : ""
-                        }`}
+                          }`}
                         onContextMenu={(e) => handleContextMenu(e)}
-                        style={{
-                          boxShadow:
-                            "0px 5px 5px rgba(0, 0, 0, 0.5), 0px 0px 0px rgba(0, 0, 0, 0.2)",
-                        }}
                       >
-                        <p className="text-lg text-white">{column}</p>
+                        <p className="text-lg text-dark-blue">{column}</p>
                       </th>
                     )
                 )}
               </tr>
             </thead>
-            <tbody className="shadow-[rgba(0,_0,_0,_0.24)_0px_3px_8px] rounded-xl">
+            <tbody className="border border-1 bg-white">
               {rows.map((row, rowIndex) => (
                 <tr key={rowIndex}>
                   {/* CODIGO DE PRODUCTO */}
                   {columns.map(
-                    (column, columnIndex) =>
+                    (column, columnIndex) => {
+                      const isFirstRow = rowIndex === 0;
                       initialColumns.includes(column) && (
                         <React.Fragment key={columnIndex}>
                           <td
-                            className={`px-3 py-2 border-r-2 border-r-[#0c547a] border-[#808e94] ${
-                              rowIndex === 0 ? "border-t-0" : "border-t-2"
-                            } `}
+                            className={`px-3 py-3 border border-1 border-x-0`}
                             tabIndex={0}
                             style={{ overflow: "visible" }}
                           >
@@ -588,10 +620,10 @@ export default function Table() {
                                     options={
                                       DescriptionData
                                         ? DescriptionData.map((item) => ({
-                                            value: item.productName,
-                                            label: item.concatenatedName,
-                                            code: item.code,
-                                          }))
+                                          value: item.productName,
+                                          label: item.concatenatedName,
+                                          code: item.code,
+                                        }))
                                         : []
                                     }
                                     value={{
@@ -640,11 +672,10 @@ export default function Table() {
                                 type={inputTypes[column]}
                                 ref={inputRefs[column][rowIndex]}
                                 data-field-name={column}
-                                className={`pl-2 h-[30px] outline-none w-full ${
-                                  inputTypes[column] === "number"
-                                    ? "hide-number-arrows"
-                                    : ""
-                                }`}
+                                className={`pl-2 h-[30px] outline-none w-full ${inputTypes[column] === "number"
+                                  ? "hide-number-arrows"
+                                  : ""
+                                  }`}
                                 value={row[column] || ""}
                                 onChange={(e) => {
                                   if (column === "Net") {
@@ -677,11 +708,15 @@ export default function Table() {
                                     e.preventDefault();
                                   }
                                 }}
+                                readOnly={column === "Net" && isReadOnly}
+                                onDoubleClick={() => setIsReadOnly(false)}
+                                onBlur={() => setIsReadOnly(true)}
                               />
                             )}
                           </td>
                         </React.Fragment>
                       )
+                    }
                   )}
                 </tr>
               ))}
@@ -698,7 +733,7 @@ export default function Table() {
               }}
             >
               <h4 className="font-bold mb-2">Show/Hide Columns</h4>
-              {columns.map((column) => (
+              {columns.map((column, columnIndex) => (
                 <div key={column} className={`flex items-center`}>
                   <input
                     type="checkbox"
@@ -733,19 +768,37 @@ export default function Table() {
           placeholder="Write your comments here"
         />
         <button
-          onClick={createOrder}
+          onClick={() => setConfirmCreateOrder(true)}
           className="bg-primary-blue py-2 px-4 rounded-lg text-white font-medium mr-2 w-[15%]"
         >
           Send order
         </button>
       </div>
+
       <ModalSuccessfull
         isvisible={showConfirmModal}
         onClose={() => setShowConfirmModal(false)}
+        title="Congratulations"
+        text="Your order has been shipped, thank you for using"
+        textGrownet="Grownet"
+        button=" Close"
       />
+      {confirmCreateOrder && (
+        <ModalSuccessfull
+          isvisible={confirmCreateOrder}
+          onClose={() => setConfirmCreateOrder(false)}
+          title="Confirmation!"
+          text="Are you sure about creating this order?"
+          textGrownet=""
+          button="Confirm"
+          sendOrder={createOrder}
+        />
+      )}
+
       <ModalOrderError
         isvisible={showErrorOrderModal}
         onClose={() => setShowErrorOrderModal(false)}
+        error={orderError}
       />
     </div>
   );

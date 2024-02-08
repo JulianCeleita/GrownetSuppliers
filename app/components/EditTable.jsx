@@ -21,6 +21,7 @@ export const fetchOrderDetail = async (
   setIsLoading,
   orderId
 ) => {
+  setIsLoading(true);
   try {
     const response = await axios.get(`${orderDetail}${orderId}`, {
       headers: {
@@ -101,19 +102,16 @@ const useFocusOnEnter = (formRef) => {
 
 export default function EditTable({ orderId, dateDelivery }) {
   const [rows, setRows] = useState(
-    Array.from({ length: 5 }, () => ({ ...initialRowsState }))
+    Array.from({ length: 0 }, () => ({ ...initialRowsState }))
   );
   const form = useRef();
   const { onEnterKey } = useFocusOnEnter(form);
   const { token, setToken } = useTokenStore();
   const [products, setProducts] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const {
     initialColumns,
     toggleColumnVisibility,
-    initialTotalRows,
-    toggleTotalRowVisibility,
-    customers,
     setTotalNetSum,
     setTotalPriceSum,
     setTotalTaxSum,
@@ -123,20 +121,22 @@ export default function EditTable({ orderId, dateDelivery }) {
     orderDetail,
     setOrderDetail,
   } = useTableStore();
-  const [showCheckboxColumnTotal, setShowCheckboxColumnTotal] = useState(false);
+
   const menuRef = useRef(null);
-  const menuRefTotal = useRef(null);
   const [showCheckboxColumn, setShowCheckboxColumn] = useState(false);
   const [currentValues, setCurrentValues] = useState({});
   const [productByCode, setProductByCode] = useState({});
   const [DescriptionData, setDescriptionData] = useState(null);
-  const lastActiveColumn = initialColumns[initialColumns.length - 1];
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [showErrorOrderModal, setShowErrorOrderModal] = useState(false);
-  const [specialRequirements, setSpecialRequirements] = useState("");
+  const [specialRequirements, setSpecialRequirements] = useState(
+    orderDetail.observation ? orderDetail.observation : ""
+  );
   const [mouseCoords, setMouseCoords] = useState({ x: 0, y: 0 });
-  const { user, setUser } = useUserStore();
   const router = useRouter();
+  const [isReadOnly, setIsReadOnly] = useState(true);
+  const [confirmCreateOrder, setConfirmCreateOrder] = useState(false);
+  const [orderError, setOrderError] = useState("");
 
   const columns = [
     "Code",
@@ -529,6 +529,12 @@ export default function EditTable({ orderId, dateDelivery }) {
             price: Number(row.Net),
           };
         });
+      if (!filteredProducts || filteredProducts.length === 0) {
+        setShowErrorOrderModal(true);
+        setOrderError("You must leave at least one product in the order.");
+        setConfirmCreateOrder(false);
+        return;
+      }
 
       const jsonOrderData = {
         date_delivery: dateDelivery,
@@ -539,6 +545,7 @@ export default function EditTable({ orderId, dateDelivery }) {
         total_tax: parseFloat(totalTaxSum),
         products: filteredProducts,
       };
+      console.log("jsonOrderData", jsonOrderData);
       const response = await axios.post(
         `${editStorageOrder}${orderDetail.reference}`,
         jsonOrderData,
@@ -548,9 +555,13 @@ export default function EditTable({ orderId, dateDelivery }) {
           },
         }
       );
+      console.log("response", response);
       setSpecialRequirements("");
-
-      router.push("/");
+      setShowConfirmModal(true);
+      setConfirmCreateOrder(false);
+      setTimeout(() => {
+        router.push("/");
+      }, 1000);
     } catch (error) {
       setShowErrorOrderModal(true);
     }
@@ -581,255 +592,284 @@ export default function EditTable({ orderId, dateDelivery }) {
 
   return (
     <div className="flex flex-col p-8">
-      <div className="overflow-x-auto">
-        <form
-          ref={form}
-          onKeyUp={(event) => onEnterKey(event)}
-          className="m-1 whitespace-nowrap"
-        >
-          <table className="w-full text-sm text-center table-auto">
-            <thead className="text-white">
-              <tr>
-                {columns.map(
-                  (column, index) =>
-                    initialColumns.includes(column) && (
-                      <th
-                        key={index}
-                        scope="col"
-                        className={`py-2 px-2 bg-dark-blue rounded-lg capitalize ${
-                          column === "quantity" ||
-                          column === "Code" ||
-                          column === "VAT %" ||
-                          column === "UOM" ||
-                          column === "Net"
-                            ? "w-20"
-                            : column === "Packsize"
-                            ? "w-40"
-                            : ""
-                        }`}
-                        onContextMenu={(e) => handleContextMenu(e)}
-                        style={{
-                          boxShadow:
-                            "0px 5px 5px rgba(0, 0, 0, 0.5), 0px 0px 0px rgba(0, 0, 0, 0.2)",
-                        }}
-                      >
-                        <p className="text-lg text-white">{column}</p>
-                      </th>
-                    )
-                )}
-              </tr>
-            </thead>
-            <tbody className="shadow-[rgba(0,_0,_0,_0.24)_0px_3px_8px] rounded-xl">
-              {rows.map((row, rowIndex) => (
-                <tr key={rowIndex}>
-                  {/* CODIGO DE PRODUCTO */}
-                  {columns.map(
-                    (column, columnIndex) =>
-                      initialColumns.includes(column) && (
-                        <React.Fragment key={columnIndex}>
-                          <td
-                            className={`px-3 py-2 border-r-2 border-r-[#0c547a] border-[#808e94] ${
-                              rowIndex === 0 ? "border-t-0" : "border-t-2"
-                            } `}
-                            tabIndex={0}
-                            style={{ overflow: "visible" }}
+      {isLoading ? (
+        <div className="flex justify-center items-center mt-24">
+          <div class="loader"></div>
+        </div>
+      ) : (
+        <>
+          <div className="overflow-x-auto">
+            <form
+              ref={form}
+              onKeyUp={(event) => onEnterKey(event)}
+              className="m-1 whitespace-nowrap"
+            >
+              <table className="w-full text-sm text-center table-auto">
+                <thead className="text-white">
+                  <tr>
+                    {columns.map(
+                      (column, index) =>
+                        initialColumns.includes(column) && (
+                          <th
+                            key={index}
+                            scope="col"
+                            className={`py-3 px-2 bg-white capitalize ${
+                              column === "quantity" ||
+                              column === "Code" ||
+                              column === "VAT %" ||
+                              column === "UOM" ||
+                              column === "Net"
+                                ? "w-20"
+                                : column === "Packsize" ||
+                                  column === "Total Price"
+                                ? "w-40"
+                                : ""
+                            }`}
+                            onContextMenu={(e) => handleContextMenu(e)}
                           >
-                            {[
-                              "Description",
-                              "Packsize",
-                              "UOM",
-                              "price",
-                              "Total Net",
-                              "VAT %",
-                              "VAT £",
-                              "Total Price",
-                              "Unit Cost",
-                              "Profit",
-                              "Price Band",
-                              "Total Cost",
-                            ].includes(column) ? (
-                              <span>
-                                {column === "Packsize" && row[column]}
-                                {column === "UOM" && row[column]}
-                                {column === "price" && calculatePrice(row)}
-                                {column === "Total Net" &&
-                                  calculateTotalNet(row)}
-                                {column === "VAT %" && row[column]}
-                                {column === "VAT £" &&
-                                  calculateTaxCalculation(row)}
-                                {column === "Total Price" &&
-                                  calculateTotalPrice(row)}
-                                {column === "Unit Cost" && row[column]}
-                                {column === "Profit" && calculateProfit(row)}
-                                {column === "Price Band" && row[column]}
-                                {column === "Total Cost" &&
-                                  calculateTotalCost(row)}
-                                {column === "Description" && (
-                                  <Select
-                                    className="w-full"
-                                    menuPortalTarget={document.body}
-                                    options={
-                                      DescriptionData
-                                        ? DescriptionData.map((item) => ({
-                                            value: item.productName,
-                                            label: item.concatenatedName,
-                                            code: item.code,
-                                          }))
-                                        : []
-                                    }
-                                    value={{
-                                      label: row[column] || "",
-                                      value: row[column] || "",
-                                    }}
-                                    onChange={(selectedDescription, e) => {
+                            <p className="text-lg text-dark-blue">{column}</p>
+                          </th>
+                        )
+                    )}
+                  </tr>
+                </thead>
+                <tbody className="border border-1 bg-white">
+                  {rows.map((row, rowIndex) => (
+                    <tr key={rowIndex}>
+                      {/* CODIGO DE PRODUCTO */}
+                      {columns.map(
+                        (column, columnIndex) =>
+                          initialColumns.includes(column) && (
+                            <React.Fragment key={columnIndex}>
+                              <td
+                                className={`px-3 py-2 border border-1 border-x-0 `}
+                                tabIndex={0}
+                                style={{ overflow: "visible" }}
+                              >
+                                {[
+                                  "Description",
+                                  "Packsize",
+                                  "UOM",
+                                  "price",
+                                  "Total Net",
+                                  "VAT %",
+                                  "VAT £",
+                                  "Total Price",
+                                  "Unit Cost",
+                                  "Profit",
+                                  "Price Band",
+                                  "Total Cost",
+                                ].includes(column) ? (
+                                  <span>
+                                    {column === "Packsize" && row[column]}
+                                    {column === "UOM" && row[column]}
+                                    {column === "price" && calculatePrice(row)}
+                                    {column === "Total Net" &&
+                                      calculateTotalNet(row)}
+                                    {column === "VAT %" && row[column]}
+                                    {column === "VAT £" &&
+                                      calculateTaxCalculation(row)}
+                                    {column === "Total Price" &&
+                                      calculateTotalPrice(row)}
+                                    {column === "Unit Cost" && row[column]}
+                                    {column === "Profit" &&
+                                      calculateProfit(row)}
+                                    {column === "Price Band" && row[column]}
+                                    {column === "Total Cost" &&
+                                      calculateTotalCost(row)}
+                                    {column === "Description" && (
+                                      <Select
+                                        className="w-full"
+                                        menuPortalTarget={document.body}
+                                        options={
+                                          DescriptionData
+                                            ? DescriptionData.map((item) => ({
+                                                value: item.productName,
+                                                label: item.concatenatedName,
+                                                code: item.code,
+                                              }))
+                                            : []
+                                        }
+                                        value={{
+                                          label: row[column] || "",
+                                          value: row[column] || "",
+                                        }}
+                                        onChange={(selectedDescription, e) => {
+                                          setCurrentValues((prevValues) => ({
+                                            // ...prevValues,
+                                            [column]: selectedDescription.code,
+                                          }));
+
+                                          const updatedRows = [...rows];
+                                          updatedRows[rowIndex][column] =
+                                            selectedDescription.code;
+                                          if (selectedDescription.code) {
+                                            fetchProductCode(rowIndex);
+                                          }
+                                          setRows(updatedRows);
+                                        }}
+                                        onKeyDown={(selectedDescription) => {
+                                          if (selectedDescription.code) {
+                                            fetchProductCode(rowIndex);
+                                          }
+                                        }}
+                                        styles={{
+                                          control: (provided) => ({
+                                            ...provided,
+                                            border: "none",
+                                            boxShadow: "none",
+                                          }),
+                                          dropdownIndicator: (provided) => ({
+                                            ...provided,
+                                            display: "none",
+                                          }),
+                                          indicatorSeparator: (provided) => ({
+                                            ...provided,
+                                            display: "none",
+                                          }),
+                                        }}
+                                      />
+                                    )}
+                                  </span>
+                                ) : (
+                                  <input
+                                    type={inputTypes[column]}
+                                    ref={inputRefs[column][rowIndex]}
+                                    data-field-name={column}
+                                    className={`pl-2 h-[30px] outline-none w-full ${
+                                      inputTypes[column] === "number"
+                                        ? "hide-number-arrows"
+                                        : ""
+                                    }`}
+                                    value={row[column] || ""}
+                                    onChange={(e) => {
+                                      if (column === "Net") {
+                                        let newValue = parseFloat(
+                                          e.target.value
+                                        );
+
+                                        newValue = newValue.toFixed(2);
+                                      }
                                       setCurrentValues((prevValues) => ({
-                                        // ...prevValues,
-                                        [column]: selectedDescription.code,
+                                        ...prevValues,
+                                        [column]: e.target.value,
                                       }));
 
                                       const updatedRows = [...rows];
                                       updatedRows[rowIndex][column] =
-                                        selectedDescription.code;
-                                      if (selectedDescription.code) {
-                                        fetchProductCode(rowIndex);
-                                      }
+                                        e.target.value;
                                       setRows(updatedRows);
+                                      handleCodeChange(e, rowIndex, column);
                                     }}
-                                    onKeyDown={(selectedDescription) => {
-                                      if (selectedDescription.code) {
-                                        fetchProductCode(rowIndex);
+                                    step={0.1}
+                                    onKeyDown={(e) =>
+                                      handleKeyDown(e, rowIndex, column)
+                                    }
+                                    onKeyPress={(e) => {
+                                      if (
+                                        column === "Net" &&
+                                        e.charCode === 46
+                                      ) {
+                                        return;
+                                      }
+                                      if (
+                                        inputTypes[column] === "number" &&
+                                        (e.charCode < 48 || e.charCode > 57)
+                                      ) {
+                                        e.preventDefault();
                                       }
                                     }}
-                                    styles={{
-                                      control: (provided) => ({
-                                        ...provided,
-                                        border: "none",
-                                        boxShadow: "none",
-                                      }),
-                                      dropdownIndicator: (provided) => ({
-                                        ...provided,
-                                        display: "none",
-                                      }),
-                                      indicatorSeparator: (provided) => ({
-                                        ...provided,
-                                        display: "none",
-                                      }),
-                                    }}
+                                    readOnly={column === "Net" && isReadOnly}
+                                    onDoubleClick={() => setIsReadOnly(false)}
+                                    onBlur={() => setIsReadOnly(true)}
                                   />
                                 )}
-                              </span>
-                            ) : (
-                              <input
-                                type={inputTypes[column]}
-                                ref={inputRefs[column][rowIndex]}
-                                data-field-name={column}
-                                className={`pl-2 h-[30px] outline-none w-full ${
-                                  inputTypes[column] === "number"
-                                    ? "hide-number-arrows"
-                                    : ""
-                                }`}
-                                value={row[column] || ""}
-                                onChange={(e) => {
-                                  if (column === "Net") {
-                                    let newValue = parseFloat(e.target.value);
+                              </td>
+                            </React.Fragment>
+                          )
+                      )}
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
 
-                                    newValue = newValue.toFixed(2);
-                                  }
-                                  setCurrentValues((prevValues) => ({
-                                    ...prevValues,
-                                    [column]: e.target.value,
-                                  }));
-
-                                  const updatedRows = [...rows];
-                                  updatedRows[rowIndex][column] =
-                                    e.target.value;
-                                  setRows(updatedRows);
-                                  handleCodeChange(e, rowIndex, column);
-                                }}
-                                step={0.1}
-                                onKeyDown={(e) =>
-                                  handleKeyDown(e, rowIndex, column)
-                                }
-                                onKeyPress={(e) => {
-                                  if (column === "Net" && e.charCode === 46) {
-                                    return;
-                                  }
-                                  if (
-                                    inputTypes[column] === "number" &&
-                                    (e.charCode < 48 || e.charCode > 57)
-                                  ) {
-                                    e.preventDefault();
-                                  }
-                                }}
-                              />
-                            )}
-                          </td>
-                        </React.Fragment>
-                      )
-                  )}
-                </tr>
-              ))}
-            </tbody>
-          </table>
-
-          {showCheckboxColumn === true && (
-            <div
-              ref={menuRef}
-              className="absolute bg-white p-2 border rounded"
-              style={{
-                top: `${mouseCoords.y}px`,
-                left: `${mouseCoords.x}px`,
-              }}
-            >
-              <h4 className="font-bold mb-2">Show/Hide Columns</h4>
-              {columns.map((column) => (
-                <div key={column} className={`flex items-center`}>
-                  <input
-                    type="checkbox"
-                    id={column}
-                    checked={initialColumns.includes(column)}
-                    onChange={() => handleCheckboxChange(column)}
-                  />
-                  <label htmlFor={column} className="ml-2 capitalize">
-                    {column}
-                  </label>
+              {showCheckboxColumn === true && (
+                <div
+                  ref={menuRef}
+                  className="absolute bg-white p-2 border rounded"
+                  style={{
+                    top: `${mouseCoords.y}px`,
+                    left: `${mouseCoords.x}px`,
+                  }}
+                >
+                  <h4 className="font-bold mb-2">Show/Hide Columns</h4>
+                  {columns.map((column) => (
+                    <div key={column} className={`flex items-center`}>
+                      <input
+                        type="checkbox"
+                        id={column}
+                        checked={initialColumns.includes(column)}
+                        onChange={() => handleCheckboxChange(column)}
+                      />
+                      <label htmlFor={column} className="ml-2 capitalize">
+                        {column}
+                      </label>
+                    </div>
+                  ))}
+                  <button
+                    className="mt-2 text-danger"
+                    onClick={() => setShowCheckboxColumn(false)}
+                  >
+                    Close
+                  </button>
                 </div>
-              ))}
-              <button
-                className="mt-2 text-danger"
-                onClick={() => setShowCheckboxColumn(false)}
-              >
-                Close
-              </button>
-            </div>
-          )}
-        </form>
-      </div>
-      <div className="flex justify-center mb-20 w-full mt-5">
-        <h1 className="bg-dark-blue text-white font-semibold p-3 rounded-tl-lg rounded-bl-lg w-[30%] items-center text-center flex justify-center">
-          Special requirements
-        </h1>
-        <input
-          type="text"
-          value={specialRequirements}
-          onChange={(e) => setSpecialRequirements(e.target.value)}
-          className="p-3 border border-dark-blue rounded-tr-lg rounded-br-lg w-full mr-5"
-          placeholder={orderDetail.observation}
-        />
-        <button
-          onClick={editOrder}
-          className="bg-primary-blue py-2 px-4 rounded-lg text-white font-medium mr-2 w-[15%]"
-        >
-          Edit order
-        </button>
-      </div>
+              )}
+            </form>
+          </div>
+          <div className="flex justify-center mb-20 w-full mt-5">
+            <h1 className="bg-dark-blue text-white font-semibold p-3 rounded-tl-lg rounded-bl-lg w-[30%] items-center text-center flex justify-center">
+              Special requirements
+            </h1>
+            <input
+              type="text"
+              value={specialRequirements}
+              onChange={(e) => setSpecialRequirements(e.target.value)}
+              className="p-3 border border-dark-blue rounded-tr-lg rounded-br-lg w-full mr-5"
+              placeholder="Write your comments here"
+            />
+            <button
+              onClick={() => setConfirmCreateOrder(true)}
+              className="bg-primary-blue py-2 px-4 rounded-lg text-white font-medium mr-2 w-[15%]"
+            >
+              Edit order
+            </button>
+          </div>
+        </>
+      )}
       <ModalSuccessfull
         isvisible={showConfirmModal}
         onClose={() => setShowConfirmModal(false)}
+        title="Congratulations"
+        text="Your request has been edited, thank you for using"
+        textGrownet="Grownet"
+        button=" Close"
       />
+      {confirmCreateOrder && (
+        <ModalSuccessfull
+          isvisible={confirmCreateOrder}
+          onClose={() => setConfirmCreateOrder(false)}
+          title="Confirmation!"
+          text="Are you sure to edit this order?"
+          textGrownet=""
+          button="Confirm"
+          sendOrder={editOrder}
+        />
+      )}
+
       <ModalOrderError
         isvisible={showErrorOrderModal}
         onClose={() => setShowErrorOrderModal(false)}
+        error={orderError}
       />
     </div>
   );
