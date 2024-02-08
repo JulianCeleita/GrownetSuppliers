@@ -52,14 +52,9 @@ const CustomerDetailPage = ({ isvisible, onClose, customer }) => {
   const [error, setError] = useState("");
   const [selectedRoutes, setSelectedRoutes] = useState({});
 
-  const params = useParams();
-  if (!isvisible) {
-    return null;
-  }
-  let customerId;
-  if (params) {
-    customerId = params.customerId;
-  }
+
+  console.log(customer)
+  const customerId = customer?.accountNumber;
 
   useEffect(() => {
     const storedToken = localStorage.getItem("token");
@@ -128,18 +123,25 @@ const CustomerDetailPage = ({ isvisible, onClose, customer }) => {
     setHasMounted(true);
   }, []);
 
+  if (!isvisible) {
+    return null;
+  }
+
+
+
+
   const mapDayNumberToName = (dayNumber) => {
     switch (dayNumber) {
       case 1:
-        return "lunes";
+        return "Mon";
       case 2:
-        return "martes";
+        return "Tues";
       case 3:
-        return "miercoles";
+        return "Wen";
       case 4:
-        return "jueves";
+        return "Truh";
       case 5:
-        return "viernes";
+        return "Frid";
       default:
         return "";
     }
@@ -177,15 +179,15 @@ const CustomerDetailPage = ({ isvisible, onClose, customer }) => {
 
   const getDayNumber = (day) => {
     switch (day.toLowerCase()) {
-      case "lunes":
+      case "mon":
         return "1";
-      case "martes":
+      case "tues":
         return "2";
-      case "miercoles":
+      case "wen":
         return "3";
-      case "jueves":
+      case "truh":
         return "4";
-      case "viernes":
+      case "frid":
         return "5";
       default:
         return null;
@@ -266,10 +268,12 @@ const CustomerDetailPage = ({ isvisible, onClose, customer }) => {
       delivery_window: `${startHour} - ${endHour}`,
       group_id: selectedGroup,
     };
+    console.log("🚀 ~ enviarData ~ postData:", postData)
     const postDataAssign = {
       customer: customerId,
       ...prepareDataForBackend(),
     };
+    console.log("🚀 ~ enviarData ~ postDataAssign:", postDataAssign)
     axios
       .post(`${customerUpdate}${customerId}`, postData, {
         headers: {
@@ -277,6 +281,7 @@ const CustomerDetailPage = ({ isvisible, onClose, customer }) => {
         },
       })
       .then((response) => {
+        console.log("🚀 ~ .then ~ response:", response)
         axios
           .post(assignCustomer, postDataAssign, {
             headers: {
@@ -284,6 +289,7 @@ const CustomerDetailPage = ({ isvisible, onClose, customer }) => {
             },
           })
           .then((assignResponse) => {
+            console.log("🚀 ~ .then ~ assignResponse:", assignResponse)
             Swal.fire({
               position: "top-end",
               icon: "success",
@@ -312,7 +318,7 @@ const CustomerDetailPage = ({ isvisible, onClose, customer }) => {
   return (
     <>
       {token ? (
-        <div className="fixed inset-0 bg-black bg-opacity-25 backdrop-blur-sm flex flex-col justify-center items-center font-poppins">
+        <div className="fixed z-50 inset-0 bg-black bg-opacity-25 backdrop-blur-sm flex flex-col justify-center items-center font-poppins">
           <div className="bg-white p-8 rounded-2xl w-[900px] flex flex-col items-center">
             <button
               className="text-dark-blue place-self-end "
@@ -574,9 +580,8 @@ const CustomerDetailPage = ({ isvisible, onClose, customer }) => {
                 <button
                   type="submit"
                   value="Submit"
-                  className={`bg-primary-blue py-3 px-4 rounded-lg text-white font-medium mr-3 ${
-                    isLoading === true ? "bg-gray-500/50" : ""
-                  }`}
+                  className={`bg-primary-blue py-3 px-4 rounded-lg text-white font-medium mr-3 ${isLoading === true ? "bg-gray-500/50" : ""
+                    }`}
                   disabled={isLoading}
                 >
                   Edit customer

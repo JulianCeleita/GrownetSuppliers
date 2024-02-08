@@ -375,7 +375,65 @@ const OrderDetailPage = () => {
               </div>
             ) : (
               orderId && (
-                <EditTable orderId={orderId} dateDelivery={selectedDate} />
+                <>
+                  <section className="fixed top-0 right-10 mt-8">
+                    <div className="flex gap-4">
+                      <div className="grid grid-cols-2 py-3 px-4 shadow-sm rounded-3xl shadow-slate-400 bg-white">
+                        <div className="flex flex-col col-span-1 pr-2 items-center justify-center">
+                          <h1 className="text-xl font-bold text-primary-blue">
+                            Status
+                          </h1>
+                          <h2 className="text-sm text-black px-1 font-semibold">
+                            Loading
+                          </h2>
+                        </div>
+                        {/* TODO AGREGAR EN ESTE DIV EL PORCENTAJE DE LOADING PARA RUTA SELECCIONADA */}
+                        <div className="flex col-span-1 items-center justify-center">
+                          <div className="flex items-center justify-center bg-primary-blue rounded-full w-16 h-16">
+                            <img
+                              src="/loadingBlanco.png"
+                              alt=""
+                              className="w-10 h-7"
+                            />
+                          </div>
+                        </div>
+                        {/* <CircleProgressBar percentage={48} /> */}
+                      </div>
+                      <div className="grid grid-cols-2 gap-3 px-3 py-3 items-center justify-center shadow-sm rounded-3xl bg-white shadow-slate-400">
+                        <div>
+                          <h1 className="flex text-lg font-semibold items-center justify-center text-black">
+                            Net Invoice
+                          </h1>
+                          <div className="flex justify-center text-center">
+                            <div className="flex items-center">
+                              <h2 className="text-2xl font-bold text-primary-blue">
+                                £8,000
+                              </h2>
+                            </div>
+                          </div>
+                        </div>
+                        <div className="border-l border-gray-400">
+                          <h2 className="flex text-xl font-semibold items-center justify-center text-black">
+                            Profit
+                          </h2>
+                          <div className="flex justify-center text-center">
+                            <div className="grid grid-cols-1 text-center">
+                              <div>
+                                <p className="text-2xl font-bold text-primary-blue">
+                                  97.2%
+                                </p>
+                              </div>
+                              <h2 className="flex items-center justify-center text-green-500 rounded-full text-sm bg-light-green text-dark-green">
+                                £1,476
+                              </h2>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </section>
+                  <EditTable orderId={orderId} dateDelivery={selectedDate} />
+                </>
               )
             )}
           </div>
