@@ -16,6 +16,20 @@ const formatDate = (dateString) => {
   const formattedDate = format(new Date(dateString), "yyyy-MM-dd");
   return formattedDate;
 };
+export const customStyles = {
+  placeholder: (provided) => ({
+    ...provided,
+    color: "dark-blue",
+  }),
+  control: (base) => ({
+    ...base,
+    border: 0,
+    boxShadow: "none",
+    "&:hover": {
+      border: 0,
+    },
+  }),
+};
 // TODO: revisar por qué se dañó la filtración por fechas y calendario
 const OrderView = () => {
   const router = useRouter();
@@ -242,11 +256,16 @@ const OrderView = () => {
               placeholderText="Select a date"
             />
           )}
-          <Select
-            options={options}
-            onChange={handleRouteSelection}
-            placeholder="Select route"
-          />
+          <div className=" px-3 py-[0.3em] rounded-md border border-gray-300">
+            <Select
+              options={options}
+              onChange={handleRouteSelection}
+              placeholder="Select route"
+              placeholderText
+              styles={customStyles}
+              className="text-dark-blue"
+            />
+          </div>
           <button
             className="flex bg-primary-blue text-white py-3 px-4 rounded-full font-medium transition-all cursor-pointer hover:bg-dark-blue hover:scale-110"
             onClick={() => printOrders()}
@@ -275,7 +294,7 @@ const OrderView = () => {
               </div>
             </div>
 
-{/* TODO AGREGAR EN ESTE DIV EL PORCENTAJE DE LOADING PARA RUTA SELECCIONADA */}
+            {/* TODO AGREGAR EN ESTE DIV EL PORCENTAJE DE LOADING PARA RUTA SELECCIONADA */}
             <div className="flex col-span-1 items-center justify-center">
               <div className="flex items-center justify-center bg-primary-blue rounded-full w-16 h-16">
                 <img
