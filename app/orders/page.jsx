@@ -13,6 +13,7 @@ import useTokenStore from "../store/useTokenStore";
 import useUserStore from "../store/useUserStore";
 import { CircleProgressBar } from "../components/CircleProgressBar";
 import useWorkDateStore from "../store/useWorkDateStore";
+import usePercentageStore from "../store/usePercentageStore";
 
 const formatDate = (dateString) => {
   const formattedDate = format(new Date(dateString), "yyyy-MM-dd");
@@ -37,6 +38,7 @@ const OrderView = () => {
   const router = useRouter();
   const { token } = useTokenStore();
   const { workDate, setFetchWorkDate } = useWorkDateStore()
+  const { routePercentages, setRoutePercentages, setFetchRoutePercentages } = usePercentageStore()
   const [searchTerm, setSearchTerm] = useState("");
   const [isLoading, setIsLoading] = useState(true);
   const [orders, setOrders] = useState([]);
@@ -50,6 +52,7 @@ const OrderView = () => {
   const [selectedOrders, setSelectedOrders] = useState({});
   const [selectedRoute, setSelectedRoute] = useState("");
   const [filterType, setFilterType] = useState("range");
+  const [showPercentage, setShowPercentage] = useState(null);
 
   const formatDateToShow = (dateString) => {
     if (!dateString) return "Loading...";
@@ -81,8 +84,19 @@ const OrderView = () => {
   }, [user, token, showDatePicker]);
 
   useEffect(() => {
-    setFetchWorkDate(token, user.id_supplier)
-  }, [user])
+    setFetchWorkDate(token, user.id_supplier);
+  }, [user]);
+
+  useEffect(() => {
+    if (routePercentages) {
+      const result = routePercentages.find(item => item.nameRoute === selectedRoute);
+      if (result) {
+        setShowPercentage(result.percentage_loading > 0 ? result.percentage_loading : result.percentage_packing);
+      } else {
+        setShowPercentage(null);
+      }
+    }
+  }, [routePercentages]);
 
 
   const subtractDays = (date, days) => {
@@ -168,13 +182,21 @@ const OrderView = () => {
   const uniqueRoutesArray = [
     ...new Set(sortedOrders.map((order) => order.route)),
   ];
+
   const options = [
     { value: "", label: "All routes" },
     ...uniqueRoutesArray.map((route) => ({ value: route, label: route })),
   ];
 
-  const handleRouteSelection = (option) => {
+  const getPercentages = async (value) => {
+    if (value !== "" || value !== null || value !== undefined) {
+      await setFetchRoutePercentages(token, workDate)
+    }
+  }
+
+  const handleRouteSelection = async (option) => {
     setSelectedRoute(option.value);
+    await getPercentages(option.value)
   };
 
   const filteredOrders = selectedRoute
@@ -307,22 +329,26 @@ const OrderView = () => {
                       Orders
                     </h2>
                     <h2 className="flex items-center text-green-500 text-center px-2 rounded-full text-sm bg-light-green text-dark-green">
-                      06/02/24
+                      {formatDateToShow(workDate)}
                     </h2>
                   </div>
                 </div>
               </div>
               {/* TODO AGREGAR EN ESTE DIV EL PORCENTAJE DE LOADING PARA RUTA SELECCIONADA */}
               <div className="flex col-span-1 items-center justify-center">
-                <div className="flex items-center justify-center bg-primary-blue rounded-full w-16 h-16">
-                  <img
-                    src="./loadingBlanco.png"
-                    alt="Percent"
-                    className="w-10 h-7"
-                  />
-                </div>
+                {showPercentage === null ? (
+                  <div className="flex items-center justify-center bg-primary-blue rounded-full w-16 h-16">
+                    <img
+                      src="./loadingBlanco.png"
+                      alt="Percent"
+                      className="w-10 h-7"
+                    />
+                  </div>
+                ) : (
+                  <CircleProgressBar percentage={showPercentage} />
+                )}
+
               </div>
-              {/* <CircleProgressBar percentage={48} /> */}
             </div>
             <div className="grid grid-cols-2 gap-3 px-3 py-3 items-center justify-center shadow-sm rounded-3xl bg-white shadow-slate-400">
               <div>
