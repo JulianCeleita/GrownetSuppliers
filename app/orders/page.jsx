@@ -1,19 +1,16 @@
 "use client";
+import { PlusCircleIcon, PrinterIcon } from "@heroicons/react/24/outline";
 import { format } from "date-fns";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+import { fetchOrders, fetchOrdersSupplier } from "../api/ordersRequest";
 import Layout from "../layoutS";
 import useTokenStore from "../store/useTokenStore";
 import useUserStore from "../store/useUserStore";
-import DatePicker from "react-datepicker";
-import "react-datepicker/dist/react-datepicker.css";
-import {
-  countOrdersForDate,
-  fetchOrders,
-  fetchOrdersSupplier,
-} from "../api/ordersRequest";
-import { PlusCircleIcon } from "@heroicons/react/24/outline";
+import Select from "react-select";
 
 const formatDate = (dateString) => {
   const formattedDate = format(new Date(dateString), "yyyy-MM-dd");
@@ -34,8 +31,8 @@ const OrderView = () => {
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
   const [selectedOrders, setSelectedOrders] = useState({});
-
-  const [filterType, setFilterType] = useState('range');
+  const [selectedRoute, setSelectedRoute] = useState("");
+  const [filterType, setFilterType] = useState("range");
 
   useEffect(() => {
     if (user && user.rol_name === "AdminGrownet") {
@@ -80,7 +77,7 @@ const OrderView = () => {
       const startFormatted = subtractDays(start, 1);
       startFormatted.setHours(0, 0, 0, 0);
       const end = new Date(endDate);
-      const endFormatted = subtractDays(end, 1)
+      const endFormatted = subtractDays(end, 1);
       endFormatted.setHours(23, 59, 59, 999);
       return deliveryDate >= startFormatted && deliveryDate <= endFormatted;
     }
@@ -103,12 +100,12 @@ const OrderView = () => {
     router.push(`/order/${order.reference}`, undefined, {
       shallow: true,
     });
-  }
+  };
 
   const handleOrderSelect = (order, checked) => {
-    setSelectedOrders(prevState => ({
+    setSelectedOrders((prevState) => ({
       ...prevState,
-      [order.reference]: checked
+      [order.reference]: checked,
     }));
   };
 
@@ -125,13 +122,9 @@ const OrderView = () => {
       .filter(([reference, checked]) => checked)
       .map(([reference]) => reference);
 
-    console.log('ordersToPrint', ordersToPrint);
+    console.log("ordersToPrint", ordersToPrint);
     //TODO: implementar lógica para imprimir las ordenes seleccionadas
-  }
-
-  const totalOrders = orders.length;
-
-  const filteredOrders = orders.filter((order) => filterOrdersByDate(order));
+  };
 
   const sortedOrders = orders
     .filter((order) => filterOrdersByDate(order))
@@ -141,18 +134,35 @@ const OrderView = () => {
       return dateA - dateB;
     });
 
+  const uniqueRoutesArray = [
+    ...new Set(sortedOrders.map((order) => order.route)),
+  ];
+  const options = [
+    { value: "", label: "All routes" },
+    ...uniqueRoutesArray.map((route) => ({ value: route, label: route })),
+  ];
+
+  const handleRouteSelection = (option) => {
+    setSelectedRoute(option.value);
+  };
+  const filteredOrders = selectedRoute
+    ? sortedOrders.filter(
+        (order) => order.route.toLowerCase() === selectedRoute.toLowerCase()
+      )
+    : sortedOrders;
+
   const statusColorClass = (status) => {
     switch (status) {
-      case 'Delivered':
-        return 'bg-green';
-      case 'Dispute':
-        return 'bg-red-500';
-      case 'Generated':
-        return 'bg-orange-500';
-      case 'Preparing':
-        return 'bg-orange-500';
+      case "Delivered":
+        return "bg-green";
+      case "Dispute":
+        return "bg-red-500";
+      case "Generated":
+        return "bg-orange-500";
+      case "Preparing":
+        return "bg-orange-500";
       default:
-        return 'bg-gray-500';
+        return "bg-gray-500";
     }
   };
 
@@ -160,7 +170,9 @@ const OrderView = () => {
     <Layout>
       <div className="-mt-24">
         <div className="flex gap-6 p-8">
-          <h1 className="text-2xl text-light-green font-semibold mt-1 ml-24">Orders <span className="text-white">list</span></h1>
+          <h1 className="text-2xl text-light-green font-semibold mt-1 ml-24">
+            Orders <span className="text-white">list</span>
+          </h1>
           <Link
             className="flex bg-green py-3 px-4 rounded-full text-white font-medium transition-all hover:bg-dark-blue hover:scale-110 "
             href="/orders/create-order"
@@ -177,7 +189,7 @@ const OrderView = () => {
             <option value="range">Filter by range</option>
             <option value="date">Filter per date</option>
           </select>
-          {filterType === 'range' && (
+          {filterType === "range" && (
             <>
               <DatePicker
                 selected={startDate}
@@ -217,33 +229,92 @@ const OrderView = () => {
             </>
           )}
 
-          {filterType === 'date' && (
+          {filterType === "date" && (
             <DatePicker
               selected={selectedDate}
               onChange={(date) => {
                 setSelectedDate(date);
                 setStartDate(date);
                 setEndDate(date);
-                setDateFilter("range")
+                setDateFilter("range");
               }}
               className="form-input px-4 py-3 rounded-md border border-gray-300"
               placeholderText="Select a date"
             />
           )}
+          <Select
+            options={options}
+            onChange={handleRouteSelection}
+            placeholder="Select route"
+          />
           <button
-            className="text-white bg-primary-blue border-b-2 border-stone-100 cursor-pointer rounded-xl px-5"
+            className="flex bg-primary-blue text-white py-3 px-4 rounded-full font-medium transition-all cursor-pointer hover:bg-dark-blue hover:scale-110"
             onClick={() => printOrders()}
           >
-            Print
+            <PrinterIcon className="h-6 w-6" />
           </button>
+        </div>
+        <div className="flex mb-10 gap-2">
+          <div className="grid grid-cols-3 px-1 py-3 shadow-sm rounded-3xl shadow-slate-400">
+            <div className="col-span-2">
+              <h1 className="flex text-xl font-bold items-center justify-center text-black">
+                Today
+              </h1>
+              <div className="grid grid-cols-2 pl-2 justify-center text-center">
+                <div className="flex items-center justify-end pr-1">
+                  <p className="text-5xl font-bold text-primary-blue">20</p>
+                </div>
+                <div className="grid grid-cols-1 text-left">
+                  <h2 className="text-sm text-black px-1 font-semibold">
+                    Orders
+                  </h2>
+                  <h2 className="flex items-center text-green-500 text-center px-2 rounded-full text-sm bg-light-green text-dark-green">
+                    06/02/24
+                  </h2>
+                </div>
+              </div>
+            </div>
+
+{/* TODO AGREGAR EN ESTE DIV EL PORCENTAJE DE LOADING PARA RUTA SELECCIONADA */}
+            <div className="flex col-span-1 items-center justify-center">
+              <div className="flex items-center justify-center bg-primary-blue rounded-full w-16 h-16">
+                <img
+                  src="./loadingBlanco.png"
+                  alt="Percent"
+                  className="w-10 h-7"
+                />
+              </div>
+            </div>
+          </div>
+          <div className="grid grid-cols-2 gap-3 px-3 py-3 items-center justify-center shadow-sm rounded-3xl shadow-slate-400">
+            <div>
+              <h1 className="flex text-xl font-bold items-center justify-center text-black">
+                Total net
+              </h1>
+              <div className="flex justify-center text-center">
+                <div className="flex items-center">
+                  <p className="text-4xl font-bold text-primary-blue">£1,000</p>
+                </div>
+              </div>
+            </div>
+            <div className="border-l border-gray-400">
+              <h1 className="flex text-xl font-bold items-center justify-center text-black">
+                Profit
+              </h1>
+              <div className="flex justify-center text-center">
+                <div>
+                  <p className="text-4xl font-bold text-primary-blue">18%</p>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
         <div className="flex items-center justify-center mb-20">
           <table className="w-[90%] bg-white rounded-2xl text-center border-b-0">
             <thead className="sticky top-0 bg-white rounded-tl-lg">
               <tr className="border-2 border-stone-100 border-b-0 text-dark-blue rounded-t-3xl">
                 <th className="py-4 flex items-center justify-center">
-                  Select all
-                  <label className="inline-flex items-center ml-3">
+                  <label className="inline-flex items-center">
                     <input
                       type="checkbox"
                       className="form-checkbox h-5 w-5 text-blue-500"
@@ -254,15 +325,15 @@ const OrderView = () => {
                 <th className="py-4"># Invoice</th>
                 <th className="py-4">Customer</th>
                 <th className="py-4">Amount</th>
-                <th className="py-4">Profit</th>
+                <th className="py-4">Profit %</th>
                 <th className="py-4">Route</th>
                 <th className="py-4">Responsable</th>
                 <th className="py-4">Delivery date</th>
-                <th className="py-4">Order status</th>
+                <th className="py-4">Status</th>
               </tr>
             </thead>
             <tbody>
-              {sortedOrders.map((order, index) => (
+              {filteredOrders.map((order, index) => (
                 <tr
                   key={index}
                   className="text-dark-blue border-2 border-stone-100 border-t-0"
@@ -273,25 +344,30 @@ const OrderView = () => {
                         type="checkbox"
                         className="form-checkbox h-5 w-5 text-blue-500"
                         checked={!!selectedOrders[order.reference]}
-                        onChange={(e) => handleOrderSelect(order, e.target.checked)}
+                        onChange={(e) =>
+                          handleOrderSelect(order, e.target.checked)
+                        }
                       />
                     </label>
                   </td>
+                  <td className="py-4">#5</td>
                   <td
                     className="py-4 cursor-pointer hover:bg-primary-blue hover:text-white"
                     onClick={(e) => goToOrder(e, order)}
                   >
                     {order.accountName}
                   </td>
-                  <td className="py-4">#5</td>
                   <td className="py-4">Amount</td>
                   <td className="py-4">10%</td>
-                  <td className="py-4">R1</td>
+                  <td className="py-4">{order.route}</td>
                   <td className="py-4">Santiago Arango</td>
                   <td className="py-4">{order.date_delivery}</td>
                   <td className="py-4 flex gap-2 justify-center">
-                    <div className={`inline-block mt-1 rounded-full text-white ${statusColorClass(order.name_status)} w-3 h-3 flex items-center justify-center`}>
-                    </div>
+                    <div
+                      className={`inline-block mt-1 rounded-full text-white ${statusColorClass(
+                        order.name_status
+                      )} w-3 h-3 flex items-center justify-center`}
+                    ></div>
                     {order.name_status}
                   </td>
                 </tr>
@@ -305,7 +381,7 @@ const OrderView = () => {
           </div>
         )}
       </div>
-    </Layout >
+    </Layout>
   );
 };
 export default OrderView;
