@@ -103,10 +103,12 @@ export default function Table() {
   const [DescriptionData, setDescriptionData] = useState(null);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [showErrorOrderModal, setShowErrorOrderModal] = useState(false);
+  const [orderError, setOrderError] = useState("");
   const [specialRequirements, setSpecialRequirements] = useState("");
   const [mouseCoords, setMouseCoords] = useState({ x: 0, y: 0 });
   const { user, setUser } = useUserStore();
   const [isReadOnly, setIsReadOnly] = useState(true);
+  const [confirmCreateOrder, setConfirmCreateOrder] = useState(false);
 
   const columns = [
     "Code",
@@ -436,6 +438,14 @@ export default function Table() {
 
   const createOrder = async () => {
     try {
+      if (!customers) {
+        setShowErrorOrderModal(true);
+        setOrderError(
+          "Please select the customer you want to create the order for."
+        );
+        setConfirmCreateOrder(false);
+        return;
+      }
       const filteredProducts = rows
         .filter((row) => parseFloat(row.quantity) > 0)
         .map((row) => {
@@ -450,10 +460,16 @@ export default function Table() {
           };
         });
 
+      if (!filteredProducts || filteredProducts.length === 0) {
+        setShowErrorOrderModal(true);
+        setOrderError("Please choose a product for your order.");
+        setConfirmCreateOrder(false);
+        return;
+      }
       const jsonOrderData = {
-        accountNumber_customers: customers?.accountNumber,
-        address_delivery: customers?.address,
-        date_delivery: customers?.orderDate,
+        accountNumber_customers: customers[0]?.accountNumber,
+        address_delivery: customers[0]?.address,
+        date_delivery: customers.orderDate,
         id_suppliers: user?.id_supplier,
         net: parseFloat(totalNetSum),
         observation: specialRequirements,
@@ -461,13 +477,16 @@ export default function Table() {
         total_tax: parseFloat(totalTaxSum),
         products: filteredProducts,
       };
+
+      console.log("jsonOrderData", jsonOrderData);
       const response = await axios.post(createStorageOrder, jsonOrderData, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
-
+      console.log("response", response);
       setShowConfirmModal(true);
+      setConfirmCreateOrder(false);
       setRows(Array.from({ length: 5 }, () => ({ ...initialRowsState })));
       setSpecialRequirements("");
       setProducts([]);
@@ -737,19 +756,37 @@ export default function Table() {
           placeholder="Write your comments here"
         />
         <button
-          onClick={createOrder}
+          onClick={() => setConfirmCreateOrder(true)}
           className="bg-primary-blue py-2 px-4 rounded-lg text-white font-medium mr-2 w-[15%]"
         >
           Send order
         </button>
       </div>
+
       <ModalSuccessfull
         isvisible={showConfirmModal}
         onClose={() => setShowConfirmModal(false)}
+        title="Congratulations"
+        text="Your order has been shipped, thank you for using"
+        textGrownet="Grownet"
+        button=" Close"
       />
+      {confirmCreateOrder && (
+        <ModalSuccessfull
+          isvisible={confirmCreateOrder}
+          onClose={() => setConfirmCreateOrder(false)}
+          title="Confirmation!"
+          text="Are you sure about creating this order?"
+          textGrownet=""
+          button="Confirm"
+          sendOrder={createOrder}
+        />
+      )}
+
       <ModalOrderError
         isvisible={showErrorOrderModal}
         onClose={() => setShowErrorOrderModal(false)}
+        error={orderError}
       />
     </div>
   );
