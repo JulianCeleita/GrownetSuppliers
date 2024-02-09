@@ -307,7 +307,9 @@ const OrderView = () => {
                 setSelectedDate(date);
                 setStartDate(date);
                 setEndDate(date);
-                setWorkDate(formatDateToTransform(date));
+                setWorkDate(
+                  formatDateToTransform(date.toLocaleDateString("en-CA"))
+                );
                 setDateFilter("range");
                 console.log("Selected Date: ", date);
               }}
