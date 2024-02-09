@@ -308,6 +308,7 @@ const OrderView = () => {
                 setEndDate(date);
                 setWorkDate(formatDateToTransform(date));
                 setDateFilter("range");
+                console.log("Selected Date: ", date);
               }}
               className="form-input px-4 py-3 rounded-md border border-gray-300"
               placeholderText="Select a date"
