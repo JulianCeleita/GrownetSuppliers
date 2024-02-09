@@ -12,7 +12,11 @@ import { useEffect, useState } from "react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import Select from "react-select";
-import { fetchOrders, fetchOrdersSupplier } from "../api/ordersRequest";
+import {
+  fetchOrders,
+  fetchOrdersDate,
+  fetchOrdersSupplier,
+} from "../api/ordersRequest";
 import { CircleProgressBar } from "../components/CircleProgressBar";
 import Layout from "../layoutS";
 import usePercentageStore from "../store/usePercentageStore";
@@ -77,6 +81,10 @@ const OrderView = () => {
     const year = date.getFullYear();
     return `${year}-${month}-${day}`;
   };
+
+  useEffect(() => {
+    fetchOrdersDate(token, startDate, endDate);
+  }, []);
 
   useEffect(() => {
     if (user && user.rol_name === "AdminGrownet") {
@@ -235,8 +243,15 @@ const OrderView = () => {
         return "bg-gray-500";
     }
   };
-  console.log("selectedDate", selectedDate);
-  console.log("workDate", workDate);
+
+  const handleChangeDate = (date) => {
+    setSelectedDate(date);
+    setStartDate(date);
+    setEndDate(date);
+    setWorkDate(formatDateToTransform(date));
+    setDateFilter("range");
+  };
+
   return (
     <Layout>
       <div className="-mt-24">
@@ -304,12 +319,7 @@ const OrderView = () => {
             <DatePicker
               selected={selectedDate}
               onChange={(date) => {
-                setSelectedDate(date);
-                setStartDate(date);
-                setEndDate(date);
-                setWorkDate(formatDateToTransform(date));
-                setDateFilter("range");
-                console.log("Selected Date: ", date);
+                handleChangeDate(date);
               }}
               className="form-input px-4 py-3 rounded-md border border-gray-300"
               placeholderText="Select a date"
