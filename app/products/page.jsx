@@ -180,7 +180,7 @@ function Products() {
         />
         {isLoading && (
           <div className="flex justify-center items-center mb-20">
-            <div class="loader"></div>
+            <div className="loader"></div>
           </div>
         )}
       </div>
