@@ -297,7 +297,7 @@ const SideBar = () => {
                             }
                             onClick={() => setActiveLink("catalogs")}
                           >
-                            Catalogs
+                            Catalogue
                           </h3>
 
                           {activeLink === "catalogs" && (
