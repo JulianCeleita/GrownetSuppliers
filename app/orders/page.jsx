@@ -217,8 +217,8 @@ const OrderView = () => {
 
   const filteredOrders = selectedRoute
     ? sortedOrders.filter(
-      (order) => order.route.toLowerCase() === selectedRoute.toLowerCase()
-    )
+        (order) => order.route.toLowerCase() === selectedRoute.toLowerCase()
+      )
     : sortedOrders;
 
   const statusColorClass = (status) => {
@@ -235,7 +235,8 @@ const OrderView = () => {
         return "bg-gray-500";
     }
   };
-
+  console.log("selectedDate", selectedDate);
+  console.log("workDate", workDate);
   return (
     <Layout>
       <div className="-mt-24">
@@ -427,10 +428,10 @@ const OrderView = () => {
             </thead>
 
             <tbody>
-              {!isLoading && (
-                filteredOrders.length > 0 ? (
+              {!isLoading &&
+                (filteredOrders.length > 0 ? (
                   filteredOrders.map((order, index) => (
-                    < tr key={index} className="text-dark-blue border-b-[1.5px]" >
+                    <tr key={index} className="text-dark-blue border-b-[1.5px]">
                       <td className="py-4">
                         <label className="inline-flex items-center">
                           <input
@@ -474,8 +475,7 @@ const OrderView = () => {
                       </p>
                     </td>
                   </tr>
-                )
-              )}
+                ))}
             </tbody>
           </table>
         </div>
@@ -485,7 +485,7 @@ const OrderView = () => {
           </div>
         )}
       </div>
-    </Layout >
+    </Layout>
   );
 };
 export default OrderView;

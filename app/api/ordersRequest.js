@@ -18,7 +18,6 @@ export const fetchOrders = async (token, setOrders, setIsLoading) => {
       : [];
     setOrders(newOrder);
     setIsLoading(false);
-    console.log("Estas son las ordenes", newOrder);
   } catch (error) {
     console.error("Error al obtener las ordenes:", error);
   }
@@ -45,7 +44,6 @@ export const fetchOrdersSupplier = async (
       : [];
     setOrders(newOrder);
     setIsLoading(false);
-    console.log("Estas son las ordenes por supplier", newOrder)
   } catch (error) {
     console.error("Error al obtener las ordenes por supplier:", error);
   }
@@ -98,7 +96,6 @@ export const fetchOrderDetail = async (
     ) {
       setOrderDetail(response.data.order);
       setIsLoading(false);
-      console.log("Estos son los detalles de la orden", response.data.order);
     } else {
       router?.push("/");
     }
