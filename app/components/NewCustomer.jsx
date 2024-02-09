@@ -236,7 +236,7 @@ function NewCustomer({ isvisible, onClose, setUpdateCustomers }) {
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-25 backdrop-blur-sm flex flex-col justify-center items-center">
-      <div className="bg-white p-8 rounded-2xl  2xl:w-[900px] flex flex-col items-center  max-h-screen h-[95%] 2xl:h-hidden">
+      <div className="bg-white p-8 rounded-2xl w-[950px]  2xl:w-[900px] flex flex-col items-center  max-h-screen h-[95%] 2xl:h-hidden">
         <div className="overflow-y-auto ">
           <div className=" flex justify-end">
             <button

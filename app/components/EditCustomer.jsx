@@ -338,21 +338,24 @@ const CustomerDetailPage = ({
     <>
       {token ? (
         <div className="fixed z-50 inset-0 bg-black bg-opacity-25 backdrop-blur-sm flex flex-col justify-center items-center font-poppins">
-          <div className="bg-white p-8 rounded-2xl 2xl:w-[900px] flex flex-col items-center  h-[95%] 2xl:h-hidden max-h-screen">
+          <div className="bg-white p-8 rounded-2xl w-[950px] 2xl:w-[900px] flex flex-col items-center  h-[95%] 2xl:h-hidden max-h-screen">
             <div className="overflow-y-auto">
-              <div className="flex justify-end">
-                <button
-                  className="text-dark-blue place-self-end  flex justify-end"
-                  onClick={() => {
-                    setAccountName("");
-                    setEmailCustomer("");
-                    clearStates();
-                    onClose();
-                  }}
-                >
-                  <XMarkIcon className="h-6 w-6 text-gray-500" />
-                </button>
-              </div>
+              {!isLoading && (
+                <div className="flex justify-end">
+                  <button
+                    className="text-dark-blue place-self-end  flex justify-end"
+                    onClick={() => {
+                      setAccountName("");
+                      setEmailCustomer("");
+                      clearStates();
+                      onClose();
+                    }}
+                  >
+                    <XMarkIcon className="h-6 w-6 text-gray-500" />
+                  </button>
+                </div>
+              )}
+
               <h1 className="text-2xl font-bold text-dark-blue mb-2 flex justify-center">
                 Edit <span className="text-primary-blue">&nbsp;customer</span>
               </h1>
@@ -361,7 +364,7 @@ const CustomerDetailPage = ({
                   <div class="loader"></div>
                 </div>
               ) : (
-                <form className="text-left " onSubmit={enviarData}>
+                <form className="text-left mt-8" onSubmit={enviarData}>
                   <div className="flex">
                     <div className="flex flex-col  w-[50%]">
                       <div className="flex items-center">
