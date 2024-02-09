@@ -346,9 +346,7 @@ function NewCustomer({ isvisible, onClose, setUpdateCustomers }) {
                       No
                     </option>
                   </select>
-                </div>
-                <div className="flex mt-3 items-center">
-                  <label className="mr-2">Group:</label>
+                  <label className="mx-2">Group:</label>
                   <select
                     value={selectedGroup}
                     onChange={(e) => setSelectedGroup(e.target.value)}
@@ -365,9 +363,21 @@ function NewCustomer({ isvisible, onClose, setUpdateCustomers }) {
                       ))}
                   </select>
                 </div>
+
+                <div className="flex items-center mt-3">
+                  <label className="mr-2">Special Instructions:</label>
+                  <textarea
+                    className="border p-3 rounded-md w-full"
+                    placeholder="Special instructions"
+                    type="text"
+                    value={specialInstructions}
+                    onChange={(e) => setSpecialInstructions(e.target.value)}
+                    required
+                  />
+                </div>
               </div>
               <div className="ml-5 flex flex-col w-[50%] ">
-                <div className="flex items-center mb-4">
+                <div className="flex items-center mb-3">
                   <label className="mr-2">Account number:</label>
                   <input
                     className="border p-3 rounded-md w-full"
@@ -378,7 +388,7 @@ function NewCustomer({ isvisible, onClose, setUpdateCustomers }) {
                     required
                   />
                 </div>
-                <div className="flex items-center mb-4">
+                <div className="flex items-center mb-3">
                   <label className="mr-2">Marketing Email:</label>
                   <input
                     className="border p-3 rounded-md w-full"
@@ -389,7 +399,7 @@ function NewCustomer({ isvisible, onClose, setUpdateCustomers }) {
                     required
                   />
                 </div>
-                <div className="flex items-center mb-4">
+                <div className="flex items-center mb-3">
                   <label className="mr-2">Telephone number:</label>
                   <input
                     className="border p-3 rounded-md w-full"
@@ -400,30 +410,18 @@ function NewCustomer({ isvisible, onClose, setUpdateCustomers }) {
                     required
                   />
                 </div>
-                <div className="flex items-center mb-4">
-                  <label className="mr-2">Special Instructions:</label>
+                <div className="flex items-center mb-3">
+                  <label className="mr-2">Drop:</label>
                   <input
                     className="border p-3 rounded-md w-full"
-                    placeholder="Special instructions"
-                    type="text"
-                    value={specialInstructions}
-                    onChange={(e) => setSpecialInstructions(e.target.value)}
+                    placeholder="557"
+                    type="number"
+                    maxLength={3}
+                    value={drop}
+                    onChange={handleDropChange}
                     required
                   />
-                </div>
-                <div className="flex items-center mb-4">
-                  <label className="mr-2">Account email:</label>
-                  <input
-                    className="border p-3 rounded-md w-full"
-                    placeholder="suppliers@grownet.com"
-                    type="email"
-                    value={accountEmail}
-                    onChange={(e) => setAccountEmail(e.target.value)}
-                    required
-                  />
-                </div>
-                <div className="flex items-center mb-4">
-                  <label className="mr-2">Crates:</label>
+                  <label className="mx-2">Crates:</label>
                   <select
                     value={crates}
                     onChange={handleCratesChange}
@@ -438,7 +436,18 @@ function NewCustomer({ isvisible, onClose, setUpdateCustomers }) {
                     </option>
                   </select>
                 </div>
-                <div className="flex items-center mb-4">
+                <div className="flex items-center mb-3">
+                  <label className="mr-2">Account email:</label>
+                  <input
+                    className="border p-3 rounded-md w-full"
+                    placeholder="suppliers@grownet.com"
+                    type="email"
+                    value={accountEmail}
+                    onChange={(e) => setAccountEmail(e.target.value)}
+                    required
+                  />
+                </div>
+                <div className="flex items-center mb-3">
                   <label className="mr-2">Delivery Window:</label>
                   <div className="flex items-center">
                     <input
@@ -464,8 +473,8 @@ function NewCustomer({ isvisible, onClose, setUpdateCustomers }) {
                     />
                   </div>
                 </div>
-                <div className="flex items-center mb-4">
-                  <label className="mr-2">Routes:</label>
+                <div className="flex items-center mb-3">
+                  <label className="mr-2">Route:</label>
                   <div className="flex flex-wrap border p-2 w-full rounded-lg ">
                     {["Mon", "Tues", "Wed", "Thur", "Fri", "Sat"].map((day) => (
                       <div key={day} className="flex items-center my-1 w-[50%]">
@@ -479,7 +488,7 @@ function NewCustomer({ isvisible, onClose, setUpdateCustomers }) {
                               [day]: selectedRouteId,
                             }));
                           }}
-                          className="ml-2 border rounded-md bg-white bg-clip-padding bg-no-repeat w-full border-gray-200 p-1 leading-tight focus:outline-none text-gray-400 hover:border-gray-300 duration-150 ease-in-out"
+                          className="ml-2 border rounded-md bg-white bg-clip-padding bg-no-repeat w-full border-gray-200 p-1 leading-tight focus:outline-none text-dark-blue hover:border-gray-300 duration-150 ease-in-out"
                         >
                           <option value="">Select route</option>
                           {routes.map((route) => (
