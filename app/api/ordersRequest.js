@@ -38,6 +38,7 @@ export const fetchOrdersSupplier = async (
         },
       }
     );
+    console.log("🚀 ~ response:", response)
 
     const newOrder = Array.isArray(response.data.orders)
       ? response.data.orders
