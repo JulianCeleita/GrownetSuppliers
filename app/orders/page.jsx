@@ -1,6 +1,6 @@
 "use client";
 import { PlusCircleIcon, PrinterIcon } from "@heroicons/react/24/outline";
-import { format, set } from "date-fns";
+import { format } from "date-fns";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -8,12 +8,12 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import Select from "react-select";
 import { fetchOrders, fetchOrdersSupplier } from "../api/ordersRequest";
+import { CircleProgressBar } from "../components/CircleProgressBar";
 import Layout from "../layoutS";
+import usePercentageStore from "../store/usePercentageStore";
 import useTokenStore from "../store/useTokenStore";
 import useUserStore from "../store/useUserStore";
-import { CircleProgressBar } from "../components/CircleProgressBar";
 import useWorkDateStore from "../store/useWorkDateStore";
-import usePercentageStore from "../store/usePercentageStore";
 
 const formatDate = (dateString) => {
   const formattedDate = format(new Date(dateString), "yyyy-MM-dd");
@@ -101,6 +101,7 @@ const OrderView = () => {
       const result = routePercentages.find(
         (item) => item.nameRoute === selectedRoute
       );
+
       if (result) {
         setShowPercentage(result.percentage_loading);
       } else {
