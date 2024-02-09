@@ -93,7 +93,6 @@ const PricesView = () => {
       const priceNameB = b.accountName || "";
       return priceNameA.localeCompare(priceNameB);
     });
-  console.log("sortedPrices", sortedPrices);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
 
   const handleDeletePrice = (price) => {
@@ -171,7 +170,6 @@ const PricesView = () => {
       presentations_id: price.presentations_id,
       products_id: price.products_id,
     };
-    // console.log("postData", postData);
     axios
       .post(`${priceUpdate}${price.price_id}`, postData, {
         headers: {
