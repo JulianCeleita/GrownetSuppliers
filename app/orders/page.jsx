@@ -3,6 +3,7 @@ import {
   PlusCircleIcon,
   PrinterIcon,
   CalendarIcon,
+  ExclamationCircleIcon,
 } from "@heroicons/react/24/outline";
 import { format, set } from "date-fns";
 import Link from "next/link";
@@ -12,12 +13,12 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import Select from "react-select";
 import { fetchOrders, fetchOrdersSupplier } from "../api/ordersRequest";
+import { CircleProgressBar } from "../components/CircleProgressBar";
 import Layout from "../layoutS";
+import usePercentageStore from "../store/usePercentageStore";
 import useTokenStore from "../store/useTokenStore";
 import useUserStore from "../store/useUserStore";
-import { CircleProgressBar } from "../components/CircleProgressBar";
 import useWorkDateStore from "../store/useWorkDateStore";
-import usePercentageStore from "../store/usePercentageStore";
 
 const formatDate = (dateString) => {
   const formattedDate = format(new Date(dateString), "yyyy-MM-dd");
@@ -37,7 +38,7 @@ export const customStyles = {
     },
   }),
 };
-// TODO: revisar por qué se dañó la filtración por fechas y calendario
+
 const OrderView = () => {
   const router = useRouter();
   const { token } = useTokenStore();
@@ -52,12 +53,12 @@ const OrderView = () => {
   const [dateFilter, setDateFilter] = useState("today");
   const [showAllOrders, setShowAllOrders] = useState(false);
   const [showDatePicker, setShowDatePicker] = useState(false);
-  const [selectedDate, setSelectedDate] = useState(new Date());
+  const [selectedDate, setSelectedDate] = useState();
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
   const [selectedOrders, setSelectedOrders] = useState({});
   const [selectedRoute, setSelectedRoute] = useState("");
-  const [filterType, setFilterType] = useState("range");
+  const [filterType, setFilterType] = useState("date");
   const [showPercentage, setShowPercentage] = useState(null);
 
   const formatDateToShow = (dateString) => {
@@ -106,6 +107,7 @@ const OrderView = () => {
       const result = routePercentages.find(
         (item) => item.nameRoute === selectedRoute
       );
+
       if (result) {
         setShowPercentage(result.percentage_loading);
       } else {
@@ -215,8 +217,8 @@ const OrderView = () => {
 
   const filteredOrders = selectedRoute
     ? sortedOrders.filter(
-        (order) => order.route.toLowerCase() === selectedRoute.toLowerCase()
-      )
+      (order) => order.route.toLowerCase() === selectedRoute.toLowerCase()
+    )
     : sortedOrders;
 
   const statusColorClass = (status) => {
@@ -424,52 +426,65 @@ const OrderView = () => {
             </thead>
 
             <tbody>
-              {filteredOrders.map((order, index) => (
-                <tr key={index} className="text-dark-blue border-b-[1.5px]">
-                  <td className="py-4">
-                    <label className="inline-flex items-center">
-                      <input
-                        type="checkbox"
-                        className="form-checkbox h-5 w-5 text-blue-500"
-                        checked={!!selectedOrders[order.reference]}
-                        onChange={(e) =>
-                          handleOrderSelect(order, e.target.checked)
-                        }
-                      />
-                    </label>
-                  </td>
-                  <td className="py-4">#5</td>
-                  <td
-                    className="py-4 cursor-pointer hover:bg-light-blue"
-                    onClick={(e) => goToOrder(e, order)}
-                  >
-                    {order.accountName}
-                  </td>
-                  <td className="py-4">Amount</td>
-                  <td className="py-4">10%</td>
-                  <td className="py-4">{order.route}</td>
-                  <td className="py-4">Santiago Arango</td>
-                  <td className="py-4">{order.date_delivery}</td>
-                  <td className="py-4 flex gap-2 justify-center">
-                    <div
-                      className={`inline-block mt-1 rounded-full text-white ${statusColorClass(
-                        order.name_status
-                      )} w-3 h-3 flex items-center justify-center`}
-                    ></div>
-                    {order.name_status}
-                  </td>
-                </tr>
-              ))}
+              {!isLoading && (
+                filteredOrders.length > 0 ? (
+                  filteredOrders.map((order, index) => (
+                    < tr key={index} className="text-dark-blue border-b-[1.5px]" >
+                      <td className="py-4">
+                        <label className="inline-flex items-center">
+                          <input
+                            type="checkbox"
+                            className="form-checkbox h-5 w-5 text-blue-500"
+                            checked={!!selectedOrders[order.reference]}
+                            onChange={(e) =>
+                              handleOrderSelect(order, e.target.checked)
+                            }
+                          />
+                        </label>
+                      </td>
+                      <td className="py-4">{order.reference}</td>
+                      <td
+                        className="py-4 cursor-pointer hover:bg-light-blue"
+                        onClick={(e) => goToOrder(e, order)}
+                      >
+                        {order.accountName}
+                      </td>
+                      <td className="py-4">{order.net}</td>
+                      <td className="py-4">10%</td>
+                      <td className="py-4">{order.route}</td>
+                      <td className="py-4">Santiago Arango</td>
+                      <td className="py-4">{order.date_delivery}</td>
+                      <td className="py-4 flex gap-2 justify-center">
+                        <div
+                          className={`inline-block mt-1 rounded-full text-white ${statusColorClass(
+                            order.name_status
+                          )} w-3 h-3 flex items-center justify-center`}
+                        ></div>
+                        {order.name_status}
+                      </td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td colSpan="9" className="py-4 text-center text-dark-blue">
+                      <p className="flex items-center justify-center text-gray my-10">
+                        <ExclamationCircleIcon class="h-12 w-12 mr-10 text-gray" />
+                        Results not found. Try a different search!
+                      </p>
+                    </td>
+                  </tr>
+                )
+              )}
             </tbody>
           </table>
         </div>
         {isLoading && (
-          <div className="flex justify-center items-center mb-20">
+          <div className="flex justify-center items-center mb-20 -mt-20">
             <div className="loader"></div>
           </div>
         )}
       </div>
-    </Layout>
+    </Layout >
   );
 };
 export default OrderView;
