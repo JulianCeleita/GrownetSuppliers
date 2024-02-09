@@ -1,5 +1,9 @@
 "use client";
-import { PlusCircleIcon, PrinterIcon } from "@heroicons/react/24/outline";
+import {
+  PlusCircleIcon,
+  PrinterIcon,
+  CalendarIcon,
+} from "@heroicons/react/24/outline";
 import { format } from "date-fns";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -320,21 +324,29 @@ const OrderView = () => {
         </div>
         <section className="fixed top-0 right-10 mt-8">
           <div className="flex gap-4">
-            <div className="grid grid-cols-3 px-1 py-3 shadow-sm rounded-3xl shadow-slate-400 bg-white">
-              <div className="col-span-2">
-                <h1 className="flex text-xl font-bold items-center justify-center text-black">
-                  Today
-                </h1>
-                <div className="grid grid-cols-2 pl-2 justify-center text-center">
-                  <div className="flex items-center justify-end pr-1">
+            <div className="px-4 py-4 rounded-3xl flex items-center justify-center bg-white shadow-[0_8px_30px_rgb(0,0,0,0.12)]">
+              <div>
+                <h1 className="text-xl font-bold text-dark-blue">Today</h1>
+                <div className="flex items-center justify-center text-center">
+                  <div className="pr-1">
                     <p className="text-5xl font-bold text-primary-blue">20</p>
                   </div>
                   <div className="grid grid-cols-1 text-left">
-                    <h2 className="text-sm text-black px-1 font-semibold">
+                    <h2 className="text-sm text-dark-blue px-1 font-medium ">
                       Orders
                     </h2>
-                    <h2 className="flex items-center text-green-500 text-center px-2 rounded-full text-sm bg-light-green text-dark-green">
-                      {formatDateToShow(workDate)}
+                    <div className="flex items-center  text-center justify-center py-1 px-2 w-[105px] rounded-lg  text-sm bg-background-green">
+                      <CalendarIcon className="h-4 w-4 text-green" />
+
+                      <h2 className="ml-1 text-green">
+                        {formatDateToShow(workDate)}
+                      </h2>
+                    </div>
+                    <h2 className="text-gray-grownet text-[12px]">
+                      Active routes today{" "}
+                      <span className="text-primary-blue font-semibold">
+                        15
+                      </span>
                     </h2>
                   </div>
                 </div>
@@ -356,7 +368,7 @@ const OrderView = () => {
             </div>
             <div className="grid grid-cols-2 gap-3 px-3 py-3 items-center justify-center shadow-sm rounded-3xl bg-white shadow-slate-400">
               <div>
-                <h1 className="flex text-xl font-bold items-center justify-center text-black">
+                <h1 className="flex text-xl font-bold items-center justify-center">
                   Total net
                 </h1>
                 <div className="flex justify-center text-center">
@@ -367,8 +379,8 @@ const OrderView = () => {
                   </div>
                 </div>
               </div>
-              <div className="border-l border-gray-400">
-                <h1 className="flex text-xl font-bold items-center justify-center text-black">
+              <div className="border-l border-green border-dashed">
+                <h1 className="flex text-xl font-bold items-center justify-center">
                   Profit
                 </h1>
                 <div className="flex justify-center text-center">
