@@ -232,6 +232,8 @@ function NewCustomer({ isvisible, onClose, setUpdateCustomers }) {
       .catch((error) => {
         console.error("Error al agregar el nuevo cliente: ", error);
       });
+
+    setUpdateCustomers(false);
   };
 
   return (
