@@ -290,7 +290,7 @@ const CustomerDetailPage = ({
             Swal.fire({
               position: "top-end",
               icon: "success",
-              title: "Client created successfully",
+              title: "Client edited successfully",
               showConfirmButton: false,
               timer: 1500,
             });
@@ -315,8 +315,8 @@ const CustomerDetailPage = ({
         },
       })
       .then((response) => {
-        setShowDeleteModal(false);
         setUpdateCustomers(true);
+        setShowDeleteModal(false);
         clearStates();
         onClose();
       })
