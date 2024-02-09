@@ -38,7 +38,6 @@ export const fetchRoutes = async (token, user, setRoutes, setIsLoading) => {
       ? response.data.routes
       : [];
     setRoutes(newRoute);
-    setIsLoading(false);
   } catch (error) {
     console.error("Error al obtener los routes:", error);
   }
