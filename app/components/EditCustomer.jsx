@@ -273,7 +273,9 @@ const CustomerDetailPage = ({
           })
           .then((assignResponse) => {
             Swal.fire({
-              position: "top-end",
+              customClass: {
+                container: "fixed inset-0 flex items-center justify-center",
+              },
               icon: "success",
               title: "Client created successfully",
               showConfirmButton: false,
