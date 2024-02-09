@@ -13,7 +13,6 @@ const usePercentageStore = create((set) => ({
                 },
             });
 
-            // console.log('response setFetchRoutePercentages: ', response.data.routes);
             set({ routePercentages: response.data.routes });
         } catch (error) {
             console.log('error setFetchWorkDate: ', error);

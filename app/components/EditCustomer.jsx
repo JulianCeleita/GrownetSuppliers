@@ -54,7 +54,6 @@ const CustomerDetailPage = ({
   const [error, setError] = useState("");
   const [selectedRoutes, setSelectedRoutes] = useState({});
 
-  // console.log(customer)
   const customerId = customer?.accountNumber;
 
   useEffect(() => {
@@ -255,12 +254,10 @@ const CustomerDetailPage = ({
       delivery_window: `${startHour} - ${endHour}`,
       group_id: selectedGroup,
     };
-    console.log("🚀 ~ enviarData ~ postData:", postData);
     const postDataAssign = {
       customer: customerId,
       ...prepareDataForBackend(),
     };
-    console.log("🚀 ~ enviarData ~ postDataAssign:", postDataAssign);
     axios
       .post(`${customerUpdate}${customerId}`, postData, {
         headers: {
@@ -268,7 +265,6 @@ const CustomerDetailPage = ({
         },
       })
       .then((response) => {
-        console.log("🚀 ~ .then ~ response:", response);
         axios
           .post(assignCustomer, postDataAssign, {
             headers: {
@@ -276,7 +272,6 @@ const CustomerDetailPage = ({
             },
           })
           .then((assignResponse) => {
-            console.log("🚀 ~ .then ~ assignResponse:", assignResponse);
             Swal.fire({
               position: "top-end",
               icon: "success",
