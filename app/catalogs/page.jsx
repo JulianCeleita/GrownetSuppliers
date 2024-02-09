@@ -20,6 +20,7 @@ import Select from "react-select";
 import CreateProduct from "../components/CreateProduct";
 
 import ModalPrices from "../components/ModalPrices";
+import ModalEditProduct from "../components/ModalEditProduct";
 
 
 const PricesView = () => {
@@ -39,6 +40,9 @@ const PricesView = () => {
 
   const [showNewPresentations, setShowNewPresentations] = useState(false);
   const [products, setProducts] = useState([]);
+  const [selectedProduct, setSelectedProduct] = useState([]);
+
+  const [showEditPresentations, setShowEditPresentations] = useState(false);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedCatalog, setSelectedCatalog] = useState(null);
@@ -80,7 +84,7 @@ const PricesView = () => {
   }, [user, token]);
 
   const filteredPrices = prices.filter((price) => {
-    return price.customers_accountNumber.toLowerCase().includes(searchTerm);
+    return price.product?.toLowerCase().includes(searchTerm);
   });
   const sortedPrices = filteredPrices
     .filter(
@@ -198,10 +202,10 @@ const PricesView = () => {
   return (
     <Layout>
       <div>
-        <div className="flex justify-between p-8 bg-primary-blue">
-          <h1 className="text-2xl text-white font-semibold">Catalogue</h1>
+        <div className="flex gap-5 p-8 -mt-24 ml-20 ">
+          <h1 className="text-2xl text-white font-semibold mt-2">Catalogue</h1>
           <button
-            className="flex bg-green py-3 px-4 rounded-lg text-white font-medium hover:bg-dark-blue hover:scale-110 "
+            className="flex bg-green mt-1 py-2 px-4 rounded-full text-white font-medium transition-all hover:bg-dark-blue hover:scale-110"
             type="button"
             onClick={() => setShowNewPresentations(true)}
           >
@@ -213,7 +217,7 @@ const PricesView = () => {
         <div className="flex relative items-center justify-center ml-5 ">
           <input
             type="text"
-            placeholder="Search prices by customer number"
+            placeholder="Search product"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className="border p-2 rounded-xl w-[40%] pl-10 max-w-[72%]"
@@ -224,6 +228,12 @@ const PricesView = () => {
             placeholder="select a customer"
             className="text-black"
             classNamePrefix="select"
+            styles={{
+              menuList: (provided) => ({
+                ...provided,
+                overflowX: 'hidden',
+              }),
+            }}
           />
         </div>
 
@@ -254,7 +264,7 @@ const PricesView = () => {
                 {/* TODO: si se decide implementar la columna price descomentar este codigo */}
                 {/* <th className="py-4">Price</th> */}
                 {/* <th className="py-4">Status</th> */}
-                <th className="py-4">Delete</th>
+                {/* <th className="py-4">Delete</th> */}
               </tr>
             </thead>
             <tbody>
@@ -266,44 +276,36 @@ const PricesView = () => {
                   >
                     <td
                       className="py-4"
-                      onClick={(e) => {
-                        e.preventDefault();
-                        router.push(`/price/${price.price_id}`, undefined, {
-                          shallow: true,
-                        });
+                      onClick={() => {
+                        setSelectedProduct(price)
+                        setShowEditPresentations(true)
                       }}
                     >
                       5PP
                     </td>
                     <td
                       className="py-4"
-                      onClick={(e) => {
-                        e.preventDefault();
-                        router.push(`/price/${price.price_id}`, undefined, {
-                          shallow: true,
-                        });
+                      onClick={() => {
+                        setSelectedProduct(price)
+                        setShowEditPresentations(true)
                       }}
                     >
                       {price.product} - {price.presentation}
                     </td>
                     <td
                       className="py-4"
-                      onClick={(e) => {
-                        e.preventDefault();
-                        router.push(`/price/${price.price_id}`, undefined, {
-                          shallow: true,
-                        });
+                      onClick={() => {
+                        setSelectedProduct(price)
+                        setShowEditPresentations(true)
                       }}
                     >
                       kl
                     </td>
                     <td
                       className="py-4"
-                      onClick={(e) => {
-                        e.preventDefault();
-                        router.push(`/price/${price.price_id}`, undefined, {
-                          shallow: true,
-                        });
+                      onClick={() => {
+                        setSelectedProduct(price)
+                        setShowEditPresentations(true)
                       }}
                     >
                       {price.cost}
@@ -358,11 +360,9 @@ const PricesView = () => {
 
                     <td
                       className="py-4"
-                      onClick={(e) => {
-                        e.preventDefault();
-                        router.push(`/price/${price.price_id}`, undefined, {
-                          shallow: true,
-                        });
+                      onClick={() => {
+                        setSelectedProduct(price)
+                        setShowEditPresentations(true)
                       }}
                     >
                       {calculateUtilityValue(
@@ -382,11 +382,9 @@ const PricesView = () => {
                     </td>
                     <td
                       className="py-4"
-                      onClick={(e) => {
-                        e.preventDefault();
-                        router.push(`/price/${price.price_id}`, undefined, {
-                          shallow: true,
-                        });
+                      onClick={() => {
+                        setSelectedProduct(price)
+                        setShowEditPresentations(true)
                       }}
                     >
                       {calculateUtilityValue(
@@ -430,13 +428,14 @@ const PricesView = () => {
                         />
                         <button
                           onClick={() => openModal(price)}
+                          title="Recommended prices"
                           className="ml-2 text-sm bg-blue-500 hover:bg-blue-700 text-white p-0.5 rounded"
                         >
                           <InformationCircleIcon className="h-7 w-7 font-bold" />
                         </button>
                       </div>
                     </td>
-                    <td>
+                    {/* <td>
                       <button
                         onClick={() => {
                           setSelectedPrice(price);
@@ -447,7 +446,7 @@ const PricesView = () => {
                         <TrashIcon className="h-6 w-6" />
                         Delete
                       </button>
-                    </td>
+                    </td> */}
                   </tr>
                 ))}
             </tbody>
@@ -458,6 +457,13 @@ const PricesView = () => {
           onClose={() => setShowNewPresentations(false)}
           setProducts={setProducts}
           setIsLoading={setIsLoading}
+        />
+        <ModalEditProduct
+          isvisible={showEditPresentations}
+          onClose={() => setShowEditPresentations(false)}
+          setProducts={setProducts}
+          setIsLoading={setIsLoading}
+          
         />
         <ModalDelete
           isvisible={showDeleteModal}
