@@ -65,6 +65,8 @@ export const restaurantsData =
   "https://api.grownetapp.com/grownet/api/customers/all";
 export const createOrders =
   "https://api.grownetapp.com/grownet/api/orders/create";
+export const ordersDate =
+  "https://api.grownetapp.com/grownet/api/orders/search/date";
 export const customerSupplier =
   "https://api.grownetapp.com/grownet/api/customers/supplier/";
 
@@ -135,12 +137,13 @@ export const printOrdersUrl = "https://api.grownetapp.com/grownet/api/";
 //   days: 2, opcional
 //   supplier: idSupplier,
 // }
-export const dateAvailable = "https://api.grownetapp.com/grownet/api/suppliers/operationHistory";
+export const dateAvailable =
+  "https://api.grownetapp.com/grownet/api/suppliers/operationHistory";
 
 // peticion post
-// data 
+// data
 // const dateData = {
 //   date: date,
 // }
-export const routesByDate = "https://api.grownetapp.com/grownet/api/deliveryRoutes/show";
-
+export const routesByDate =
+  "https://api.grownetapp.com/grownet/api/deliveryRoutes/show";
