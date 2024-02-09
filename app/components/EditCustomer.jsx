@@ -288,7 +288,9 @@ const CustomerDetailPage = ({
             console.log("🚀 ~ .then ~ edited:")
             setUpdateCustomers(true);
             Swal.fire({
-              position: "top-end",
+              customClass: {
+                container: "fixed inset-0 flex items-center justify-center",
+              },
               icon: "success",
               title: "Client edited successfully",
               showConfirmButton: false,
