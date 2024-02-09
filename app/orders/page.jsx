@@ -4,7 +4,7 @@ import {
   PrinterIcon,
   CalendarIcon,
 } from "@heroicons/react/24/outline";
-import { format } from "date-fns";
+import { format, set } from "date-fns";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -41,9 +41,10 @@ export const customStyles = {
 const OrderView = () => {
   const router = useRouter();
   const { token } = useTokenStore();
-  const { workDate, setFetchWorkDate } = useWorkDateStore();
+  const { workDate, setWorkDate, setFetchWorkDate } = useWorkDateStore();
   const { routePercentages, setRoutePercentages, setFetchRoutePercentages } =
     usePercentageStore();
+
   const [searchTerm, setSearchTerm] = useState("");
   const [isLoading, setIsLoading] = useState(true);
   const [orders, setOrders] = useState([]);
@@ -66,6 +67,14 @@ const OrderView = () => {
     const month = String(date.getMonth() + 1).padStart(2, "0");
     const year = String(date.getFullYear()).slice(-2);
     return `${day}/${month}/${year}`;
+  };
+
+  const formatDateToTransform = (dateString) => {
+    const date = new Date(dateString);
+    const day = String(date.getDate()).padStart(2, "0");
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const year = date.getFullYear();
+    return `${year}-${month}-${day}`;
   };
 
   useEffect(() => {
@@ -98,11 +107,7 @@ const OrderView = () => {
         (item) => item.nameRoute === selectedRoute
       );
       if (result) {
-        setShowPercentage(
-          result.percentage_loading > 0
-            ? result.percentage_loading
-            : result.percentage_packing
-        );
+        setShowPercentage(result.percentage_loading);
       } else {
         setShowPercentage(null);
       }
@@ -243,7 +248,7 @@ const OrderView = () => {
             <PlusCircleIcon className="h-6 w-6 mr-1" /> New Order
           </Link>
         </div>
-        <div className="flex ml-24 mb-3 items-center space-x-4">
+        <div className="flex ml-24 mb-3 items-center  space-x-4 mt-20 2xl:mt-0">
           <select
             value={filterType}
             onChange={(e) => setFilterType(e.target.value)}
@@ -299,6 +304,7 @@ const OrderView = () => {
                 setSelectedDate(date);
                 setStartDate(date);
                 setEndDate(date);
+                setWorkDate(formatDateToTransform(date));
                 setDateFilter("range");
               }}
               className="form-input px-4 py-3 rounded-md border border-gray-300"
@@ -322,7 +328,7 @@ const OrderView = () => {
             <PrinterIcon className="h-6 w-6" />
           </button>
         </div>
-        <section className="fixed top-0 right-10 mt-8">
+        <section className="fixed top-0 right-10 mt-8 ">
           <div className="flex gap-4">
             <div className="px-4 py-4 rounded-3xl flex items-center justify-center bg-white shadow-[0_8px_30px_rgb(0,0,0,0.12)]">
               <div>
