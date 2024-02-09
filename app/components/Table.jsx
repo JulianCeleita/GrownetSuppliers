@@ -103,6 +103,7 @@ export default function Table() {
   const [DescriptionData, setDescriptionData] = useState(null);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [showErrorOrderModal, setShowErrorOrderModal] = useState(false);
+  const [showErrorCode, setShowErrorCode] = useState(false);
   const [orderError, setOrderError] = useState("");
   const [specialRequirements, setSpecialRequirements] = useState("");
   const [mouseCoords, setMouseCoords] = useState({ x: 0, y: 0 });
@@ -433,6 +434,17 @@ export default function Table() {
       setProductByCode(productByCodeData);
     } catch (error) {
       console.error("Error al hacer la solicitud:", error.message);
+      setShowErrorCode(true);
+      const updatedRows = rows.map((row, index) => {
+        if (index === rowIndex) {
+          return {
+            ...row,
+            Code: "",
+          };
+        }
+        return row;
+      });
+      setRows(updatedRows);
     }
   };
 
@@ -822,6 +834,16 @@ export default function Table() {
         isvisible={showErrorOrderModal}
         onClose={() => setShowErrorOrderModal(false)}
         error={orderError}
+        title={"Sorry"}
+      />
+      <ModalOrderError
+        isvisible={showErrorCode}
+        onClose={() => setShowErrorCode(false)}
+        error={orderError}
+        title={"Incorrect code"}
+        message={
+          "The entered code is incorrect. Please verify and try again with a valid code."
+        }
       />
     </div>
   );

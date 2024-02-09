@@ -271,6 +271,7 @@ const CustomerDetailPage = ({
       delivery_window: `${startHour} - ${endHour}`,
       group_id: selectedGroup,
     };
+
     const postDataAssign = {
       customer: customerId,
       ...prepareDataForBackend(),
@@ -309,6 +310,7 @@ const CustomerDetailPage = ({
       .catch((error) => {
         console.error("Error al agregar el nuevo cliente: ", error);
       });
+    setUpdateCustomers(false);
   };
 
   const handleDeleteCustomer = (customerId) => {

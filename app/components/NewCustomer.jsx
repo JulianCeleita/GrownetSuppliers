@@ -194,6 +194,7 @@ function NewCustomer({ isvisible, onClose, setUpdateCustomers }) {
       vip: vipSelected,
       delivery_window: `${startHour} - ${endHour}`,
       group_id: selectedGroup,
+      countries_indicative: user?.countries_indicactive
     };
     const postDataAssign = {
       ...prepareDataForBackend(),
@@ -205,6 +206,7 @@ function NewCustomer({ isvisible, onClose, setUpdateCustomers }) {
         },
       })
       .then((response) => {
+        console.log("🚀 ~ .then ~ response:", response)
         const customerAccountNumber = response?.data?.accountNumber;
         postDataAssign.customer = customerAccountNumber;
         axios
@@ -232,6 +234,8 @@ function NewCustomer({ isvisible, onClose, setUpdateCustomers }) {
       .catch((error) => {
         console.error("Error al agregar el nuevo cliente: ", error);
       });
+
+    setUpdateCustomers(false);
   };
 
   return (
