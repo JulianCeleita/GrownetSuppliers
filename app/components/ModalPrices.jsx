@@ -28,11 +28,6 @@ function ModalPrices({
     const { token } = useTokenStore();
     const { user } = useUserStore();
 
-
-    useEffect(() => {
-        console.log(price)
-    }, [])
-
     const enviarData = (price, band_id, newPrice) => {
         const priceId = price.price_id;
         const postData = {
@@ -42,7 +37,6 @@ function ModalPrices({
             presentations_id: price.presentations_id,
             products_id: price.products_id,
         };
-        // console.log("postData", postData);
         axios
             .post(`${priceUpdate}${price.price_id}`, postData, {
                 headers: {

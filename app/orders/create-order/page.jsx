@@ -1,6 +1,10 @@
 "use client";
 import Table from "@/app/components/Table";
-import { ArrowLeftIcon } from "@heroicons/react/24/outline";
+import {
+  ArrowLeftIcon,
+  ChevronDownIcon,
+  ChevronUpIcon,
+} from "@heroicons/react/24/outline";
 import axios from "axios";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
@@ -27,7 +31,7 @@ const CreateOrderView = () => {
     totalProfit,
     totalProfitPercentage,
   } = useTableStore();
-
+  const [details, setDetails] = useState(false);
   const [restaurants, setRestaurants] = useState(null);
   const [selectedAccNumber, setSelectedAccNumber] = useState("");
   const [selectedAccName, setSelectedAccName] = useState("");
@@ -36,7 +40,6 @@ const CreateOrderView = () => {
   const [orderDate, setOrderDate] = useState(getCurrentDate());
   const [mouseCoords, setMouseCoords] = useState({ x: 0, y: 0 });
   const { user, setUser } = useUserStore();
-
   //Fecha input
   function getCurrentDate() {
     const today = new Date();
@@ -208,122 +211,66 @@ const CreateOrderView = () => {
 
   return (
     <Layout>
-      <div className="flex p-6 pb-0 bg-primary-blue">
-        <Link
-          onClick={resetStates}
-          className="flex bg-dark-blue py-3 px-4 rounded-lg text-white font-medium transition-all hover:scale-110 "
-          href="/orders"
-        >
-          <ArrowLeftIcon className="w-5 h-5 mt-0.5 mr-1 inline-block" /> Orders
-        </Link>
+      <div className="max-w-[400px] -mt-[110px] ml-[115px]">
+        <div className="flex mt-1 items-center">
+          <h3 className="w-[38%] text-white">Account Name:</h3>
+          <div className="relative mb-2 w-[62%]">
+            <Select
+              instanceId
+              options={restaurantList.map((restaurant) => ({
+                value: restaurant.accountName,
+                label: restaurant.accountName,
+              }))}
+              onChange={(selectedOption) => {
+                setSelectedAccName(selectedOption.value);
+                setIsDropdownVisible(false);
+              }}
+              value={{
+                value: selectedAccNumber,
+                label:
+                  customers && customers[0].accountName
+                    ? customers[0].accountName
+                    : "Search...",
+              }}
+              isSearchable
+            />
+          </div>
+        </div>
+
+        <div className="flex items-center">
+          <h3 className="w-[38%] text-white">Account Number:</h3>
+          <div className="relative mb-2 w-[62%]">
+            <Select
+              instanceId
+              options={restaurantList.map((restaurant) => ({
+                value: restaurant.accountNumber,
+                label: restaurant.accountNumber,
+              }))}
+              onChange={(selectedOption) => {
+                setSelectedAccNumber(selectedOption.value);
+                setIsDropdownVisible(false);
+              }}
+              value={{
+                value: selectedAccNumber,
+                label:
+                  customers && customers[0].accountNumber
+                    ? customers[0].accountNumber
+                    : "Search...",
+              }}
+              isSearchable
+            />
+          </div>
+        </div>
       </div>
-      <div className="grid grid-cols-3 gap-4 p-5 shadow-lg bg-primary-blue pb-20">
-        <div className="bg-white p-4 rounded-lg shadow-lg text-dark-blue">
-          <div className="flex">
-            <h3 className="w-[40%]">Account Name:</h3>
-            <div className="relative mb-2 w-[60%]">
-              <Select
-                instanceId
-                options={restaurantList.map((restaurant) => ({
-                  value: restaurant.accountName,
-                  label: restaurant.accountName,
-                }))}
-                onChange={(selectedOption) => {
-                  setSelectedAccName(selectedOption.value);
-                  setIsDropdownVisible(false);
-                }}
-                value={{
-                  value: selectedAccNumber,
-                  label:
-                    customers && customers[0].accountName
-                      ? customers[0].accountName
-                      : "Search...",
-                }}
-                isSearchable
-              />
-            </div>
-          </div>
-          <div className="flex">
-            <h3 className="w-[40%]">Account Number:</h3>
-            <div className="relative mb-2 w-[60%]">
-              <Select
-                instanceId
-                options={restaurantList.map((restaurant) => ({
-                  value: restaurant.accountNumber,
-                  label: restaurant.accountNumber,
-                }))}
-                onChange={(selectedOption) => {
-                  setSelectedAccNumber(selectedOption.value);
-                  setIsDropdownVisible(false);
-                }}
-                value={{
-                  value: selectedAccNumber,
-                  label:
-                    customers && customers[0].accountNumber
-                      ? customers[0].accountNumber
-                      : "Search...",
-                }}
-                isSearchable
-              />
-            </div>
-          </div>
-          <div className="grid grid-cols-2 mb-2">
-            <div className="grid grid-cols-2">
-              <h3>Post Code:</h3>
-              <h3 className="underline decoration-2 decoration-green">
-                {customers && customers[0].postCode
-                  ? customers[0].postCode
-                  : ""}
-              </h3>
-            </div>
-            <div className="grid grid-cols-2">
-              <h3>Telephone:</h3>
-              <h3 className="underline decoration-2 decoration-green">
-                {" "}
-                {customers && customers[0].telephone
-                  ? customers[0].telephone
-                  : ""}
-              </h3>
-            </div>
-          </div>
-          <div className="flex mb-2">
-            <h3 className="w-[20%]">Address:</h3>
-            <h3 className="underline decoration-2 decoration-green w-[80%]">
-              {customers && customers[0].address ? customers[0].address : ""}
-            </h3>
-          </div>
-          <div className="flex mb-2">
-            <h3 className="w-[20%]">Contact:</h3>
-            <h3 className="underline decoration-2 decoration-green w-[80%]">
-              {customers && customers[0].email ? customers[0].email : ""}
-            </h3>
-          </div>
-        </div>
-        <div className="bg-white p-2 pr-9 pl-9 rounded-lg flex flex-col justify-center">
-          <div className="flex items-center mb-3">
-            <label>Date: </label>
-            <input
-              type="date"
-              className="border ml-2 p-1.5 rounded-md w-[100%] "
-              min={getCurrentDate()}
-              onChange={handleDateChange}
-              value={orderDate}
-            />
-            <label className="ml-3">Inv. No.: </label>
-            <input
-              type="text"
-              value="Invoice Number."
-              readOnly
-              className="border ml-2 p-1.5 rounded-md w-[100%]"
-            />
-          </div>
-          <div className="grid grid-cols-2">
-            <label>Order No.: </label>
-            <input type="text" className="border p-2 rounded-md mb-2" />
-            {/*<h3>Drop:</h3>
-          <h3 className="underline decoration-2 decoration-green">{""}</h3>*/}
-          </div>
-        </div>
+      {/* <Link
+        onClick={resetStates}
+        className="flex w-[120px] items-center bg-dark-blue py-2.5 px-3 rounded-lg text-white font-medium transition-all hover:scale-110 "
+        href="/orders"
+      >
+        <ArrowLeftIcon className="w-5 h-5 mt-0.5 mr-2 inline-block" /> Go back
+      </Link> */}
+
+      {/* <div className="grid grid-cols-3 gap-4 p-5 shadow-lg bg-primary-blue pb-20">
         <div
           className="bg-white p-2 pr-9 pl-9 rounded-lg flex flex-col justify-center"
           onContextMenu={(e) => handleContextMenuTotal(e)}
@@ -344,7 +291,7 @@ const CreateOrderView = () => {
                 </div>
               )
           )}
-        </div>
+        </div> 
         {showCheckboxColumnTotal === true && (
           <div
             ref={menuRefTotal}
@@ -379,8 +326,63 @@ const CreateOrderView = () => {
             </button>
           </div>
         )}
+      </div>*/}
+      <div className="flex items-center ml-10 mt-5 w-[70%] px-2 py-1 rounded-md">
+        <label className="text-dark-blue">Date: </label>
+        <input
+          type="date"
+          className="border ml-2 p-1.5 rounded-md text-dark-blue"
+          min={getCurrentDate()}
+          onChange={handleDateChange}
+          value={orderDate}
+        />
+        <label className="ml-3">Inv. number: </label>
+        <input
+          type="text"
+          value="Invoice Number."
+          readOnly
+          className="border ml-2 p-1.5 rounded-md"
+        />
+        <label className="mx-3">Order Number: </label>
+        <input type="text" className="border p-2 rounded-md" />
+
+        {details ? (
+          <button
+            className="bg-dark-blue rounded-md ml-3 transition-all hover:scale-110"
+            onClick={() => setDetails(false)}
+          >
+            <ChevronUpIcon className="h-7 w-7 text-white p-1" />
+          </button>
+        ) : (
+          <button
+            className="bg-dark-blue rounded-md ml-3 transition-all hover:scale-110"
+            onClick={() => setDetails(true)}
+          >
+            <ChevronDownIcon className="h-7 w-7 text-white p-1" />
+          </button>
+        )}
       </div>
-      <div className="-mt-20">
+      {details && (
+        <div className="bg-light-blue flex items-center justify-around mx-10 mt-2 px-2 py-1 rounded-md">
+          <h3>Post Code:</h3>
+          <h3 className="underline decoration-2 decoration-green">
+            {customers && customers[0].postCode ? customers[0].postCode : ""}
+          </h3>
+          <h3>Telephone:</h3>
+          <h3 className="underline decoration-2 decoration-green">
+            {customers && customers[0].telephone ? customers[0].telephone : ""}
+          </h3>
+          <h3 className="">Address:</h3>
+          <h3 className="underline decoration-2 decoration-green ">
+            {customers && customers[0].address ? customers[0].address : ""}
+          </h3>
+          <h3 className="">Contact:</h3>
+          <h3 className="underline decoration-2 decoration-green ">
+            {customers && customers[0].email ? customers[0].email : ""}
+          </h3>
+        </div>
+      )}
+      <div className="">
         <Table />
       </div>
     </Layout>
