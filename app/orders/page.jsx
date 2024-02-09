@@ -239,7 +239,7 @@ const OrderView = () => {
             <PlusCircleIcon className="h-6 w-6 mr-1" /> New Order
           </Link>
         </div>
-        <div className="flex ml-24 mb-3 items-center space-x-4">
+        <div className="flex ml-24 mb-3 items-center  space-x-4 mt-20 2xl:mt-0">
           <select
             value={filterType}
             onChange={(e) => setFilterType(e.target.value)}
@@ -318,7 +318,7 @@ const OrderView = () => {
             <PrinterIcon className="h-6 w-6" />
           </button>
         </div>
-        <section className="fixed top-0 right-10 mt-8">
+        <section className="fixed top-0 right-10 mt-8 ">
           <div className="flex gap-4">
             <div className="grid grid-cols-3 px-1 py-3 shadow-sm rounded-3xl shadow-slate-400 bg-white">
               <div className="col-span-2">
