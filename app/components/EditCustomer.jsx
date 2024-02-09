@@ -4,7 +4,7 @@ import {
   fetchGroups,
   fetchRoutes,
 } from "@/app/api/customerRequest";
-import { assignCustomer, customerUpdate } from "@/app/config/urls.config";
+import { assignCustomer, customerUpdate, disableCustomer } from "@/app/config/urls.config";
 import RootLayout from "@/app/layout";
 import useTokenStore from "@/app/store/useTokenStore";
 import useUserStore from "@/app/store/useUserStore";
@@ -12,7 +12,8 @@ import axios from "axios";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import Swal from "sweetalert2";
-import { XMarkIcon } from "@heroicons/react/24/outline";
+import { TrashIcon, XMarkIcon } from "@heroicons/react/24/outline";
+import ModalDelete from "./ModalDelete";
 
 const CustomerDetailPage = ({
   isvisible,
@@ -53,18 +54,26 @@ const CustomerDetailPage = ({
   const [endHour, setEndHour] = useState("");
   const [error, setError] = useState("");
   const [selectedRoutes, setSelectedRoutes] = useState({});
+  const [showDeleteModal, setShowDeleteModal] = useState("")
 
   const customerId = customer?.accountNumber;
 
   useEffect(() => {
-    if (!token) {
-      router.push("/");
-    } else if (token !== null && customerId !== undefined) {
+    if (isvisible) {
+      setIsLoading(true);
       fetchCustomerDetail(token, setDetailCustomer, setIsLoading, customerId);
       fetchRoutes(token, user, setRoutes, setIsLoading);
       fetchGroups(token, user, setGroups, setIsLoading);
     }
-  }, [customerId, token]);
+  }, [isvisible, customerId, token, user]);
+
+  useEffect(() => {
+    if (!isvisible) {
+      setDetailCustomer(undefined);
+      setAccountNumber("");
+      setAccountName("");
+    }
+  }, [isvisible]);
 
   useEffect(() => {
     if (detailCustomer && detailCustomer.length > 0) {
@@ -230,6 +239,10 @@ const CustomerDetailPage = ({
     setDrop(newValue);
   };
 
+  const clearStates = () => {
+    setDetailCustomer(null);
+  }
+
   const enviarData = (e) => {
     e.preventDefault();
     const postData = {
@@ -272,14 +285,18 @@ const CustomerDetailPage = ({
             },
           })
           .then((assignResponse) => {
+            console.log("🚀 ~ .then ~ edited:")
+            setUpdateCustomers(true);
             Swal.fire({
-              position: "top-end",
+              customClass: {
+                container: "fixed inset-0 flex items-center justify-center",
+              },
               icon: "success",
-              title: "Client created successfully",
+              title: "Client edited successfully",
               showConfirmButton: false,
               timer: 1500,
             });
-            setUpdateCustomers(true);
+            clearStates();
             onClose();
           })
           .catch((assignError) => {
@@ -291,6 +308,25 @@ const CustomerDetailPage = ({
       });
   };
 
+  const handleDeleteCustomer = (customerId) => {
+    const id = customerId;
+    axios
+      .post(`${disableCustomer}${id}`, null, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+      .then((response) => {
+        setUpdateCustomers(true);
+        setShowDeleteModal(false);
+        clearStates();
+        onClose();
+      })
+      .catch((error) => {
+        console.error("Error al eliminar la presentación:", error);
+      });
+  };
+
   if (!hasMounted) {
     return null;
   }
@@ -299,26 +335,28 @@ const CustomerDetailPage = ({
     <>
       {token ? (
         <div className="fixed z-50 inset-0 bg-black bg-opacity-25 backdrop-blur-sm flex flex-col justify-center items-center font-poppins">
-          <div className="bg-white p-8 rounded-2xl 2xl:w-[900px] h-[95%] 2xl:h-hidden flex flex-col items-center  max-h-screen">
-            <div className="overflow-y-auto">
-              <div>
-                <div className="flex justify-end">
-                  <button
-                    className="text-dark-blue place-self-end "
-                    onClick={() => {
-                      setAccountName("");
-                      setEmailCustomer("");
-                      onClose();
-                    }}
-                  >
-                    <XMarkIcon className="h-6 w-6 text-gray-500" />
-                  </button>
-                </div>
-                <h1 className="text-2xl font-bold text-dark-blue mb-2 flex justify-center">
-                  Edit <span className="text-primary-blue">&nbsp;customer</span>
-                </h1>
+          <div className="bg-white p-8 rounded-2xl w-[900px] flex flex-col items-center overflow-y-auto max-h-screen">
+            <button
+              className="text-dark-blue place-self-end "
+              onClick={() => {
+                setAccountName("");
+                setEmailCustomer("");
+                clearStates();
+                onClose();
+              }}
+            >
+              <XMarkIcon className="h-6 w-6 text-gray-500" />
+            </button>
+            <h1 className="text-2xl font-bold text-dark-blue mb-2">
+              Edit <span className="text-primary-blue">customer</span>
+            </h1>
+            {isLoading ? (
+              <div className="flex justify-center items-center mb-20">
+                <div class="loader"></div>
               </div>
-              <form className="text-left mt-8 " onSubmit={enviarData}>
+            ) : (
+
+              <form className="text-left " onSubmit={enviarData}>
                 <div className="flex">
                   <div className="flex flex-col  w-[50%]">
                     <div className="flex items-center">
@@ -386,7 +424,7 @@ const CustomerDetailPage = ({
                         type="number"
                         maxLength={3}
                         value={drop}
-                        onChange={(e) => setDrop(e.target.value)}
+                        onChange={handleDropChange}
                         required
                       />
                     </div>
@@ -560,19 +598,31 @@ const CustomerDetailPage = ({
                     </div>
                   </div>
                 </div>
+                <div>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setShowDeleteModal(true);
+                    }}
+                    className="flex text-primary-blue font-medium hover:scale-110 hover:text-danger hover:border-danger"
+                  >
+                    <TrashIcon className="h-6 w-6 mr-1" />
+                    Delete
+                  </button>
+                </div>
                 <div className="mt-3 text-center">
                   <button
                     type="submit"
                     value="Submit"
-                    className={`bg-primary-blue py-3 px-4 rounded-lg text-white font-medium mr-3 ${
-                      isLoading === true ? "bg-gray-500/50" : ""
-                    }`}
+                    className={`bg-primary-blue py-3 px-4 rounded-lg text-white font-medium mr-3 ${isLoading === true ? "bg-gray-500/50" : ""
+                      }`}
                     disabled={isLoading}
                   >
                     Edit customer
                   </button>
                   <button
                     onClick={() => {
+                      clearStates();
                       onClose();
                     }}
                     className=" py-3 px-4 rounded-lg text-primary-blue border border-primary-blue font-medium"
@@ -581,8 +631,13 @@ const CustomerDetailPage = ({
                   </button>
                 </div>
               </form>
-            </div>
+            )}
           </div>
+          <ModalDelete
+            isvisible={showDeleteModal}
+            onClose={() => setShowDeleteModal(false)}
+            onConfirm={() => handleDeleteCustomer(customerId)}
+          />
         </div>
       ) : (
         <RootLayout></RootLayout>
