@@ -1,6 +1,11 @@
 "use client";
-import { PlusCircleIcon, PrinterIcon } from "@heroicons/react/24/outline";
-import { format } from "date-fns";
+import {
+  PlusCircleIcon,
+  PrinterIcon,
+  CalendarIcon,
+  ExclamationCircleIcon,
+} from "@heroicons/react/24/outline";
+import { format, set } from "date-fns";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -8,12 +13,12 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import Select from "react-select";
 import { fetchOrders, fetchOrdersSupplier } from "../api/ordersRequest";
+import { CircleProgressBar } from "../components/CircleProgressBar";
 import Layout from "../layoutS";
+import usePercentageStore from "../store/usePercentageStore";
 import useTokenStore from "../store/useTokenStore";
 import useUserStore from "../store/useUserStore";
-import { CircleProgressBar } from "../components/CircleProgressBar";
 import useWorkDateStore from "../store/useWorkDateStore";
-import usePercentageStore from "../store/usePercentageStore";
 
 const formatDate = (dateString) => {
   const formattedDate = format(new Date(dateString), "yyyy-MM-dd");
@@ -33,12 +38,14 @@ export const customStyles = {
     },
   }),
 };
-// TODO: revisar por qué se dañó la filtración por fechas y calendario
+
 const OrderView = () => {
   const router = useRouter();
   const { token } = useTokenStore();
-  const { workDate, setFetchWorkDate } = useWorkDateStore()
-  const { routePercentages, setRoutePercentages, setFetchRoutePercentages } = usePercentageStore()
+  const { workDate, setWorkDate, setFetchWorkDate } = useWorkDateStore();
+  const { routePercentages, setRoutePercentages, setFetchRoutePercentages } =
+    usePercentageStore();
+
   const [searchTerm, setSearchTerm] = useState("");
   const [isLoading, setIsLoading] = useState(true);
   const [orders, setOrders] = useState([]);
@@ -46,21 +53,29 @@ const OrderView = () => {
   const [dateFilter, setDateFilter] = useState("today");
   const [showAllOrders, setShowAllOrders] = useState(false);
   const [showDatePicker, setShowDatePicker] = useState(false);
-  const [selectedDate, setSelectedDate] = useState(new Date());
+  const [selectedDate, setSelectedDate] = useState();
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
   const [selectedOrders, setSelectedOrders] = useState({});
   const [selectedRoute, setSelectedRoute] = useState("");
-  const [filterType, setFilterType] = useState("range");
+  const [filterType, setFilterType] = useState("date");
   const [showPercentage, setShowPercentage] = useState(null);
 
   const formatDateToShow = (dateString) => {
     if (!dateString) return "Loading...";
     const date = new Date(dateString);
-    const day = String(date.getDate()).padStart(2, '0');
-    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, "0");
+    const month = String(date.getMonth() + 1).padStart(2, "0");
     const year = String(date.getFullYear()).slice(-2);
     return `${day}/${month}/${year}`;
+  };
+
+  const formatDateToTransform = (dateString) => {
+    const date = new Date(dateString);
+    const day = String(date.getDate()).padStart(2, "0");
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const year = date.getFullYear();
+    return `${year}-${month}-${day}`;
   };
 
   useEffect(() => {
@@ -89,15 +104,17 @@ const OrderView = () => {
 
   useEffect(() => {
     if (routePercentages) {
-      const result = routePercentages.find(item => item.nameRoute === selectedRoute);
+      const result = routePercentages.find(
+        (item) => item.nameRoute === selectedRoute
+      );
+
       if (result) {
-        setShowPercentage(result.percentage_loading > 0 ? result.percentage_loading : result.percentage_packing);
+        setShowPercentage(result.percentage_loading);
       } else {
         setShowPercentage(null);
       }
     }
   }, [routePercentages]);
-
 
   const subtractDays = (date, days) => {
     const result = new Date(date);
@@ -167,7 +184,6 @@ const OrderView = () => {
       .filter(([reference, checked]) => checked)
       .map(([reference]) => reference);
 
-    console.log("ordersToPrint", ordersToPrint);
     //TODO: implementar lógica para imprimir las ordenes seleccionadas
   };
 
@@ -190,13 +206,13 @@ const OrderView = () => {
 
   const getPercentages = async (value) => {
     if (value !== "" || value !== null || value !== undefined) {
-      await setFetchRoutePercentages(token, workDate)
+      await setFetchRoutePercentages(token, workDate);
     }
-  }
+  };
 
   const handleRouteSelection = async (option) => {
     setSelectedRoute(option.value);
-    await getPercentages(option.value)
+    await getPercentages(option.value);
   };
 
   const filteredOrders = selectedRoute
@@ -234,7 +250,7 @@ const OrderView = () => {
             <PlusCircleIcon className="h-6 w-6 mr-1" /> New Order
           </Link>
         </div>
-        <div className="flex ml-24 mb-3 items-center space-x-4">
+        <div className="flex ml-24 mb-3 items-center  space-x-4 mt-20 2xl:mt-0">
           <select
             value={filterType}
             onChange={(e) => setFilterType(e.target.value)}
@@ -290,6 +306,7 @@ const OrderView = () => {
                 setSelectedDate(date);
                 setStartDate(date);
                 setEndDate(date);
+                setWorkDate(formatDateToTransform(date));
                 setDateFilter("range");
               }}
               className="form-input px-4 py-3 rounded-md border border-gray-300"
@@ -313,23 +330,31 @@ const OrderView = () => {
             <PrinterIcon className="h-6 w-6" />
           </button>
         </div>
-        <section className="fixed top-0 right-10 mt-8">
+        <section className="fixed top-0 right-10 mt-8 ">
           <div className="flex gap-4">
-            <div className="grid grid-cols-3 px-1 py-3 shadow-sm rounded-3xl shadow-slate-400 bg-white">
-              <div className="col-span-2">
-                <h1 className="flex text-xl font-bold items-center justify-center text-black">
-                  Today
-                </h1>
-                <div className="grid grid-cols-2 pl-2 justify-center text-center">
-                  <div className="flex items-center justify-end pr-1">
+            <div className="px-4 py-4 rounded-3xl flex items-center justify-center bg-white shadow-[0_8px_30px_rgb(0,0,0,0.12)]">
+              <div>
+                <h1 className="text-xl font-bold text-dark-blue">Today</h1>
+                <div className="flex items-center justify-center text-center">
+                  <div className="pr-1">
                     <p className="text-5xl font-bold text-primary-blue">20</p>
                   </div>
                   <div className="grid grid-cols-1 text-left">
-                    <h2 className="text-sm text-black px-1 font-semibold">
+                    <h2 className="text-sm text-dark-blue px-1 font-medium ">
                       Orders
                     </h2>
-                    <h2 className="flex items-center text-green-500 text-center px-2 rounded-full text-sm bg-light-green text-dark-green">
-                      {formatDateToShow(workDate)}
+                    <div className="flex items-center  text-center justify-center py-1 px-2 w-[105px] rounded-lg  text-sm bg-background-green">
+                      <CalendarIcon className="h-4 w-4 text-green" />
+
+                      <h2 className="ml-1 text-green">
+                        {formatDateToShow(workDate)}
+                      </h2>
+                    </div>
+                    <h2 className="text-gray-grownet text-[12px]">
+                      Active routes today{" "}
+                      <span className="text-primary-blue font-semibold">
+                        15
+                      </span>
                     </h2>
                   </div>
                 </div>
@@ -347,12 +372,11 @@ const OrderView = () => {
                 ) : (
                   <CircleProgressBar percentage={showPercentage} />
                 )}
-
               </div>
             </div>
             <div className="grid grid-cols-2 gap-3 px-3 py-3 items-center justify-center shadow-sm rounded-3xl bg-white shadow-slate-400">
               <div>
-                <h1 className="flex text-xl font-bold items-center justify-center text-black">
+                <h1 className="flex text-xl font-bold items-center justify-center">
                   Total net
                 </h1>
                 <div className="flex justify-center text-center">
@@ -363,8 +387,8 @@ const OrderView = () => {
                   </div>
                 </div>
               </div>
-              <div className="border-l border-gray-400">
-                <h1 className="flex text-xl font-bold items-center justify-center text-black">
+              <div className="border-l border-green border-dashed">
+                <h1 className="flex text-xl font-bold items-center justify-center">
                   Profit
                 </h1>
                 <div className="flex justify-center text-center">
@@ -377,10 +401,10 @@ const OrderView = () => {
           </div>
         </section>
 
-        <div className="flex items-center justify-center mb-20">
-          <table className="w-[90%] bg-white text-center border-b-0">
-            <thead className="sticky top-0 bg-white">
-              <tr className="border-2 border-stone-100 border-b-0 text-dark-blue">
+        <div className="flex items-center justify-center mb-20  p-2">
+          <table className="w-[90%] bg-white first-line:bg-white rounded-2xl text-center shadow-[rgba(17,_17,_26,_0.1)_0px_0px_16px]">
+            <thead className="sticky top-0  shadow-[0px_11px_15px_-3px_#edf2f7]">
+              <tr className="  text-dark-blue">
                 <th className="py-4 flex items-center justify-center rounded-tl-lg">
                   <label className="inline-flex items-center">
                     <input
@@ -402,55 +426,65 @@ const OrderView = () => {
             </thead>
 
             <tbody>
-              {filteredOrders.map((order, index) => (
-                <tr
-                  key={index}
-                  className="text-dark-blue border-2 border-stone-100 border-t-0"
-                >
-                  <td className="py-4">
-                    <label className="inline-flex items-center">
-                      <input
-                        type="checkbox"
-                        className="form-checkbox h-5 w-5 text-blue-500"
-                        checked={!!selectedOrders[order.reference]}
-                        onChange={(e) =>
-                          handleOrderSelect(order, e.target.checked)
-                        }
-                      />
-                    </label>
-                  </td>
-                  <td className="py-4">#5</td>
-                  <td
-                    className="py-4 cursor-pointer hover:bg-primary-blue hover:text-white"
-                    onClick={(e) => goToOrder(e, order)}
-                  >
-                    {order.accountName}
-                  </td>
-                  <td className="py-4">Amount</td>
-                  <td className="py-4">10%</td>
-                  <td className="py-4">{order.route}</td>
-                  <td className="py-4">Santiago Arango</td>
-                  <td className="py-4">{order.date_delivery}</td>
-                  <td className="py-4 flex gap-2 justify-center">
-                    <div
-                      className={`inline-block mt-1 rounded-full text-white ${statusColorClass(
-                        order.name_status
-                      )} w-3 h-3 flex items-center justify-center`}
-                    ></div>
-                    {order.name_status}
-                  </td>
-                </tr>
-              ))}
+              {!isLoading && (
+                filteredOrders.length > 0 ? (
+                  filteredOrders.map((order, index) => (
+                    < tr key={index} className="text-dark-blue border-b-[1.5px]" >
+                      <td className="py-4">
+                        <label className="inline-flex items-center">
+                          <input
+                            type="checkbox"
+                            className="form-checkbox h-5 w-5 text-blue-500"
+                            checked={!!selectedOrders[order.reference]}
+                            onChange={(e) =>
+                              handleOrderSelect(order, e.target.checked)
+                            }
+                          />
+                        </label>
+                      </td>
+                      <td className="py-4">{order.reference}</td>
+                      <td
+                        className="py-4 cursor-pointer hover:bg-light-blue"
+                        onClick={(e) => goToOrder(e, order)}
+                      >
+                        {order.accountName}
+                      </td>
+                      <td className="py-4">{order.net}</td>
+                      <td className="py-4">10%</td>
+                      <td className="py-4">{order.route}</td>
+                      <td className="py-4">Santiago Arango</td>
+                      <td className="py-4">{order.date_delivery}</td>
+                      <td className="py-4 flex gap-2 justify-center">
+                        <div
+                          className={`inline-block mt-1 rounded-full text-white ${statusColorClass(
+                            order.name_status
+                          )} w-3 h-3 flex items-center justify-center`}
+                        ></div>
+                        {order.name_status}
+                      </td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td colSpan="9" className="py-4 text-center text-dark-blue">
+                      <p className="flex items-center justify-center text-gray my-10">
+                        <ExclamationCircleIcon class="h-12 w-12 mr-10 text-gray" />
+                        Results not found. Try a different search!
+                      </p>
+                    </td>
+                  </tr>
+                )
+              )}
             </tbody>
           </table>
         </div>
         {isLoading && (
-          <div className="flex justify-center items-center mb-20">
+          <div className="flex justify-center items-center mb-20 -mt-20">
             <div className="loader"></div>
           </div>
         )}
       </div>
-    </Layout>
+    </Layout >
   );
 };
 export default OrderView;

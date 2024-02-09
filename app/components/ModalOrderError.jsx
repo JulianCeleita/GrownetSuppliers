@@ -1,6 +1,6 @@
-import { FaceFrownIcon, XMarkIcon } from "@heroicons/react/24/outline";
+import { ExclamationCircleIcon, XMarkIcon } from "@heroicons/react/24/outline";
 
-function ModalOrderError({ isvisible, onClose, error }) {
+function ModalOrderError({ isvisible, onClose, error, title, message }) {
   if (!isvisible) {
     return null;
   }
@@ -13,9 +13,10 @@ function ModalOrderError({ isvisible, onClose, error }) {
         >
           <XMarkIcon className="h-6 w-6 text-gray-500" />
         </button>
-        <FaceFrownIcon className="h-12 w-12 text-danger mb-2" />
-        <h1 className="text-2xl font-medium text-danger mb-2">Sorry</h1>
+        <ExclamationCircleIcon className="h-12 w-12 text-danger mb-2" />
+        <h1 className="text-2xl font-medium text-dark-blue mb-2">{title}</h1>
         <p className="text-dark-blue text-lg text-center">{error}</p>
+        <p className="text-dark-blue text-lg text-center">{message}</p>
         <button
           onClick={() => onClose()}
           className="bg-primary-blue py-3 px-4 rounded-lg text-white font-medium mr-3 hover:bg-green mt-5"

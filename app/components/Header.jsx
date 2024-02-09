@@ -25,14 +25,16 @@ function Header() {
 
     handleRouteChange();
   }, [pathname, router]);
-
+  const headerHeight =
+    pathname === "/orders/create-order" ? "h-[120px]" : "h-auto";
   return (
-    <div className="flex justify-between items-center bg-primary-blue rounded-b-3xl border-red-700 p-4">
+    <div
+      className={`flex justify-between items-center bg-primary-blue rounded-b-3xl p-4 ${headerHeight}`}
+    >
       <div className="flex mx-5">
         <SideBar />
       </div>
     </div>
-
   );
 }
 export default Header;

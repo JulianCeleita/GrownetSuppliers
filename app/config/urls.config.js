@@ -99,6 +99,8 @@ export const customerUpdate =
   "https://api.grownetapp.com/grownet/api/customers/updatecustomersupplier/";
 export const deleteCustomer =
   "https://api.grownetapp.com/grownet/api/customers/deletecustomersupplier/";
+export const disableCustomer =
+  "https://api.grownetapp.com/grownet/api/customers/delete/";
 export const assignCustomer =
   "https://api.grownetapp.com/grownet/api/deliveryRoutes/assigncustomers";
 

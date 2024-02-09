@@ -38,7 +38,6 @@ export const fetchRoutes = async (token, user, setRoutes, setIsLoading) => {
       ? response.data.routes
       : [];
     setRoutes(newRoute);
-    setIsLoading(false);
   } catch (error) {
     console.error("Error al obtener los routes:", error);
   }
@@ -56,7 +55,7 @@ export const fetchGroups = async (token, user, setGroups, setIsLoading) => {
       ? response.data.groups
       : [];
     setGroups(newGroup);
-    setIsLoading(false);
+    // setIsLoading(false);
   } catch (error) {
     console.error("Error al obtener los groups:", error);
   }
@@ -102,7 +101,6 @@ export const fetchCustomersSupplier = async (
         },
       }
     );
-    console.log("🚀 ~ response:", response)
 
     const newCustomer = Array.isArray(response.data.customers)
       ? response.data.customers

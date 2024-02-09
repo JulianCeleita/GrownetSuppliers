@@ -103,6 +103,7 @@ export default function Table() {
   const [DescriptionData, setDescriptionData] = useState(null);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [showErrorOrderModal, setShowErrorOrderModal] = useState(false);
+  const [showErrorCode, setShowErrorCode] = useState(false);
   const [orderError, setOrderError] = useState("");
   const [specialRequirements, setSpecialRequirements] = useState("");
   const [mouseCoords, setMouseCoords] = useState({ x: 0, y: 0 });
@@ -433,6 +434,17 @@ export default function Table() {
       setProductByCode(productByCodeData);
     } catch (error) {
       console.error("Error al hacer la solicitud:", error.message);
+      setShowErrorCode(true);
+      const updatedRows = rows.map((row, index) => {
+        if (index === rowIndex) {
+          return {
+            ...row,
+            Code: "",
+          };
+        }
+        return row;
+      });
+      setRows(updatedRows);
     }
   };
 
@@ -535,44 +547,65 @@ export default function Table() {
   };
 
   return (
-    <div className="flex flex-col p-8">
+    <div className="flex flex-col p-5">
       <div className="overflow-x-auto">
         <form
           ref={form}
           onKeyUp={(event) => onEnterKey(event)}
-          className="m-1 whitespace-nowrap"
+          className="m-2 whitespace-nowrap"
         >
-          <table className="w-full text-sm text-center table-auto">
-            <thead className="text-white bg-blue-500">
+          <table className="w-full text-sm bg-white rounded-2xl text-center shadow-[rgba(17,_17,_26,_0.1)_0px_0px_16px]">
+            <thead className="sticky top-0 bg-white shadow-[0px_11px_15px_-3px_#edf2f7] ">
               <tr>
                 {columns.map((column, index) => {
                   const isVisible = initialColumns.includes(column);
                   // Encuentra el índice de la primera y última columna visible
-                  const firstVisibleColumnIndex = columns.findIndex(col => initialColumns.includes(col));
-                  const lastVisibleColumnIndex = columns.length - 1 - [...columns].reverse().findIndex(col => initialColumns.includes(col));
+                  const firstVisibleColumnIndex = columns.findIndex((col) =>
+                    initialColumns.includes(col)
+                  );
+                  const lastVisibleColumnIndex =
+                    columns.length -
+                    1 -
+                    [...columns]
+                      .reverse()
+                      .findIndex((col) => initialColumns.includes(col));
 
-                  return isVisible && (
-                    <th
-                      key={index}
-                      scope="col"
-                      className={`py-2 px-2 bg-white capitalize ${index === firstVisibleColumnIndex ? "rounded-tl-lg" : ""
-                        } ${index === lastVisibleColumnIndex ? "rounded-tr-lg" : ""
-                        } ${column === "quantity" ||
+                  return (
+                    isVisible && (
+                      <th
+                        key={index}
+                        scope="col"
+                        className={`py-2 px-2 capitalize ${
+                          index === firstVisibleColumnIndex
+                            ? "rounded-tl-lg"
+                            : ""
+                        } ${
+                          index === lastVisibleColumnIndex
+                            ? "rounded-tr-lg"
+                            : ""
+                        } ${
+                          column === "quantity" ||
                           column === "Code" ||
                           column === "VAT %" ||
                           column === "UOM" ||
-                          column === "Net" ? "w-20" :
-                          column === "Packsize" || column === "Total Price" ? "w-40" : ""
+                          column === "Net"
+                            ? "w-20"
+                            : column === "Packsize" || column === "Total Price"
+                            ? "w-40"
+                            : ""
                         }`}
-                      onContextMenu={(e) => handleContextMenu(e)}
-                    >
-                      <p className="text-lg text-dark-blue">{column}</p>
-                    </th>
+                        onContextMenu={(e) => handleContextMenu(e)}
+                      >
+                        <p className="text-base text-dark-blue my-2">
+                          {column}
+                        </p>
+                      </th>
+                    )
                   );
                 })}
               </tr>
             </thead>
-            <tbody className="border border-1 bg-white">
+            <tbody className="">
               {rows.map((row, rowIndex) => (
                 <tr key={rowIndex}>
                   {/* CODIGO DE PRODUCTO */}
@@ -581,7 +614,7 @@ export default function Table() {
                       initialColumns.includes(column) && (
                         <React.Fragment key={columnIndex}>
                           <td
-                            className={`px-3 py-2 border border-1 border-x-0`}
+                            className={`px-3 py-2 border-b-[1.5px]`}
                             tabIndex={0}
                             style={{ overflow: "visible" }}
                           >
@@ -622,10 +655,10 @@ export default function Table() {
                                     options={
                                       DescriptionData
                                         ? DescriptionData.map((item) => ({
-                                          value: item.productName,
-                                          label: item.concatenatedName,
-                                          code: item.code,
-                                        }))
+                                            value: item.productName,
+                                            label: item.concatenatedName,
+                                            code: item.code,
+                                          }))
                                         : []
                                     }
                                     value={{
@@ -674,10 +707,11 @@ export default function Table() {
                                 type={inputTypes[column]}
                                 ref={inputRefs[column][rowIndex]}
                                 data-field-name={column}
-                                className={`pl-2 h-[30px] outline-none w-full ${inputTypes[column] === "number"
-                                  ? "hide-number-arrows"
-                                  : ""
-                                  }`}
+                                className={`pl-2 h-[30px] outline-none w-full ${
+                                  inputTypes[column] === "number"
+                                    ? "hide-number-arrows"
+                                    : ""
+                                }`}
                                 value={row[column] || ""}
                                 onChange={(e) => {
                                   if (column === "Net") {
@@ -727,7 +761,7 @@ export default function Table() {
           {showCheckboxColumn === true && (
             <div
               ref={menuRef}
-              className="absolute bg-white p-2 border rounded"
+              className="absolute p-2 border rounded bg-white"
               style={{
                 top: `${mouseCoords.y}px`,
                 left: `${mouseCoords.x}px`,
@@ -800,6 +834,16 @@ export default function Table() {
         isvisible={showErrorOrderModal}
         onClose={() => setShowErrorOrderModal(false)}
         error={orderError}
+        title={"Sorry"}
+      />
+      <ModalOrderError
+        isvisible={showErrorCode}
+        onClose={() => setShowErrorCode(false)}
+        error={orderError}
+        title={"Incorrect code"}
+        message={
+          "The entered code is incorrect. Please verify and try again with a valid code."
+        }
       />
     </div>
   );

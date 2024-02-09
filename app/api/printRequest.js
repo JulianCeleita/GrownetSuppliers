@@ -11,7 +11,6 @@ export const fetchPrintOrders = async (token, orders) => {
       }
     );
 
-    console.log("response", response);
   } catch (error) {
     console.error("Error al enviar las ordenes para imprimir:", error);
   }
