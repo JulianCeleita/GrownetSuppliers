@@ -1,6 +1,6 @@
 "use client";
 import { PlusCircleIcon, PrinterIcon } from "@heroicons/react/24/outline";
-import { format } from "date-fns";
+import { format, set } from "date-fns";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -37,7 +37,7 @@ export const customStyles = {
 const OrderView = () => {
   const router = useRouter();
   const { token } = useTokenStore();
-  const { workDate, setFetchWorkDate } = useWorkDateStore()
+  const { workDate, setWorkDate, setFetchWorkDate } = useWorkDateStore()
   const { routePercentages, setRoutePercentages, setFetchRoutePercentages } = usePercentageStore()
   const [searchTerm, setSearchTerm] = useState("");
   const [isLoading, setIsLoading] = useState(true);
@@ -61,6 +61,14 @@ const OrderView = () => {
     const month = String(date.getMonth() + 1).padStart(2, '0');
     const year = String(date.getFullYear()).slice(-2);
     return `${day}/${month}/${year}`;
+  };
+
+  const formatDateToTransform = (dateString) => {
+    const date = new Date(dateString);
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const year = date.getFullYear();
+    return `${year}-${month}-${day}`;
   };
 
   useEffect(() => {
@@ -290,6 +298,7 @@ const OrderView = () => {
                 setSelectedDate(date);
                 setStartDate(date);
                 setEndDate(date);
+                setWorkDate(formatDateToTransform(date));
                 setDateFilter("range");
               }}
               className="form-input px-4 py-3 rounded-md border border-gray-300"
