@@ -143,7 +143,7 @@ const CustomersView = () => {
               className="pl-12 pr-4 py-3 h-[45px] w-full rounded-lg border border-gray-200 bg-white text-gray-700 placeholder-gray-400 focus:outline-none shadow-md hover:shadow-lg transition-shadow duration-150 ease-in-out"
             />
             <div className="absolute left-3 top-1/2 transform -translate-y-1/2">
-              <MagnifyingGlassIcon class="h-5 w-5 text-gray-400 mr-5" />
+              <MagnifyingGlassIcon className="h-5 w-5 text-gray-400 mr-5" />
             </div>
           </div>
           <select
@@ -224,7 +224,7 @@ const CustomersView = () => {
                     className="text-dark-blue border-2 border-stone-100 border-t-0"
                   >
                     <p className="flex items-center justify-center text-gray my-10">
-                      <ExclamationCircleIcon class="h-12 w-12 mr-10 text-gray" />
+                      <ExclamationCircleIcon className="h-12 w-12 mr-10 text-gray" />
                       Results not found. Try a different search!
                     </p>
                   </td>
@@ -314,7 +314,7 @@ const CustomersView = () => {
         />
         {isLoading && (
           <div className="flex justify-center items-center mb-20">
-            <div class="loader"></div>
+            <div className="loader"></div>
           </div>
         )}
       </div>

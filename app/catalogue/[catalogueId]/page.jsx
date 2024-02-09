@@ -304,7 +304,7 @@ const CustomerDetailPage = () => {
                     <div className="flex flex-col items-center justify-center">
                         {isLoading && (
                             <div className="flex justify-center items-center mb-10 mt-20">
-                                <div class="loader"></div>
+                                <div className="loader"></div>
                             </div>
                         )}
                         {!isLoading && (

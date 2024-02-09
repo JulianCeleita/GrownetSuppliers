@@ -76,10 +76,13 @@ export const fetchCustomers = async (
       },
     });
 
-    const newCustomer = Array.isArray(response.data.customers)
+    const newCustomers = Array.isArray(response.data.customers)
       ? response.data.customers
       : [];
-    setCustomers(newCustomer);
+    const sortedCustomers = newCustomers.sort((a, b) =>
+      a.accountName.localeCompare(b.accountName)
+    );
+    setCustomers(sortedCustomers);
     setIsLoading(false);
   } catch (error) {
     console.error("Error al obtener los customers:", error);
@@ -102,10 +105,13 @@ export const fetchCustomersSupplier = async (
       }
     );
 
-    const newCustomer = Array.isArray(response.data.customers)
+    const newCustomers = Array.isArray(response.data.customers)
       ? response.data.customers
       : [];
-    setCustomers(newCustomer);
+    const sortedCustomers = newCustomers.sort((a, b) =>
+      a.accountName.localeCompare(b.accountName)
+    );
+    setCustomers(sortedCustomers);
     setIsLoading(false);
   } catch (error) {
     console.error("Error al obtener los customers:", error);
