@@ -199,7 +199,7 @@ const PricesView = () => {
     <Layout>
       <div>
         <div className="flex justify-between p-8 bg-primary-blue">
-          <h1 className="text-2xl text-white font-semibold">Catalogue</h1>
+          <h1 className="text-2xl text-white font-semibold">Catalogs</h1>
           <button
             className="flex bg-green py-3 px-4 rounded-lg text-white font-medium hover:bg-dark-blue hover:scale-110 "
             type="button"
