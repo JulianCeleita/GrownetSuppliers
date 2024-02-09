@@ -94,11 +94,7 @@ const OrderView = () => {
         (item) => item.nameRoute === selectedRoute
       );
       if (result) {
-        setShowPercentage(
-          result.percentage_loading > 0
-            ? result.percentage_loading
-            : result.percentage_packing
-        );
+        setShowPercentage(result.percentage_loading);
       } else {
         setShowPercentage(null);
       }
