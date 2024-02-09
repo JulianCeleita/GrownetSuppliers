@@ -4,7 +4,7 @@ import {
   fetchGroups,
   fetchRoutes,
 } from "@/app/api/customerRequest";
-import { assignCustomer, customerUpdate } from "@/app/config/urls.config";
+import { assignCustomer, customerUpdate, disableCustomer } from "@/app/config/urls.config";
 import RootLayout from "@/app/layout";
 import useTokenStore from "@/app/store/useTokenStore";
 import useUserStore from "@/app/store/useUserStore";
@@ -12,7 +12,8 @@ import axios from "axios";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import Swal from "sweetalert2";
-import { XMarkIcon } from "@heroicons/react/24/outline";
+import { TrashIcon, XMarkIcon } from "@heroicons/react/24/outline";
+import ModalDelete from "./ModalDelete";
 
 const CustomerDetailPage = ({
   isvisible,
@@ -53,18 +54,26 @@ const CustomerDetailPage = ({
   const [endHour, setEndHour] = useState("");
   const [error, setError] = useState("");
   const [selectedRoutes, setSelectedRoutes] = useState({});
+  const [showDeleteModal, setShowDeleteModal] = useState("")
 
   const customerId = customer?.accountNumber;
 
   useEffect(() => {
-    if (!token) {
-      router.push("/");
-    } else if (token !== null && customerId !== undefined) {
+    if (isvisible) {
+      setIsLoading(true);
       fetchCustomerDetail(token, setDetailCustomer, setIsLoading, customerId);
       fetchRoutes(token, user, setRoutes, setIsLoading);
       fetchGroups(token, user, setGroups, setIsLoading);
     }
-  }, [customerId, token]);
+  }, [isvisible, customerId, token, user]);
+
+  useEffect(() => {
+    if (!isvisible) {
+      setDetailCustomer(undefined);
+      setAccountNumber("");
+      setAccountName("");
+    }
+  }, [isvisible]);
 
   useEffect(() => {
     if (detailCustomer && detailCustomer.length > 0) {
@@ -230,6 +239,10 @@ const CustomerDetailPage = ({
     setDrop(newValue);
   };
 
+  const clearStates = () => {
+    setDetailCustomer(null);
+  }
+
   const enviarData = (e) => {
     e.preventDefault();
     const postData = {
@@ -272,6 +285,8 @@ const CustomerDetailPage = ({
             },
           })
           .then((assignResponse) => {
+            console.log("🚀 ~ .then ~ edited:")
+            setUpdateCustomers(true);
             Swal.fire({
               position: "top-end",
               icon: "success",
@@ -279,7 +294,7 @@ const CustomerDetailPage = ({
               showConfirmButton: false,
               timer: 1500,
             });
-            setUpdateCustomers(true);
+            clearStates();
             onClose();
           })
           .catch((assignError) => {
@@ -288,6 +303,25 @@ const CustomerDetailPage = ({
       })
       .catch((error) => {
         console.error("Error al agregar el nuevo cliente: ", error);
+      });
+  };
+
+  const handleDeleteCustomer = (customerId) => {
+    const id = customerId;
+    axios
+      .post(`${disableCustomer}${id}`, null, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+      .then((response) => {
+        setShowDeleteModal(false);
+        setUpdateCustomers(true);
+        clearStates();
+        onClose();
+      })
+      .catch((error) => {
+        console.error("Error al eliminar la presentación:", error);
       });
   };
 
@@ -305,6 +339,7 @@ const CustomerDetailPage = ({
               onClick={() => {
                 setAccountName("");
                 setEmailCustomer("");
+                clearStates();
                 onClose();
               }}
             >
@@ -313,270 +348,294 @@ const CustomerDetailPage = ({
             <h1 className="text-2xl font-bold text-dark-blue mb-2">
               Edit <span className="text-primary-blue">customer</span>
             </h1>
-            <form className="text-left " onSubmit={enviarData}>
-              <div className="flex">
-                <div className="flex flex-col  w-[50%]">
-                  <div className="flex items-center">
-                    <label className="mr-2">Account name:</label>
-                    <input
-                      className="border p-3 rounded-md w-full"
-                      placeholder="Name"
-                      type="text"
-                      value={accountName}
-                      onChange={(e) => setAccountName(e.target.value)}
-                      required
-                    />
-                  </div>
-                  <div className="flex mt-3 items-center">
-                    <label className="mr-2">Email:</label>
-                    <input
-                      className="border p-3 rounded-md w-full"
-                      placeholder="test@grownet.com"
-                      type="email"
-                      value={emailCustomer}
-                      onChange={(e) => setEmailCustomer(e.target.value)}
-                      required
-                    />
-                  </div>
-                  <div className="flex mt-3 items-center">
-                    <label className="mr-2">Address:</label>
-                    <input
-                      className="border p-3 rounded-md w-full"
-                      placeholder="test@grownet.com"
-                      type="text"
-                      value={addressCustomer}
-                      onChange={(e) => setAddressCustomer(e.target.value)}
-                      required
-                    />
-                  </div>
-                  <div className="flex mt-3 items-center">
-                    <label className="mr-2">Post code:</label>
-                    <input
-                      className="border p-3 rounded-md w-full"
-                      placeholder="170001"
-                      type="text"
-                      maxLength={45}
-                      value={postCode}
-                      onChange={(e) => setPostCode(e.target.value)}
-                      required
-                    />
-                  </div>
-                  <div className="flex mt-3 items-center">
-                    <label className="mr-2">Main Contact:</label>
-                    <input
-                      className="border p-3 rounded-md w-full"
-                      placeholder="Your name"
-                      type="text"
-                      maxLength={100}
-                      value={mainContact}
-                      onChange={(e) => setMainContact(e.target.value)}
-                      required
-                    />
-                  </div>
-                  <div className="flex mt-3 items-center">
-                    <label className="mr-2">Drop:</label>
-                    <input
-                      className="border p-3 rounded-md w-full"
-                      placeholder="5"
-                      type="number"
-                      maxLength={3}
-                      value={drop}
-                      onChange={(e) => setDrop(e.target.value)}
-                      required
-                    />
-                  </div>
-                  <div className="flex mt-3 items-center">
-                    <label className="mr-2">VIP:</label>
-                    <select
-                      value={vip}
-                      onChange={handleVipChange}
-                      className="ml-2 border p-2 rounded-md w-full"
-                    >
-                      <option value="">Select Option</option>
-                      <option key="yes" value="yes">
-                        Yes
-                      </option>
-                      <option key="no" value="no">
-                        No
-                      </option>
-                    </select>
-                  </div>
-                  <div className="flex mt-3 items-center">
-                    <label className="mr-2">Group:</label>
-                    <select
-                      value={selectedGroup}
-                      onChange={(e) => setSelectedGroup(e.target.value)}
-                      className="ml-2 border p-2 rounded-md w-full"
-                    >
-                      <option value="">Select Group</option>
-                      {groups &&
-                        groups.map((group) => (
-                          <>
-                            <option key={group.id} value={group.id}>
-                              {group.group}
-                            </option>
-                          </>
-                        ))}
-                    </select>
-                  </div>
-                </div>
-                <div className="ml-5 flex flex-col w-[50%] ">
-                  <div className="flex items-center mb-4">
-                    <label className="mr-2">Account number:</label>
-                    <input
-                      className="border p-3 rounded-md"
-                      placeholder="RK100"
-                      type="text"
-                      value={accountNumber}
-                      readOnly
-                      required
-                    />
-                  </div>
-                  <div className="flex items-center mb-4">
-                    <label className="mr-2">Marketing Email:</label>
-                    <input
-                      className="border p-3 rounded-md w-full"
-                      placeholder="test_marketing@grownet.com"
-                      type="email"
-                      value={marketingEmail}
-                      onChange={(e) => setMarketingEmail(e.target.value)}
-                      required
-                    />
-                  </div>
-                  <div className="flex items-center mb-4">
-                    <label className="mr-2">Telephone number:</label>
-                    <input
-                      className="border p-3 rounded-md w-full"
-                      placeholder="31383394455"
-                      type="number"
-                      value={telephoneCustomer}
-                      onChange={(e) => setTelephoneCustomer(e.target.value)}
-                      required
-                    />
-                  </div>
-                  <div className="flex items-center mb-4">
-                    <label className="mr-2">Special Instructions:</label>
-                    <input
-                      className="border p-3 rounded-md w-full"
-                      placeholder="Special instructions"
-                      type="text"
-                      value={specialInstructions}
-                      onChange={(e) => setSpecialInstructions(e.target.value)}
-                      required
-                    />
-                  </div>
-                  <div className="flex items-center mb-4">
-                    <label className="mr-2">Account email:</label>
-                    <input
-                      className="border p-3 rounded-md w-full"
-                      placeholder="suppliers@grownet.com"
-                      type="email"
-                      value={accountEmail}
-                      onChange={(e) => setAccountEmail(e.target.value)}
-                      required
-                    />
-                  </div>
-                  <div className="flex items-center mb-4">
-                    <label className="mr-2">Crates:</label>
-                    <select
-                      value={crates}
-                      onChange={handleCratesChange}
-                      className="ml-2 border p-2 rounded-md w-full"
-                    >
-                      <option value="">Select Option</option>
-                      <option key="yes" value="yes">
-                        Yes
-                      </option>
-                      <option key="no" value="no">
-                        No
-                      </option>
-                    </select>
-                  </div>
-                  <div className="flex items-center mb-4">
-                    <label className="mr-2">Delivery Window:</label>
+            {isLoading ? (
+              <div className="flex justify-center items-center mb-20">
+                <div class="loader"></div>
+              </div>
+            ) : (
+
+              <form className="text-left " onSubmit={enviarData}>
+                <div className="flex">
+                  <div className="flex flex-col  w-[50%]">
                     <div className="flex items-center">
+                      <label className="mr-2">Account name:</label>
                       <input
                         className="border p-3 rounded-md w-full"
-                        placeholder="hh:mm:ss"
+                        placeholder="Name"
                         type="text"
-                        maxLength={8}
-                        value={startHour}
-                        onChange={handleStartHourChange}
-                        onBlur={handleBlur}
-                        required
-                      />
-                      <span className="mx-2">-</span>
-                      <input
-                        className="border p-3 rounded-md w-full"
-                        placeholder="hh:mm:ss"
-                        type="text"
-                        maxLength={8}
-                        value={endHour}
-                        onChange={handleEndHourChange}
-                        onBlur={handleBlur}
+                        value={accountName}
+                        onChange={(e) => setAccountName(e.target.value)}
                         required
                       />
                     </div>
-                  </div>
-                  <div className="flex items-center mb-4">
-                    <label className="mr-2">Routes:</label>
-                    <table className="ml-2 border p-2 rounded-md">
-                      <thead>
-                        <tr>
-                          <th></th>
-                          {routes.map((route) => (
-                            <th className="p-1" key={route.id}>
-                              {route.name}
-                            </th>
+                    <div className="flex mt-3 items-center">
+                      <label className="mr-2">Email:</label>
+                      <input
+                        className="border p-3 rounded-md w-full"
+                        placeholder="test@grownet.com"
+                        type="email"
+                        value={emailCustomer}
+                        onChange={(e) => setEmailCustomer(e.target.value)}
+                        required
+                      />
+                    </div>
+                    <div className="flex mt-3 items-center">
+                      <label className="mr-2">Address:</label>
+                      <input
+                        className="border p-3 rounded-md w-full"
+                        placeholder="test@grownet.com"
+                        type="text"
+                        value={addressCustomer}
+                        onChange={(e) => setAddressCustomer(e.target.value)}
+                        required
+                      />
+                    </div>
+                    <div className="flex mt-3 items-center">
+                      <label className="mr-2">Post code:</label>
+                      <input
+                        className="border p-3 rounded-md w-full"
+                        placeholder="170001"
+                        type="text"
+                        maxLength={45}
+                        value={postCode}
+                        onChange={(e) => setPostCode(e.target.value)}
+                        required
+                      />
+                    </div>
+                    <div className="flex mt-3 items-center">
+                      <label className="mr-2">Main Contact:</label>
+                      <input
+                        className="border p-3 rounded-md w-full"
+                        placeholder="Your name"
+                        type="text"
+                        maxLength={100}
+                        value={mainContact}
+                        onChange={(e) => setMainContact(e.target.value)}
+                        required
+                      />
+                    </div>
+                    <div className="flex mt-3 items-center">
+                      <label className="mr-2">Drop:</label>
+                      <input
+                        className="border p-3 rounded-md w-full"
+                        placeholder="5"
+                        type="number"
+                        maxLength={3}
+                        value={drop}
+                        onChange={handleDropChange}
+                        required
+                      />
+                    </div>
+                    <div className="flex mt-3 items-center">
+                      <label className="mr-2">VIP:</label>
+                      <select
+                        value={vip}
+                        onChange={handleVipChange}
+                        className="ml-2 border p-2 rounded-md w-full"
+                      >
+                        <option value="">Select Option</option>
+                        <option key="yes" value="yes">
+                          Yes
+                        </option>
+                        <option key="no" value="no">
+                          No
+                        </option>
+                      </select>
+                    </div>
+                    <div className="flex mt-3 items-center">
+                      <label className="mr-2">Group:</label>
+                      <select
+                        value={selectedGroup}
+                        onChange={(e) => setSelectedGroup(e.target.value)}
+                        className="ml-2 border p-2 rounded-md w-full"
+                      >
+                        <option value="">Select Group</option>
+                        {groups &&
+                          groups.map((group) => (
+                            <>
+                              <option key={group.id} value={group.id}>
+                                {group.group}
+                              </option>
+                            </>
                           ))}
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {["Mon", "Tues", "Wen", "Truh", "Frid"].map((day) => (
-                          <tr key={day}>
-                            <td>{day}</td>
+                      </select>
+                    </div>
+                  </div>
+                  <div className="ml-5 flex flex-col w-[50%] ">
+                    <div className="flex items-center mb-4">
+                      <label className="mr-2">Account number:</label>
+                      <input
+                        className="border p-3 rounded-md"
+                        placeholder="RK100"
+                        type="text"
+                        value={accountNumber}
+                        readOnly
+                        required
+                      />
+                    </div>
+                    <div className="flex items-center mb-4">
+                      <label className="mr-2">Marketing Email:</label>
+                      <input
+                        className="border p-3 rounded-md w-full"
+                        placeholder="test_marketing@grownet.com"
+                        type="email"
+                        value={marketingEmail}
+                        onChange={(e) => setMarketingEmail(e.target.value)}
+                        required
+                      />
+                    </div>
+                    <div className="flex items-center mb-4">
+                      <label className="mr-2">Telephone number:</label>
+                      <input
+                        className="border p-3 rounded-md w-full"
+                        placeholder="31383394455"
+                        type="number"
+                        value={telephoneCustomer}
+                        onChange={(e) => setTelephoneCustomer(e.target.value)}
+                        required
+                      />
+                    </div>
+                    <div className="flex items-center mb-4">
+                      <label className="mr-2">Special Instructions:</label>
+                      <input
+                        className="border p-3 rounded-md w-full"
+                        placeholder="Special instructions"
+                        type="text"
+                        value={specialInstructions}
+                        onChange={(e) => setSpecialInstructions(e.target.value)}
+                        required
+                      />
+                    </div>
+                    <div className="flex items-center mb-4">
+                      <label className="mr-2">Account email:</label>
+                      <input
+                        className="border p-3 rounded-md w-full"
+                        placeholder="suppliers@grownet.com"
+                        type="email"
+                        value={accountEmail}
+                        onChange={(e) => setAccountEmail(e.target.value)}
+                        required
+                      />
+                    </div>
+                    <div className="flex items-center mb-4">
+                      <label className="mr-2">Crates:</label>
+                      <select
+                        value={crates}
+                        onChange={handleCratesChange}
+                        className="ml-2 border p-2 rounded-md w-full"
+                      >
+                        <option value="">Select Option</option>
+                        <option key="yes" value="yes">
+                          Yes
+                        </option>
+                        <option key="no" value="no">
+                          No
+                        </option>
+                      </select>
+                    </div>
+                    <div className="flex items-center mb-4">
+                      <label className="mr-2">Delivery Window:</label>
+                      <div className="flex items-center">
+                        <input
+                          className="border p-3 rounded-md w-full"
+                          placeholder="hh:mm:ss"
+                          type="text"
+                          maxLength={8}
+                          value={startHour}
+                          onChange={handleStartHourChange}
+                          onBlur={handleBlur}
+                          required
+                        />
+                        <span className="mx-2">-</span>
+                        <input
+                          className="border p-3 rounded-md w-full"
+                          placeholder="hh:mm:ss"
+                          type="text"
+                          maxLength={8}
+                          value={endHour}
+                          onChange={handleEndHourChange}
+                          onBlur={handleBlur}
+                          required
+                        />
+                      </div>
+                    </div>
+                    <div className="flex items-center mb-4">
+                      <label className="mr-2">Routes:</label>
+                      <table className="ml-2 border p-2 rounded-md">
+                        <thead>
+                          <tr>
+                            <th></th>
                             {routes.map((route) => (
-                              <td key={route.id}>
-                                <input
-                                  type="checkbox"
-                                  checked={
-                                    selectedRoutes[day]?.[route.id] || false
-                                  }
-                                  onChange={() =>
-                                    handleRouteCheckboxChange(route.id, day)
-                                  }
-                                />
-                              </td>
+                              <th className="p-1" key={route.id}>
+                                {route.name}
+                              </th>
                             ))}
                           </tr>
-                        ))}
-                      </tbody>
-                    </table>
+                        </thead>
+                        <tbody>
+                          {["Mon", "Tues", "Wen", "Truh", "Frid"].map((day) => (
+                            <tr key={day}>
+                              <td>{day}</td>
+                              {routes.map((route) => (
+                                <td key={route.id}>
+                                  <input
+                                    type="checkbox"
+                                    checked={
+                                      selectedRoutes[day]?.[route.id] || false
+                                    }
+                                    onChange={() =>
+                                      handleRouteCheckboxChange(route.id, day)
+                                    }
+                                  />
+                                </td>
+                              ))}
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
                   </div>
                 </div>
-              </div>
-              <div className="mt-3 text-center">
-                <button
-                  type="submit"
-                  value="Submit"
-                  className={`bg-primary-blue py-3 px-4 rounded-lg text-white font-medium mr-3 ${
-                    isLoading === true ? "bg-gray-500/50" : ""
-                  }`}
-                  disabled={isLoading}
-                >
-                  Edit customer
-                </button>
-                <button
-                  onClick={() => {
-                    onClose();
-                  }}
-                  className=" py-3 px-4 rounded-lg text-primary-blue border border-primary-blue font-medium"
-                >
-                  Close
-                </button>
-              </div>
-            </form>
+                <div>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setShowDeleteModal(true);
+                    }}
+                    className="flex text-primary-blue font-medium hover:scale-110 hover:text-danger hover:border-danger"
+                  >
+                    <TrashIcon className="h-6 w-6 mr-1" />
+                    Delete
+                  </button>
+                </div>
+                <div className="mt-3 text-center">
+                  <button
+                    type="submit"
+                    value="Submit"
+                    className={`bg-primary-blue py-3 px-4 rounded-lg text-white font-medium mr-3 ${isLoading === true ? "bg-gray-500/50" : ""
+                      }`}
+                    disabled={isLoading}
+                  >
+                    Edit customer
+                  </button>
+                  <button
+                    onClick={() => {
+                      clearStates();
+                      onClose();
+                    }}
+                    className=" py-3 px-4 rounded-lg text-primary-blue border border-primary-blue font-medium"
+                  >
+                    Close
+                  </button>
+                </div>
+              </form>
+            )}
           </div>
+          <ModalDelete
+            isvisible={showDeleteModal}
+            onClose={() => setShowDeleteModal(false)}
+            onConfirm={() => handleDeleteCustomer(customerId)}
+          />
         </div>
       ) : (
         <RootLayout></RootLayout>

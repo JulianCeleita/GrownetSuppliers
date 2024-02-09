@@ -149,6 +149,29 @@ function NewCustomer({ isvisible, onClose, setUpdateCustomers }) {
     setDrop(newValue);
   };
 
+  const clearStates = () => {
+    setAccountNumber("");
+    setAccountName("");
+    setPostCode("");
+    setAddressCustomer("");
+    setSpecialInstructions("");
+    setTelephoneCustomer("");
+    setEmailCustomer("");
+    setMarketingEmail("");
+    setMainContact("");
+    setAccountEmail("");
+    setDrop("");
+    // Reset crates and vip to their initial "unselected" state
+    setCrates("");
+    setVip("");
+    // Reset selectedGroup to null which represents no group selected
+    setSelectedGroup(null);
+    // Reset routes to an empty object, assuming no routes are selected initially
+    setSelectedRoutes({});
+    setStartHour("");
+    setEndHour("");
+  }
+
   const enviarData = (e) => {
     e.preventDefault();
     const postData = {
@@ -191,11 +214,6 @@ function NewCustomer({ isvisible, onClose, setUpdateCustomers }) {
             },
           })
           .then((assignResponse) => {
-            if (user?.rol_name == "AdminGrownet") {
-              fetchCustomers(token, user, setCustomers, setIsLoading);
-            } else {
-              fetchCustomersSupplier(token, user, setCustomers, setIsLoading);
-            }
             Swal.fire({
               position: "top-end",
               icon: "success",
@@ -203,8 +221,8 @@ function NewCustomer({ isvisible, onClose, setUpdateCustomers }) {
               showConfirmButton: false,
               timer: 1500,
             });
-
             setUpdateCustomers(true);
+            clearStates();
             onClose();
           })
           .catch((assignError) => {
@@ -224,6 +242,7 @@ function NewCustomer({ isvisible, onClose, setUpdateCustomers }) {
           onClick={() => {
             setAccountName("");
             setEmailCustomer("");
+            clearStates();
             onClose();
           }}
         >
@@ -478,15 +497,15 @@ function NewCustomer({ isvisible, onClose, setUpdateCustomers }) {
             <button
               type="submit"
               value="Submit"
-              className={`bg-primary-blue py-3 px-4 rounded-lg text-white font-medium mr-3 ${
-                isLoading === true ? "bg-gray-500/50" : ""
-              }`}
+              className={`bg-primary-blue py-3 px-4 rounded-lg text-white font-medium mr-3 ${isLoading === true ? "bg-gray-500/50" : ""
+                }`}
               disabled={isLoading}
             >
               Add customer
             </button>
             <button
               onClick={() => {
+                clearStates();
                 onClose();
               }}
               className=" py-3 px-4 rounded-lg text-primary-blue border border-primary-blue font-medium"

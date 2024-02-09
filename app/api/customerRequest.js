@@ -55,7 +55,7 @@ export const fetchGroups = async (token, user, setGroups, setIsLoading) => {
       ? response.data.groups
       : [];
     setGroups(newGroup);
-    setIsLoading(false);
+    // setIsLoading(false);
   } catch (error) {
     console.error("Error al obtener los groups:", error);
   }
