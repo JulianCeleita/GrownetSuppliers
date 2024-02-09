@@ -289,7 +289,6 @@ const CustomerDetailPage = ({
             },
           })
           .then((assignResponse) => {
-            console.log("🚀 ~ .then ~ edited:");
             setUpdateCustomers(true);
             Swal.fire({
               customClass: {
