@@ -50,16 +50,16 @@ function NewCustomer({ isvisible, onClose, setUpdateCustomers }) {
     return null;
   }
 
-  const handleRouteCheckboxChange = (routeId, day) => {
-    setSelectedRoutes((prevSelectedRoutes) => {
-      const updatedRoutes = { ...prevSelectedRoutes };
+  // const handleRouteCheckboxChange = (routeId, day) => {
+  //   setSelectedRoutes((prevSelectedRoutes) => {
+  //     const updatedRoutes = { ...prevSelectedRoutes };
 
-      // Toggle the selected checkbox for the current route and day
-      updatedRoutes[day] = { [routeId]: !updatedRoutes[day]?.[routeId] };
+  //     // Toggle the selected checkbox for the current route and day
+  //     updatedRoutes[day] = { [routeId]: !updatedRoutes[day]?.[routeId] };
 
-      return updatedRoutes;
-    });
-  };
+  //     return updatedRoutes;
+  //   });
+  // };
 
   const prepareDataForBackend = () => {
     const daysData = {};
@@ -238,7 +238,7 @@ function NewCustomer({ isvisible, onClose, setUpdateCustomers }) {
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-25 backdrop-blur-sm flex flex-col justify-center items-center">
-      <div className="bg-white p-8 rounded-2xl w-[950px]  2xl:w-[900px] flex flex-col items-center  max-h-screen h-[95%] 2xl:h-hidden">
+      <div className="bg-white p-8 rounded-2xl w-[1100px] flex flex-col items-center  max-h-screen 2xl:h-hidden">
         <div className="overflow-y-auto ">
           <div className=" flex justify-end">
             <button
@@ -257,7 +257,7 @@ function NewCustomer({ isvisible, onClose, setUpdateCustomers }) {
             New <span className="text-primary-blue">&nbsp;customer</span>
           </h1>
 
-          <form className="text-left mt-8" onSubmit={enviarData}>
+          <form className="text-left mt-8 " onSubmit={enviarData}>
             <div className="flex">
               <div className="flex flex-col  w-[50%]">
                 <div className="flex items-center">
@@ -466,42 +466,35 @@ function NewCustomer({ isvisible, onClose, setUpdateCustomers }) {
                 </div>
                 <div className="flex items-center mb-4">
                   <label className="mr-2">Routes:</label>
-                  <table className="ml-2 border p-2 rounded-md">
-                    <thead>
-                      <tr>
-                        <th></th>
-                        {routes.map((route) => (
-                          <th className="p-1" key={route.id}>
-                            {route.name}
-                          </th>
-                        ))}
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {["Mon", "Tues", "Wen", "Truh", "Frid"].map((day) => (
-                        <tr key={day}>
-                          <td>{day}</td>
+                  <div className="flex flex-wrap border p-2 w-full rounded-lg ">
+                    {["Mon", "Tues", "Wed", "Thur", "Fri", "Sat"].map((day) => (
+                      <div key={day} className="flex items-center my-1 w-[50%]">
+                        <label className="mx-2">{day}:</label>
+                        <select
+                          value={selectedRoutes[day]}
+                          onChange={(e) => {
+                            const selectedRouteId = e.target.value;
+                            setSelectedRoutes((prevSelectedRoutes) => ({
+                              ...prevSelectedRoutes,
+                              [day]: selectedRouteId,
+                            }));
+                          }}
+                          className="ml-2 border rounded-md bg-white bg-clip-padding bg-no-repeat w-full border-gray-200 p-1 leading-tight focus:outline-none text-gray-400 hover:border-gray-300 duration-150 ease-in-out"
+                        >
+                          <option value="">Select route</option>
                           {routes.map((route) => (
-                            <td key={route.id}>
-                              <input
-                                type="checkbox"
-                                checked={
-                                  selectedRoutes[day]?.[route.id] || false
-                                }
-                                onChange={() =>
-                                  handleRouteCheckboxChange(route.id, day)
-                                }
-                              />
-                            </td>
+                            <option key={route.id} value={route.id}>
+                              {route.name}
+                            </option>
                           ))}
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
+                        </select>
+                      </div>
+                    ))}
+                  </div>
                 </div>
               </div>
             </div>
-            <div className="mt-3 text-center">
+            <div className="mt-3 text-center ">
               <button
                 type="submit"
                 value="Submit"
