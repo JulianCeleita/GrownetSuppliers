@@ -175,7 +175,11 @@ const CreateOrderView = () => {
     { name: "Net Invoice", price: "£ " + totalNetSum },
     { name: "Total VAT", price: "£ " + totalTaxSum },
     { name: "Total Invoice", price: "£ " + totalPriceSum },
-    { name: "Profit (£)", price: "£ " + totalProfit },
+    {
+      name: "Profit (£)",
+      price: "£ " + totalProfit,
+      percetage: totalProfitPercentage + "%",
+    },
     { name: "Profit (%)", price: totalProfitPercentage + "%" },
   ];
 
@@ -213,7 +217,7 @@ const CreateOrderView = () => {
     <Layout>
       <div className="max-w-[400px] -mt-[110px] ml-[115px]">
         <div className="flex mt-1 items-center">
-          <h3 className="w-[38%] text-white">Account Name:</h3>
+          <h3 className="w-[38%] text-white">Account name:</h3>
           <div className="relative mb-2 w-[62%]">
             <Select
               instanceId
@@ -238,7 +242,7 @@ const CreateOrderView = () => {
         </div>
 
         <div className="flex items-center">
-          <h3 className="w-[38%] text-white">Account Number:</h3>
+          <h3 className="w-[38%] text-white">Account number:</h3>
           <div className="relative mb-2 w-[62%]">
             <Select
               instanceId
@@ -262,13 +266,59 @@ const CreateOrderView = () => {
           </div>
         </div>
       </div>
-      {/* <Link
-        onClick={resetStates}
-        className="flex w-[120px] items-center bg-dark-blue py-2.5 px-3 rounded-lg text-white font-medium transition-all hover:scale-110 "
-        href="/orders"
-      >
-        <ArrowLeftIcon className="w-5 h-5 mt-0.5 mr-2 inline-block" /> Go back
-      </Link> */}
+      <section className="fixed top-0 right-10 mt-4">
+        <div className="flex justify-end">
+          <Link
+            onClick={resetStates}
+            className="flex w-[120px] mb-3 items-center bg-dark-blue py-2.5 px-3 rounded-lg text-white font-medium transition-all hover:scale-110 "
+            href="/orders"
+          >
+            <ArrowLeftIcon className="w-5 h-5 mt-0.5 mr-2 inline-block" /> Go
+            back
+          </Link>
+        </div>
+        <div className="px-4 py-4 rounded-3xl flex items-center justify-center bg-white shadow-[0_8px_30px_rgb(0,0,0,0.12)]">
+          {/* <div className="pr-2">
+            <h1 className="flex text-xl font-bold">Net invoice</h1>
+            <p className="text-[28px] font-bold text-primary-blue">£15.000</p>
+          </div>
+          <div className="border-l border-green border-dashed pl-3">
+            <h1 className=" text-xl font-bold">Profit</h1>
+            <p className="text-[25px] font-bold text-primary-blue -mt-2">
+              97.72%
+            </p>
+            <h2 className="ml-1 text-green font-semibold py-1 px-2 rounded-lg text-[15px] bg-background-green text-center -mt-1">
+              £15.800
+            </h2>
+          </div> */}
+          {columnsTotal.map(
+            (column, index) =>
+              initialTotalRows.includes(column.name) && (
+                <div key={column.name}>
+                  {column.name === "Net Invoice" && (
+                    <div className="pr-2">
+                      <h1 className="flex text-xl font-bold">Net invoice</h1>
+                      <p className="text-[28px] font-bold text-primary-blue">
+                        {column.price}
+                      </p>
+                    </div>
+                  )}
+                  {column.name === "Profit (£)" && (
+                    <div className="border-l border-green border-dashed pl-3">
+                      <h1 className=" text-xl font-bold">Profit</h1>
+                      <p className="text-[25px] font-bold text-primary-blue -mt-2">
+                        {column.percetage}
+                      </p>
+                      <h2 className="ml-1 text-green font-semibold py-1 px-2 rounded-lg text-[15px] bg-background-green text-center -mt-1">
+                        {column.price}
+                      </h2>
+                    </div>
+                  )}
+                </div>
+              )
+          )}
+        </div>
+      </section>
 
       {/* <div className="grid grid-cols-3 gap-4 p-5 shadow-lg bg-primary-blue pb-20">
         <div
@@ -327,7 +377,7 @@ const CreateOrderView = () => {
           </div>
         )}
       </div>*/}
-      <div className="flex items-center ml-10 mt-5 w-[70%] px-2 py-1 rounded-md">
+      <div className="flex items-center ml-10 mt-10 w-[70%] px-2 py-1 rounded-md">
         <label className="text-dark-blue">Date: </label>
         <input
           type="date"

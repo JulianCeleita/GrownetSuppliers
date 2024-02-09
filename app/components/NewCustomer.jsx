@@ -149,6 +149,29 @@ function NewCustomer({ isvisible, onClose, setUpdateCustomers }) {
     setDrop(newValue);
   };
 
+  const clearStates = () => {
+    setAccountNumber("");
+    setAccountName("");
+    setPostCode("");
+    setAddressCustomer("");
+    setSpecialInstructions("");
+    setTelephoneCustomer("");
+    setEmailCustomer("");
+    setMarketingEmail("");
+    setMainContact("");
+    setAccountEmail("");
+    setDrop("");
+    // Reset crates and vip to their initial "unselected" state
+    setCrates("");
+    setVip("");
+    // Reset selectedGroup to null which represents no group selected
+    setSelectedGroup(null);
+    // Reset routes to an empty object, assuming no routes are selected initially
+    setSelectedRoutes({});
+    setStartHour("");
+    setEndHour("");
+  };
+
   const enviarData = (e) => {
     e.preventDefault();
     const postData = {
@@ -191,11 +214,6 @@ function NewCustomer({ isvisible, onClose, setUpdateCustomers }) {
             },
           })
           .then((assignResponse) => {
-            if (user?.rol_name == "AdminGrownet") {
-              fetchCustomers(token, user, setCustomers, setIsLoading);
-            } else {
-              fetchCustomersSupplier(token, user, setCustomers, setIsLoading);
-            }
             Swal.fire({
               position: "top-end",
               icon: "success",
@@ -203,8 +221,8 @@ function NewCustomer({ isvisible, onClose, setUpdateCustomers }) {
               showConfirmButton: false,
               timer: 1500,
             });
-
             setUpdateCustomers(true);
+            clearStates();
             onClose();
           })
           .catch((assignError) => {
@@ -218,25 +236,25 @@ function NewCustomer({ isvisible, onClose, setUpdateCustomers }) {
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-25 backdrop-blur-sm flex flex-col justify-center items-center">
-      <div className="bg-white h-[95%] 2xl:h-hidden p-8 rounded-2xl  flex flex-col items-center   ">
-        <div className=" overflow-y-auto scrollbar">
-          <div>
-            <div className="flex justify-end">
-              <button
-                className=" text-dark-blue "
-                onClick={() => {
-                  setAccountName("");
-                  setEmailCustomer("");
-                  onClose();
-                }}
-              >
-                <XMarkIcon className="h-6 w-6 text-gray-500" />
-              </button>
-            </div>
-            <h1 className="text-2xl font-bold text-dark-blue mb-2 flex justify-center">
-              New <span className="text-primary-blue">&nbsp;customer</span>
-            </h1>
+      <div className="bg-white p-8 rounded-2xl w-[950px]  2xl:w-[900px] flex flex-col items-center  max-h-screen h-[95%] 2xl:h-hidden">
+        <div className="overflow-y-auto ">
+          <div className=" flex justify-end">
+            <button
+              className="text-dark-blue place-self-end "
+              onClick={() => {
+                setAccountName("");
+                setEmailCustomer("");
+                clearStates();
+                onClose();
+              }}
+            >
+              <XMarkIcon className="h-6 w-6 text-gray-500" />
+            </button>
           </div>
+          <h1 className="text-2xl font-bold text-dark-blue mb-2 flex justify-center">
+            New <span className="text-primary-blue">&nbsp;customer</span>
+          </h1>
+
           <form className="text-left mt-8" onSubmit={enviarData}>
             <div className="flex">
               <div className="flex flex-col  w-[50%]">
@@ -494,6 +512,7 @@ function NewCustomer({ isvisible, onClose, setUpdateCustomers }) {
               </button>
               <button
                 onClick={() => {
+                  clearStates();
                   onClose();
                 }}
                 className=" py-3 px-4 rounded-lg text-primary-blue border border-primary-blue font-medium"
