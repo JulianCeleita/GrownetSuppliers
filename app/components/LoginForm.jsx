@@ -45,6 +45,7 @@ function LoginForm() {
         }
         setUsername("");
         setPassword("");
+        console.log('Esta es la respuesta de logueo',response.data);
       })
       .catch((error) => {
         console.error("Error al iniciar sesión: ", error);
