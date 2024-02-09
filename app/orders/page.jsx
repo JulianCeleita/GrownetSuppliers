@@ -19,7 +19,6 @@ import usePercentageStore from "../store/usePercentageStore";
 import useTokenStore from "../store/useTokenStore";
 import useUserStore from "../store/useUserStore";
 import useWorkDateStore from "../store/useWorkDateStore";
-import { CalendarIcon } from "@heroicons/react/24/solid";
 
 const formatDate = (dateString) => {
   const formattedDate = format(new Date(dateString), "yyyy-MM-dd");

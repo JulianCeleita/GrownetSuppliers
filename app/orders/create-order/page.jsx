@@ -278,19 +278,6 @@ const CreateOrderView = () => {
           </Link>
         </div>
         <div className="px-4 py-4 rounded-3xl flex items-center justify-center bg-white shadow-[0_8px_30px_rgb(0,0,0,0.12)]">
-          {/* <div className="pr-2">
-            <h1 className="flex text-xl font-bold">Net invoice</h1>
-            <p className="text-[28px] font-bold text-primary-blue">£15.000</p>
-          </div>
-          <div className="border-l border-green border-dashed pl-3">
-            <h1 className=" text-xl font-bold">Profit</h1>
-            <p className="text-[25px] font-bold text-primary-blue -mt-2">
-              97.72%
-            </p>
-            <h2 className="ml-1 text-green font-semibold py-1 px-2 rounded-lg text-[15px] bg-background-green text-center -mt-1">
-              £15.800
-            </h2>
-          </div> */}
           {columnsTotal.map(
             (column, index) =>
               initialTotalRows.includes(column.name) && (
