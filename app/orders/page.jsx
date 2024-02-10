@@ -350,16 +350,12 @@ const OrderView = () => {
             <DatePicker
               selected={selectedDate}
               onChange={(date) => {
-                const dateInTimeZone = convertUTCtoTimeZone2(
-                  date.toISOString(),
-                  "Europe/London"
-                );
-                setSelectedDate(new Date(dateInTimeZone));
-                setStartDate(dateInTimeZone);
-                setEndDate(dateInTimeZone);
-                setWorkDate(formatDateToTransform(dateInTimeZone));
+                setSelectedDate(date);
+                setStartDate(date);
+                setEndDate(date);
+                setWorkDate(formatDateToTransform(date));
                 setDateFilter("date");
-                console.log("Selected Date: ", dateInTimeZone);
+                console.log("Selected Date: ", date);
               }}
               className="form-input px-4 py-3 rounded-md border border-gray-300"
               placeholderText="Select a date"
