@@ -39,7 +39,7 @@ export const customStyles = {
   }),
 };
 
-function convertUTCtoTimeZone(dateUTC, timeZone) {
+function convertUTCtoTimeZone2(dateUTC, timeZone) {
   return new Date(dateUTC).toLocaleString("en-US", { timeZone });
 }
 const OrderView = () => {
@@ -56,9 +56,9 @@ const OrderView = () => {
   const [dateFilter, setDateFilter] = useState("today");
   const [showAllOrders, setShowAllOrders] = useState(false);
   const [showDatePicker, setShowDatePicker] = useState(false);
-  const [selectedDate, setSelectedDate] = useState(new Date());
-  const [startDate, setStartDate] = useState(new Date());
-  const [endDate, setEndDate] = useState(new Date());
+  const [selectedDate, setSelectedDate] = useState("");
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
   const [selectedOrders, setSelectedOrders] = useState({});
   const [selectedRoute, setSelectedRoute] = useState("");
   const [filterType, setFilterType] = useState("date");
@@ -125,23 +125,43 @@ const OrderView = () => {
     return result;
   };
 
+  function convertUTCtoTimeZone(dateUTC, timeZone) {
+    let offset = new Date().getTimezoneOffset();
+    let tzOffset = new Date(dateUTC).getTimezoneOffset();
+    if (timeZone === "America/Bogota") {
+      offset -= 300; // Bogotá está GMT-5
+    } else if (timeZone === "Europe/London") {
+      offset += 60; // Londres está GMT+0 o BST+1
+    }
+    const adjustedDate = new Date(
+      dateUTC.getTime() + (offset - tzOffset) * 60000
+    );
+    return adjustedDate;
+  }
+
   const filterOrdersByDate = (order) => {
     if (showAllOrders) {
       return true;
     }
 
-    const deliveryDate = new Date(order.date_delivery);
+    const deliveryDate = convertUTCtoTimeZone(
+      new Date(order.date_delivery),
+      "America/Bogota"
+    );
     deliveryDate.setHours(0, 0, 0, 0);
 
     if (dateFilter === "today") {
-      const workDateFormatted = new Date(workDate);
+      const workDateFormatted = convertUTCtoTimeZone(
+        new Date(workDate),
+        "Europe/London"
+      );
       return isSameDay(deliveryDate, workDateFormatted);
     }
     if (dateFilter === "range" && startDate && endDate) {
-      const start = new Date(startDate);
+      const start = convertUTCtoTimeZone(new Date(startDate), "America/Bogota");
       const startFormatted = subtractDays(start, 1);
       startFormatted.setHours(0, 0, 0, 0);
-      const end = new Date(endDate);
+      const end = convertUTCtoTimeZone(new Date(endDate), "Europe/London");
       const endFormatted = subtractDays(end, 1);
       endFormatted.setHours(23, 59, 59, 999);
       return deliveryDate >= startFormatted && deliveryDate <= endFormatted;
@@ -304,13 +324,13 @@ const OrderView = () => {
 
           {filterType === "date" && (
             <DatePicker
-              selected={new Date(selectedDate)}
+              selected={selectedDate}
               onChange={(date) => {
-                const dateInTimeZone = convertUTCtoTimeZone(
+                const dateInTimeZone = convertUTCtoTimeZone2(
                   date.toISOString(),
                   "Europe/London"
                 );
-                setSelectedDate(dateInTimeZone);
+                setSelectedDate(new Date(dateInTimeZone));
                 setStartDate(dateInTimeZone);
                 setEndDate(dateInTimeZone);
                 setWorkDate(formatDateToTransform(dateInTimeZone));
