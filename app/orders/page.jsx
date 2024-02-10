@@ -70,10 +70,16 @@ const OrderView = () => {
 
   const formatDateToShow = (dateString) => {
     if (!dateString) return "Loading...";
-    const date = new Date(dateString);
-    const day = String(date.getDate()).padStart(2, "0");
-    const month = String(date.getMonth() + 1).padStart(2, "0");
-    const year = String(date.getFullYear()).slice(-2);
+
+    // Crear un objeto Date basado en valores UTC
+    const parts = dateString.split("-").map((part) => parseInt(part, 10));
+    const utcDate = new Date(Date.UTC(parts[0], parts[1] - 1, parts[2]));
+    console.log("utcDate", utcDate);
+    // Formatear la fecha en UTC
+    const day = String(utcDate.getUTCDate()).padStart(2, "0");
+    const month = String(utcDate.getUTCMonth() + 1).padStart(2, "0");
+    const year = String(utcDate.getUTCFullYear()).slice(-2);
+    console.log("day", day, "month", month, "year", year);
     return `${day}/${month}/${year}`;
   };
 
@@ -156,38 +162,32 @@ const OrderView = () => {
       new Date(order.date_delivery),
       "America/Bogota"
     );
+    const deliveryDate2 = new Date(order.date_delivery);
     deliveryDate.setHours(0, 0, 0, 0);
 
     if (dateFilter === "today") {
-      const workDateFormatted = convertUTCtoTimeZone(
-        new Date(workDate),
-        "Europe/London"
+      const workDateFormatted = new Date(workDate);
+      console.log(
+        "order.date_delivery",
+        order.date_delivery,
+        "workDate",
+        workDate,
+        "dateFilter",
+        dateFilter
       );
-      return isSameDay(deliveryDate, workDateFormatted);
+      return order.date_delivery === workDate;
     }
     if (dateFilter === "range" && startDate && endDate) {
-      const start = convertUTCtoTimeZone(new Date(startDate), "America/Bogota");
+      const start = new Date(startDate);
       const startFormatted = subtractDays(start, 1);
       startFormatted.setHours(0, 0, 0, 0);
-      const end = convertUTCtoTimeZone(new Date(endDate), "Europe/London");
+      const end = new Date(endDate);
       const endFormatted = subtractDays(end, 1);
       endFormatted.setHours(23, 59, 59, 999);
       return deliveryDate >= startFormatted && deliveryDate <= endFormatted;
     }
     if (dateFilter === "date" && selectedDate) {
-      const selectedDateFormatted = convertUTCtoTimeZone(
-        new Date(selectedDate),
-        "America/Bogota"
-      );
-
       const selectDa = formatDateToTransform(selectedDate);
-      console.log(
-        "deliveryDate",
-        order.date_delivery,
-        "selectedDate:",
-        selectDa
-      );
-      selectedDateFormatted.setHours(0, 0, 0, 0);
       return order.date_delivery === selectDa;
     }
 
@@ -353,9 +353,7 @@ const OrderView = () => {
                 setSelectedDate(date);
                 setStartDate(date);
                 setEndDate(date);
-                setWorkDate(formatDateToTransform(date));
                 setDateFilter("date");
-                console.log("Selected Date: ", date);
               }}
               className="form-input px-4 py-3 rounded-md border border-gray-300"
               placeholderText="Select a date"
