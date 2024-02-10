@@ -266,7 +266,7 @@ const CreateOrderView = () => {
           </div>
         </div>
       </div>
-      <section className="fixed top-0 right-10 mt-4">
+      <section className="absolute top-0 right-10 mt-4">
         <div className="flex justify-end">
           <Link
             onClick={resetStates}
@@ -420,7 +420,9 @@ const CreateOrderView = () => {
         </div>
       )}
       <div className="">
-        <Table />
+        <Table
+        orderDate={orderDate}
+        />
       </div>
     </Layout>
   );

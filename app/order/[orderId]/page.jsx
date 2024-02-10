@@ -4,6 +4,7 @@ import {
   customersData,
   orderDetail,
   restaurantsData,
+  routesByDate,
 } from "@/app/config/urls.config";
 import RootLayout from "@/app/layout";
 import Layout from "@/app/layoutS";
@@ -17,6 +18,7 @@ import { useParams } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { fetchOrderDetail } from "@/app/api/ordersRequest";
+import { CircleProgressBar } from "@/app/components/CircleProgressBar";
 
 const OrderDetailPage = () => {
   const [hasMounted, setHasMounted] = useState(false);
@@ -42,6 +44,7 @@ const OrderDetailPage = () => {
   const [orderDate, setOrderDate] = useState(getCurrentDate());
   const [mouseCoords, setMouseCoords] = useState({ x: 0, y: 0 });
   const [selectedDate, setSelectedDate] = useState("");
+  const [percentageDetail, setPercentageDetail] = useState(null)
   const router = useRouter();
   const { user, setUser } = useUserStore();
   const [isLoading, setIsLoading] = useState(false);
@@ -150,6 +153,7 @@ const OrderDetailPage = () => {
       console.error("Error fetching AccNumber data", error);
     }
   };
+
   const fetchDataAccName = async () => {
     try {
       const responseAccNumber = await axios.get(
@@ -192,14 +196,46 @@ const OrderDetailPage = () => {
     setShowCheckboxColumnTotal(!showCheckboxColumnTotal);
     setMouseCoords({ x: e.clientX, y: e.clientY });
   };
+
   const handleCheckboxChangeTotal = (columnName) => {
     toggleTotalRowVisibility(columnName);
   };
+
   const handleClickOutsideTotal = (e) => {
     if (menuRefTotal.current && !menuRefTotal.current.contains(e.target)) {
       setShowCheckboxColumnTotal(false);
     }
   };
+
+  const getRoutes = async (token, date) => {
+    try {
+      const { data } = await axios.post(routesByDate, { date },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      data.routes.forEach((route) => {
+        route.accounts.forEach((account) => {
+          if (account.orders_reference === Number(orderId)) {
+            const percentage = Number(account.percentage_loading).toFixed(0);
+            setPercentageDetail(percentage);
+          }
+        });
+      });
+    } catch (error) {
+      console.log('Error in getRoutes:', error);
+    }
+  };
+
+  useEffect(() => {
+    if (selectedDate) {
+      getRoutes(token, selectedDate);
+    }
+  }, [selectedDate])
+
 
   useEffect(() => {
     document.addEventListener("click", handleClickOutsideTotal);
@@ -389,15 +425,20 @@ const OrderDetailPage = () => {
                         </div>
                         {/* TODO AGREGAR EN ESTE DIV EL PORCENTAJE DE LOADING PARA RUTA SELECCIONADA */}
                         <div className="flex col-span-1 items-center justify-center">
-                          <div className="flex items-center justify-center bg-primary-blue rounded-full w-16 h-16">
-                            <img
-                              src="/loadingBlanco.png"
-                              alt=""
-                              className="w-10 h-7"
-                            />
-                          </div>
+
+                          {!percentageDetail ? (
+                            <div className="flex items-center justify-center bg-primary-blue rounded-full w-16 h-16">
+                              <img
+                                src="/loadingBlanco.png"
+                                alt=""
+                                className="w-10 h-7"
+                              />
+                            </div>
+                          ) : (
+                            <CircleProgressBar percentage={percentageDetail} />
+                          )}
+
                         </div>
-                        {/* <CircleProgressBar percentage={48} /> */}
                       </div>
                       <div className="grid grid-cols-2 gap-3 px-3 py-3 items-center justify-center shadow-sm rounded-3xl bg-white shadow-slate-400">
                         <div>

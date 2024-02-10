@@ -158,7 +158,7 @@ const CustomerDetailPage = () => {
 
   const prepareDataForBackend = () => {
     const daysData = {};
-
+    console.log("selectedRoutes para el backend", selectedRoutes);
     Object.keys(selectedRoutes).forEach((day) => {
       const routesForDay = Object.values(selectedRoutes[day]);
       if (routesForDay.some((isSelected) => isSelected)) {
@@ -168,7 +168,7 @@ const CustomerDetailPage = () => {
           .join(",");
       }
     });
-
+    console.log("daysData para el backend", daysData)
     return { customer: customerId, days_routes: daysData };
   };
 
@@ -333,7 +333,7 @@ const CustomerDetailPage = () => {
               >
                 <div className="flex items-center justify-center">
                   <h1 className="text-2xl font-bold text-dark-blue mb-2">
-                    Edit <span className="text-primary-blue">customer</span>
+                    Edit <span className="text-primary-blue"></span>
                   </h1>
                 </div>
                 <div className="grid grid-cols-2 gap-3 mt-3">
@@ -546,14 +546,7 @@ const CustomerDetailPage = () => {
                     <label className="mr-2">Routes:</label>
                     <table className="ml-2 border p-2 rounded-md">
                       <thead>
-                        <tr>
-                          <th></th>
-                          {routes.map((route) => (
-                            <th className="p-1" key={route.id}>
-                              {route.name}
-                            </th>
-                          ))}
-                        </tr>
+                       
                       </thead>
                       <tbody>
                         {[
@@ -572,8 +565,10 @@ const CustomerDetailPage = () => {
                                   checked={
                                     selectedRoutes[day]?.[route.id] || false
                                   }
-                                  onChange={() =>
+                                  onChange={() =>{
+                                    console.log("route.id", route.id)
                                     handleRouteCheckboxChange(route.id, day)
+                                  }
                                   }
                                 />
                               </td>
