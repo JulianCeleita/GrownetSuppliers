@@ -39,6 +39,9 @@ export const customStyles = {
   }),
 };
 
+function convertUTCtoTimeZone(dateUTC, timeZone) {
+  return new Date(dateUTC).toLocaleString("en-US", { timeZone });
+}
 const OrderView = () => {
   const router = useRouter();
   const { token } = useTokenStore();
@@ -53,9 +56,9 @@ const OrderView = () => {
   const [dateFilter, setDateFilter] = useState("today");
   const [showAllOrders, setShowAllOrders] = useState(false);
   const [showDatePicker, setShowDatePicker] = useState(false);
-  const [selectedDate, setSelectedDate] = useState();
-  const [startDate, setStartDate] = useState(null);
-  const [endDate, setEndDate] = useState(null);
+  const [selectedDate, setSelectedDate] = useState(new Date());
+  const [startDate, setStartDate] = useState(new Date());
+  const [endDate, setEndDate] = useState(new Date());
   const [selectedOrders, setSelectedOrders] = useState({});
   const [selectedRoute, setSelectedRoute] = useState("");
   const [filterType, setFilterType] = useState("date");
@@ -75,7 +78,7 @@ const OrderView = () => {
     const day = String(date.getDate()).padStart(2, "0");
     const month = String(date.getMonth() + 1).padStart(2, "0");
     const year = date.getFullYear();
-    return `${year}-${month}-${day}`;
+    return `${year}-${month}-${day}, 5:00:00 AM`;
   };
 
   useEffect(() => {
@@ -235,8 +238,7 @@ const OrderView = () => {
         return "bg-gray-500";
     }
   };
-  console.log("selectedDate", selectedDate);
-  console.log("workDate", workDate);
+
   return (
     <Layout>
       <div className="-mt-24">
@@ -302,16 +304,18 @@ const OrderView = () => {
 
           {filterType === "date" && (
             <DatePicker
-              selected={selectedDate}
+              selected={new Date(selectedDate)}
               onChange={(date) => {
-                setSelectedDate(date);
-                setStartDate(date);
-                setEndDate(date);
-                setWorkDate(
-                  formatDateToTransform(date.toLocaleDateString("en-CA"))
+                const dateInTimeZone = convertUTCtoTimeZone(
+                  date.toISOString(),
+                  "Europe/London"
                 );
+                setSelectedDate(dateInTimeZone);
+                setStartDate(dateInTimeZone);
+                setEndDate(dateInTimeZone);
+                setWorkDate(formatDateToTransform(dateInTimeZone));
                 setDateFilter("range");
-                console.log("Selected Date: ", date);
+                console.log("Selected Date: ", dateInTimeZone);
               }}
               className="form-input px-4 py-3 rounded-md border border-gray-300"
               placeholderText="Select a date"
