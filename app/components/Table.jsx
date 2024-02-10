@@ -75,7 +75,7 @@ const useFocusOnEnter = (formRef) => {
   return { onEnterKey };
 };
 
-export default function Table() {
+export default function Table({ orderDate }) {
   const [rows, setRows] = useState(
     Array.from({ length: 5 }, () => ({ ...initialRowsState }))
   );
@@ -481,7 +481,7 @@ export default function Table() {
       const jsonOrderData = {
         accountNumber_customers: customers[0]?.accountNumber,
         address_delivery: customers[0]?.address,
-        date_delivery: customers.orderDate,
+        date_delivery: orderDate,
         id_suppliers: user?.id_supplier,
         net: parseFloat(totalNetSum),
         observation: specialRequirements,

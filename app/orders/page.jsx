@@ -12,7 +12,11 @@ import { useEffect, useState } from "react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import Select from "react-select";
-import { fetchOrders, fetchOrdersSupplier } from "../api/ordersRequest";
+import {
+  fetchOrders,
+  fetchOrdersDate,
+  fetchOrdersSupplier,
+} from "../api/ordersRequest";
 import { CircleProgressBar } from "../components/CircleProgressBar";
 import Layout from "../layoutS";
 import usePercentageStore from "../store/usePercentageStore";
@@ -80,6 +84,10 @@ const OrderView = () => {
     const year = date.getFullYear();
     return `${year}-${month}-${day}, 5:00:00 AM`;
   };
+
+  useEffect(() => {
+    fetchOrdersDate(token, startDate, endDate);
+  }, []);
 
   useEffect(() => {
     if (user && user.rol_name === "AdminGrownet") {
@@ -402,7 +410,7 @@ const OrderView = () => {
                 )}
               </div>
             </div>
-            <div className="grid grid-cols-2 gap-3 px-3 py-3 items-center justify-center shadow-sm rounded-3xl bg-white shadow-slate-400">
+            <div className="grid grid-cols-2 gap-3 px-3 py-3 items-center justify-center rounded-3xl bg-white shadow-[0_8px_30px_rgb(0,0,0,0.12)]">
               <div>
                 <h1 className="flex text-xl font-bold items-center justify-center">
                   Total net
@@ -429,7 +437,7 @@ const OrderView = () => {
           </div>
         </section>
 
-        <div className="flex items-center justify-center mb-20  p-2">
+        <div className="flex items-center justify-center mb-20 mt-8  p-2">
           <table className="w-[90%] bg-white first-line:bg-white rounded-2xl text-center shadow-[rgba(17,_17,_26,_0.1)_0px_0px_16px]">
             <thead className="sticky top-0  shadow-[0px_11px_15px_-3px_#edf2f7]">
               <tr className="  text-dark-blue">

@@ -1,6 +1,7 @@
 import axios from "axios";
 import {
   orderDetail,
+  ordersDate,
   ordersSupplierUrl,
   ordersUrl,
 } from "../config/urls.config";
@@ -101,5 +102,27 @@ export const fetchOrderDetail = async (
     }
   } catch (error) {
     console.error("Error al obtener el detalle:", error);
+  }
+};
+
+export const fetchOrdersDate = async (
+  token,
+  end,
+  start,
+) => {
+  const postData = {
+    start: start,
+    end: end,
+  };
+  try {
+    const response = await axios.post(ordersDate, postData, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    console.log("response data", response)
+  } catch (error) {
+    console.error("Error al obtener el orders by date:", error);
   }
 };
