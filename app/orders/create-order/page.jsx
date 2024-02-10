@@ -420,7 +420,9 @@ const CreateOrderView = () => {
         </div>
       )}
       <div className="">
-        <Table />
+        <Table
+        orderDate={orderDate}
+        />
       </div>
     </Layout>
   );
