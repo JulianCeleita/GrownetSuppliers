@@ -78,7 +78,7 @@ const OrderView = () => {
     const day = String(date.getDate()).padStart(2, "0");
     const month = String(date.getMonth() + 1).padStart(2, "0");
     const year = date.getFullYear();
-    return `${year}-${month}-${day}, 5:00:00 AM`;
+    return `${year}-${month}-${day}`;
   };
 
   useEffect(() => {
@@ -165,6 +165,22 @@ const OrderView = () => {
       const endFormatted = subtractDays(end, 1);
       endFormatted.setHours(23, 59, 59, 999);
       return deliveryDate >= startFormatted && deliveryDate <= endFormatted;
+    }
+    if (dateFilter === "date" && selectedDate) {
+      const selectedDateFormatted = convertUTCtoTimeZone(
+        new Date(selectedDate),
+        "America/Bogota"
+      );
+
+      const selectDa = formatDateToTransform(selectedDate);
+      console.log(
+        "deliveryDate",
+        order.date_delivery,
+        "selectedDate:",
+        selectDa
+      );
+      selectedDateFormatted.setHours(0, 0, 0, 0);
+      return order.date_delivery === selectDa;
     }
 
     return false;
@@ -334,7 +350,7 @@ const OrderView = () => {
                 setStartDate(dateInTimeZone);
                 setEndDate(dateInTimeZone);
                 setWorkDate(formatDateToTransform(dateInTimeZone));
-                setDateFilter("range");
+                setDateFilter("date");
                 console.log("Selected Date: ", dateInTimeZone);
               }}
               className="form-input px-4 py-3 rounded-md border border-gray-300"
