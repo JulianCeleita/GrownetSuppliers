@@ -193,7 +193,8 @@ const OrderDetailPage = () => {
     { name: "Net Invoice", price: "£ " + totalNetSum },
     { name: "Total VAT", price: "£ " + totalTaxSum },
     { name: "Total Invoice", price: "£ " + totalPriceSum },
-    { name: "Profit (£)", price: "£ " + totalProfit },
+    { name: "Profit (£)", price: "£ " + totalProfit,
+      percentage: totalProfitPercentage + "%"},
     { name: "Profit (%)", price: totalProfitPercentage + "%" },
   ];
 
@@ -326,7 +327,33 @@ const OrderDetailPage = () => {
             back
           </Link>
         </div>
-        <div className="px-4 py-4 rounded-3xl flex items-center justify-center bg-white shadow-[0_8px_30px_rgb(0,0,0,0.12)]">
+        <section className="fixed top-0 right-10 mt-8">
+                <div className="flex gap-4">
+                  <div className="grid grid-cols-2 px-4 py-4 rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.12)] bg-white">
+                    <div className="flex flex-col col-span-1 pr-2 items-center justify-center">
+                      <h1 className="text-xl font-bold text-primary-blue">
+                        Status
+                      </h1>
+                      <h2 className="text-sm px-1 font-semibold">
+                        Loading
+                      </h2>
+                    </div>
+                    {/* TODO AGREGAR EN ESTE DIV EL PORCENTAJE DE LOADING PARA RUTA SELECCIONADA */}
+                    <div className="flex col-span-1 items-center justify-center">
+                      {!percentageDetail ? (
+                        <div className="flex items-center justify-center bg-primary-blue rounded-full w-16 h-16">
+                          <img
+                            src="/loadingBlanco.png"
+                            alt=""
+                            className="w-10 h-7"
+                          />
+                        </div>
+                      ) : (
+                        <CircleProgressBar percentage={percentageDetail} />
+                      )}
+                    </div>
+                  </div>
+                  <div className="px-4 py-4 rounded-3xl flex items-center justify-center bg-white shadow-[0_8px_30px_rgb(0,0,0,0.12)]">
           {columnsTotal.map(
             (column, index) =>
               initialTotalRows.includes(column.name) && (
@@ -343,7 +370,7 @@ const OrderDetailPage = () => {
                     <div className="border-l border-green border-dashed pl-3">
                       <h1 className=" text-xl font-bold">Profit</h1>
                       <p className="text-[25px] font-bold text-primary-blue -mt-2">
-                        {column.percetage}
+                        {column.percentage}
                       </p>
                       <h2 className="ml-1 text-green font-semibold py-1 px-2 rounded-lg text-[15px] bg-background-green text-center -mt-1">
                         {column.price}
@@ -354,6 +381,8 @@ const OrderDetailPage = () => {
               )
           )}
         </div>
+                </div>
+              </section>
       </section>
       <div className="flex items-center ml-10 mt-10 w-[70%] px-2 py-1 rounded-md">
         <label className="text-dark-blue">Date: </label>
@@ -488,7 +517,7 @@ const OrderDetailPage = () => {
         ) : (
           orderId && (
             <>
-              <section className="fixed top-0 right-10 mt-8">
+              {/* <section className="fixed top-0 right-10 mt-8">
                 <div className="flex gap-4">
                   <div className="grid grid-cols-2 py-3 px-4 shadow-sm rounded-3xl shadow-slate-400 bg-white">
                     <div className="flex flex-col col-span-1 pr-2 items-center justify-center">
@@ -498,9 +527,9 @@ const OrderDetailPage = () => {
                       <h2 className="text-sm text-black px-1 font-semibold">
                         Loading
                       </h2>
-                    </div>
+                    </div> */}
                     {/* TODO AGREGAR EN ESTE DIV EL PORCENTAJE DE LOADING PARA RUTA SELECCIONADA */}
-                    <div className="flex col-span-1 items-center justify-center">
+                    {/* <div className="flex col-span-1 items-center justify-center">
                       {!percentageDetail ? (
                         <div className="flex items-center justify-center bg-primary-blue rounded-full w-16 h-16">
                           <img
@@ -546,7 +575,7 @@ const OrderDetailPage = () => {
                     </div>
                   </div>
                 </div>
-              </section>
+              </section> */}
               <EditTable orderId={orderId} dateDelivery={selectedDate} />
             </>
           )
