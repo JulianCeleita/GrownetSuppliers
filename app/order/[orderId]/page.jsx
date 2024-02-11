@@ -11,7 +11,11 @@ import Layout from "@/app/layoutS";
 import { useTableStore } from "@/app/store/useTableStore";
 import useTokenStore from "@/app/store/useTokenStore";
 import useUserStore from "@/app/store/useUserStore";
-import { ArrowLeftIcon } from "@heroicons/react/24/outline";
+import {
+  ArrowLeftIcon,
+  ChevronDownIcon,
+  ChevronUpIcon,
+} from "@heroicons/react/24/outline";
 import axios from "axios";
 import Link from "next/link";
 import { useParams } from "next/navigation";
@@ -19,6 +23,7 @@ import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { fetchOrderDetail } from "@/app/api/ordersRequest";
 import { CircleProgressBar } from "@/app/components/CircleProgressBar";
+import Select from "react-select";
 
 const OrderDetailPage = () => {
   const [hasMounted, setHasMounted] = useState(false);
@@ -44,7 +49,8 @@ const OrderDetailPage = () => {
   const [orderDate, setOrderDate] = useState(getCurrentDate());
   const [mouseCoords, setMouseCoords] = useState({ x: 0, y: 0 });
   const [selectedDate, setSelectedDate] = useState("");
-  const [percentageDetail, setPercentageDetail] = useState(null)
+  const [percentageDetail, setPercentageDetail] = useState(null);
+  const [details, setDetails] = useState(false);
   const router = useRouter();
   const { user, setUser } = useUserStore();
   const [isLoading, setIsLoading] = useState(false);
@@ -209,7 +215,9 @@ const OrderDetailPage = () => {
 
   const getRoutes = async (token, date) => {
     try {
-      const { data } = await axios.post(routesByDate, { date },
+      const { data } = await axios.post(
+        routesByDate,
+        { date },
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -226,7 +234,7 @@ const OrderDetailPage = () => {
         });
       });
     } catch (error) {
-      console.log('Error in getRoutes:', error);
+      console.log("Error in getRoutes:", error);
     }
   };
 
@@ -234,8 +242,7 @@ const OrderDetailPage = () => {
     if (selectedDate) {
       getRoutes(token, selectedDate);
     }
-  }, [selectedDate])
-
+  }, [selectedDate]);
 
   useEffect(() => {
     document.addEventListener("click", handleClickOutsideTotal);
@@ -249,100 +256,170 @@ const OrderDetailPage = () => {
     return null;
   }
 
+  console.log("orderDetail", orderDetail);
+
   return (
-    <>
-      {token ? (
-        <Layout>
-          <div className="flex p-6 pb-0 bg-primary-blue">
-            <Link
-              className="flex bg-dark-blue py-3 px-4 rounded-lg text-white font-medium transition-all hover:scale-110 "
-              href="/"
-            >
-              <ArrowLeftIcon className="w-5 h-5 mt-0.5 mr-1 inline-block" />{" "}
-              Orders
-            </Link>
+    <Layout>
+      <div className="max-w-[400px] -mt-[110px] ml-[115px]">
+        <div className="flex mt-1 items-center">
+          <h3 className="w-[38%] text-white">Account name:</h3>
+          <div className="relative mb-2 w-[62%]">
+            <Select
+              instanceId
+              options={restaurantList.map((restaurant) => ({
+                value: restaurant.accountName,
+                label: restaurant.accountName,
+              }))}
+              onChange={(selectedOption) => {
+                setSelectedAccName(selectedOption.value);
+                setIsDropdownVisible(false);
+              }}
+              value={{
+                value:
+                  selectedAccNumber && selectedAccNumber
+                    ? orderDetail.accountName
+                    : "",
+                label:
+                  orderDetail && orderDetail.accountName
+                    ? orderDetail.accountName
+                    : "",
+              }}
+              isSearchable
+            />
           </div>
-          <div className="grid grid-cols-3 gap-4 p-6 shadow-lg bg-primary-blue pb-20">
-            {!isLoading && (
-              <>
-                <div className="grid grid-cols-2 bg-white p-4 rounded-lg shadow-lg text-dark-blue">
-                  <h3 className="m-3">Account Name:</h3>
-                  <div className="relative ml-3">
-                    <h3 className="underline decoration-2 decoration-green mt-3">
-                      {" "}
-                      {orderDetail && orderDetail.accountName
-                        ? orderDetail.accountName
-                        : ""}
-                    </h3>
-                  </div>
-                  <div className="grid grid-cols-2 m-3 gap-2">
-                    <h3>Account Number:</h3>
-                    <div className="relative">
-                      <h3 className="underline decoration-2 decoration-green">
-                        {" "}
-                        {orderDetail && orderDetail.accountNumber
-                          ? orderDetail.accountNumber
-                          : ""}
-                      </h3>
+        </div>
+        <div className="flex items-center">
+          <h3 className="w-[38%] text-white">Account number:</h3>
+          <div className="relative mb-2 w-[62%]">
+            <Select
+              instanceId
+              options={restaurantList.map((restaurant) => ({
+                value: restaurant.accountNumber,
+                label: restaurant.accountNumber,
+              }))}
+              onChange={(selectedOption) => {
+                setSelectedAccNumber(selectedOption.value);
+                setIsDropdownVisible(false);
+              }}
+              value={{
+                value:
+                  selectedAccName && selectedAccName
+                    ? orderDetail.accountNumber
+                    : "",
+                label:
+                  orderDetail && orderDetail.accountNumber
+                    ? orderDetail.accountNumber
+                    : "",
+              }}
+              isSearchable
+            />
+          </div>
+        </div>
+      </div>
+      <section className="absolute top-0 right-10 mt-4">
+        <div className="flex justify-end">
+          <Link
+            className="flex w-[120px] mb-3 items-center bg-dark-blue py-2.5 px-3 rounded-lg text-white font-medium transition-all hover:scale-110 "
+            href="/"
+          >
+            <ArrowLeftIcon className="w-5 h-5 mt-0.5 mr-2 inline-block" /> Go
+            back
+          </Link>
+        </div>
+        <div className="px-4 py-4 rounded-3xl flex items-center justify-center bg-white shadow-[0_8px_30px_rgb(0,0,0,0.12)]">
+          {columnsTotal.map(
+            (column, index) =>
+              initialTotalRows.includes(column.name) && (
+                <div key={column.name}>
+                  {column.name === "Net Invoice" && (
+                    <div className="pr-2">
+                      <h1 className="flex text-xl font-bold">Net invoice</h1>
+                      <p className="text-[28px] font-bold text-primary-blue">
+                        {column.price}
+                      </p>
                     </div>
-
-                    <h3>Post Code:</h3>
-                    <h3 className="underline decoration-2 decoration-green">
-                      {customers && customers.postCode
-                        ? customers.postCode
-                        : ""}
-                    </h3>
-                  </div>
-                  <div className="grid grid-cols-2 m-3 gap-2">
-                    <h3>Address:</h3>
-                    <h3 className="underline decoration-2 decoration-green">
-                      {orderDetail && orderDetail.address_delivery
-                        ? orderDetail.address_delivery
-                        : ""}
-                    </h3>
-                    <h3>Telephone:</h3>
-                    <h3 className="underline decoration-2 decoration-green">
-                      {" "}
-                      {orderDetail && orderDetail.telephone_customer
-                        ? orderDetail.telephone_customer
-                        : ""}
-                    </h3>
-                  </div>
-                  <h3 className="ml-3">Contact:</h3>
-                  <h3 className="underline decoration-2 decoration-green ml-3">
-                    {orderDetail && orderDetail.email ? orderDetail.email : ""}
-                  </h3>
+                  )}
+                  {column.name === "Profit (£)" && (
+                    <div className="border-l border-green border-dashed pl-3">
+                      <h1 className=" text-xl font-bold">Profit</h1>
+                      <p className="text-[25px] font-bold text-primary-blue -mt-2">
+                        {column.percetage}
+                      </p>
+                      <h2 className="ml-1 text-green font-semibold py-1 px-2 rounded-lg text-[15px] bg-background-green text-center -mt-1">
+                        {column.price}
+                      </h2>
+                    </div>
+                  )}
                 </div>
-                <div className="bg-white p-2 pr-9 pl-9 rounded-lg flex flex-col justify-center">
-                  <div className="flex items-center mb-3">
-                    <label>Date: </label>
-                    <input
-                      type="date"
-                      className="border ml-2 p-1.5 rounded-md w-[100%] "
-                      value={selectedDate}
-                      onChange={handleDateChange}
-                    />
-                    <label className="ml-3">Inv. No.: </label>
-                    <input
-                      type="text"
-                      value="Order"
-                      readOnly
-                      className="border ml-2 p-1.5 rounded-md w-[100%]"
-                    />
-                  </div>
-                  <div className="grid grid-cols-2">
-                    <label>Order No.: </label>
-                    <input type="text" className="border p-2 rounded-md mb-2" />
+              )
+          )}
+        </div>
+      </section>
+      <div className="flex items-center ml-10 mt-10 w-[70%] px-2 py-1 rounded-md">
+        <label className="text-dark-blue">Date: </label>
+        <input
+          type="date"
+          className="border ml-2 p-1.5 rounded-md text-dark-blue"
+          value={selectedDate}
+          onChange={handleDateChange}
+          min={getCurrentDate()}
+        />
+        <label className="ml-3">Inv. number: </label>
+        <input
+          type="text"
+          value={
+            orderDetail && orderDetail.reference ? orderDetail.reference : ""
+          }
+          readOnly
+          className="border ml-2 p-1.5 rounded-md"
+        />
+        <label className="mx-3">Order Number: </label>
+        <input type="text" className="border p-2 rounded-md" />
+        {details ? (
+          <button
+            className="bg-dark-blue rounded-md ml-3 transition-all hover:scale-110"
+            onClick={() => setDetails(false)}
+          >
+            <ChevronUpIcon className="h-7 w-7 text-white p-1" />
+          </button>
+        ) : (
+          <button
+            className="bg-dark-blue rounded-md ml-3 transition-all hover:scale-110"
+            onClick={() => setDetails(true)}
+          >
+            <ChevronDownIcon className="h-7 w-7 text-white p-1" />
+          </button>
+        )}
+      </div>
+      <div>
+        {details && (
+          <div className="bg-light-blue flex items-center justify-around mx-10 mt-2 px-2 py-1 rounded-md">
+            <h3>Post Code:</h3>
+            <h3 className="underline decoration-2 decoration-green">
+              {customers && customers.postCode ? customers.postCode : ""}
+            </h3>
+            <h3>Telephone:</h3>
+            <h3 className="underline decoration-2 decoration-green">
+              {orderDetail && orderDetail.telephone_customer
+                ? orderDetail.telephone_customer
+                : ""}
+            </h3>
+            <h3>Address:</h3>
+            <h3 className="underline decoration-2 decoration-green ">
+              {orderDetail && orderDetail.address_delivery
+                ? orderDetail.address_delivery
+                : ""}
+            </h3>
+            <h3 className="ml-3">Contact:</h3>
+            <h3 className="underline decoration-2 decoration-green ">
+              {orderDetail && orderDetail.email ? orderDetail.email : ""}
+            </h3>
+          </div>
+        )}
+      </div>
 
-                    <h3>Round:</h3>
-                    <h3 className="underline decoration-2 decoration-green mb-2">
-                      1056
-                    </h3>
-                    {/*<h3>Drop:</h3>
-          <h3 className="underline decoration-2 decoration-green">{""}</h3>*/}
-                  </div>
-                </div>
-                <div
+      {/* ELIMINAR DE AQUI ... */}
+      {/* <div
                   className="bg-white p-2 pr-9 pl-9 rounded-lg flex flex-col justify-center"
                   onContextMenu={(e) => handleContextMenuTotal(e)}
                 >
@@ -400,89 +477,82 @@ const OrderDetailPage = () => {
                       Close
                     </button>
                   </div>
-                )}
-              </>
-            )}
+                )} */}
+      {/* HASTA AQUI */}
+
+      <div>
+        {isLoading ? (
+          <div className="flex justify-center items-center mt-24">
+            <div className="loader"></div>
           </div>
-          <div className="-mt-20">
-            {isLoading ? (
-              <div className="flex justify-center items-center mt-24">
-                <div className="loader"></div>
-              </div>
-            ) : (
-              orderId && (
-                <>
-                  <section className="fixed top-0 right-10 mt-8">
-                    <div className="flex gap-4">
-                      <div className="grid grid-cols-2 py-3 px-4 shadow-sm rounded-3xl shadow-slate-400 bg-white">
-                        <div className="flex flex-col col-span-1 pr-2 items-center justify-center">
-                          <h1 className="text-xl font-bold text-primary-blue">
-                            Status
-                          </h1>
-                          <h2 className="text-sm text-black px-1 font-semibold">
-                            Loading
+        ) : (
+          orderId && (
+            <>
+              <section className="fixed top-0 right-10 mt-8">
+                <div className="flex gap-4">
+                  <div className="grid grid-cols-2 py-3 px-4 shadow-sm rounded-3xl shadow-slate-400 bg-white">
+                    <div className="flex flex-col col-span-1 pr-2 items-center justify-center">
+                      <h1 className="text-xl font-bold text-primary-blue">
+                        Status
+                      </h1>
+                      <h2 className="text-sm text-black px-1 font-semibold">
+                        Loading
+                      </h2>
+                    </div>
+                    {/* TODO AGREGAR EN ESTE DIV EL PORCENTAJE DE LOADING PARA RUTA SELECCIONADA */}
+                    <div className="flex col-span-1 items-center justify-center">
+                      {!percentageDetail ? (
+                        <div className="flex items-center justify-center bg-primary-blue rounded-full w-16 h-16">
+                          <img
+                            src="/loadingBlanco.png"
+                            alt=""
+                            className="w-10 h-7"
+                          />
+                        </div>
+                      ) : (
+                        <CircleProgressBar percentage={percentageDetail} />
+                      )}
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-2 gap-3 px-3 py-3 items-center justify-center shadow-sm rounded-3xl bg-white shadow-slate-400">
+                    <div>
+                      <h1 className="flex text-lg font-semibold items-center justify-center text-black">
+                        Net Invoice
+                      </h1>
+                      <div className="flex justify-center text-center">
+                        <div className="flex items-center">
+                          <h2 className="text-2xl font-bold text-primary-blue">
+                            £8,000
                           </h2>
-                        </div>
-                        {/* TODO AGREGAR EN ESTE DIV EL PORCENTAJE DE LOADING PARA RUTA SELECCIONADA */}
-                        <div className="flex col-span-1 items-center justify-center">
-
-                          {!percentageDetail ? (
-                            <div className="flex items-center justify-center bg-primary-blue rounded-full w-16 h-16">
-                              <img
-                                src="/loadingBlanco.png"
-                                alt=""
-                                className="w-10 h-7"
-                              />
-                            </div>
-                          ) : (
-                            <CircleProgressBar percentage={percentageDetail} />
-                          )}
-
-                        </div>
-                      </div>
-                      <div className="grid grid-cols-2 gap-3 px-3 py-3 items-center justify-center shadow-sm rounded-3xl bg-white shadow-slate-400">
-                        <div>
-                          <h1 className="flex text-lg font-semibold items-center justify-center text-black">
-                            Net Invoice
-                          </h1>
-                          <div className="flex justify-center text-center">
-                            <div className="flex items-center">
-                              <h2 className="text-2xl font-bold text-primary-blue">
-                                £8,000
-                              </h2>
-                            </div>
-                          </div>
-                        </div>
-                        <div className="border-l border-gray-400">
-                          <h2 className="flex text-xl font-semibold items-center justify-center text-black">
-                            Profit
-                          </h2>
-                          <div className="flex justify-center text-center">
-                            <div className="grid grid-cols-1 text-center">
-                              <div>
-                                <p className="text-2xl font-bold text-primary-blue">
-                                  97.2%
-                                </p>
-                              </div>
-                              <h2 className="flex items-center justify-center text-green-500 rounded-full text-sm bg-light-green text-dark-green">
-                                £1,476
-                              </h2>
-                            </div>
-                          </div>
                         </div>
                       </div>
                     </div>
-                  </section>
-                  <EditTable orderId={orderId} dateDelivery={selectedDate} />
-                </>
-              )
-            )}
-          </div>
-        </Layout>
-      ) : (
-        <RootLayout></RootLayout>
-      )}
-    </>
+                    <div className="border-l border-gray-400">
+                      <h2 className="flex text-xl font-semibold items-center justify-center text-black">
+                        Profit
+                      </h2>
+                      <div className="flex justify-center text-center">
+                        <div className="grid grid-cols-1 text-center">
+                          <div>
+                            <p className="text-2xl font-bold text-primary-blue">
+                              97.2%
+                            </p>
+                          </div>
+                          <h2 className="flex items-center justify-center text-green-500 rounded-full text-sm bg-light-green text-dark-green">
+                            £1,476
+                          </h2>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </section>
+              <EditTable orderId={orderId} dateDelivery={selectedDate} />
+            </>
+          )
+        )}
+      </div>
+    </Layout>
   );
 };
 export default OrderDetailPage;
