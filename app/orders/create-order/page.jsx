@@ -178,7 +178,7 @@ const CreateOrderView = () => {
     {
       name: "Profit (£)",
       price: "£ " + totalProfit,
-      percetage: totalProfitPercentage + "%",
+      percentage: totalProfitPercentage + "%",
     },
     { name: "Profit (%)", price: totalProfitPercentage + "%" },
   ];
@@ -294,7 +294,7 @@ const CreateOrderView = () => {
                     <div className="border-l border-green border-dashed pl-3">
                       <h1 className=" text-xl font-bold">Profit</h1>
                       <p className="text-[25px] font-bold text-primary-blue -mt-2">
-                        {column.percetage}
+                        {column.percentage}
                       </p>
                       <h2 className="ml-1 text-green font-semibold py-1 px-2 rounded-lg text-[15px] bg-background-green text-center -mt-1">
                         {column.price}

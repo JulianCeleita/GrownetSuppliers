@@ -1,6 +1,4 @@
 "use client";
-import Image from "next/image";
-import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import useUserStore from "../store/useUserStore";
@@ -26,7 +24,9 @@ function Header() {
     handleRouteChange();
   }, [pathname, router]);
   const headerHeight =
-    pathname === "/orders/create-order" ? "h-[120px]" : "h-auto";
+    pathname === "/orders/create-order" || pathname.startsWith("/order/")
+      ? "h-[120px]"
+      : "h-auto";
   return (
     <div
       className={`flex justify-between items-center bg-primary-blue rounded-b-3xl p-4 ${headerHeight}`}
