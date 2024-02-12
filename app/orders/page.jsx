@@ -5,7 +5,6 @@ import {
   CalendarIcon,
   ExclamationCircleIcon,
 } from "@heroicons/react/24/outline";
-import { format, set } from "date-fns";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -24,10 +23,6 @@ import useTokenStore from "../store/useTokenStore";
 import useUserStore from "../store/useUserStore";
 import useWorkDateStore from "../store/useWorkDateStore";
 
-const formatDate = (dateString) => {
-  const formattedDate = format(new Date(dateString), "yyyy-MM-dd");
-  return formattedDate;
-};
 export const customStyles = {
   placeholder: (provided) => ({
     ...provided,
@@ -43,20 +38,15 @@ export const customStyles = {
   }),
 };
 
-function convertUTCtoTimeZone2(dateUTC, timeZone) {
-  return new Date(dateUTC).toLocaleString("en-US", { timeZone });
-}
 const OrderView = () => {
   const router = useRouter();
   const { token } = useTokenStore();
-  const { workDate, setWorkDate, setFetchWorkDate } = useWorkDateStore();
-  const { routePercentages, setRoutePercentages, setFetchRoutePercentages } =
-    usePercentageStore();
+  const { workDate, setFetchWorkDate } = useWorkDateStore();
+  const { routePercentages, setFetchRoutePercentages } = usePercentageStore();
 
-  const [searchTerm, setSearchTerm] = useState("");
   const [isLoading, setIsLoading] = useState(true);
   const [orders, setOrders] = useState([]);
-  const { user, setUser } = useUserStore();
+  const { user } = useUserStore();
   const [dateFilter, setDateFilter] = useState("today");
   const [showAllOrders, setShowAllOrders] = useState(false);
   const [showDatePicker, setShowDatePicker] = useState(false);
@@ -162,19 +152,10 @@ const OrderView = () => {
       new Date(order.date_delivery),
       "America/Bogota"
     );
-    const deliveryDate2 = new Date(order.date_delivery);
+
     deliveryDate.setHours(0, 0, 0, 0);
 
     if (dateFilter === "today") {
-      const workDateFormatted = new Date(workDate);
-      console.log(
-        "order.date_delivery",
-        order.date_delivery,
-        "workDate",
-        workDate,
-        "dateFilter",
-        dateFilter
-      );
       return order.date_delivery === workDate;
     }
     if (dateFilter === "range" && startDate && endDate) {
@@ -192,16 +173,6 @@ const OrderView = () => {
     }
 
     return false;
-  };
-
-  const isSameDay = (date1, date2) => {
-    return date1.toDateString() === date2.toDateString();
-  };
-
-  const handleDateChange = (date) => {
-    setShowAllOrders(false);
-    setShowDatePicker(false);
-    setSelectedDate(date);
   };
 
   const goToOrder = (e, order) => {
