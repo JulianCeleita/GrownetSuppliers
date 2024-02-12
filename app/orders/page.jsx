@@ -482,7 +482,6 @@ const OrderView = () => {
                     <tr
                       key={index}
                       className="text-dark-blue border-b-[1.5px] cursor-pointer hover:bg-[#F6F6F6]"
-                      onClick={(e) => goToOrder(e, order)}
                     >
                       <td className="py-4">
                         <label className="inline-flex items-center">
@@ -496,16 +495,29 @@ const OrderView = () => {
                           />
                         </label>
                       </td>
-                      <td className="py-4">{order.reference}</td>
-                      <td className="py-4 cursor-pointer ">
+                      <td className="py-4" onClick={(e) => goToOrder(e, order)}>
+                        {order.reference}
+                      </td>
+                      <td className="py-4" onClick={(e) => goToOrder(e, order)}>
                         {order.accountName}
                       </td>
-                      <td className="py-4">{order.net}</td>
-                      <td className="py-4">10%</td>
-                      <td className="py-4">{order.route}</td>
+                      <td className="py-4" onClick={(e) => goToOrder(e, order)}>
+                        {order.net}
+                      </td>
+                      <td className="py-4" onClick={(e) => goToOrder(e, order)}>
+                        10%
+                      </td>
+                      <td className="py-4" onClick={(e) => goToOrder(e, order)}>
+                        {order.route}
+                      </td>
                       <td className="py-4">-</td>
-                      <td className="py-4">{order.date_delivery}</td>
-                      <td className="py-4 flex gap-2 justify-center">
+                      <td className="py-4" onClick={(e) => goToOrder(e, order)}>
+                        {order.date_delivery}
+                      </td>
+                      <td
+                        className="py-4 flex gap-2 justify-center"
+                        onClick={(e) => goToOrder(e, order)}
+                      >
                         <div
                           className={`inline-block mt-1 rounded-full text-white ${statusColorClass(
                             order.name_status
