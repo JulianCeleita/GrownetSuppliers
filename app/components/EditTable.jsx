@@ -139,7 +139,7 @@ export default function EditTable({ orderId, dateDelivery }) {
   const [isReadOnly, setIsReadOnly] = useState(true);
   const [confirmCreateOrder, setConfirmCreateOrder] = useState(false);
   const [orderError, setOrderError] = useState("");
-  const isEditable = !(orderDetail?.state_name === "packing" || orderDetail?.state_name === "loading");
+  const isEditable = (orderDetail?.state_name === "Prepairng");
   
   const columns = [
     "Code",
