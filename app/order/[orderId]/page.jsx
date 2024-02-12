@@ -393,7 +393,7 @@ const OrderDetailPage = () => {
           readOnly
           className="border ml-2 p-1.5 rounded-md w-20"
         />
-        <label className="mx-3">Order Number: </label>
+        <label className="mx-3">Customer Ref: </label>
         <input type="text" className="border p-2 rounded-md w-20" />
         {details ? (
           <button
