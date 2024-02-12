@@ -141,7 +141,7 @@ export default function EditTable({
   const router = useRouter();
   const [isReadOnly, setIsReadOnly] = useState(true);
   const [orderError, setOrderError] = useState("");
-  const isEditable = (orderDetail?.state_name === "Prepairng");
+  const isEditable = (orderDetail?.state_name === "Prepairing");
   
   const columns = [
     "Code",

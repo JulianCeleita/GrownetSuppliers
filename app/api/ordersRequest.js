@@ -45,6 +45,7 @@ export const fetchOrdersSupplier = async (
       : [];
     setOrders(newOrder);
     setIsLoading(false);
+    console.log("Response", response.data.orders)
   } catch (error) {
     console.error("Error al obtener las ordenes por supplier:", error);
   }
