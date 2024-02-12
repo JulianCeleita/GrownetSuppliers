@@ -25,7 +25,6 @@ const SideBar = () => {
     removeToken();
     removeUser();
   };
-
   const handleButtonOpen = async () => {
     try {
       const currentDate = formatDate(selectedDate);
