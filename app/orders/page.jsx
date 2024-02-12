@@ -64,15 +64,12 @@ const OrderView = () => {
   const formatDateToShow = (dateString) => {
     if (!dateString) return "Loading...";
 
-    // Crear un objeto Date basado en valores UTC
     const parts = dateString.split("-").map((part) => parseInt(part, 10));
     const utcDate = new Date(Date.UTC(parts[0], parts[1] - 1, parts[2]));
-    console.log("utcDate", utcDate);
-    // Formatear la fecha en UTC
+
     const day = String(utcDate.getUTCDate()).padStart(2, "0");
     const month = String(utcDate.getUTCMonth() + 1).padStart(2, "0");
     const year = String(utcDate.getUTCFullYear()).slice(-2);
-    console.log("day", day, "month", month, "year", year);
     return `${day}/${month}/${year}`;
   };
 
@@ -156,11 +153,9 @@ const OrderView = () => {
       "America/Bogota"
     );
 
-
     deliveryDate.setHours(0, 0, 0, 0);
 
     if (dateFilter === "today") {
-
       return order.date_delivery === workDate;
     }
     if (dateFilter === "range" && startDate && endDate) {
