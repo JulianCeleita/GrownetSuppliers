@@ -139,8 +139,8 @@ export default function EditTable({ orderId, dateDelivery }) {
   const [isReadOnly, setIsReadOnly] = useState(true);
   const [confirmCreateOrder, setConfirmCreateOrder] = useState(false);
   const [orderError, setOrderError] = useState("");
-  const isNotOrderEditable = orderDetail?.id_stateOrder !== 3;
-
+  const isEditable = !(orderDetail?.state_name === "packing" || orderDetail?.state_name === "loading");
+  
   const columns = [
     "Code",
     "Description",
@@ -752,7 +752,7 @@ export default function EditTable({ orderId, dateDelivery }) {
                                             display: "none",
                                           }),
                                         }}
-                                        isDisabled={row.isExistingProduct && isNotOrderEditable}
+                                        isDisabled={row.isExistingProduct && !isEditable}
                                       />
                                     )}
                                   </span>
@@ -761,7 +761,7 @@ export default function EditTable({ orderId, dateDelivery }) {
                                     type={inputTypes[column]}
                                     ref={inputRefs[column][rowIndex]}
                                     data-field-name={column}
-                                    disabled={row.isExistingProduct && isNotOrderEditable}
+                                    disabled={row.isExistingProduct && !isEditable}
                                     className={`pl-2 h-[30px] outline-none w-full ${inputTypes[column] === "number"
                                         ? "hide-number-arrows"
                                         : ""
