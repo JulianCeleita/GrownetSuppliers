@@ -260,8 +260,6 @@ const OrderDetailPage = () => {
     return null;
   }
 
-  console.log("orderDetail", orderDetail);
-
   return (
     <Layout>
       <div className="max-w-[400px] -mt-[110px] ml-[115px]">

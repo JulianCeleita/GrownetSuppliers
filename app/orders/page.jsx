@@ -11,11 +11,7 @@ import { useEffect, useState } from "react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import Select from "react-select";
-import {
-  fetchOrders,
-  fetchOrdersDate,
-  fetchOrdersSupplier,
-} from "../api/ordersRequest";
+import { fetchOrders, fetchOrdersSupplier } from "../api/ordersRequest";
 import { CircleProgressBar } from "../components/CircleProgressBar";
 import Layout from "../layoutS";
 import usePercentageStore from "../store/usePercentageStore";
@@ -80,10 +76,6 @@ const OrderView = () => {
     const year = date.getFullYear();
     return `${year}-${month}-${day}`;
   };
-
-  useEffect(() => {
-    fetchOrdersDate(token, startDate, endDate);
-  }, []);
 
   useEffect(() => {
     if (user && user.rol_name === "AdminGrownet") {
