@@ -90,6 +90,7 @@ export const fetchOrderDetail = async (
         Authorization: `Bearer ${token}`,
       },
     });
+    console.log("🚀 ~ response:", response)
 
     if (
       user?.id_suppliers == orderDetail.id_suppliers &&

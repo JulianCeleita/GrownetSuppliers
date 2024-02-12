@@ -105,7 +105,7 @@ const OrderDetailPage = () => {
         });
 
         const sortedRestaurants = responseRestaurants.data.customers.sort(
-          (a, b) => a.accountName.localeCompare(b.accountName)
+          (a, b) => a?.accountName?.localeCompare(b.accountName)
         );
 
         setRestaurants(sortedRestaurants);
