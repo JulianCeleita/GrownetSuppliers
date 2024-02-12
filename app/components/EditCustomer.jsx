@@ -106,10 +106,12 @@ const CustomerDetailPage = ({
         detailCustomer[0]?.delivery_window || ""
       );
 
-      const sHour = inicio.split(":");
-      const eHour = fin.split(":");
-      setStartHour({ hour: sHour[0], minute: Number(sHour[1]) < 30 ? "00" : "30" });
-      setEndHour({ hour: eHour[0], minute: Number(eHour[1]) < 30 ? "00" : "30" });
+      if (inicio !== "" && fin !== "") {
+        const sHour = inicio.split(":");
+        const eHour = fin.split(":");
+        setStartHour({ hour: sHour[0], minute: Number(sHour[1]) < 30 ? "00" : "30" });
+        setEndHour({ hour: eHour[0], minute: Number(eHour[1]) < 30 ? "00" : "30" });
+      }
 
       const selectedRoutesData = {};
       detailCustomer[0].routes.forEach((route) => {
