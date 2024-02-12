@@ -395,7 +395,7 @@ const CustomerDetailPage = ({
                         <label className="mr-2">Address:</label>
                         <input
                           className="border p-3 rounded-md w-full"
-                          placeholder="test@grownet.com"
+                          placeholder="Street 1234"
                           type="text"
                           value={addressCustomer}
                           onChange={(e) => setAddressCustomer(e.target.value)}

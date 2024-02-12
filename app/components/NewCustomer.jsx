@@ -289,7 +289,7 @@ function NewCustomer({ isvisible, onClose, setUpdateCustomers }) {
                   <label className="mr-2">Address:</label>
                   <input
                     className="border p-3 rounded-md w-full"
-                    placeholder="test@grownet.com"
+                    placeholder="Street 123"
                     type="text"
                     maxLength={100}
                     value={addressCustomer}
