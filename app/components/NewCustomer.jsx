@@ -49,60 +49,31 @@ function NewCustomer({ isvisible, onClose, setUpdateCustomers }) {
     return null;
   }
 
-  // const handleRouteCheckboxChange = (routeId, day) => {
-  //   setSelectedRoutes((prevSelectedRoutes) => {
-  //     const updatedRoutes = { ...prevSelectedRoutes };
-
-  //     // Toggle the selected checkbox for the current route and day
-  //     updatedRoutes[day] = { [routeId]: !updatedRoutes[day]?.[routeId] };
-
-  //     return updatedRoutes;
-  //   });
-  // };
-
   const prepareDataForBackend = () => {
     const daysData = {};
 
-    Object.keys(selectedRoutes).forEach((day) => {
-      const routesForDay = Object.values(selectedRoutes[day]);
-      if (routesForDay.some((isSelected) => isSelected)) {
-        daysData[getDayNumber(day)] = Object.entries(selectedRoutes[day])
-          .filter(([_, isSelected]) => isSelected)
-          .map(([routeId, _]) => routeId)
-          .join(",");
-      }
+    const allDays = ['Mon', 'Tues', 'Wed', 'Thur', 'Fri', 'Sat'];
+
+    allDays.forEach((day) => {
+      const dayNumber = getDayNumber(day.toLowerCase());
+      daysData[dayNumber] = selectedRoutes[day] || "R100";
     });
 
     return { days_routes: daysData };
   };
 
   const getDayNumber = (day) => {
-    switch (day.toLowerCase()) {
-      case "mon":
-        return "1";
-      case "tues":
-        return "2";
-      case "wen":
-        return "3";
-      case "truh":
-        return "4";
-      case "frid":
-        return "5";
-      default:
-        return null;
-    }
-  };
+    const daysMap = {
+      mon: "1",
+      tues: "2",
+      wed: "3",
+      thur: "4",
+      fri: "5",
+      sat: "6"
+    };
 
-  // const handleImageChange = (e) => {
-  //   const file = e.target.files[0];
-  //   setSelectedImage(file);
-  // };
-  // const handleRouteChange = (e) => {
-  //   setSelectedRoute(e.target.value);
-  // };
-  // const handleGroupChange = (e) => {
-  //   setSelectedGroup(e.target.value);
-  // };
+    return daysMap[day.toLowerCase()] || null;
+  };
 
   const handleCratesChange = (e) => {
     const value = e.target.value;
@@ -160,12 +131,9 @@ function NewCustomer({ isvisible, onClose, setUpdateCustomers }) {
     setMainContact("");
     setAccountEmail("");
     setDrop("");
-    // Reset crates and vip to their initial "unselected" state
     setCrates("");
     setVip("");
-    // Reset selectedGroup to null which represents no group selected
     setSelectedGroup(null);
-    // Reset routes to an empty object, assuming no routes are selected initially
     setSelectedRoutes({});
     setStartHour("");
     setEndHour("");
@@ -205,7 +173,6 @@ function NewCustomer({ isvisible, onClose, setUpdateCustomers }) {
         },
       })
       .then((response) => {
-        console.log("🚀 ~ .then ~ response:", response);
         const customerAccountNumber = response?.data?.accountNumber;
         postDataAssign.customer = customerAccountNumber;
         axios
@@ -487,9 +454,8 @@ function NewCustomer({ isvisible, onClose, setUpdateCustomers }) {
               <button
                 type="submit"
                 value="Submit"
-                className={`bg-primary-blue py-3 px-4 rounded-lg text-white font-medium mr-3 ${
-                  isLoading === true ? "bg-gray-500/50" : ""
-                }`}
+                className={`bg-primary-blue py-3 px-4 rounded-lg text-white font-medium mr-3 ${isLoading === true ? "bg-gray-500/50" : ""
+                  }`}
                 disabled={isLoading}
               >
                 Add customer
