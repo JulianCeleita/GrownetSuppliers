@@ -28,7 +28,8 @@ export const fetchOrderDetail = async (
         Authorization: `Bearer ${token}`,
       },
     });
-
+    
+    console.log("🚀 ~ response:", response)
     const newOrderDetail = Array.isArray(response.data.order)
       ? response.data.order
       : [];
@@ -754,7 +755,7 @@ export default function EditTable({
                                             display: "none",
                                           }),
                                         }}
-                                        isDisabled={row.isExistingProduct && !isEditable}
+                                        isDisabled={row.isExistingProduct && isEditable}
                                       />
                                     )}
                                   </span>
@@ -763,7 +764,7 @@ export default function EditTable({
                                     type={inputTypes[column]}
                                     ref={inputRefs[column][rowIndex]}
                                     data-field-name={column}
-                                    disabled={row.isExistingProduct && !isEditable}
+                                    disabled={row.isExistingProduct && isEditable}
                                     className={`pl-2 h-[30px] outline-none w-full ${inputTypes[column] === "number"
                                         ? "hide-number-arrows"
                                         : ""
