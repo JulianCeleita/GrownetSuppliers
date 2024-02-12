@@ -370,7 +370,10 @@ const CustomerDetailPage = ({
                   <div className="flex">
                     <div className="flex flex-col  w-[50%]">
                       <div className="flex items-center">
-                        <label className="mr-2">Account name:</label>
+                        <label className="mr-2">
+                          Account name:{" "}
+                          <span className="text-primary-blue">*</span>
+                        </label>
                         <input
                           className="border p-3 rounded-md w-full"
                           placeholder="Name"
@@ -391,7 +394,9 @@ const CustomerDetailPage = ({
                         />
                       </div>
                       <div className="flex mt-3 items-center">
-                        <label className="mr-2">Address:</label>
+                        <label className="mr-2 w-[115px]">
+                          Address: <span className="text-primary-blue">*</span>
+                        </label>
                         <input
                           className="border p-3 rounded-md w-full"
                           placeholder="Street 1234"
@@ -402,7 +407,10 @@ const CustomerDetailPage = ({
                         />
                       </div>
                       <div className="flex mt-3 items-center">
-                        <label className="mr-2">Post code:</label>
+                        <label className="mr-2">
+                          Post code:{" "}
+                          <span className="text-primary-blue">*</span>
+                        </label>
                         <input
                           className="border p-3 rounded-md w-full"
                           placeholder="170001"
@@ -470,9 +478,12 @@ const CustomerDetailPage = ({
                     </div>
                     <div className="ml-5 flex flex-col w-[50%] ">
                       <div className="flex items-center mb-3">
-                        <label className="mr-2">Account number:</label>
+                        <label className="mr-2">
+                          Account number:{" "}
+                          <span className="text-primary-blue">*</span>
+                        </label>
                         <input
-                          className="border p-3 rounded-md"
+                          className="border p-3 rounded-md w-full"
                           placeholder="RK100"
                           type="text"
                           value={accountNumber}
@@ -491,7 +502,10 @@ const CustomerDetailPage = ({
                         />
                       </div>
                       <div className="flex items-center mb-3">
-                        <label className="mr-2">Telephone number:</label>
+                        <label className="mr-2">
+                          Telephone number:{" "}
+                          <span className="text-primary-blue">*</span>
+                        </label>
                         <input
                           className="border p-3 rounded-md w-full hide-number-arrows"
                           placeholder="31383394455"
@@ -536,7 +550,10 @@ const CustomerDetailPage = ({
                         />
                       </div>
                       <div className="flex items-center mb-3">
-                        <label className="mr-2">Delivery Window:</label>
+                        <label className="mr-2">
+                          Delivery Window:{" "}
+                          <span className="text-primary-blue">*</span>
+                        </label>
                         <div className="flex items-center">
                           <input
                             className="border p-3 rounded-md w-full"
