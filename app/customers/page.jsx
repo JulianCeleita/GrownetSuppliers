@@ -153,7 +153,7 @@ const CustomersView = () => {
             w-auto border-gray-200 px-4 py-2 pr-8 leading-tight
             focus:outline-none focus:shadow-outline text-gray-400 hover:border-gray-300 shadow-md hover:shadow-lg transition-shadow duration-150 ease-in-out"
           >
-            <option value="all">Select status</option>
+            <option value="all">All status</option>
             <option value="active" className="text-black">
               Active
             </option>
@@ -171,7 +171,7 @@ const CustomersView = () => {
             w-auto border-gray-200 px-4 py-2 pr-8 leading-tight
             focus:outline-none focus:shadow-outline text-gray-400 hover:border-gray-300 shadow-md hover:shadow-lg transition-shadow duration-150 ease-in-out"
           >
-            <option value="">All Routes</option>
+            <option value="">All routes</option>
             {routes &&
               routes.map((route) => (
                 <option
