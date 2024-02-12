@@ -100,22 +100,6 @@ function NewCustomer({ isvisible, onClose, setUpdateCustomers }) {
     setVipSelected(isYes);
   };
 
-  const validateHourFormat = (input) => {
-    return /^([01]\d|2[0-3]):([0-5]\d):([0-5]\d)$/.test(input) || input === "";
-  };
-
-  const handleStartHourChange = (e) => {
-    const input = e.target.value;
-    setStartHour(input);
-    setError(validateHourFormat(input) ? "" : "Wrong time format");
-  };
-
-  const handleEndHourChange = (e) => {
-    const input = e.target.value;
-    setEndHour(input);
-    setError(validateHourFormat(input) ? "" : "Wrong time format");
-  };
-
   const handleDropChange = (e) => {
     const inputValue = e.target.value;
     const newValue = inputValue === "" ? "0" : inputValue <= 100 ? inputValue : "100";
