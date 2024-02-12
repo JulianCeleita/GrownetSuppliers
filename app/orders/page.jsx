@@ -38,6 +38,9 @@ export const customStyles = {
   }),
 };
 
+function convertUTCtoTimeZone2(dateUTC, timeZone) {
+  return new Date(dateUTC).toLocaleString("en-US", { timeZone });
+}
 const OrderView = () => {
   const router = useRouter();
   const { token } = useTokenStore();
@@ -153,9 +156,11 @@ const OrderView = () => {
       "America/Bogota"
     );
 
+
     deliveryDate.setHours(0, 0, 0, 0);
 
     if (dateFilter === "today") {
+
       return order.date_delivery === workDate;
     }
     if (dateFilter === "range" && startDate && endDate) {
