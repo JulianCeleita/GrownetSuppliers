@@ -57,7 +57,10 @@ const OrderDetailPage = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [accName, setAccName] = useState("");
   const params = useParams();
-
+  const [confirmCreateOrder, setConfirmCreateOrder] = useState(false);
+  const [specialRequirements, setSpecialRequirements] = useState(
+    orderDetail.observation ? orderDetail.observation : ""
+  );
   let orderId;
   if (params) {
     ({ orderId } = params);
@@ -102,7 +105,7 @@ const OrderDetailPage = () => {
         });
 
         const sortedRestaurants = responseRestaurants.data.customers.sort(
-          (a, b) => a.accountName.localeCompare(b.accountName)
+          (a, b) => a?.accountName?.localeCompare(b.accountName)
         );
 
         setRestaurants(sortedRestaurants);
@@ -296,6 +299,12 @@ const OrderDetailPage = () => {
       </div>
       <section className="absolute top-0 right-10 mt-4">
         <div className="flex justify-end">
+          <button
+            onClick={() => setConfirmCreateOrder(true)}
+            className="mb-3 mr-5 bg-green py-2.5 px-3 rounded-lg text-white font-medium transition-all hover:scale-110 hover:bg-dark-blue"
+          >
+            Save changes
+          </button>
           <Link
             className="flex w-[120px] mb-3 items-center bg-dark-blue py-2.5 px-3 rounded-lg text-white font-medium transition-all hover:scale-110 "
             href="/"
@@ -308,7 +317,7 @@ const OrderDetailPage = () => {
           <div className="px-4 py-4 rounded-3xl flex items-center justify-center bg-white shadow-[0_8px_30px_rgb(0,0,0,0.12)]">
             <div className="flex flex-col col-span-1 pr-2 items-center justify-center">
               <h1 className="text-xl font-bold text-primary-blue">Status</h1>
-              <h2 className="text-sm px-1 font-semibold">Loading</h2>
+              <h2 className="text-sm px-1 font-semibold">TBC</h2>
             </div>
             {/* TODO AGREGAR EN ESTE DIV EL PORCENTAJE DE LOADING PARA RUTA SELECCIONADA */}
             <div className="flex col-span-1 items-center justify-center">
@@ -390,26 +399,30 @@ const OrderDetailPage = () => {
       <div>
         {details && (
           <div className="bg-light-blue flex items-center justify-around mx-10 mt-2 px-2 py-1 rounded-md">
-            <h3>Post Code:</h3>
-            <h3 className="underline decoration-2 decoration-green">
-              {customers && customers.postCode ? customers.postCode : ""}
-            </h3>
-            <h3>Telephone:</h3>
-            <h3 className="underline decoration-2 decoration-green">
+            <h3 className="font-medium">Post Code:</h3>
+            <h3>{customers && customers.postCode ? customers.postCode : ""}</h3>
+            <h3 className="font-medium">Telephone:</h3>
+            <h3>
               {orderDetail && orderDetail.telephone_customer
                 ? orderDetail.telephone_customer
                 : ""}
             </h3>
-            <h3>Address:</h3>
-            <h3 className="underline decoration-2 decoration-green ">
+            <h3 className="font-medium">Address:</h3>
+            <h3>
               {orderDetail && orderDetail.address_delivery
                 ? orderDetail.address_delivery
                 : ""}
             </h3>
-            <h3 className="ml-3">Contact:</h3>
-            <h3 className="underline decoration-2 decoration-green ">
-              {orderDetail && orderDetail.email ? orderDetail.email : ""}
-            </h3>
+            <h3 className="font-medium">Contact:</h3>
+            <h3>{orderDetail && orderDetail.email ? orderDetail.email : ""}</h3>
+            <h3 className="font-medium">Special requirements:</h3>
+            <input
+              type="text"
+              value={specialRequirements}
+              onChange={(e) => setSpecialRequirements(e.target.value)}
+              className="p-2 border border-dark-blue rounded-lg m-1 w-[300px]"
+              placeholder="Write your comments here"
+            />
           </div>
         )}
       </div>
@@ -543,7 +556,14 @@ const OrderDetailPage = () => {
                   </div>
                 </div>
               </section> */}
-              <EditTable orderId={orderId} dateDelivery={selectedDate} />
+              <EditTable
+                orderId={orderId}
+                dateDelivery={selectedDate}
+                confirmCreateOrder={confirmCreateOrder}
+                setConfirmCreateOrder={setConfirmCreateOrder}
+                specialRequirements={specialRequirements}
+                setSpecialRequirements={setSpecialRequirements}
+              />
             </>
           )
         )}

@@ -25,7 +25,6 @@ const SideBar = () => {
     removeToken();
     removeUser();
   };
-
   const handleButtonOpen = async () => {
     try {
       const currentDate = formatDate(selectedDate);
@@ -311,7 +310,7 @@ const SideBar = () => {
                         className="flex bg-white p-3 text-dark-blue hover:scale-105 transition-all font-medium rounded-full"
                         onClick={handleLogout}
                       >
-                        <ArrowLeftOnRectangleIcon className="h-6 w-6" />
+                        <ArrowLeftOnRectangleIcon className="h-6 w-6 mr-2" />
                         Log out
                       </button>
                       <button

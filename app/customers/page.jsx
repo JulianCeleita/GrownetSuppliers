@@ -240,7 +240,7 @@ const CustomersView = () => {
                           setSelectedCustomer(customer);
                           setShowEditCustomer(true);
                         }}
-                        className="text-dark-blue border-2 border-stone-100 border-t-0 cursor-pointer hover:bg-gray-50 transition-all"
+                        className="text-dark-blue border-2 border-stone-100 border-t-0 cursor-pointer hover:bg-[#F6F6F6] transition-all"
                       >
                         <td className="py-4">{customer.accountName}</td>
                         <td className="py-4 w-[110px">{customer.telephone}</td>

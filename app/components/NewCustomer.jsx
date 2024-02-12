@@ -12,6 +12,7 @@ import {
 } from "../api/customerRequest";
 import { assignCustomer, createCustomer } from "../config/urls.config";
 import useTokenStore from "../store/useTokenStore";
+import { set } from "date-fns";
 
 function NewCustomer({ isvisible, onClose, setUpdateCustomers }) {
   const { token } = useTokenStore();
@@ -35,8 +36,8 @@ function NewCustomer({ isvisible, onClose, setUpdateCustomers }) {
   const [groups, setGroups] = useState([]);
   const [selectedGroup, setSelectedGroup] = useState(1);
   const { user, setUser } = useUserStore();
-  const [startHour, setStartHour] = useState("00:09");
-  const [endHour, setEndHour] = useState("");
+  const [startHour, setStartHour] = useState({ hour: "12", minute: "00" });
+  const [endHour, setEndHour] = useState({ hour: "12", minute: "30" });
   const [error, setError] = useState("");
   const [selectedRoutes, setSelectedRoutes] = useState({});
   const [customers, setCustomers] = useState([]);
@@ -98,30 +99,6 @@ function NewCustomer({ isvisible, onClose, setUpdateCustomers }) {
     const isYes = value === "yes";
     setVipSelected(isYes);
   };
-  
-  const validateHourFormat = (input) => {
-    return /^([01]\d|2[0-3]):([0-5]\d):([0-5]\d)$/.test(input) || input === "";
-  };
-
-  const handleStartHourChange = (e) => {
-    const input = e.target.value;
-    setStartHour(input);
-    setError(validateHourFormat(input) ? "" : "Wrong time format");
-  };
-
-  const handleEndHourChange = (e) => {
-    const input = e.target.value;
-    setEndHour(input);
-    setError(validateHourFormat(input) ? "" : "Wrong time format");
-  };
-
-  const handleBlur = () => {
-    if (!validateHourFormat(startHour) || !validateHourFormat(endHour)) {
-      setError("Both fields must be in valid time format");
-    } else {
-      setError("");
-    }
-  };
 
   const handleDropChange = (e) => {
     const inputValue = e.target.value;
@@ -172,7 +149,7 @@ function NewCustomer({ isvisible, onClose, setUpdateCustomers }) {
       drop: safeDropValue,
       crates: safeCratesValue,
       vip: safeVipValue,
-      delivery_window: `${startHour} - ${endHour}`,
+      delivery_window: `${startHour.hour + ':' + startHour.minute} - ${endHour.hour + ':' + endHour.minute}`,
       group_id: selectedGroup,
       countries_indicative: user?.countries_indicactive,
     };
@@ -219,6 +196,22 @@ function NewCustomer({ isvisible, onClose, setUpdateCustomers }) {
       });
 
     setUpdateCustomers(false);
+  };
+
+  const handleHour = (event, start) => {
+    if (start) {
+      setStartHour(prev => ({ ...prev, hour: event.target.value }));
+    } else {
+      setEndHour(prev => ({ ...prev, hour: event.target.value }));
+    }
+  };
+
+  const handleMinute = (event, start) => {
+    if (start) {
+      setStartHour(prev => ({ ...prev, minute: event.target.value }));
+    } else {
+      setEndHour(prev => ({ ...prev, minute: event.target.value }));
+    }
   };
 
   return (
@@ -428,25 +421,35 @@ function NewCustomer({ isvisible, onClose, setUpdateCustomers }) {
                     <span className="text-primary-blue">*</span>
                   </label>
                   <div className="flex items-center w-full">
-                    <input
-                      className="border p-3 rounded-md w-full"
-                      placeholder="hh:mm"
-                      type="time"
-                      value={startHour}
-                      onChange={handleStartHourChange}
-                      onBlur={handleBlur}
-                      required
-                    />
-                    <span className="mx-2">-</span>
-                    <input
-                      className="border p-3 rounded-md w-full"
-                      placeholder="hh:mm"
-                      type="time"
-                      value={endHour}
-                      onChange={handleEndHourChange}
-                      onBlur={handleBlur}
-                      required
-                    />
+                    <div className="border p-3 rounded-md w-full flex justify-center gap-3" >
+                      <select value={startHour.hour} onChange={(value) => handleHour(value, true)} required>
+                        {Array.from({ length: 24 }, (_, i) => i).map((i) => (
+                          <option key={i} value={i}>
+                            {i.toString().padStart(2, '0')}
+                          </option>
+                        ))}
+                      </select>
+                      :
+                      <select value={startHour.minute} onChange={(value) => handleMinute(value, true)} required>
+                        <option value="00">00</option>
+                        <option value="30">30</option>
+                      </select>
+                    </div>
+                    <span className="mx-3">-</span>
+                    <div className="border p-3 rounded-md w-full flex justify-center gap-3" >
+                      <select value={endHour.hour} onChange={(value) => handleHour(value, false)} required>
+                        {Array.from({ length: 24 }, (_, i) => i).map((i) => (
+                          <option key={i} value={i}>
+                            {i.toString().padStart(2, '0')}
+                          </option>
+                        ))}
+                      </select>
+                      :
+                      <select value={endHour.minute} onChange={(value) => handleMinute(value, false)} required>
+                        <option value="00">00</option>
+                        <option value="30">30</option>
+                      </select>
+                    </div>
                   </div>
                 </div>
                 <div className="flex items-center mb-3">
