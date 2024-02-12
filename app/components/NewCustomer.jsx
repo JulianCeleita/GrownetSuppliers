@@ -35,7 +35,7 @@ function NewCustomer({ isvisible, onClose, setUpdateCustomers }) {
   const [groups, setGroups] = useState([]);
   const [selectedGroup, setSelectedGroup] = useState(null);
   const { user, setUser } = useUserStore();
-  const [startHour, setStartHour] = useState("");
+  const [startHour, setStartHour] = useState("00:09");
   const [endHour, setEndHour] = useState("");
   const [error, setError] = useState("");
   const [selectedRoutes, setSelectedRoutes] = useState({});
