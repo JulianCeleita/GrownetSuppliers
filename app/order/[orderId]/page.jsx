@@ -24,6 +24,7 @@ import { useRouter } from "next/navigation";
 import { fetchOrderDetail } from "@/app/api/ordersRequest";
 import { CircleProgressBar } from "@/app/components/CircleProgressBar";
 import Select from "react-select";
+import { getPercentageOrder } from "../../api/percentageOrderRequest";
 
 const OrderDetailPage = () => {
   const [hasMounted, setHasMounted] = useState(false);
@@ -217,34 +218,9 @@ const OrderDetailPage = () => {
     }
   };
 
-  const getRoutes = async (token, date) => {
-    try {
-      const { data } = await axios.post(
-        routesByDate,
-        { date },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-
-      data.routes.forEach((route) => {
-        route.accounts.forEach((account) => {
-          if (account.orders_reference === Number(orderId)) {
-            const percentage = Number(account.percentage_loading).toFixed(0);
-            setPercentageDetail(percentage);
-          }
-        });
-      });
-    } catch (error) {
-      console.log("Error in getRoutes:", error);
-    }
-  };
-
   useEffect(() => {
     if (selectedDate) {
-      getRoutes(token, selectedDate);
+      getPercentageOrder(token, selectedDate, orderId, setPercentageDetail);
     }
   }, [selectedDate]);
 
@@ -259,8 +235,6 @@ const OrderDetailPage = () => {
   if (!hasMounted) {
     return null;
   }
-
-  console.log("orderDetail", orderDetail);
 
   return (
     <Layout>
@@ -395,7 +369,7 @@ const OrderDetailPage = () => {
           readOnly
           className="border ml-2 p-1.5 rounded-md w-20"
         />
-        <label className="mx-3">Order Number: </label>
+        <label className="mx-3">Customer Ref: </label>
         <input type="text" className="border p-2 rounded-md w-20" />
         {details ? (
           <button

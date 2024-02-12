@@ -58,10 +58,10 @@ const CustomersView = () => {
 
   useEffect(() => {
     const sortedCustomers = customers.sort((a, b) =>
-      a.accountName.localeCompare(b.accountName)
+      a.accountName?.localeCompare(b.accountName)
     );
     const filteredCustomers = sortedCustomers.filter((customer) =>
-      customer.accountName.toLowerCase().includes(searchTerm.toLowerCase())
+      customer?.accountName?.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
     setDisplayedCustomers(filteredCustomers);
