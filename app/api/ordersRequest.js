@@ -104,3 +104,31 @@ export const fetchOrderDetail = async (
     console.error("Error al obtener el detalle:", error);
   }
 };
+export const fetchOrdersDate = async (
+  token,
+  end,
+  start,
+  routeId,
+  setTotalNet
+) => {
+  const postData = {
+    date: {
+      start: start,
+      end: end,
+    },
+    route_id: routeId,
+  };
+  console.log("postData", postData);
+  try {
+    const response = await axios.post(ordersDate, postData, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+    });
+    setTotalNet(response.data);
+    console.log("response data", response.data);
+  } catch (error) {
+    console.error("Error al obtener el orders by date:", error);
+  }
+};
