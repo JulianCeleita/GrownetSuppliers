@@ -57,6 +57,7 @@ const OrderDetailPage = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [accName, setAccName] = useState("");
   const params = useParams();
+  const [confirmCreateOrder, setConfirmCreateOrder] = useState(false);
 
   let orderId;
   if (params) {
@@ -296,6 +297,12 @@ const OrderDetailPage = () => {
       </div>
       <section className="absolute top-0 right-10 mt-4">
         <div className="flex justify-end">
+          <button
+            onClick={() => setConfirmCreateOrder(true)}
+            className="mb-3 mr-5 bg-green py-2.5 px-3 rounded-lg text-white font-medium transition-all hover:scale-110 hover:bg-dark-blue"
+          >
+            Save changes
+          </button>
           <Link
             className="flex w-[120px] mb-3 items-center bg-dark-blue py-2.5 px-3 rounded-lg text-white font-medium transition-all hover:scale-110 "
             href="/"
@@ -406,6 +413,7 @@ const OrderDetailPage = () => {
             </h3>
             <h3 className="font-medium">Contact:</h3>
             <h3>{orderDetail && orderDetail.email ? orderDetail.email : ""}</h3>
+            <h3 className="font-medium">Special requirements</h3>
           </div>
         )}
       </div>
@@ -539,7 +547,12 @@ const OrderDetailPage = () => {
                   </div>
                 </div>
               </section> */}
-              <EditTable orderId={orderId} dateDelivery={selectedDate} />
+              <EditTable
+                orderId={orderId}
+                dateDelivery={selectedDate}
+                confirmCreateOrder={confirmCreateOrder}
+                setConfirmCreateOrder={setConfirmCreateOrder}
+              />
             </>
           )
         )}

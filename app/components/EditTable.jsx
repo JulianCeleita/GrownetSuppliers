@@ -100,7 +100,12 @@ const useFocusOnEnter = (formRef) => {
   return { onEnterKey };
 };
 
-export default function EditTable({ orderId, dateDelivery }) {
+export default function EditTable({
+  orderId,
+  dateDelivery,
+  confirmCreateOrder,
+  setConfirmCreateOrder,
+}) {
   const [rows, setRows] = useState(
     Array.from({ length: 0 }, () => ({ ...initialRowsState }))
   );
@@ -137,7 +142,6 @@ export default function EditTable({ orderId, dateDelivery }) {
   const [mouseCoords, setMouseCoords] = useState({ x: 0, y: 0 });
   const router = useRouter();
   const [isReadOnly, setIsReadOnly] = useState(true);
-  const [confirmCreateOrder, setConfirmCreateOrder] = useState(false);
   const [orderError, setOrderError] = useState("");
 
   const columns = [
@@ -860,12 +864,12 @@ export default function EditTable({ orderId, dateDelivery }) {
               className="p-3 border border-dark-blue rounded-tr-lg rounded-br-lg w-full mr-5"
               placeholder="Write your comments here"
             />
-            <button
+            {/* <button
               onClick={() => setConfirmCreateOrder(true)}
               className="bg-primary-blue py-2 px-4 rounded-lg text-white font-medium mr-2 w-[15%]"
             >
               Save changes
-            </button>
+            </button> */}
           </div>
         </>
       )}
