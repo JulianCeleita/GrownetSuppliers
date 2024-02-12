@@ -37,7 +37,6 @@ function NewSupplier({ isvisible, onClose, setSuppliers }) {
       formDataObject[key] = value;
     });
 
-
     try {
       const response = await axios.post(addSupplierUrl, formData, {
         headers: {
@@ -89,7 +88,7 @@ function NewSupplier({ isvisible, onClose, setSuppliers }) {
             <label>Email: </label>
             <input
               className="border p-3 rounded-md mr-3 mt-3 w-200"
-              placeholder="email@grownet.com"
+              placeholder="your-email@grownetapp.com"
               type="email"
               value={emailSupplier}
               onChange={(e) => setEmailSupplier(e.target.value)}
@@ -108,8 +107,9 @@ function NewSupplier({ isvisible, onClose, setSuppliers }) {
             <button
               type="submit"
               value="Submit"
-              className={`bg-primary-blue py-3 px-4 rounded-lg text-white font-medium mr-3 ${isLoading === true ? "bg-gray-500/50" : ""
-                }`}
+              className={`bg-primary-blue py-3 px-4 rounded-lg text-white font-medium mr-3 ${
+                isLoading === true ? "bg-gray-500/50" : ""
+              }`}
               disabled={isLoading}
             >
               Add supplier

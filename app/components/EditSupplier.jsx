@@ -82,7 +82,7 @@ function EditSupplier({
             <input
               id="email"
               className="border p-3 rounded-md mr-3 mt-3 w-200"
-              placeholder="email@grownet.com"
+              placeholder="your-email@grownetapp.com"
               type="email"
               value={editedEmail}
               onChange={(e) => setEditedEmail(e.target.value)}
