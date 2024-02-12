@@ -35,8 +35,8 @@ function NewCustomer({ isvisible, onClose, setUpdateCustomers }) {
   const [groups, setGroups] = useState([]);
   const [selectedGroup, setSelectedGroup] = useState(1);
   const { user, setUser } = useUserStore();
-  const [startHour, setStartHour] = useState("00:09");
-  const [endHour, setEndHour] = useState("");
+  const [startHour, setStartHour] = useState("00:00");
+  const [endHour, setEndHour] = useState("00:30");
   const [error, setError] = useState("");
   const [selectedRoutes, setSelectedRoutes] = useState({});
   const [customers, setCustomers] = useState([]);
@@ -98,7 +98,7 @@ function NewCustomer({ isvisible, onClose, setUpdateCustomers }) {
     const isYes = value === "yes";
     setVipSelected(isYes);
   };
-  
+
   const validateHourFormat = (input) => {
     return /^([01]\d|2[0-3]):([0-5]\d):([0-5]\d)$/.test(input) || input === "";
   };
