@@ -390,26 +390,22 @@ const OrderDetailPage = () => {
       <div>
         {details && (
           <div className="bg-light-blue flex items-center justify-around mx-10 mt-2 px-2 py-1 rounded-md">
-            <h3>Post Code:</h3>
-            <h3 className="underline decoration-2 decoration-green">
-              {customers && customers.postCode ? customers.postCode : ""}
-            </h3>
-            <h3>Telephone:</h3>
-            <h3 className="underline decoration-2 decoration-green">
+            <h3 className="font-medium">Post Code:</h3>
+            <h3>{customers && customers.postCode ? customers.postCode : ""}</h3>
+            <h3 className="font-medium">Telephone:</h3>
+            <h3>
               {orderDetail && orderDetail.telephone_customer
                 ? orderDetail.telephone_customer
                 : ""}
             </h3>
-            <h3>Address:</h3>
-            <h3 className="underline decoration-2 decoration-green ">
+            <h3 className="font-medium">Address:</h3>
+            <h3>
               {orderDetail && orderDetail.address_delivery
                 ? orderDetail.address_delivery
                 : ""}
             </h3>
-            <h3 className="ml-3">Contact:</h3>
-            <h3 className="underline decoration-2 decoration-green ">
-              {orderDetail && orderDetail.email ? orderDetail.email : ""}
-            </h3>
+            <h3 className="font-medium">Contact:</h3>
+            <h3>{orderDetail && orderDetail.email ? orderDetail.email : ""}</h3>
           </div>
         )}
       </div>

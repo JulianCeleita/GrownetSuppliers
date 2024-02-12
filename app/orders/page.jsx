@@ -119,13 +119,16 @@ const OrderView = () => {
   useEffect(() => {
     if (objectToArray(selectedOrders).length === 1) {
       console.log("selectedOrders.[0]", objectToArray(selectedOrders)[0]);
-      getPercentageOrder(token, selectedDate !== "" ? selectedDate : workDate, objectToArray(selectedOrders)[0], setShowPercentage);
+      getPercentageOrder(
+        token,
+        selectedDate !== "" ? selectedDate : workDate,
+        objectToArray(selectedOrders)[0],
+        setShowPercentage
+      );
     } else {
       setShowPercentage(null);
     }
-
-  }, [selectedOrders])
-
+  }, [selectedOrders]);
 
   const subtractDays = (date, days) => {
     const result = new Date(date);
@@ -206,10 +209,10 @@ const OrderView = () => {
     return Object.entries(object)
       .filter(([reference, checked]) => checked)
       .map(([reference]) => reference);
-  }
+  };
 
   const printOrders = () => {
-    const ordersToPrint = objectToArray(selectedOrders)
+    const ordersToPrint = objectToArray(selectedOrders);
     //TODO: implementar lógica para imprimir las ordenes seleccionadas
   };
 
@@ -243,8 +246,8 @@ const OrderView = () => {
 
   const filteredOrders = selectedRoute
     ? sortedOrders.filter(
-      (order) => order.route.toLowerCase() === selectedRoute.toLowerCase()
-    )
+        (order) => order.route.toLowerCase() === selectedRoute.toLowerCase()
+      )
     : sortedOrders;
 
   const statusColorClass = (status) => {
@@ -454,7 +457,11 @@ const OrderView = () => {
               {!isLoading &&
                 (filteredOrders.length > 0 ? (
                   filteredOrders.map((order, index) => (
-                    <tr key={index} className="text-dark-blue border-b-[1.5px]">
+                    <tr
+                      key={index}
+                      className="text-dark-blue border-b-[1.5px] cursor-pointer hover:bg-[#F6F6F6]"
+                      onClick={(e) => goToOrder(e, order)}
+                    >
                       <td className="py-4">
                         <label className="inline-flex items-center">
                           <input
@@ -468,10 +475,7 @@ const OrderView = () => {
                         </label>
                       </td>
                       <td className="py-4">{order.reference}</td>
-                      <td
-                        className="py-4 cursor-pointer hover:bg-light-blue"
-                        onClick={(e) => goToOrder(e, order)}
-                      >
+                      <td className="py-4 cursor-pointer ">
                         {order.accountName}
                       </td>
                       <td className="py-4">{order.net}</td>

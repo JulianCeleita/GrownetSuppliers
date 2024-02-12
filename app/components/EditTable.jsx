@@ -864,7 +864,7 @@ export default function EditTable({ orderId, dateDelivery }) {
               onClick={() => setConfirmCreateOrder(true)}
               className="bg-primary-blue py-2 px-4 rounded-lg text-white font-medium mr-2 w-[15%]"
             >
-              Edit order
+              Save changes
             </button>
           </div>
         </>

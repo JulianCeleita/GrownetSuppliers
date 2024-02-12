@@ -401,22 +401,20 @@ const CreateOrderView = () => {
       </div>
       {details && (
         <div className="bg-light-blue flex items-center justify-around mx-10 mt-2 px-2 py-1 rounded-md">
-          <h3>Post Code:</h3>
-          <h3 className="underline decoration-2 decoration-green">
+          <h3 className="font-medium">Post Code:</h3>
+          <h3>
             {customers && customers[0].postCode ? customers[0].postCode : ""}
           </h3>
-          <h3>Telephone:</h3>
-          <h3 className="underline decoration-2 decoration-green">
+          <h3 className="font-medium">Telephone:</h3>
+          <h3>
             {customers && customers[0].telephone ? customers[0].telephone : ""}
           </h3>
-          <h3 className="">Address:</h3>
-          <h3 className="underline decoration-2 decoration-green ">
+          <h3 className="font-medium">Address:</h3>
+          <h3>
             {customers && customers[0].address ? customers[0].address : ""}
           </h3>
-          <h3 className="">Contact:</h3>
-          <h3 className="underline decoration-2 decoration-green ">
-            {customers && customers[0].email ? customers[0].email : ""}
-          </h3>
+          <h3 className="font-medium">Contact:</h3>
+          <h3>{customers && customers[0].email ? customers[0].email : ""}</h3>
         </div>
       )}
       <div className="">
