@@ -139,6 +139,7 @@ export default function EditTable({ orderId, dateDelivery }) {
   const [isReadOnly, setIsReadOnly] = useState(true);
   const [confirmCreateOrder, setConfirmCreateOrder] = useState(false);
   const [orderError, setOrderError] = useState("");
+  const isNotOrderEditable = orderDetail?.id_stateOrder !== 3;
 
   const columns = [
     "Code",
@@ -186,6 +187,7 @@ export default function EditTable({ orderId, dateDelivery }) {
       orderDetail.products.length > 0
     ) {
       const initialRows = orderDetail.products.map((product) => ({
+        isExistingProduct: true,
         Code: product.presentations_code,
         Description: product.name,
         Packsize: product.presentation_name,
@@ -435,9 +437,11 @@ export default function EditTable({ orderId, dateDelivery }) {
 
   // AGREGAR NUEVA FILA
   const addNewRow = () => {
-    setRows((prevRows) => [...prevRows, { ...initialRowsState }]);
+    setRows((prevRows) => [
+      ...prevRows,
+      { ...initialRowsState, isExistingProduct: false }, // Aquí se agrega la nueva fila sin marcar como existente
+    ]);
   };
-
   // OBTENER NOMBRE DEL CAMPO SIGUIENTE
   // const getNextFieldName = (currentFieldName, rowIndex) => {
   //   const currentIndex = initialColumns.indexOf(currentFieldName);
@@ -627,26 +631,23 @@ export default function EditTable({ orderId, dateDelivery }) {
                           <th
                             key={index}
                             scope="col"
-                            className={`py-3 px-2 bg-white capitalize ${
-                              index === firstVisibleColumnIndex
+                            className={`py-3 px-2 bg-white capitalize ${index === firstVisibleColumnIndex
                                 ? "rounded-tl-lg"
                                 : ""
-                            } ${
-                              index === lastVisibleColumnIndex
+                              } ${index === lastVisibleColumnIndex
                                 ? "rounded-tr-lg"
                                 : ""
-                            } ${
-                              column === "quantity" ||
-                              column === "Code" ||
-                              column === "VAT %" ||
-                              column === "UOM" ||
-                              column === "Net"
+                              } ${column === "quantity" ||
+                                column === "Code" ||
+                                column === "VAT %" ||
+                                column === "UOM" ||
+                                column === "Net"
                                 ? "w-20"
                                 : column === "Packsize" ||
                                   column === "Total Price"
-                                ? "w-40"
-                                : ""
-                            }`}
+                                  ? "w-40"
+                                  : ""
+                              }`}
                             onContextMenu={(e) => handleContextMenu(e)}
                           >
                             <p className="text-lg text-dark-blue">{column}</p>
@@ -707,10 +708,10 @@ export default function EditTable({ orderId, dateDelivery }) {
                                         options={
                                           DescriptionData
                                             ? DescriptionData.map((item) => ({
-                                                value: item.productName,
-                                                label: item.concatenatedName,
-                                                code: item.code,
-                                              }))
+                                              value: item.productName,
+                                              label: item.concatenatedName,
+                                              code: item.code,
+                                            }))
                                             : []
                                         }
                                         value={{
@@ -751,6 +752,7 @@ export default function EditTable({ orderId, dateDelivery }) {
                                             display: "none",
                                           }),
                                         }}
+                                        isDisabled={row.isExistingProduct && isNotOrderEditable}
                                       />
                                     )}
                                   </span>
@@ -759,11 +761,11 @@ export default function EditTable({ orderId, dateDelivery }) {
                                     type={inputTypes[column]}
                                     ref={inputRefs[column][rowIndex]}
                                     data-field-name={column}
-                                    className={`pl-2 h-[30px] outline-none w-full ${
-                                      inputTypes[column] === "number"
+                                    disabled={row.isExistingProduct && isNotOrderEditable}
+                                    className={`pl-2 h-[30px] outline-none w-full ${inputTypes[column] === "number"
                                         ? "hide-number-arrows"
                                         : ""
-                                    }`}
+                                      }`}
                                     value={row[column] || ""}
                                     onChange={(e) => {
                                       if (column === "Net") {
@@ -815,6 +817,13 @@ export default function EditTable({ orderId, dateDelivery }) {
                   ))}
                 </tbody>
               </table>
+              <button
+                onClick={addNewRow}
+                type="button"
+                className="bg-primary-blue py-2 px-4 rounded-lg text-white font-medium mr-2"
+              >
+                Add new product
+              </button>
 
               {showCheckboxColumn === true && (
                 <div
