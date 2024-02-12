@@ -106,15 +106,11 @@ const CustomerDetailPage = ({
         detailCustomer[0]?.delivery_window || ""
       );
 
-      console.log({ inicio, fin });
-
       const sHour = inicio.split(":");
       const eHour = fin.split(":");
-      setStartHour({ hour: sHour[0], minute: sHour[1] < 30 ? "00" : "30" });
-      setEndHour({ hour: eHour[0], minute: eHour[1] < 30 ? "00" : "30" });
+      setStartHour({ hour: sHour[0], minute: Number(sHour[1]) < 30 ? "00" : "30" });
+      setEndHour({ hour: eHour[0], minute: Number(eHour[1]) < 30 ? "00" : "30" });
 
-      // setStartHour(inicio);
-      // setEndHour(fin);
       const selectedRoutesData = {};
       detailCustomer[0].routes.forEach((route) => {
         const day = mapDayNumberToName(route.days_id);
@@ -210,30 +206,6 @@ const CustomerDetailPage = ({
   };
   const handleGroupChange = (e) => {
     setSelectedGroup(e.target.value);
-  };
-
-  const validateHourFormat = (input) => {
-    return /^([01]\d|2[0-3]):([0-5]\d):([0-5]\d)$/.test(input) || input === "";
-  };
-
-  const handleStartHourChange = (e) => {
-    const input = e.target.value;
-    setStartHour(input);
-    setError(validateHourFormat(input) ? "" : "Formato de hora incorrecto");
-  };
-
-  const handleEndHourChange = (e) => {
-    const input = e.target.value;
-    setEndHour(input);
-    setError(validateHourFormat(input) ? "" : "Formato de hora incorrecto");
-  };
-
-  const handleBlur = () => {
-    if (!validateHourFormat(startHour) || !validateHourFormat(endHour)) {
-      setError("Ambos campos deben tener un formato de hora válido");
-    } else {
-      setError("");
-    }
   };
 
   const handleDropChange = (e) => {
