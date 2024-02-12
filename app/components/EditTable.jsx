@@ -100,7 +100,14 @@ const useFocusOnEnter = (formRef) => {
   return { onEnterKey };
 };
 
-export default function EditTable({ orderId, dateDelivery }) {
+export default function EditTable({
+  orderId,
+  dateDelivery,
+  confirmCreateOrder,
+  setConfirmCreateOrder,
+  specialRequirements,
+  setSpecialRequirements,
+}) {
   const [rows, setRows] = useState(
     Array.from({ length: 0 }, () => ({ ...initialRowsState }))
   );
@@ -130,14 +137,9 @@ export default function EditTable({ orderId, dateDelivery }) {
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [showErrorOrderModal, setShowErrorOrderModal] = useState(false);
 
-  const [specialRequirements, setSpecialRequirements] = useState(
-    orderDetail.observation ? orderDetail.observation : ""
-  );
-
   const [mouseCoords, setMouseCoords] = useState({ x: 0, y: 0 });
   const router = useRouter();
   const [isReadOnly, setIsReadOnly] = useState(true);
-  const [confirmCreateOrder, setConfirmCreateOrder] = useState(false);
   const [orderError, setOrderError] = useState("");
 
   const columns = [
@@ -849,7 +851,7 @@ export default function EditTable({ orderId, dateDelivery }) {
               )}
             </form>
           </div>
-          <div className="flex justify-center mb-20 w-full mt-5">
+          {/*  <div className="flex justify-center mb-20 w-full mt-5">
             <h1 className="bg-dark-blue text-white font-semibold p-3 rounded-tl-lg rounded-bl-lg w-[30%] items-center text-center flex justify-center">
               Special requirements
             </h1>
@@ -860,13 +862,13 @@ export default function EditTable({ orderId, dateDelivery }) {
               className="p-3 border border-dark-blue rounded-tr-lg rounded-br-lg w-full mr-5"
               placeholder="Write your comments here"
             />
-            <button
+             <button
               onClick={() => setConfirmCreateOrder(true)}
               className="bg-primary-blue py-2 px-4 rounded-lg text-white font-medium mr-2 w-[15%]"
             >
-              Edit order
-            </button>
-          </div>
+              Save changes
+            </button> 
+          </div>*/}
         </>
       )}
       <ModalSuccessfull

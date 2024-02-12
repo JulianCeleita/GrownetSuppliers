@@ -12,6 +12,7 @@ import {
 } from "../api/customerRequest";
 import { assignCustomer, createCustomer } from "../config/urls.config";
 import useTokenStore from "../store/useTokenStore";
+import { set } from "date-fns";
 
 function NewCustomer({ isvisible, onClose, setUpdateCustomers }) {
   const { token } = useTokenStore();
@@ -27,23 +28,33 @@ function NewCustomer({ isvisible, onClose, setUpdateCustomers }) {
   const [mainContact, setMainContact] = useState("");
   const [accountEmail, setAccountEmail] = useState("");
   const [drop, setDrop] = useState("");
-  const [crates, setCrates] = useState("no");
+  const [crates, setCrates] = useState(false);
   const [cratesSelected, setCratesSelected] = useState("");
-  const [vip, setVip] = useState("no");
+  const [vip, setVip] = useState(false);
   const [vipSelected, setVipSelected] = useState("");
   const [routes, setRoutes] = useState([]);
   const [groups, setGroups] = useState([]);
-  const [selectedGroup, setSelectedGroup] = useState(null);
+  const [selectedGroup, setSelectedGroup] = useState(1);
   const { user, setUser } = useUserStore();
-  const [startHour, setStartHour] = useState("00:09");
-  const [endHour, setEndHour] = useState("");
+  const [startHour, setStartHour] = useState({ hour: "12", minute: "00" });
+  const [endHour, setEndHour] = useState({ hour: "12", minute: "30" });
   const [error, setError] = useState("");
   const [selectedRoutes, setSelectedRoutes] = useState({});
   const [customers, setCustomers] = useState([]);
+
   useEffect(() => {
     fetchRoutes(token, user, setRoutes, setIsLoading);
     fetchGroups(token, user, setGroups, setIsLoading);
   }, []);
+
+  useEffect(() => {
+    if (groups.length > 0) {
+      const directGroup = groups.find(group => group.group === 'Direct');
+      if (directGroup) {
+        setSelectedGroup(directGroup.id);
+      }
+    }
+  }, [groups]);
 
   if (!isvisible) {
     return null;
@@ -105,17 +116,9 @@ function NewCustomer({ isvisible, onClose, setUpdateCustomers }) {
     setError(validateHourFormat(input) ? "" : "Wrong time format");
   };
 
-  const handleBlur = () => {
-    if (!validateHourFormat(startHour) || !validateHourFormat(endHour)) {
-      setError("Both fields must be in valid time format");
-    } else {
-      setError("");
-    }
-  };
-
   const handleDropChange = (e) => {
     const inputValue = e.target.value;
-    const newValue = inputValue <= 100 ? inputValue : 100;
+    const newValue = inputValue === "" ? "0" : inputValue <= 100 ? inputValue : "100";
     setDrop(newValue);
   };
 
@@ -141,6 +144,9 @@ function NewCustomer({ isvisible, onClose, setUpdateCustomers }) {
 
   const enviarData = (e) => {
     e.preventDefault();
+    const safeDropValue = drop === "" ? "0" : drop;
+    const safeCratesValue = cratesSelected === "" ? "0" : cratesSelected;
+    const safeVipValue = vipSelected === "" ? "0" : vipSelected;
     const postData = {
       accountNumber: accountNumber,
       accountName: accountName,
@@ -156,16 +162,18 @@ function NewCustomer({ isvisible, onClose, setUpdateCustomers }) {
       image: "",
       main_contact: mainContact,
       account_email: accountEmail,
-      drop: drop,
-      crates: cratesSelected,
-      vip: vipSelected,
-      delivery_window: `${startHour} - ${endHour}`,
+      drop: safeDropValue,
+      crates: safeCratesValue,
+      vip: safeVipValue,
+      delivery_window: `${startHour.hour + ':' + startHour.minute} - ${endHour.hour + ':' + endHour.minute}`,
       group_id: selectedGroup,
       countries_indicative: user?.countries_indicactive,
     };
+    console.log("🚀 ~ enviarData ~ postData:", postData)
     const postDataAssign = {
       ...prepareDataForBackend(),
     };
+    console.log("🚀 ~ enviarData ~ postDataAssign:", postDataAssign)
     axios
       .post(createCustomer, postData, {
         headers: {
@@ -173,6 +181,7 @@ function NewCustomer({ isvisible, onClose, setUpdateCustomers }) {
         },
       })
       .then((response) => {
+        console.log("🚀 ~ .then ~ response:", response)
         const customerAccountNumber = response?.data?.accountNumber;
         postDataAssign.customer = customerAccountNumber;
         axios
@@ -182,6 +191,7 @@ function NewCustomer({ isvisible, onClose, setUpdateCustomers }) {
             },
           })
           .then((assignResponse) => {
+            console.log("🚀 ~ .then ~ assignResponse:", assignResponse)
             Swal.fire({
               position: "top-end",
               icon: "success",
@@ -202,6 +212,22 @@ function NewCustomer({ isvisible, onClose, setUpdateCustomers }) {
       });
 
     setUpdateCustomers(false);
+  };
+
+  const handleHour = (event, start) => {
+    if (start) {
+      setStartHour(prev => ({ ...prev, hour: event.target.value }));
+    } else {
+      setEndHour(prev => ({ ...prev, hour: event.target.value }));
+    }
+  };
+
+  const handleMinute = (event, start) => {
+    if (start) {
+      setStartHour(prev => ({ ...prev, minute: event.target.value }));
+    } else {
+      setEndHour(prev => ({ ...prev, minute: event.target.value }));
+    }
   };
 
   return (
@@ -298,10 +324,10 @@ function NewCustomer({ isvisible, onClose, setUpdateCustomers }) {
                     onChange={handleVipChange}
                     className="ml-2 border p-2 rounded-md w-full"
                   >
-                    <option key="no" value="no">
+                    <option key="no" value={0}>
                       No
                     </option>
-                    <option key="yes" value="yes">
+                    <option key="yes" value={1}>
                       Yes
                     </option>
                   </select>
@@ -387,10 +413,10 @@ function NewCustomer({ isvisible, onClose, setUpdateCustomers }) {
                     onChange={handleCratesChange}
                     className="ml-2 border p-2 rounded-md w-full"
                   >
-                    <option key="no" value="no">
+                    <option key="no" value={0}>
                       No
                     </option>
-                    <option key="yes" value="yes">
+                    <option key="yes" value={1}>
                       Yes
                     </option>
                   </select>
@@ -411,25 +437,35 @@ function NewCustomer({ isvisible, onClose, setUpdateCustomers }) {
                     <span className="text-primary-blue">*</span>
                   </label>
                   <div className="flex items-center w-full">
-                    <input
-                      className="border p-3 rounded-md w-full"
-                      placeholder="hh:mm"
-                      type="time"
-                      value={startHour}
-                      onChange={handleStartHourChange}
-                      onBlur={handleBlur}
-                      required
-                    />
-                    <span className="mx-2">-</span>
-                    <input
-                      className="border p-3 rounded-md w-full"
-                      placeholder="hh:mm"
-                      type="time"
-                      value={endHour}
-                      onChange={handleEndHourChange}
-                      onBlur={handleBlur}
-                      required
-                    />
+                    <div className="border p-3 rounded-md w-full flex justify-center gap-3" >
+                      <select value={startHour.hour} onChange={(value) => handleHour(value, true)} required>
+                        {Array.from({ length: 24 }, (_, i) => i).map((i) => (
+                          <option key={i} value={i}>
+                            {i.toString().padStart(2, '0')}
+                          </option>
+                        ))}
+                      </select>
+                      :
+                      <select value={startHour.minute} onChange={(value) => handleMinute(value, true)} required>
+                        <option value="00">00</option>
+                        <option value="30">30</option>
+                      </select>
+                    </div>
+                    <span className="mx-3">-</span>
+                    <div className="border p-3 rounded-md w-full flex justify-center gap-3" >
+                      <select value={endHour.hour} onChange={(value) => handleHour(value, false)} required>
+                        {Array.from({ length: 24 }, (_, i) => i).map((i) => (
+                          <option key={i} value={i}>
+                            {i.toString().padStart(2, '0')}
+                          </option>
+                        ))}
+                      </select>
+                      :
+                      <select value={endHour.minute} onChange={(value) => handleMinute(value, false)} required>
+                        <option value="00">00</option>
+                        <option value="30">30</option>
+                      </select>
+                    </div>
                   </div>
                 </div>
                 <div className="flex items-center mb-3">
@@ -451,7 +487,7 @@ function NewCustomer({ isvisible, onClose, setUpdateCustomers }) {
                           }}
                           className="ml-2 border rounded-md bg-white bg-clip-padding bg-no-repeat w-full border-gray-200 p-1 leading-tight focus:outline-none text-dark-blue hover:border-gray-300 duration-150 ease-in-out"
                         >
-                          <option value="">Select route</option>
+                          <option value="">R100</option>
                           {routes.map((route) => (
                             <option key={route.id} value={route.id}>
                               {route.name}

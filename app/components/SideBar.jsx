@@ -2,6 +2,7 @@ import {
   ArrowLeftOnRectangleIcon,
   Bars3Icon,
   XMarkIcon,
+  MoonIcon,
 } from "@heroicons/react/24/outline";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -9,6 +10,8 @@ import { Fragment, useLayoutEffect, useState } from "react";
 import useUserStore from "../store/useUserStore";
 import { Dialog, Transition } from "@headlessui/react";
 import useTokenStore from "../store/useTokenStore";
+import grownetLogo from "../img/grownet-logo.png";
+import Image from "next/image";
 
 const SideBar = () => {
   const { removeToken, setToken } = useTokenStore();
@@ -64,10 +67,7 @@ const SideBar = () => {
 
   return (
     <div>
-      <button
-        className="ml-4"
-        onClick={() => setOpen(true)}
-      >
+      <button className="ml-4" onClick={() => setOpen(true)}>
         <Bars3Icon className="h-10 w-10 mr-6 text-white font-bold" />
       </button>
       <Transition.Root show={open} as={Fragment}>
@@ -98,11 +98,11 @@ const SideBar = () => {
             leaveTo="-translate-x-full"
           >
             <div className="absolute inset-y-0 left-0 flex max-w-full pr-10">
-              <Dialog.Panel className="pointer-events-auto relative w-screen max-w-md">
-                <div className="absolute right-0 top-0 -mr-8 flex pl-2 pt-4">
+              <Dialog.Panel className="pointer-events-auto relative w-screen max-w-md ">
+                <div className="absolute right-0 top-0 flex pl-2 pt-4  mr-2">
                   <button
                     type="button"
-                    className="relative rounded-md text-gray-300 hover:text-white focus:outline-none focus:ring-2 focus:ring-white"
+                    className="relative rounded-md text-white hover:text-white focus:outline-none focus:ring-2 focus:ring-white"
                     onClick={() => setOpen(false)}
                   >
                     <span className="absolute -inset-2.5" />
@@ -110,17 +110,30 @@ const SideBar = () => {
                     <XMarkIcon className="h-6 w-6" aria-hidden="true" />
                   </button>
                 </div>
-                <div className="flex h-full flex-col overflow-y-scroll bg-white py-6 shadow-xl">
+                <div className="flex h-full flex-col bg-dark-blue py-6">
                   <div className="px-4 sm:px-6">
-                    <Dialog.Title className="text-base font-semibold leading-6 text-gray-900">
-                      Menu
+                    <Dialog.Title className="text-base font-semibold leading-6 text-white">
+                      <div className="bg-[#046373] py-3 px-5 rounded-2xl flex items-center mt-8">
+                        <Image
+                          src={grownetLogo}
+                          alt="Grownet Logo"
+                          width={80}
+                          height={80}
+                        />
+                        <div className="ml-5">
+                          <h1 className="font-semibold text-lg">Hi, 📦🚀✨</h1>
+                          <p className="font-normal text-[15px]">
+                            Welcome to suppliers
+                          </p>
+                        </div>
+                      </div>
                     </Dialog.Title>
                   </div>
                   <div className="relative mt-6 flex-1 px-4 sm:px-6">
                     <div className="pl-4">
                       <Link
                         href="/users"
-                        className="relative group text-black rounded m-2 py-2 transition-all hover:text-dark-green hover:scale-110"
+                        className="relative group text-white rounded m-2 py-2 transition-all hover:text-light-green hover:scale-110"
                       >
                         <h3
                           className={activeLink === "users" ? "active" : ""}
@@ -139,7 +152,7 @@ const SideBar = () => {
                       </Link>
                       <Link
                         href="/orders"
-                        className="relative group text-black rounded m-2 py-2 transition-all hover:text-dark-green hover:scale-110"
+                        className="relative group text-white rounded m-2 py-2 transition-all hover:text-light-green hover:scale-110"
                       >
                         <h3
                           className={activeLink === "orders" ? "active" : ""}
@@ -156,27 +169,10 @@ const SideBar = () => {
                           <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-white group-hover:w-full transition-all duration-300 ease-in-out"></span>
                         )}
                       </Link>
-                      <Link
-                        href="/presentations"
-                        className="relative group text-black rounded m-2 py-2 transition-all hover:text-dark-green hover:scale-110"
-                      >
-                        <div
-                          className={
-                            activeLink === "presentations" ? "active" : ""
-                          }
-                          onClick={() => setActiveLink("presentations")}
-                        >
-                          Presentations
-                        </div>
-                        {activeLink === "presentations" ? (
-                          <span className="absolute bottom-0 left-0  h-0.5 bg-light-green w-full transition-all duration-300 ease-in-out"></span>
-                        ) : (
-                          <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-white group-hover:w-full transition-all duration-300 ease-in-out"></span>
-                        )}
-                      </Link>
+
                       <Link
                         href="/calendar"
-                        className="relative group text-black rounded m-2 py-2 transition-all hover:text-dark-green hover:scale-110"
+                        className="relative group text-white rounded m-2 py-2 transition-all hover:text-light-green hover:scale-110"
                       >
                         <div
                           className={activeLink === "calendar" ? "active" : ""}
@@ -194,7 +190,7 @@ const SideBar = () => {
                       {user && user.rol_name === "AdminGrownet" && (
                         <Link
                           href="/products"
-                          className="relative group text-black rounded m-2 py-2 transition-all hover:text-dark-green hover:scale-110"
+                          className="relative group text-white rounded m-2 py-2 transition-all hover:text-light-green hover:scale-110"
                         >
                           <h3
                             className={
@@ -218,7 +214,7 @@ const SideBar = () => {
                       {user && user.rol_name === "AdminGrownet" && (
                         <Link
                           href="/categories"
-                          className="relative group text-black rounded m-2 py-2 transition-all hover:text-dark-green hover:scale-110"
+                          className="relative group text-white rounded m-2 py-2 transition-all hover:text-light-green hover:scale-110"
                         >
                           <h3
                             className={
@@ -242,7 +238,7 @@ const SideBar = () => {
                       {user && user.rol_name === "AdminGrownet" && (
                         <Link
                           href="/suppliers"
-                          className="relative group text-black rounded m-2 py-2 transition-all hover:text-dark-green hover:scale-110"
+                          className="relative group text-white rounded m-2 py-2 transition-all hover:text-light-green hover:scale-110"
                         >
                           <h3
                             className={
@@ -266,7 +262,7 @@ const SideBar = () => {
                       {user && user.rol_name === "Administrador" && (
                         <Link
                           href="/customers"
-                          className="relative group text-black rounded m-2 py-2 transition-all hover:text-dark-green hover:scale-110"
+                          className="relative group text-white rounded m-2 py-2 transition-all hover:text-light-green hover:scale-110"
                         >
                           <h3
                             className={
@@ -289,7 +285,7 @@ const SideBar = () => {
                       {user && user.rol_name === "Administrador" && (
                         <Link
                           href="/catalogs"
-                          className="relative group text-black rounded m-2 py-2 transition-all hover:text-dark-green hover:scale-110"
+                          className="relative group text-white rounded m-2 py-2 transition-all hover:text-light-green hover:scale-110"
                         >
                           <h3
                             className={
@@ -309,25 +305,20 @@ const SideBar = () => {
                           )}
                         </Link>
                       )}
+                    </div>
+                    <div className="flex items-center absolute bottom-0  gap 2 justify-between w-full right-0 px-5">
                       <button
-                        className="text-white flex bg-dark-blue rounded-lg m-2 p-2 transition-all hover:bg-black hover:scale-110"
+                        className="flex bg-white p-3 text-dark-blue hover:scale-105 transition-all font-medium rounded-full"
                         onClick={handleLogout}
                       >
-                        <ArrowLeftOnRectangleIcon className="h-6 w-6" />
+                        <ArrowLeftOnRectangleIcon className="h-6 w-6 mr-2" />
                         Log out
                       </button>
-                    </div>
-                    <div className="flex items-center justify-center gap-8 absolute bottom-0 w-[80%]">
                       <button
-                        className="bg-green p-2 text-white hover:scale-105 transition-all font-semibold rounded-lg"
-                        onClick={handleButtonOpen}
-                      >
-                        Open Day
-                      </button>
-                      <button
-                        className="bg-green p-2 text-white hover:scale-105 transition-all font-semibold rounded-lg"
+                        className="flex bg-white p-3 text-dark-blue hover:scale-105 transition-all font-medium rounded-full"
                         onClick={handleButtonClose}
                       >
+                        <MoonIcon className="h-6 w-6 text-dark-blue mr-2" />
                         Close Day
                       </button>
                     </div>

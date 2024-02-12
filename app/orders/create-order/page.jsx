@@ -39,6 +39,8 @@ const CreateOrderView = () => {
   const [isNameDropdownVisible, setIsNameDropdownVisible] = useState(false);
   const [orderDate, setOrderDate] = useState(getCurrentDate());
   const [mouseCoords, setMouseCoords] = useState({ x: 0, y: 0 });
+  const [confirmCreateOrder, setConfirmCreateOrder] = useState(false);
+  const [specialRequirements, setSpecialRequirements] = useState("");
   const { user, setUser } = useUserStore();
   //Fecha input
   function getCurrentDate() {
@@ -58,6 +60,10 @@ const CreateOrderView = () => {
             Authorization: `Bearer ${token}`,
           },
         });
+        console.log(
+          "🚀 ~ fetchData ~ responseRestaurants:",
+          responseRestaurants
+        );
 
         const sortedRestaurants = responseRestaurants.data.customers.sort(
           (a, b) => a.accountName.localeCompare(b.accountName)
@@ -81,7 +87,7 @@ const CreateOrderView = () => {
         );
 
         const sortedRestaurants = responseRestaurants.data.customers.sort(
-          (a, b) => a.accountName.localeCompare(b.accountName)
+          (a, b) => a?.accountName?.localeCompare(b.accountName)
         );
 
         setRestaurants(sortedRestaurants);
@@ -268,6 +274,12 @@ const CreateOrderView = () => {
       </div>
       <section className="absolute top-0 right-10 mt-4">
         <div className="flex justify-end">
+          <button
+            onClick={() => setConfirmCreateOrder(true)}
+            className="mb-3 mr-5 bg-green py-2.5 px-3 rounded-lg text-white font-medium transition-all hover:scale-110 hover:bg-dark-blue"
+          >
+            Send order
+          </button>
           <Link
             onClick={resetStates}
             className="flex w-[120px] mb-3 items-center bg-dark-blue py-2.5 px-3 rounded-lg text-white font-medium transition-all hover:scale-110 "
@@ -380,7 +392,7 @@ const CreateOrderView = () => {
           readOnly
           className="border ml-2 p-1.5 rounded-md w-20"
         />
-        <label className="mx-3">Order Number: </label>
+        <label className="mx-3">Customer Ref: </label>
         <input type="text" className="border p-2 rounded-md w-20" />
 
         {details ? (
@@ -401,26 +413,38 @@ const CreateOrderView = () => {
       </div>
       {details && (
         <div className="bg-light-blue flex items-center justify-around mx-10 mt-2 px-2 py-1 rounded-md">
-          <h3>Post Code:</h3>
-          <h3 className="underline decoration-2 decoration-green">
+          <h3 className="font-medium">Post Code:</h3>
+          <h3>
             {customers && customers[0].postCode ? customers[0].postCode : ""}
           </h3>
-          <h3>Telephone:</h3>
-          <h3 className="underline decoration-2 decoration-green">
+          <h3 className="font-medium">Telephone:</h3>
+          <h3>
             {customers && customers[0].telephone ? customers[0].telephone : ""}
           </h3>
-          <h3 className="">Address:</h3>
-          <h3 className="underline decoration-2 decoration-green ">
+          <h3 className="font-medium">Address:</h3>
+          <h3>
             {customers && customers[0].address ? customers[0].address : ""}
           </h3>
-          <h3 className="">Contact:</h3>
-          <h3 className="underline decoration-2 decoration-green ">
-            {customers && customers[0].email ? customers[0].email : ""}
-          </h3>
+          <h3 className="font-medium">Contact:</h3>
+          <h3>{customers && customers[0].email ? customers[0].email : ""}</h3>
+          <h3 className="font-medium">Special requirements:</h3>
+          <input
+            type="text"
+            value={specialRequirements}
+            onChange={(e) => setSpecialRequirements(e.target.value)}
+            className="p-2 border border-dark-blue rounded-lg m-1 w-[300px]"
+            placeholder="Write your comments here"
+          />
         </div>
       )}
       <div className="">
-        <Table orderDate={orderDate} />
+        <Table
+          orderDate={orderDate}
+          confirmCreateOrder={confirmCreateOrder}
+          setConfirmCreateOrder={setConfirmCreateOrder}
+          specialRequirements={specialRequirements}
+          setSpecialRequirements={setSpecialRequirements}
+        />
       </div>
     </Layout>
   );

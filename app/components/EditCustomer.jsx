@@ -54,8 +54,8 @@ const CustomerDetailPage = ({
   const [routeName, setRouteName] = useState("");
   const [routes, setRoutes] = useState([]);
   const [selectedRoute, setSelectedRoute] = useState(null);
-  const [startHour, setStartHour] = useState("");
-  const [endHour, setEndHour] = useState("");
+  const [startHour, setStartHour] = useState({ hour: "12", minute: "00" });
+  const [endHour, setEndHour] = useState({ hour: "12", minute: "30" });
   const [error, setError] = useState("");
   const [selectedRoutes, setSelectedRoutes] = useState({});
   const [showDeleteModal, setShowDeleteModal] = useState("");
@@ -101,11 +101,20 @@ const CustomerDetailPage = ({
       setSelectedGroup(detailCustomer[0]?.group_id);
       setRouteName(detailCustomer[0]?.route);
       setGroupName(detailCustomer[0]?.group);
+
       const { inicio, fin } = extraerHoras(
         detailCustomer[0]?.delivery_window || ""
       );
-      setStartHour(inicio);
-      setEndHour(fin);
+
+      console.log({ inicio, fin });
+
+      const sHour = inicio.split(":");
+      const eHour = fin.split(":");
+      setStartHour({ hour: sHour[0], minute: sHour[1] < 30 ? "00" : "30" });
+      setEndHour({ hour: eHour[0], minute: eHour[1] < 30 ? "00" : "30" });
+
+      // setStartHour(inicio);
+      // setEndHour(fin);
       const selectedRoutesData = {};
       detailCustomer[0].routes.forEach((route) => {
         const day = mapDayNumberToName(route.days_id);
@@ -239,6 +248,9 @@ const CustomerDetailPage = ({
 
   const enviarData = (e) => {
     e.preventDefault();
+    const safeDropValue = drop === "" ? "0" : drop;
+    const safeCratesValue = cratesSelected === "" ? "0" : cratesSelected;
+    const safeVipValue = vipSelected === "" ? "0" : vipSelected;
     const postData = {
       accountNumber: accountNumber,
       accountName: accountName,
@@ -255,10 +267,10 @@ const CustomerDetailPage = ({
       image: "",
       main_contact: mainContact,
       account_email: accountEmail,
-      drop: drop,
-      crates: cratesSelected,
-      vip: vipSelected,
-      delivery_window: `${startHour} - ${endHour}`,
+      drop: safeDropValue,
+      crates: safeCratesValue,
+      vip: safeVipValue,
+      delivery_window: `${startHour.hour + ':' + startHour.minute} - ${endHour.hour + ':' + endHour.minute}`,
       group_id: selectedGroup,
     };
 
@@ -320,6 +332,22 @@ const CustomerDetailPage = ({
       .catch((error) => {
         console.error("Error al eliminar la presentación:", error);
       });
+  };
+
+  const handleHour = (event, start) => {
+    if (start) {
+      setStartHour(prev => ({ ...prev, hour: event.target.value }));
+    } else {
+      setEndHour(prev => ({ ...prev, hour: event.target.value }));
+    }
+  };
+
+  const handleMinute = (event, start) => {
+    if (start) {
+      setStartHour(prev => ({ ...prev, minute: event.target.value }));
+    } else {
+      setEndHour(prev => ({ ...prev, minute: event.target.value }));
+    }
   };
 
   if (!hasMounted) {
@@ -545,25 +573,35 @@ const CustomerDetailPage = ({
                           <span className="text-primary-blue">*</span>
                         </label>
                         <div className="flex items-center w-full">
-                          <input
-                            className="border p-3 rounded-md w-full"
-                            placeholder="hh:mm"
-                            type="time"
-                            value={startHour}
-                            onChange={handleStartHourChange}
-                            onBlur={handleBlur}
-                            required
-                          />
-                          <span className="mx-2">-</span>
-                          <input
-                            className="border p-3 rounded-md w-full"
-                            placeholder="hh:mm"
-                            type="time"
-                            value={endHour}
-                            onChange={handleEndHourChange}
-                            onBlur={handleBlur}
-                            required
-                          />
+                          <div className="border p-3 rounded-md w-full flex justify-center gap-3" >
+                            <select value={startHour.hour} onChange={(value) => handleHour(value, true)} required>
+                              {Array.from({ length: 24 }, (_, i) => i).map((i) => (
+                                <option key={i} value={i}>
+                                  {i.toString().padStart(2, '0')}
+                                </option>
+                              ))}
+                            </select>
+                            :
+                            <select value={startHour.minute} onChange={(value) => handleMinute(value, true)} required>
+                              <option value="00">00</option>
+                              <option value="30">30</option>
+                            </select>
+                          </div>
+                          <span className="mx-3">-</span>
+                          <div className="border p-3 rounded-md w-full flex justify-center gap-3" >
+                            <select value={endHour.hour} onChange={(value) => handleHour(value, false)} required>
+                              {Array.from({ length: 24 }, (_, i) => i).map((i) => (
+                                <option key={i} value={i}>
+                                  {i.toString().padStart(2, '0')}
+                                </option>
+                              ))}
+                            </select>
+                            :
+                            <select value={endHour.minute} onChange={(value) => handleMinute(value, false)} required>
+                              <option value="00">00</option>
+                              <option value="30">30</option>
+                            </select>
+                          </div>
                         </div>
                       </div>
                       <div className="flex items-center mb-3">
@@ -589,7 +627,7 @@ const CustomerDetailPage = ({
                                   }}
                                   className="ml-2 border rounded-md bg-white bg-clip-padding bg-no-repeat w-full border-gray-200 p-1 leading-tight focus:outline-none text-dark-blue hover:border-gray-300 duration-150 ease-in-out"
                                 >
-                                  <option value="">Select</option>
+                                  <option value="">R100</option>
                                   {routes.map((route) => (
                                     <option
                                       key={route.id}

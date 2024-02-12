@@ -24,6 +24,7 @@ import { useRouter } from "next/navigation";
 import { fetchOrderDetail } from "@/app/api/ordersRequest";
 import { CircleProgressBar } from "@/app/components/CircleProgressBar";
 import Select from "react-select";
+import { getPercentageOrder } from "../../api/percentageOrderRequest";
 
 const OrderDetailPage = () => {
   const [hasMounted, setHasMounted] = useState(false);
@@ -56,7 +57,10 @@ const OrderDetailPage = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [accName, setAccName] = useState("");
   const params = useParams();
-
+  const [confirmCreateOrder, setConfirmCreateOrder] = useState(false);
+  const [specialRequirements, setSpecialRequirements] = useState(
+    orderDetail.observation ? orderDetail.observation : ""
+  );
   let orderId;
   if (params) {
     ({ orderId } = params);
@@ -217,34 +221,9 @@ const OrderDetailPage = () => {
     }
   };
 
-  const getRoutes = async (token, date) => {
-    try {
-      const { data } = await axios.post(
-        routesByDate,
-        { date },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-
-      data.routes.forEach((route) => {
-        route.accounts.forEach((account) => {
-          if (account.orders_reference === Number(orderId)) {
-            const percentage = Number(account.percentage_loading).toFixed(0);
-            setPercentageDetail(percentage);
-          }
-        });
-      });
-    } catch (error) {
-      console.log("Error in getRoutes:", error);
-    }
-  };
-
   useEffect(() => {
     if (selectedDate) {
-      getRoutes(token, selectedDate);
+      getPercentageOrder(token, selectedDate, orderId, setPercentageDetail);
     }
   }, [selectedDate]);
 
@@ -320,6 +299,12 @@ const OrderDetailPage = () => {
       </div>
       <section className="absolute top-0 right-10 mt-4">
         <div className="flex justify-end">
+          <button
+            onClick={() => setConfirmCreateOrder(true)}
+            className="mb-3 mr-5 bg-green py-2.5 px-3 rounded-lg text-white font-medium transition-all hover:scale-110 hover:bg-dark-blue"
+          >
+            Save changes
+          </button>
           <Link
             className="flex w-[120px] mb-3 items-center bg-dark-blue py-2.5 px-3 rounded-lg text-white font-medium transition-all hover:scale-110 "
             href="/"
@@ -393,7 +378,7 @@ const OrderDetailPage = () => {
           readOnly
           className="border ml-2 p-1.5 rounded-md w-20"
         />
-        <label className="mx-3">Order Number: </label>
+        <label className="mx-3">Customer Ref: </label>
         <input type="text" className="border p-2 rounded-md w-20" />
         {details ? (
           <button
@@ -414,26 +399,30 @@ const OrderDetailPage = () => {
       <div>
         {details && (
           <div className="bg-light-blue flex items-center justify-around mx-10 mt-2 px-2 py-1 rounded-md">
-            <h3>Post Code:</h3>
-            <h3 className="underline decoration-2 decoration-green">
-              {customers && customers.postCode ? customers.postCode : ""}
-            </h3>
-            <h3>Telephone:</h3>
-            <h3 className="underline decoration-2 decoration-green">
+            <h3 className="font-medium">Post Code:</h3>
+            <h3>{customers && customers.postCode ? customers.postCode : ""}</h3>
+            <h3 className="font-medium">Telephone:</h3>
+            <h3>
               {orderDetail && orderDetail.telephone_customer
                 ? orderDetail.telephone_customer
                 : ""}
             </h3>
-            <h3>Address:</h3>
-            <h3 className="underline decoration-2 decoration-green ">
+            <h3 className="font-medium">Address:</h3>
+            <h3>
               {orderDetail && orderDetail.address_delivery
                 ? orderDetail.address_delivery
                 : ""}
             </h3>
-            <h3 className="ml-3">Contact:</h3>
-            <h3 className="underline decoration-2 decoration-green ">
-              {orderDetail && orderDetail.email ? orderDetail.email : ""}
-            </h3>
+            <h3 className="font-medium">Contact:</h3>
+            <h3>{orderDetail && orderDetail.email ? orderDetail.email : ""}</h3>
+            <h3 className="font-medium">Special requirements:</h3>
+            <input
+              type="text"
+              value={specialRequirements}
+              onChange={(e) => setSpecialRequirements(e.target.value)}
+              className="p-2 border border-dark-blue rounded-lg m-1 w-[300px]"
+              placeholder="Write your comments here"
+            />
           </div>
         )}
       </div>
@@ -567,7 +556,14 @@ const OrderDetailPage = () => {
                   </div>
                 </div>
               </section> */}
-              <EditTable orderId={orderId} dateDelivery={selectedDate} />
+              <EditTable
+                orderId={orderId}
+                dateDelivery={selectedDate}
+                confirmCreateOrder={confirmCreateOrder}
+                setConfirmCreateOrder={setConfirmCreateOrder}
+                specialRequirements={specialRequirements}
+                setSpecialRequirements={setSpecialRequirements}
+              />
             </>
           )
         )}
