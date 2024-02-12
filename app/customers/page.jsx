@@ -67,7 +67,6 @@ const CustomersView = () => {
     setDisplayedCustomers(filteredCustomers);
   }, [searchTerm, customers]);
 
-
   const [showDeleteModal, setShowDeleteModal] = useState(false);
 
   const handleDeleteCustomer = (customer) => {
@@ -148,9 +147,6 @@ const CustomersView = () => {
             <option value="all">All status</option>
             <option value="active" className="text-black">
               Active
-            </option>
-            <option value="blocked" className="text-black">
-              Blocked
             </option>
             <option value="inactive" className="text-black">
               Inactive
