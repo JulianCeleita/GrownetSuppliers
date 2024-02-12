@@ -168,7 +168,7 @@ const CustomerDetailPage = () => {
           .join(",");
       }
     });
-    console.log("daysData para el backend", daysData)
+    console.log("daysData para el backend", daysData);
     return { customer: customerId, days_routes: daysData };
   };
 
@@ -545,9 +545,7 @@ const CustomerDetailPage = () => {
                   <div className="flex items-center mb-4">
                     <label className="mr-2">Routes:</label>
                     <table className="ml-2 border p-2 rounded-md">
-                      <thead>
-                       
-                      </thead>
+                      <thead></thead>
                       <tbody>
                         {[
                           "lunes",
@@ -565,11 +563,10 @@ const CustomerDetailPage = () => {
                                   checked={
                                     selectedRoutes[day]?.[route.id] || false
                                   }
-                                  onChange={() =>{
-                                    console.log("route.id", route.id)
-                                    handleRouteCheckboxChange(route.id, day)
-                                  }
-                                  }
+                                  onChange={() => {
+                                    console.log("route.id", route.id);
+                                    handleRouteCheckboxChange(route.id, day);
+                                  }}
                                 />
                               </td>
                             ))}

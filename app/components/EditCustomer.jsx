@@ -384,11 +384,10 @@ const CustomerDetailPage = ({
                         <label className="mr-2">Email:</label>
                         <input
                           className="border p-3 rounded-md w-full"
-                          placeholder="test@grownet.com"
+                          placeholder="your-email@grownetapp.com"
                           type="email"
                           value={emailCustomer}
                           onChange={(e) => setEmailCustomer(e.target.value)}
-                          required
                         />
                       </div>
                       <div className="flex mt-3 items-center">
@@ -423,7 +422,6 @@ const CustomerDetailPage = ({
                           maxLength={100}
                           value={mainContact}
                           onChange={(e) => setMainContact(e.target.value)}
-                          required
                         />
                       </div>
 
@@ -434,12 +432,11 @@ const CustomerDetailPage = ({
                           onChange={handleVipChange}
                           className="ml-2 border p-2 rounded-md w-full"
                         >
-                          <option value="">Select Option</option>
-                          <option key="yes" value="yes">
-                            Yes
-                          </option>
                           <option key="no" value="no">
                             No
+                          </option>
+                          <option key="yes" value="yes">
+                            Yes
                           </option>
                         </select>
                         <label className="mx-2">Group:</label>
@@ -448,7 +445,6 @@ const CustomerDetailPage = ({
                           onChange={(e) => setSelectedGroup(e.target.value)}
                           className="ml-2 border p-2 rounded-md w-full"
                         >
-                          <option value="">Select Group</option>
                           {groups &&
                             groups.map((group) => (
                               <>
@@ -459,7 +455,113 @@ const CustomerDetailPage = ({
                             ))}
                         </select>
                       </div>
-                      <div className="flex items-center mt-3">
+                      <div className="flex items-center mt-3 ">
+                        <label className="mr-2">Special Instructions:</label>
+                        <textarea
+                          className="border p-3 rounded-md w-full h-[150px]"
+                          placeholder="Special instructions"
+                          type="text"
+                          value={specialInstructions}
+                          onChange={(e) =>
+                            setSpecialInstructions(e.target.value)
+                          }
+                        />
+                      </div>
+                    </div>
+                    <div className="ml-5 flex flex-col w-[50%] ">
+                      <div className="flex items-center mb-3">
+                        <label className="mr-2">Account number:</label>
+                        <input
+                          className="border p-3 rounded-md"
+                          placeholder="RK100"
+                          type="text"
+                          value={accountNumber}
+                          readOnly
+                          required
+                        />
+                      </div>
+                      <div className="flex items-center mb-3">
+                        <label className="mr-2">Marketing Email:</label>
+                        <input
+                          className="border p-3 rounded-md w-full"
+                          placeholder="your-email@grownetapp.com"
+                          type="email"
+                          value={marketingEmail}
+                          onChange={(e) => setMarketingEmail(e.target.value)}
+                        />
+                      </div>
+                      <div className="flex items-center mb-3">
+                        <label className="mr-2">Telephone number:</label>
+                        <input
+                          className="border p-3 rounded-md w-full hide-number-arrows"
+                          placeholder="31383394455"
+                          type="number"
+                          value={telephoneCustomer}
+                          onChange={(e) => setTelephoneCustomer(e.target.value)}
+                          required
+                        />
+                      </div>
+                      <div className="flex items-center mb-3">
+                        <label className="mr-2">Drop:</label>
+                        <input
+                          className="border p-3 rounded-md w-full hide-number-arrows"
+                          placeholder="557"
+                          type="number"
+                          maxLength={3}
+                          value={drop}
+                          onChange={handleDropChange}
+                        />
+                        <label className="mx-2">Crates:</label>
+                        <select
+                          value={crates}
+                          onChange={handleCratesChange}
+                          className="ml-2 border p-2 rounded-md w-full"
+                        >
+                          <option key="no" value="no">
+                            No
+                          </option>
+                          <option key="yes" value="yes">
+                            Yes
+                          </option>
+                        </select>
+                      </div>
+                      <div className="flex items-center mb-3">
+                        <label className="mr-2">Account email:</label>
+                        <input
+                          className="border p-3 rounded-md w-full"
+                          placeholder="your-email@grownetapp.com"
+                          type="email"
+                          value={accountEmail}
+                          onChange={(e) => setAccountEmail(e.target.value)}
+                        />
+                      </div>
+                      <div className="flex items-center mb-3">
+                        <label className="mr-2">Delivery Window:</label>
+                        <div className="flex items-center">
+                          <input
+                            className="border p-3 rounded-md w-full"
+                            placeholder="hh:mm:ss"
+                            type="text"
+                            maxLength={8}
+                            value={startHour}
+                            onChange={handleStartHourChange}
+                            onBlur={handleBlur}
+                            required
+                          />
+                          <span className="mx-2">-</span>
+                          <input
+                            className="border p-3 rounded-md w-full"
+                            placeholder="hh:mm:ss"
+                            type="text"
+                            maxLength={8}
+                            value={endHour}
+                            onChange={handleEndHourChange}
+                            onBlur={handleBlur}
+                            required
+                          />
+                        </div>
+                      </div>
+                      <div className="flex items-center mb-3">
                         <label className="mr-2">Route:</label>
                         <div className="flex flex-wrap border p-2 w-full rounded-lg ">
                           {["Mon", "Tues", "Wed", "Thur", "Fri", "Sat"].map(
@@ -491,117 +593,6 @@ const CustomerDetailPage = ({
                             )
                           )}
                         </div>
-                      </div>
-                    </div>
-                    <div className="ml-5 flex flex-col w-[50%] ">
-                      <div className="flex items-center mb-3">
-                        <label className="mr-2">Account number:</label>
-                        <input
-                          className="border p-3 rounded-md"
-                          placeholder="RK100"
-                          type="text"
-                          value={accountNumber}
-                          readOnly
-                          required
-                        />
-                      </div>
-                      <div className="flex items-center mb-3">
-                        <label className="mr-2">Marketing Email:</label>
-                        <input
-                          className="border p-3 rounded-md w-full"
-                          placeholder="test_marketing@grownet.com"
-                          type="email"
-                          value={marketingEmail}
-                          onChange={(e) => setMarketingEmail(e.target.value)}
-                          required
-                        />
-                      </div>
-                      <div className="flex items-center mb-3">
-                        <label className="mr-2">Telephone number:</label>
-                        <input
-                          className="border p-3 rounded-md w-full"
-                          placeholder="31383394455"
-                          type="number"
-                          value={telephoneCustomer}
-                          onChange={(e) => setTelephoneCustomer(e.target.value)}
-                          required
-                        />
-                      </div>
-                      <div className="flex items-center mb-3">
-                        <label className="mr-2">Drop:</label>
-                        <input
-                          className="border p-3 rounded-md w-full"
-                          placeholder="557"
-                          type="number"
-                          maxLength={3}
-                          value={drop}
-                          onChange={handleDropChange}
-                          required
-                        />
-                        <label className="mx-2">Crates:</label>
-                        <select
-                          value={crates}
-                          onChange={handleCratesChange}
-                          className="ml-2 border p-2 rounded-md w-full"
-                        >
-                          <option value="">Select Option</option>
-                          <option key="yes" value="yes">
-                            Yes
-                          </option>
-                          <option key="no" value="no">
-                            No
-                          </option>
-                        </select>
-                      </div>
-                      <div className="flex items-center mb-3">
-                        <label className="mr-2">Account email:</label>
-                        <input
-                          className="border p-3 rounded-md w-full"
-                          placeholder="suppliers@grownet.com"
-                          type="email"
-                          value={accountEmail}
-                          onChange={(e) => setAccountEmail(e.target.value)}
-                          required
-                        />
-                      </div>
-                      <div className="flex items-center mb-3">
-                        <label className="mr-2">Delivery Window:</label>
-                        <div className="flex items-center">
-                          <input
-                            className="border p-3 rounded-md w-full"
-                            placeholder="hh:mm:ss"
-                            type="text"
-                            maxLength={8}
-                            value={startHour}
-                            onChange={handleStartHourChange}
-                            onBlur={handleBlur}
-                            required
-                          />
-                          <span className="mx-2">-</span>
-                          <input
-                            className="border p-3 rounded-md w-full"
-                            placeholder="hh:mm:ss"
-                            type="text"
-                            maxLength={8}
-                            value={endHour}
-                            onChange={handleEndHourChange}
-                            onBlur={handleBlur}
-                            required
-                          />
-                        </div>
-                      </div>
-                      <div className="flex items-center mb-3">
-                        <label className="mr-2">Special Instructions:</label>
-                        <textarea
-                          className="border p-3 rounded-md w-full"
-                          placeholder="Special instructions"
-                          type="text"
-                          value={specialInstructions}
-                          onChange={(e) =>
-                            setSpecialInstructions(e.target.value)
-                          }
-                          required
-                        />
                       </div>
                     </div>
                   </div>

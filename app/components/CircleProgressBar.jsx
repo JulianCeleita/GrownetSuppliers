@@ -1,21 +1,17 @@
 import React, { useEffect, useState } from "react";
-import {
-  CircularProgressbar,
-  CircularProgressbarWithChildren,
-} from "react-circular-progressbar";
+import { CircularProgressbar, buildStyles } from "react-circular-progressbar";
 import "react-circular-progressbar/dist/styles.css";
-import { buildStyles } from "react-circular-progressbar";
 
 export const CircleProgressBar = ({ percentage }) => {
-  const [color, setColor] = useState("#FFB7B7");
+  const [color, setColor] = useState("#EE6055");
 
   useEffect(() => {
     if (percentage <= 49) {
       setColor("#EE6055");
     } else if (percentage <= 99) {
-      setColor("#62C471");
+      setColor("#FF8A00");
     } else {
-      setColor("#B7FFB7");
+      setColor("#62C471");
     }
   }, [percentage]);
 
@@ -27,7 +23,7 @@ export const CircleProgressBar = ({ percentage }) => {
         styles={buildStyles({
           textSize: "25px",
           pathColor: color,
-          textColor: "black",
+          textColor: "#04444F",
           trailColor: "#d6d6d6",
           strokeWidth: 20,
         })}
