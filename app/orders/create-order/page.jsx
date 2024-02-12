@@ -58,6 +58,7 @@ const CreateOrderView = () => {
             Authorization: `Bearer ${token}`,
           },
         });
+        console.log("🚀 ~ fetchData ~ responseRestaurants:", responseRestaurants)
 
         const sortedRestaurants = responseRestaurants.data.customers.sort(
           (a, b) => a.accountName.localeCompare(b.accountName)
@@ -81,7 +82,7 @@ const CreateOrderView = () => {
         );
 
         const sortedRestaurants = responseRestaurants.data.customers.sort(
-          (a, b) => a.accountName.localeCompare(b.accountName)
+          (a, b) => a?.accountName?.localeCompare(b.accountName)
         );
 
         setRestaurants(sortedRestaurants);
@@ -376,12 +377,12 @@ const CreateOrderView = () => {
         <label className="ml-3">Inv. number: </label>
         <input
           type="text"
-          value="Invoice Number."
+          value="Inv. #"
           readOnly
-          className="border ml-2 p-1.5 rounded-md"
+          className="border ml-2 p-1.5 rounded-md w-20"
         />
-        <label className="mx-3">Order Number: </label>
-        <input type="text" className="border p-2 rounded-md" />
+        <label className="mx-3">Customer Ref: </label>
+        <input type="text" className="border p-2 rounded-md w-20" />
 
         {details ? (
           <button
@@ -420,9 +421,7 @@ const CreateOrderView = () => {
         </div>
       )}
       <div className="">
-        <Table
-        orderDate={orderDate}
-        />
+        <Table orderDate={orderDate} />
       </div>
     </Layout>
   );

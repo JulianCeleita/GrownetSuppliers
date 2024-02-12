@@ -37,6 +37,7 @@ const CustomersView = () => {
   const [showNewCustomers, setShowNewCustomers] = useState(false);
   const [showEditCustomer, setShowEditCustomer] = useState(false);
   const [updateCustomers, setUpdateCustomers] = useState(false);
+  const [displayedCustomers, setDisplayedCustomers] = useState([]);
 
   useEffect(() => {
     if (user && user?.rol_name === "AdminGrownet") {
@@ -55,26 +56,16 @@ const CustomersView = () => {
     setFilteredRoutes(routesMatchingSearchTerm);
   }, [searchTerm, routes, updateCustomers]);
 
-  const filteredCustomers = customers.filter((customer) => {
-    return customer.accountName.toLowerCase().includes(searchTerm);
-  });
+  useEffect(() => {
+    const sortedCustomers = customers.sort((a, b) =>
+      a.accountName?.localeCompare(b.accountName)
+    );
+    const filteredCustomers = sortedCustomers.filter((customer) =>
+      customer?.accountName?.toLowerCase().includes(searchTerm.toLowerCase())
+    );
 
-  const sortedCustomers = filteredCustomers.slice().sort((a, b) => {
-    const routeA = a.route?.toUpperCase();
-    const routeB = b.route?.toUpperCase();
-
-    const numberA = parseInt(routeA?.substring(1));
-    const numberB = parseInt(routeB?.substring(1));
-
-    if (numberA < numberB) {
-      return -1;
-    }
-    if (numberA > numberB) {
-      return 1;
-    }
-
-    return routeA?.localeCompare(routeB);
-  });
+    setDisplayedCustomers(filteredCustomers);
+  }, [searchTerm, customers]);
 
   const [showDeleteModal, setShowDeleteModal] = useState(false);
 
@@ -133,8 +124,8 @@ const CustomersView = () => {
             <PlusCircleIcon className="h-6 w-6 mr-1" /> New Customer
           </button>
         </div>
-        <div className="flex relative items-center justify-center mb-8 mt-2 mr-5 ml-2">
-          <div className="relative w-[55%] max-w-[65%]">
+        <div className="w-full flex items-center justify-center mb-8 mt-2 mr-5 ml-2 ">
+          <div className="relative w-[55%] max-w-[65%] ">
             <input
               type="text"
               placeholder="Search customers by name"
@@ -156,9 +147,6 @@ const CustomersView = () => {
             <option value="all">All status</option>
             <option value="active" className="text-black">
               Active
-            </option>
-            <option value="blocked" className="text-black">
-              Blocked
             </option>
             <option value="inactive" className="text-black">
               Inactive
@@ -209,7 +197,7 @@ const CustomersView = () => {
             <thead className="sticky top-0 bg-white shadow-[0px_11px_15px_-3px_#edf2f7]">
               <tr className="border-stone-100 border-b-0 text-dark-blue rounded-t-3xl">
                 <th className="py-4 rounded-tl-lg">Name</th>
-                <th className="py-4">Telephone</th>
+                <th className="py-4 ">Telephone</th>
                 <th className="py-4">Group</th>
                 <th className="py-4">Routes</th>
                 <th className="py-4">Post Code</th>
@@ -217,7 +205,7 @@ const CustomersView = () => {
               </tr>
             </thead>
             <tbody>
-              {sortedCustomers.length === 0 && !isLoading ? (
+              {displayedCustomers.length === 0 && !isLoading ? (
                 <tr>
                   <td
                     colSpan="7"
@@ -230,7 +218,7 @@ const CustomersView = () => {
                   </td>
                 </tr>
               ) : (
-                sortedCustomers.map((customer) => {
+                displayedCustomers.map((customer) => {
                   const shouldShow =
                     (status === "all" ||
                       (status === "active" &&
@@ -255,8 +243,8 @@ const CustomersView = () => {
                         className="text-dark-blue border-2 border-stone-100 border-t-0 cursor-pointer hover:bg-gray-50 transition-all"
                       >
                         <td className="py-4">{customer.accountName}</td>
-                        <td className="py-4">{customer.telephone}</td>
-                        <td className="py-4">
+                        <td className="py-4 w-[110px">{customer.telephone}</td>
+                        <td className="py-4 w-[150px]">
                           {customer.group !== null
                             ? customer.group
                             : "No group"}
@@ -273,7 +261,7 @@ const CustomersView = () => {
                             <span>No routes</span>
                           )}
                         </td>
-                        <td className="py-4">{customer.postCode}</td>
+                        <td className="py-4 w-[120px]">{customer.postCode}</td>
                         <td className="py-4 flex gap-2 justify-center">
                           <div
                             className={`inline-block mt-1 rounded-full text-white ${statusColorClass(

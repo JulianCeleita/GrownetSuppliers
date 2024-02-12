@@ -39,7 +39,7 @@ export default function RootLayout({ children }) {
 
   return (
     <html lang="es">
-      <body className="relative pb-40 min-h-screen font-poppins text-dark-blue">
+      <body className="min-h-screen font-poppins text-dark-blue">
         {isLoggedIn ? children : <Home />}
       </body>
     </html>

@@ -11,17 +11,14 @@ import { useEffect, useState } from "react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import Select from "react-select";
-import {
-  fetchOrders,
-  fetchOrdersDate,
-  fetchOrdersSupplier,
-} from "../api/ordersRequest";
+import { fetchOrders, fetchOrdersSupplier } from "../api/ordersRequest";
 import { CircleProgressBar } from "../components/CircleProgressBar";
 import Layout from "../layoutS";
 import usePercentageStore from "../store/usePercentageStore";
 import useTokenStore from "../store/useTokenStore";
 import useUserStore from "../store/useUserStore";
 import useWorkDateStore from "../store/useWorkDateStore";
+import { getPercentageOrder } from "../api/percentageOrderRequest";
 
 export const customStyles = {
   placeholder: (provided) => ({
@@ -61,15 +58,12 @@ const OrderView = () => {
   const formatDateToShow = (dateString) => {
     if (!dateString) return "Loading...";
 
-    // Crear un objeto Date basado en valores UTC
     const parts = dateString.split("-").map((part) => parseInt(part, 10));
     const utcDate = new Date(Date.UTC(parts[0], parts[1] - 1, parts[2]));
-    console.log("utcDate", utcDate);
-    // Formatear la fecha en UTC
+
     const day = String(utcDate.getUTCDate()).padStart(2, "0");
     const month = String(utcDate.getUTCMonth() + 1).padStart(2, "0");
     const year = String(utcDate.getUTCFullYear()).slice(-2);
-    console.log("day", day, "month", month, "year", year);
     return `${day}/${month}/${year}`;
   };
 
@@ -80,10 +74,6 @@ const OrderView = () => {
     const year = date.getFullYear();
     return `${year}-${month}-${day}`;
   };
-
-  useEffect(() => {
-    fetchOrdersDate(token, startDate, endDate);
-  }, []);
 
   useEffect(() => {
     if (user && user.rol_name === "AdminGrownet") {
@@ -122,6 +112,17 @@ const OrderView = () => {
       }
     }
   }, [routePercentages]);
+
+  useEffect(() => {
+    if (objectToArray(selectedOrders).length === 1) {
+      console.log("selectedOrders.[0]", objectToArray(selectedOrders)[0]);
+      getPercentageOrder(token, selectedDate !== "" ? selectedDate : workDate, objectToArray(selectedOrders)[0], setShowPercentage);
+    } else {
+      setShowPercentage(null);
+    }
+
+  }, [selectedOrders])
+
 
   const subtractDays = (date, days) => {
     const result = new Date(date);
@@ -182,7 +183,7 @@ const OrderView = () => {
     });
   };
 
-  const handleOrderSelect = (order, checked) => {
+  const handleOrderSelect = async (order, checked) => {
     setSelectedOrders((prevState) => ({
       ...prevState,
       [order.reference]: checked,
@@ -195,13 +196,17 @@ const OrderView = () => {
       newSelectedOrders[order.reference] = checked;
     });
     setSelectedOrders(newSelectedOrders);
+    setShowPercentage(null);
   };
 
-  const printOrders = () => {
-    const ordersToPrint = Object.entries(selectedOrders)
+  const objectToArray = (object) => {
+    return Object.entries(object)
       .filter(([reference, checked]) => checked)
       .map(([reference]) => reference);
+  }
 
+  const printOrders = () => {
+    const ordersToPrint = objectToArray(selectedOrders)
     //TODO: implementar lógica para imprimir las ordenes seleccionadas
   };
 
@@ -235,8 +240,8 @@ const OrderView = () => {
 
   const filteredOrders = selectedRoute
     ? sortedOrders.filter(
-        (order) => order.route.toLowerCase() === selectedRoute.toLowerCase()
-      )
+      (order) => order.route.toLowerCase() === selectedRoute.toLowerCase()
+    )
     : sortedOrders;
 
   const statusColorClass = (status) => {
@@ -469,7 +474,7 @@ const OrderView = () => {
                       <td className="py-4">{order.net}</td>
                       <td className="py-4">10%</td>
                       <td className="py-4">{order.route}</td>
-                      <td className="py-4">Santiago Arango</td>
+                      <td className="py-4">-</td>
                       <td className="py-4">{order.date_delivery}</td>
                       <td className="py-4 flex gap-2 justify-center">
                         <div
