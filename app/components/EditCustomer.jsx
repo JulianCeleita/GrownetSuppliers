@@ -159,14 +159,14 @@ const CustomerDetailPage = ({
 
   const prepareDataForBackend = () => {
     const daysData = {};
-  
-    const allDays = ['Mon', 'Tues', 'Wed', 'Thur', 'Fri', 'Sat'];
-  
+
+    const allDays = ["Mon", "Tues", "Wed", "Thur", "Fri", "Sat"];
+
     allDays.forEach((day) => {
       const dayNumber = getDayNumber(day.toLowerCase());
       daysData[dayNumber] = selectedRoutes[day] || "R100";
     });
-  
+
     return { days_routes: daysData };
   };
 
@@ -177,9 +177,9 @@ const CustomerDetailPage = ({
       wed: "3",
       thur: "4",
       fri: "5",
-      sat: "6"
+      sat: "6",
     };
-  
+
     return daysMap[day.toLowerCase()] || null;
   };
 
@@ -569,7 +569,9 @@ const CustomerDetailPage = ({
                         </div>
                       </div>
                       <div className="flex items-center mb-3">
-                        <label className="mr-2">Route:</label>
+                        <label className="mr-2 w-[90px]">
+                          Route: <span className="text-primary-blue">*</span>
+                        </label>
                         <div className="flex flex-wrap border p-2 w-full rounded-lg ">
                           {["Mon", "Tues", "Wed", "Thur", "Fri", "Sat"].map(
                             (day) => (
@@ -577,7 +579,7 @@ const CustomerDetailPage = ({
                                 key={day}
                                 className="flex items-center my-1 w-[50%]"
                               >
-                                <label className="mx-2">{day}:</label>
+                                <label className="mx-2 w-[65px]">{day}:</label>
                                 <select
                                   value={selectedRoutes[day]?.toString() || ""}
                                   onChange={(e) => {
@@ -591,7 +593,10 @@ const CustomerDetailPage = ({
                                 >
                                   <option value="">Select</option>
                                   {routes.map((route) => (
-                                    <option key={route.id} value={route.id.toString()}>
+                                    <option
+                                      key={route.id}
+                                      value={route.id.toString()}
+                                    >
                                       {route.name}
                                     </option>
                                   ))}
@@ -618,8 +623,9 @@ const CustomerDetailPage = ({
                     <button
                       type="submit"
                       value="Submit"
-                      className={`bg-primary-blue py-3 px-4 rounded-lg text-white font-medium mr-3 ${isLoading === true ? "bg-gray-500/50" : ""
-                        }`}
+                      className={`bg-primary-blue py-3 px-4 rounded-lg text-white font-medium mr-3 ${
+                        isLoading === true ? "bg-gray-500/50" : ""
+                      }`}
                       disabled={isLoading}
                     >
                       Save changes
