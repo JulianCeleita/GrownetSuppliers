@@ -566,12 +566,11 @@ const CustomerDetailPage = ({
                       </div>
                       <div className="flex items-center mb-3">
                         <label className="mr-2">Delivery Window:</label>
-                        <div className="flex items-center">
+                        <div className="flex items-center w-full">
                           <input
                             className="border p-3 rounded-md w-full"
-                            placeholder="hh:mm:ss"
-                            type="text"
-                            maxLength={8}
+                            placeholder="hh:mm"
+                            type="time"
                             value={startHour}
                             onChange={handleStartHourChange}
                             onBlur={handleBlur}
@@ -580,9 +579,8 @@ const CustomerDetailPage = ({
                           <span className="mx-2">-</span>
                           <input
                             className="border p-3 rounded-md w-full"
-                            placeholder="hh:mm:ss"
-                            type="text"
-                            maxLength={8}
+                            placeholder="hh:mm"
+                            type="time"
                             value={endHour}
                             onChange={handleEndHourChange}
                             onBlur={handleBlur}
@@ -620,9 +618,8 @@ const CustomerDetailPage = ({
                     <button
                       type="submit"
                       value="Submit"
-                      className={`bg-primary-blue py-3 px-4 rounded-lg text-white font-medium mr-3 ${
-                        isLoading === true ? "bg-gray-500/50" : ""
-                      }`}
+                      className={`bg-primary-blue py-3 px-4 rounded-lg text-white font-medium mr-3 ${isLoading === true ? "bg-gray-500/50" : ""
+                        }`}
                       disabled={isLoading}
                     >
                       Save changes
