@@ -5,7 +5,6 @@ import {
   CalendarIcon,
   ExclamationCircleIcon,
 } from "@heroicons/react/24/outline";
-import { format, set } from "date-fns";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -24,10 +23,6 @@ import useTokenStore from "../store/useTokenStore";
 import useUserStore from "../store/useUserStore";
 import useWorkDateStore from "../store/useWorkDateStore";
 
-const formatDate = (dateString) => {
-  const formattedDate = format(new Date(dateString), "yyyy-MM-dd");
-  return formattedDate;
-};
 export const customStyles = {
   placeholder: (provided) => ({
     ...provided,
@@ -43,23 +38,24 @@ export const customStyles = {
   }),
 };
 
+function convertUTCtoTimeZone2(dateUTC, timeZone) {
+  return new Date(dateUTC).toLocaleString("en-US", { timeZone });
+}
 const OrderView = () => {
   const router = useRouter();
   const { token } = useTokenStore();
-  const { workDate, setWorkDate, setFetchWorkDate } = useWorkDateStore();
-  const { routePercentages, setRoutePercentages, setFetchRoutePercentages } =
-    usePercentageStore();
+  const { workDate, setFetchWorkDate } = useWorkDateStore();
+  const { routePercentages, setFetchRoutePercentages } = usePercentageStore();
 
-  const [searchTerm, setSearchTerm] = useState("");
   const [isLoading, setIsLoading] = useState(true);
   const [orders, setOrders] = useState([]);
-  const { user, setUser } = useUserStore();
+  const { user } = useUserStore();
   const [dateFilter, setDateFilter] = useState("today");
   const [showAllOrders, setShowAllOrders] = useState(false);
   const [showDatePicker, setShowDatePicker] = useState(false);
-  const [selectedDate, setSelectedDate] = useState();
-  const [startDate, setStartDate] = useState(null);
-  const [endDate, setEndDate] = useState(null);
+  const [selectedDate, setSelectedDate] = useState("");
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
   const [selectedOrders, setSelectedOrders] = useState({});
   const [selectedRoute, setSelectedRoute] = useState("");
   const [filterType, setFilterType] = useState("date");
@@ -67,10 +63,13 @@ const OrderView = () => {
 
   const formatDateToShow = (dateString) => {
     if (!dateString) return "Loading...";
-    const date = new Date(dateString);
-    const day = String(date.getDate()).padStart(2, "0");
-    const month = String(date.getMonth() + 1).padStart(2, "0");
-    const year = String(date.getFullYear()).slice(-2);
+
+    const parts = dateString.split("-").map((part) => parseInt(part, 10));
+    const utcDate = new Date(Date.UTC(parts[0], parts[1] - 1, parts[2]));
+
+    const day = String(utcDate.getUTCDate()).padStart(2, "0");
+    const month = String(utcDate.getUTCMonth() + 1).padStart(2, "0");
+    const year = String(utcDate.getUTCFullYear()).slice(-2);
     return `${day}/${month}/${year}`;
   };
 
@@ -130,17 +129,34 @@ const OrderView = () => {
     return result;
   };
 
+  function convertUTCtoTimeZone(dateUTC, timeZone) {
+    let offset = new Date().getTimezoneOffset();
+    let tzOffset = new Date(dateUTC).getTimezoneOffset();
+    if (timeZone === "America/Bogota") {
+      offset -= 300; // Bogotá está GMT-5
+    } else if (timeZone === "Europe/London") {
+      offset += 60; // Londres está GMT+0 o BST+1
+    }
+    const adjustedDate = new Date(
+      dateUTC.getTime() + (offset - tzOffset) * 60000
+    );
+    return adjustedDate;
+  }
+
   const filterOrdersByDate = (order) => {
     if (showAllOrders) {
       return true;
     }
 
-    const deliveryDate = new Date(order.date_delivery);
+    const deliveryDate = convertUTCtoTimeZone(
+      new Date(order.date_delivery),
+      "America/Bogota"
+    );
+
     deliveryDate.setHours(0, 0, 0, 0);
 
     if (dateFilter === "today") {
-      const workDateFormatted = new Date(workDate);
-      return isSameDay(deliveryDate, workDateFormatted);
+      return order.date_delivery === workDate;
     }
     if (dateFilter === "range" && startDate && endDate) {
       const start = new Date(startDate);
@@ -151,18 +167,12 @@ const OrderView = () => {
       endFormatted.setHours(23, 59, 59, 999);
       return deliveryDate >= startFormatted && deliveryDate <= endFormatted;
     }
+    if (dateFilter === "date" && selectedDate) {
+      const selectDa = formatDateToTransform(selectedDate);
+      return order.date_delivery === selectDa;
+    }
 
     return false;
-  };
-
-  const isSameDay = (date1, date2) => {
-    return date1.toDateString() === date2.toDateString();
-  };
-
-  const handleDateChange = (date) => {
-    setShowAllOrders(false);
-    setShowDatePicker(false);
-    setSelectedDate(date);
   };
 
   const goToOrder = (e, order) => {
@@ -244,14 +254,6 @@ const OrderView = () => {
     }
   };
 
-  const handleChangeDate = (date) => {
-    setSelectedDate(date);
-    setStartDate(date);
-    setEndDate(date);
-    setWorkDate(formatDateToTransform(date));
-    setDateFilter("range");
-  };
-
   return (
     <Layout>
       <div className="-mt-24">
@@ -319,7 +321,10 @@ const OrderView = () => {
             <DatePicker
               selected={selectedDate}
               onChange={(date) => {
-                handleChangeDate(date);
+                setSelectedDate(date);
+                setStartDate(date);
+                setEndDate(date);
+                setDateFilter("date");
               }}
               className="form-input px-4 py-3 rounded-md border border-gray-300"
               placeholderText="Select a date"

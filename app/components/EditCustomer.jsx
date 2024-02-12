@@ -109,12 +109,7 @@ const CustomerDetailPage = ({
       const selectedRoutesData = {};
       detailCustomer[0].routes.forEach((route) => {
         const day = mapDayNumberToName(route.days_id);
-        const routeId = route.route_id.toString();
-
-        if (!selectedRoutesData[day]) {
-          selectedRoutesData[day] = {};
-        }
-        selectedRoutesData[day][routeId] = true;
+        selectedRoutesData[day] = route.route_id.toString();
       });
 
       setSelectedRoutes(selectedRoutesData);
@@ -136,11 +131,13 @@ const CustomerDetailPage = ({
       case 2:
         return "Tues";
       case 3:
-        return "Wen";
+        return "Wed";
       case 4:
-        return "Truh";
+        return "Thur";
       case 5:
-        return "Frid";
+        return "Fri";
+      case 6:
+        return "Sat";
       default:
         return "";
     }
@@ -162,35 +159,28 @@ const CustomerDetailPage = ({
 
   const prepareDataForBackend = () => {
     const daysData = {};
-
-    Object.keys(selectedRoutes).forEach((day) => {
-      const routesForDay = Object.values(selectedRoutes[day]);
-      if (routesForDay.some((isSelected) => isSelected)) {
-        daysData[getDayNumber(day)] = Object.entries(selectedRoutes[day])
-          .filter(([_, isSelected]) => isSelected)
-          .map(([routeId, _]) => routeId)
-          .join(",");
-      }
+  
+    const allDays = ['Mon', 'Tues', 'Wed', 'Thur', 'Fri', 'Sat'];
+  
+    allDays.forEach((day) => {
+      const dayNumber = getDayNumber(day.toLowerCase());
+      daysData[dayNumber] = selectedRoutes[day] || "R100";
     });
-
-    return { customer: customerId, days_routes: daysData };
+  
+    return { days_routes: daysData };
   };
 
   const getDayNumber = (day) => {
-    switch (day.toLowerCase()) {
-      case "mon":
-        return "1";
-      case "tues":
-        return "2";
-      case "wen":
-        return "3";
-      case "truh":
-        return "4";
-      case "frid":
-        return "5";
-      default:
-        return null;
-    }
+    const daysMap = {
+      mon: "1",
+      tues: "2",
+      wed: "3",
+      thur: "4",
+      fri: "5",
+      sat: "6"
+    };
+  
+    return daysMap[day.toLowerCase()] || null;
   };
 
   const handleRouteChange = (e) => {
@@ -370,7 +360,10 @@ const CustomerDetailPage = ({
                   <div className="flex">
                     <div className="flex flex-col  w-[50%]">
                       <div className="flex items-center">
-                        <label className="mr-2">Account name:</label>
+                        <label className="mr-2">
+                          Account name:{" "}
+                          <span className="text-primary-blue">*</span>
+                        </label>
                         <input
                           className="border p-3 rounded-md w-full"
                           placeholder="Name"
@@ -384,15 +377,16 @@ const CustomerDetailPage = ({
                         <label className="mr-2">Email:</label>
                         <input
                           className="border p-3 rounded-md w-full"
-                          placeholder="test@grownet.com"
+                          placeholder="your-email@grownetapp.com"
                           type="email"
                           value={emailCustomer}
                           onChange={(e) => setEmailCustomer(e.target.value)}
-                          required
                         />
                       </div>
                       <div className="flex mt-3 items-center">
-                        <label className="mr-2">Address:</label>
+                        <label className="mr-2 w-[115px]">
+                          Address: <span className="text-primary-blue">*</span>
+                        </label>
                         <input
                           className="border p-3 rounded-md w-full"
                           placeholder="Street 1234"
@@ -403,7 +397,10 @@ const CustomerDetailPage = ({
                         />
                       </div>
                       <div className="flex mt-3 items-center">
-                        <label className="mr-2">Post code:</label>
+                        <label className="mr-2">
+                          Post code:{" "}
+                          <span className="text-primary-blue">*</span>
+                        </label>
                         <input
                           className="border p-3 rounded-md w-full"
                           placeholder="170001"
@@ -423,7 +420,6 @@ const CustomerDetailPage = ({
                           maxLength={100}
                           value={mainContact}
                           onChange={(e) => setMainContact(e.target.value)}
-                          required
                         />
                       </div>
 
@@ -434,12 +430,11 @@ const CustomerDetailPage = ({
                           onChange={handleVipChange}
                           className="ml-2 border p-2 rounded-md w-full"
                         >
-                          <option value="">Select Option</option>
-                          <option key="yes" value="yes">
-                            Yes
-                          </option>
                           <option key="no" value="no">
                             No
+                          </option>
+                          <option key="yes" value="yes">
+                            Yes
                           </option>
                         </select>
                         <label className="mx-2">Group:</label>
@@ -448,7 +443,6 @@ const CustomerDetailPage = ({
                           onChange={(e) => setSelectedGroup(e.target.value)}
                           className="ml-2 border p-2 rounded-md w-full"
                         >
-                          <option value="">Select Group</option>
                           {groups &&
                             groups.map((group) => (
                               <>
@@ -459,45 +453,27 @@ const CustomerDetailPage = ({
                             ))}
                         </select>
                       </div>
-                      <div className="flex items-center mt-3">
-                        <label className="mr-2">Route:</label>
-                        <div className="flex flex-wrap border p-2 w-full rounded-lg ">
-                          {["Mon", "Tues", "Wed", "Thur", "Fri", "Sat"].map(
-                            (day) => (
-                              <div
-                                key={day}
-                                className="flex items-center my-1 w-[50%]"
-                              >
-                                <label className="mx-2">{day}:</label>
-                                <select
-                                  value={selectedRoutes[day]}
-                                  onChange={(e) => {
-                                    const selectedRouteId = e.target.value;
-                                    setSelectedRoutes((prevSelectedRoutes) => ({
-                                      ...prevSelectedRoutes,
-                                      [day]: selectedRouteId,
-                                    }));
-                                  }}
-                                  className="ml-2 border rounded-md bg-white bg-clip-padding bg-no-repeat w-full border-gray-200 p-1 leading-tight focus:outline-none text-dark-blue hover:border-gray-300 duration-150 ease-in-out"
-                                >
-                                  <option value="">Select</option>
-                                  {routes.map((route) => (
-                                    <option key={route.id} value={route.id}>
-                                      {route.name}
-                                    </option>
-                                  ))}
-                                </select>
-                              </div>
-                            )
-                          )}
-                        </div>
+                      <div className="flex items-center mt-3 ">
+                        <label className="mr-2">Special Instructions:</label>
+                        <textarea
+                          className="border p-3 rounded-md w-full h-[150px]"
+                          placeholder="Special instructions"
+                          type="text"
+                          value={specialInstructions}
+                          onChange={(e) =>
+                            setSpecialInstructions(e.target.value)
+                          }
+                        />
                       </div>
                     </div>
                     <div className="ml-5 flex flex-col w-[50%] ">
                       <div className="flex items-center mb-3">
-                        <label className="mr-2">Account number:</label>
+                        <label className="mr-2">
+                          Account number:{" "}
+                          <span className="text-primary-blue">*</span>
+                        </label>
                         <input
-                          className="border p-3 rounded-md"
+                          className="border p-3 rounded-md w-full"
                           placeholder="RK100"
                           type="text"
                           value={accountNumber}
@@ -509,17 +485,19 @@ const CustomerDetailPage = ({
                         <label className="mr-2">Marketing Email:</label>
                         <input
                           className="border p-3 rounded-md w-full"
-                          placeholder="test_marketing@grownet.com"
+                          placeholder="your-email@grownetapp.com"
                           type="email"
                           value={marketingEmail}
                           onChange={(e) => setMarketingEmail(e.target.value)}
-                          required
                         />
                       </div>
                       <div className="flex items-center mb-3">
-                        <label className="mr-2">Telephone number:</label>
+                        <label className="mr-2">
+                          Telephone number:{" "}
+                          <span className="text-primary-blue">*</span>
+                        </label>
                         <input
-                          className="border p-3 rounded-md w-full"
+                          className="border p-3 rounded-md w-full hide-number-arrows"
                           placeholder="31383394455"
                           type="number"
                           value={telephoneCustomer}
@@ -530,13 +508,12 @@ const CustomerDetailPage = ({
                       <div className="flex items-center mb-3">
                         <label className="mr-2">Drop:</label>
                         <input
-                          className="border p-3 rounded-md w-full"
+                          className="border p-3 rounded-md w-full hide-number-arrows"
                           placeholder="557"
                           type="number"
                           maxLength={3}
                           value={drop}
                           onChange={handleDropChange}
-                          required
                         />
                         <label className="mx-2">Crates:</label>
                         <select
@@ -544,12 +521,11 @@ const CustomerDetailPage = ({
                           onChange={handleCratesChange}
                           className="ml-2 border p-2 rounded-md w-full"
                         >
-                          <option value="">Select Option</option>
-                          <option key="yes" value="yes">
-                            Yes
-                          </option>
                           <option key="no" value="no">
                             No
+                          </option>
+                          <option key="yes" value="yes">
+                            Yes
                           </option>
                         </select>
                       </div>
@@ -557,15 +533,17 @@ const CustomerDetailPage = ({
                         <label className="mr-2">Account email:</label>
                         <input
                           className="border p-3 rounded-md w-full"
-                          placeholder="suppliers@grownet.com"
+                          placeholder="your-email@grownetapp.com"
                           type="email"
                           value={accountEmail}
                           onChange={(e) => setAccountEmail(e.target.value)}
-                          required
                         />
                       </div>
                       <div className="flex items-center mb-3">
-                        <label className="mr-2">Delivery Window:</label>
+                        <label className="mr-2">
+                          Delivery Window:{" "}
+                          <span className="text-primary-blue">*</span>
+                        </label>
                         <div className="flex items-center">
                           <input
                             className="border p-3 rounded-md w-full"
@@ -591,17 +569,37 @@ const CustomerDetailPage = ({
                         </div>
                       </div>
                       <div className="flex items-center mb-3">
-                        <label className="mr-2">Special Instructions:</label>
-                        <textarea
-                          className="border p-3 rounded-md w-full"
-                          placeholder="Special instructions"
-                          type="text"
-                          value={specialInstructions}
-                          onChange={(e) =>
-                            setSpecialInstructions(e.target.value)
-                          }
-                          required
-                        />
+                        <label className="mr-2">Route:</label>
+                        <div className="flex flex-wrap border p-2 w-full rounded-lg ">
+                          {["Mon", "Tues", "Wed", "Thur", "Fri", "Sat"].map(
+                            (day) => (
+                              <div
+                                key={day}
+                                className="flex items-center my-1 w-[50%]"
+                              >
+                                <label className="mx-2">{day}:</label>
+                                <select
+                                  value={selectedRoutes[day]?.toString() || ""}
+                                  onChange={(e) => {
+                                    const selectedRouteId = e.target.value;
+                                    setSelectedRoutes((prevSelectedRoutes) => ({
+                                      ...prevSelectedRoutes,
+                                      [day]: selectedRouteId,
+                                    }));
+                                  }}
+                                  className="ml-2 border rounded-md bg-white bg-clip-padding bg-no-repeat w-full border-gray-200 p-1 leading-tight focus:outline-none text-dark-blue hover:border-gray-300 duration-150 ease-in-out"
+                                >
+                                  <option value="">Select</option>
+                                  {routes.map((route) => (
+                                    <option key={route.id} value={route.id.toString()}>
+                                      {route.name}
+                                    </option>
+                                  ))}
+                                </select>
+                              </div>
+                            )
+                          )}
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -620,9 +618,8 @@ const CustomerDetailPage = ({
                     <button
                       type="submit"
                       value="Submit"
-                      className={`bg-primary-blue py-3 px-4 rounded-lg text-white font-medium mr-3 ${
-                        isLoading === true ? "bg-gray-500/50" : ""
-                      }`}
+                      className={`bg-primary-blue py-3 px-4 rounded-lg text-white font-medium mr-3 ${isLoading === true ? "bg-gray-500/50" : ""
+                        }`}
                       disabled={isLoading}
                     >
                       Save changes
