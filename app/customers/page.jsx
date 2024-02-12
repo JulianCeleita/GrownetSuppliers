@@ -37,6 +37,7 @@ const CustomersView = () => {
   const [showNewCustomers, setShowNewCustomers] = useState(false);
   const [showEditCustomer, setShowEditCustomer] = useState(false);
   const [updateCustomers, setUpdateCustomers] = useState(false);
+  const [displayedCustomers, setDisplayedCustomers] = useState([]);
 
   useEffect(() => {
     if (user && user?.rol_name === "AdminGrownet") {
@@ -55,26 +56,17 @@ const CustomersView = () => {
     setFilteredRoutes(routesMatchingSearchTerm);
   }, [searchTerm, routes, updateCustomers]);
 
-  const filteredCustomers = customers.filter((customer) => {
-    return customer.accountName.toLowerCase().includes(searchTerm);
-  });
+  useEffect(() => {
+    const sortedCustomers = customers.sort((a, b) =>
+      a.accountName.localeCompare(b.accountName)
+    );
+    const filteredCustomers = sortedCustomers.filter((customer) =>
+      customer.accountName.toLowerCase().includes(searchTerm.toLowerCase())
+    );
 
-  const sortedCustomers = filteredCustomers.slice().sort((a, b) => {
-    const routeA = a.route?.toUpperCase();
-    const routeB = b.route?.toUpperCase();
+    setDisplayedCustomers(filteredCustomers);
+  }, [searchTerm, customers]);
 
-    const numberA = parseInt(routeA?.substring(1));
-    const numberB = parseInt(routeB?.substring(1));
-
-    if (numberA < numberB) {
-      return -1;
-    }
-    if (numberA > numberB) {
-      return 1;
-    }
-
-    return routeA?.localeCompare(routeB);
-  });
 
   const [showDeleteModal, setShowDeleteModal] = useState(false);
 
@@ -217,7 +209,7 @@ const CustomersView = () => {
               </tr>
             </thead>
             <tbody>
-              {sortedCustomers.length === 0 && !isLoading ? (
+              {displayedCustomers.length === 0 && !isLoading ? (
                 <tr>
                   <td
                     colSpan="7"
@@ -230,7 +222,7 @@ const CustomersView = () => {
                   </td>
                 </tr>
               ) : (
-                sortedCustomers.map((customer) => {
+                displayedCustomers.map((customer) => {
                   const shouldShow =
                     (status === "all" ||
                       (status === "active" &&

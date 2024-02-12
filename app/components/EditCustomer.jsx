@@ -109,12 +109,7 @@ const CustomerDetailPage = ({
       const selectedRoutesData = {};
       detailCustomer[0].routes.forEach((route) => {
         const day = mapDayNumberToName(route.days_id);
-        const routeId = route.route_id.toString();
-
-        if (!selectedRoutesData[day]) {
-          selectedRoutesData[day] = {};
-        }
-        selectedRoutesData[day][routeId] = true;
+        selectedRoutesData[day] = route.route_id.toString();
       });
 
       setSelectedRoutes(selectedRoutesData);
@@ -136,11 +131,13 @@ const CustomerDetailPage = ({
       case 2:
         return "Tues";
       case 3:
-        return "Wen";
+        return "Wed";
       case 4:
-        return "Truh";
+        return "Thur";
       case 5:
-        return "Frid";
+        return "Fri";
+      case 6:
+        return "Sat";
       default:
         return "";
     }
@@ -162,35 +159,28 @@ const CustomerDetailPage = ({
 
   const prepareDataForBackend = () => {
     const daysData = {};
-
-    Object.keys(selectedRoutes).forEach((day) => {
-      const routesForDay = Object.values(selectedRoutes[day]);
-      if (routesForDay.some((isSelected) => isSelected)) {
-        daysData[getDayNumber(day)] = Object.entries(selectedRoutes[day])
-          .filter(([_, isSelected]) => isSelected)
-          .map(([routeId, _]) => routeId)
-          .join(",");
-      }
+  
+    const allDays = ['Mon', 'Tues', 'Wed', 'Thur', 'Fri', 'Sat'];
+  
+    allDays.forEach((day) => {
+      const dayNumber = getDayNumber(day.toLowerCase());
+      daysData[dayNumber] = selectedRoutes[day] || "R100";
     });
-
-    return { customer: customerId, days_routes: daysData };
+  
+    return { days_routes: daysData };
   };
 
   const getDayNumber = (day) => {
-    switch (day.toLowerCase()) {
-      case "mon":
-        return "1";
-      case "tues":
-        return "2";
-      case "wen":
-        return "3";
-      case "truh":
-        return "4";
-      case "frid":
-        return "5";
-      default:
-        return null;
-    }
+    const daysMap = {
+      mon: "1",
+      tues: "2",
+      wed: "3",
+      thur: "4",
+      fri: "5",
+      sat: "6"
+    };
+  
+    return daysMap[day.toLowerCase()] || null;
   };
 
   const handleRouteChange = (e) => {
@@ -589,7 +579,7 @@ const CustomerDetailPage = ({
                               >
                                 <label className="mx-2">{day}:</label>
                                 <select
-                                  value={selectedRoutes[day]}
+                                  value={selectedRoutes[day]?.toString() || ""}
                                   onChange={(e) => {
                                     const selectedRouteId = e.target.value;
                                     setSelectedRoutes((prevSelectedRoutes) => ({
@@ -601,7 +591,7 @@ const CustomerDetailPage = ({
                                 >
                                   <option value="">Select</option>
                                   {routes.map((route) => (
-                                    <option key={route.id} value={route.id}>
+                                    <option key={route.id} value={route.id.toString()}>
                                       {route.name}
                                     </option>
                                   ))}
@@ -628,9 +618,8 @@ const CustomerDetailPage = ({
                     <button
                       type="submit"
                       value="Submit"
-                      className={`bg-primary-blue py-3 px-4 rounded-lg text-white font-medium mr-3 ${
-                        isLoading === true ? "bg-gray-500/50" : ""
-                      }`}
+                      className={`bg-primary-blue py-3 px-4 rounded-lg text-white font-medium mr-3 ${isLoading === true ? "bg-gray-500/50" : ""
+                        }`}
                       disabled={isLoading}
                     >
                       Save changes
