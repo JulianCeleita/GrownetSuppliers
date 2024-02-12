@@ -80,7 +80,7 @@ export const fetchCustomers = async (
       ? response.data.customers
       : [];
     const sortedCustomers = newCustomers.sort((a, b) =>
-      a.accountName.localeCompare(b.accountName)
+      a.accountName?.localeCompare(b.accountName)
     );
     setCustomers(sortedCustomers);
     setIsLoading(false);
@@ -109,7 +109,7 @@ export const fetchCustomersSupplier = async (
       ? response.data.customers
       : [];
     const sortedCustomers = newCustomers.sort((a, b) =>
-      a.accountName.localeCompare(b.accountName)
+      a.accountName?.localeCompare(b.accountName)
     );
     setCustomers(sortedCustomers);
     setIsLoading(false);

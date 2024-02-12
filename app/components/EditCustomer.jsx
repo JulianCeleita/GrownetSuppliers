@@ -239,6 +239,9 @@ const CustomerDetailPage = ({
 
   const enviarData = (e) => {
     e.preventDefault();
+    const safeDropValue = drop === "" ? "0" : drop;
+    const safeCratesValue = cratesSelected === "" ? "0" : cratesSelected;
+    const safeVipValue = vipSelected === "" ? "0" : vipSelected;
     const postData = {
       accountNumber: accountNumber,
       accountName: accountName,
@@ -255,9 +258,9 @@ const CustomerDetailPage = ({
       image: "",
       main_contact: mainContact,
       account_email: accountEmail,
-      drop: drop,
-      crates: cratesSelected,
-      vip: vipSelected,
+      drop: safeDropValue,
+      crates: safeCratesValue,
+      vip: safeVipValue,
       delivery_window: `${startHour} - ${endHour}`,
       group_id: selectedGroup,
     };
@@ -589,7 +592,7 @@ const CustomerDetailPage = ({
                                   }}
                                   className="ml-2 border rounded-md bg-white bg-clip-padding bg-no-repeat w-full border-gray-200 p-1 leading-tight focus:outline-none text-dark-blue hover:border-gray-300 duration-150 ease-in-out"
                                 >
-                                  <option value="">Select</option>
+                                  <option value="">R100</option>
                                   {routes.map((route) => (
                                     <option key={route.id} value={route.id.toString()}>
                                       {route.name}
