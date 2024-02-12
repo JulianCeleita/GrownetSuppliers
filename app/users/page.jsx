@@ -58,9 +58,6 @@ function Users() {
         <h1 className="text-2xl text-white font-semibold -mt-[57px] ml-28">
           Users <span className="text-light-green">list</span>
         </h1>
-        {/* <div className="flex justify-between p-8 bg-primary-blue">
-          <h1 className="text-2xl text-white font-semibold">Users list</h1>
-        </div> */}
         <div className="flex gap-16 items-center justify-center mb-0  mt-12">
           <table className="w-[90%] bg-white rounded-2xl text-center shadow-[0_8px_30px_rgb(0,0,0,0.12)] mb-10">
             <thead className="sticky top-0 bg-white shadow-[0px_11px_15px_-3px_#edf2f7]">
