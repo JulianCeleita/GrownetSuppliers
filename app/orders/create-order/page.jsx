@@ -39,6 +39,8 @@ const CreateOrderView = () => {
   const [isNameDropdownVisible, setIsNameDropdownVisible] = useState(false);
   const [orderDate, setOrderDate] = useState(getCurrentDate());
   const [mouseCoords, setMouseCoords] = useState({ x: 0, y: 0 });
+  const [confirmCreateOrder, setConfirmCreateOrder] = useState(false);
+  const [specialRequirements, setSpecialRequirements] = useState("");
   const { user, setUser } = useUserStore();
   //Fecha input
   function getCurrentDate() {
@@ -58,7 +60,10 @@ const CreateOrderView = () => {
             Authorization: `Bearer ${token}`,
           },
         });
-        console.log("🚀 ~ fetchData ~ responseRestaurants:", responseRestaurants)
+        console.log(
+          "🚀 ~ fetchData ~ responseRestaurants:",
+          responseRestaurants
+        );
 
         const sortedRestaurants = responseRestaurants.data.customers.sort(
           (a, b) => a.accountName.localeCompare(b.accountName)
@@ -269,6 +274,12 @@ const CreateOrderView = () => {
       </div>
       <section className="absolute top-0 right-10 mt-4">
         <div className="flex justify-end">
+          <button
+            onClick={() => setConfirmCreateOrder(true)}
+            className="mb-3 mr-5 bg-green py-2.5 px-3 rounded-lg text-white font-medium transition-all hover:scale-110 hover:bg-dark-blue"
+          >
+            Send order
+          </button>
           <Link
             onClick={resetStates}
             className="flex w-[120px] mb-3 items-center bg-dark-blue py-2.5 px-3 rounded-lg text-white font-medium transition-all hover:scale-110 "
@@ -416,10 +427,24 @@ const CreateOrderView = () => {
           </h3>
           <h3 className="font-medium">Contact:</h3>
           <h3>{customers && customers[0].email ? customers[0].email : ""}</h3>
+          <h3 className="font-medium">Special requirements:</h3>
+          <input
+            type="text"
+            value={specialRequirements}
+            onChange={(e) => setSpecialRequirements(e.target.value)}
+            className="p-2 border border-dark-blue rounded-lg m-1 w-[300px]"
+            placeholder="Write your comments here"
+          />
         </div>
       )}
       <div className="">
-        <Table orderDate={orderDate} />
+        <Table
+          orderDate={orderDate}
+          confirmCreateOrder={confirmCreateOrder}
+          setConfirmCreateOrder={setConfirmCreateOrder}
+          specialRequirements={specialRequirements}
+          setSpecialRequirements={setSpecialRequirements}
+        />
       </div>
     </Layout>
   );

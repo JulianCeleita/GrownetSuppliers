@@ -58,7 +58,9 @@ const OrderDetailPage = () => {
   const [accName, setAccName] = useState("");
   const params = useParams();
   const [confirmCreateOrder, setConfirmCreateOrder] = useState(false);
-
+  const [specialRequirements, setSpecialRequirements] = useState(
+    orderDetail.observation ? orderDetail.observation : ""
+  );
   let orderId;
   if (params) {
     ({ orderId } = params);
@@ -413,7 +415,14 @@ const OrderDetailPage = () => {
             </h3>
             <h3 className="font-medium">Contact:</h3>
             <h3>{orderDetail && orderDetail.email ? orderDetail.email : ""}</h3>
-            <h3 className="font-medium">Special requirements</h3>
+            <h3 className="font-medium">Special requirements:</h3>
+            <input
+              type="text"
+              value={specialRequirements}
+              onChange={(e) => setSpecialRequirements(e.target.value)}
+              className="p-2 border border-dark-blue rounded-lg m-1 w-[300px]"
+              placeholder="Write your comments here"
+            />
           </div>
         )}
       </div>
@@ -552,6 +561,8 @@ const OrderDetailPage = () => {
                 dateDelivery={selectedDate}
                 confirmCreateOrder={confirmCreateOrder}
                 setConfirmCreateOrder={setConfirmCreateOrder}
+                specialRequirements={specialRequirements}
+                setSpecialRequirements={setSpecialRequirements}
               />
             </>
           )
