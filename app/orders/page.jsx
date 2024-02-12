@@ -464,7 +464,7 @@ const OrderView = () => {
                       <td className="py-4">{order.net}</td>
                       <td className="py-4">10%</td>
                       <td className="py-4">{order.route}</td>
-                      <td className="py-4">Santiago Arango</td>
+                      <td className="py-4">-</td>
                       <td className="py-4">{order.date_delivery}</td>
                       <td className="py-4 flex gap-2 justify-center">
                         <div
