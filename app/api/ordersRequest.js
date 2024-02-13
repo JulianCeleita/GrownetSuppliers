@@ -128,7 +128,7 @@ export const fetchOrdersDate = async (
       },
     });
     setTotalNet(response.data);
-    console.log("response data", response.data);
+    // console.log("response data", response.data);
   } catch (error) {
     console.error("Error al obtener el orders by date:", error);
   }
@@ -154,7 +154,7 @@ export const fetchOrdersDateByWorkDate = async (
       },
     });
     setOrdersWorkDate(response.data.orders.length);
-    console.log("response data", response.data);
+    // console.log("response data", response.data);
   } catch (error) {
     console.error("Error al obtener el orders by date:", error);
   }
