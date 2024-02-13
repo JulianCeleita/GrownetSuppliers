@@ -53,7 +53,7 @@ const OrderView = () => {
   const [selectedDate, setSelectedDate] = useState("");
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
-  const [selectedOrders, setSelectedOrders] = useState({});
+  const [selectedOrders, setSelectedOrders] = useState({ route: "" });
   const [selectedRoute, setSelectedRoute] = useState("");
   const [filterType, setFilterType] = useState("date");
   const [showPercentage, setShowPercentage] = useState(null);
@@ -61,7 +61,7 @@ const OrderView = () => {
   console.log("selectedOrders", selectedOrders);
   // console.log("endDate", endDate);
   // console.log("startDate", startDate);
-  // console.log("totalNet", totalNet);
+  console.log("totalNet", totalNet);
   // console.log("workDate", workDate);
   // console.log("routePercentages", routePercentages);
 
@@ -213,8 +213,6 @@ const OrderView = () => {
   };
 
   const handleOrderSelect = (order, checked) => {
-    console.log("order", order);
-
     setSelectedOrders((prevState) => ({
       ...prevState,
       [order.reference]: checked,
@@ -391,7 +389,9 @@ const OrderView = () => {
                 <h1 className="text-xl font-bold text-dark-blue">Today</h1>
                 <div className="flex items-center justify-center text-center">
                   <div className="pr-1">
-                    <p className="text-5xl font-bold text-primary-blue">20</p>
+                    <p className="text-5xl font-bold text-primary-blue">
+                      {totalNet.orders.length}
+                    </p>
                   </div>
                   <div className="grid grid-cols-1 text-left">
                     <h2 className="text-sm text-dark-blue px-1 font-medium ">
