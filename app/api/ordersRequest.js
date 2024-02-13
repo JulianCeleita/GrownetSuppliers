@@ -45,7 +45,6 @@ export const fetchOrdersSupplier = async (
       : [];
     setOrders(newOrder);
     setIsLoading(false);
-    console.log("Response", response.data.orders)
   } catch (error) {
     console.error("Error al obtener las ordenes por supplier:", error);
   }
@@ -91,7 +90,7 @@ export const fetchOrderDetail = async (
         Authorization: `Bearer ${token}`,
       },
     });
-    console.log("🚀 ~ response:", response)
+    console.log("🚀 ~ response:", response);
 
     if (
       user?.id_suppliers == orderDetail.id_suppliers &&
@@ -129,7 +128,33 @@ export const fetchOrdersDate = async (
       },
     });
     setTotalNet(response.data);
-    console.log("response data", response.data);
+    // console.log("response data", response.data);
+  } catch (error) {
+    console.error("Error al obtener el orders by date:", error);
+  }
+};
+
+export const fetchOrdersDateByWorkDate = async (
+  token,
+  workDate,
+  setOrdersWorkDate
+) => {
+  const postData = {
+    date: {
+      start: workDate,
+      end: workDate,
+    },
+  };
+  console.log("postData workdate", postData);
+  try {
+    const response = await axios.post(ordersDate, postData, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+    });
+    setOrdersWorkDate(response.data.orders.length);
+    // console.log("response data", response.data);
   } catch (error) {
     console.error("Error al obtener el orders by date:", error);
   }

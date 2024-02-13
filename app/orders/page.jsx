@@ -14,6 +14,7 @@ import Select from "react-select";
 import {
   fetchOrders,
   fetchOrdersDate,
+  fetchOrdersDateByWorkDate,
   fetchOrdersSupplier,
 } from "../api/ordersRequest";
 import { CircleProgressBar } from "../components/CircleProgressBar";
@@ -43,6 +44,7 @@ const OrderView = () => {
   const router = useRouter();
   const { token } = useTokenStore();
   const { workDate, setFetchWorkDate } = useWorkDateStore();
+  const [ordersWorkDate, setOrdersWorkDate] = useState(0);
   const { routePercentages, setFetchRoutePercentages } = usePercentageStore();
   const [isLoading, setIsLoading] = useState(true);
   const [orders, setOrders] = useState([]);
@@ -53,16 +55,20 @@ const OrderView = () => {
   const [selectedDate, setSelectedDate] = useState("");
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
-  const [selectedOrders, setSelectedOrders] = useState({});
+  const [startDateByNet, setStartDateByNet] = useState("");
+  const [endDateByNet, setEndDateByNet] = useState("");
+  const [selectedOrders, setSelectedOrders] = useState({ route: "" });
   const [selectedRoute, setSelectedRoute] = useState("");
   const [filterType, setFilterType] = useState("date");
   const [showPercentage, setShowPercentage] = useState(null);
   const [totalNet, setTotalNet] = useState("");
-  console.log("selectedOrders", selectedOrders);
+  //console.log("ordersWorkDate", ordersWorkDate);
+  //console.log("selectedOrders", selectedOrders);
   // console.log("endDate", endDate);
-  // console.log("startDate", startDate);
+  // console.log("startDateByNet", startDateByNet);
+  // console.log("endDateByNet", endDateByNet);
   // console.log("totalNet", totalNet);
-  // console.log("workDate", workDate);
+  //console.log("workDate", workDate);
   // console.log("routePercentages", routePercentages);
 
   const formatDateToShow = (dateString) => {
@@ -108,14 +114,11 @@ const OrderView = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        setFetchWorkDate(token, user.id_supplier, setStartDate, setEndDate);
-
-        fetchOrdersDate(
+        setFetchWorkDate(
           token,
-          endDate,
-          startDate,
-          selectedOrders.route,
-          setTotalNet
+          user.id_supplier,
+          setStartDateByNet,
+          setEndDateByNet
         );
       } catch (error) {
         console.error("Error fetching data: ", error);
@@ -123,7 +126,21 @@ const OrderView = () => {
     };
 
     fetchData();
-  }, [user, token, endDate, startDate, selectedOrders]);
+  }, [user, token, selectedOrders]);
+
+  useEffect(() => {
+    fetchOrdersDateByWorkDate(token, workDate, setOrdersWorkDate);
+  }, [workDate]);
+
+  useEffect(() => {
+    fetchOrdersDate(
+      token,
+      endDateByNet,
+      startDateByNet,
+      selectedOrders.route,
+      setTotalNet
+    );
+  }, [endDateByNet, startDateByNet, selectedOrders.route]);
 
   useEffect(() => {
     if (routePercentages) {
@@ -213,8 +230,6 @@ const OrderView = () => {
   };
 
   const handleOrderSelect = (order, checked) => {
-    console.log("order", order);
-
     setSelectedOrders((prevState) => ({
       ...prevState,
       [order.reference]: checked,
@@ -320,6 +335,7 @@ const OrderView = () => {
                 selected={startDate}
                 onChange={(date) => {
                   setStartDate(date);
+                  setStartDateByNet(formatDateToTransform(date));
                   setEndDate((currentEndDate) => {
                     if (date && currentEndDate) {
                       setDateFilter("range");
@@ -331,12 +347,14 @@ const OrderView = () => {
                 startDate={startDate}
                 endDate={endDate}
                 className="form-input px-4 py-3 rounded-md border border-gray-300"
-                placeholderText="mm/dd/yyyy"
+                dateFormat="dd/MM/yyyy"
+                placeholderText="dd/mm/yyyy"
               />
               <DatePicker
                 selected={endDate}
                 onChange={(date) => {
                   setEndDate(date);
+                  setEndDateByNet(formatDateToTransform(date));
                   setStartDate((currentStartDate) => {
                     if (currentStartDate && date) {
                       setDateFilter("range");
@@ -349,7 +367,8 @@ const OrderView = () => {
                 endDate={endDate}
                 minDate={startDate}
                 className="form-input px-4 py-3 rounded-md border border-gray-300"
-                placeholderText="mm/dd/yyyy"
+                dateFormat="dd/MM/yyyy"
+                placeholderText="dd/mm/yyyy"
               />
             </>
           )}
@@ -359,11 +378,12 @@ const OrderView = () => {
               selected={selectedDate}
               onChange={(date) => {
                 setSelectedDate(date);
-                setStartDate(date);
-                setEndDate(date);
+                setStartDateByNet(formatDateToTransform(date));
+                setEndDateByNet(formatDateToTransform(date));
                 setDateFilter("date");
               }}
               className="form-input px-4 py-3 rounded-md border border-gray-300"
+              dateFormat="dd/MM/yyyy"
               placeholderText="Select a date"
             />
           )}
@@ -391,7 +411,9 @@ const OrderView = () => {
                 <h1 className="text-xl font-bold text-dark-blue">Today</h1>
                 <div className="flex items-center justify-center text-center">
                   <div className="pr-1">
-                    <p className="text-5xl font-bold text-primary-blue">20</p>
+                    <p className="text-5xl font-bold text-primary-blue">
+                      {ordersWorkDate}
+                    </p>
                   </div>
                   <div className="grid grid-cols-1 text-left">
                     <h2 className="text-sm text-dark-blue px-1 font-medium ">
@@ -430,7 +452,10 @@ const OrderView = () => {
                 <div className="flex justify-center text-center">
                   <div className="flex items-center">
                     <p className="text-4xl font-bold text-primary-blue">
-                      £{totalNet.total_net}
+                      £
+                      {totalNet.total_net
+                        ? parseFloat(totalNet.total_net).toFixed(2)
+                        : "0"}
                     </p>
                   </div>
                 </div>
@@ -442,7 +467,10 @@ const OrderView = () => {
                 <div className="flex justify-center text-center">
                   <div>
                     <p className="text-4xl font-bold text-primary-blue">
-                      {parseFloat(totalNet.profit).toFixed(2)}%
+                      {totalNet.profit
+                        ? parseFloat(totalNet.profit).toFixed(2)
+                        : "0"}
+                      %
                     </p>
                   </div>
                 </div>

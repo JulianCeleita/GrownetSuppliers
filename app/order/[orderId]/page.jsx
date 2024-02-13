@@ -58,6 +58,7 @@ const OrderDetailPage = () => {
   const [accName, setAccName] = useState("");
   const params = useParams();
   const [confirmCreateOrder, setConfirmCreateOrder] = useState(false);
+  const [dataLoaded, setDataLoaded] = useState(false);
   const [specialRequirements, setSpecialRequirements] = useState(
     orderDetail.observation ? orderDetail.observation : ""
   );
@@ -223,7 +224,7 @@ const OrderDetailPage = () => {
 
   useEffect(() => {
     if (selectedDate) {
-      getPercentageOrder(token, selectedDate, orderId, setPercentageDetail);
+      getPercentageOrder(token, selectedDate, orderId, setPercentageDetail, setDataLoaded);
     }
   }, [selectedDate]);
 
@@ -378,7 +379,7 @@ const OrderDetailPage = () => {
           readOnly
           className="border ml-2 p-1.5 rounded-md w-20"
         />
-        <label className="mx-3">Customer Ref: </label>
+        <label className="mx-3 text-lg">Customer Ref: </label>
         <input type="text" className="border p-2 rounded-md w-20" />
         {details ? (
           <button
@@ -563,6 +564,8 @@ const OrderDetailPage = () => {
                 setConfirmCreateOrder={setConfirmCreateOrder}
                 specialRequirements={specialRequirements}
                 setSpecialRequirements={setSpecialRequirements}
+                percentageDetail={percentageDetail}
+                dataLoaded={dataLoaded}
               />
             </>
           )

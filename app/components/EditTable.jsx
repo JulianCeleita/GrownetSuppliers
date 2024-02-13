@@ -28,8 +28,6 @@ export const fetchOrderDetail = async (
         Authorization: `Bearer ${token}`,
       },
     });
-    
-    console.log("🚀 ~ response:", response)
     const newOrderDetail = Array.isArray(response.data.order)
       ? response.data.order
       : [];
@@ -108,11 +106,15 @@ export default function EditTable({
   setConfirmCreateOrder,
   specialRequirements,
   setSpecialRequirements,
+  percentageDetail,
+  dataLoaded
 }) {
-  const [rows, setRows] = useState(
-    Array.from({ length: 0 }, () => ({ ...initialRowsState }))
-  );
-  const form = useRef();
+  // const [rows, setRows] = useState(
+  //   Array.from({ length: 0 }, () => ({ ...initialRowsState }))
+  // );
+
+  const [rows, setRows] = useState([{ ...initialRowsState, isExistingProduct: false }]);
+   const form = useRef();
   const { onEnterKey } = useFocusOnEnter(form);
   const { token, setToken } = useTokenStore();
   const [products, setProducts] = useState([]);
@@ -185,6 +187,7 @@ export default function EditTable({
 
   useEffect(() => {
     if (
+      dataLoaded &&
       orderDetail &&
       orderDetail.products &&
       orderDetail.products.length > 0
@@ -208,10 +211,14 @@ export default function EditTable({
         "Total Cost": "",
       }));
 
-      setRows(initialRows);
+      if(percentageDetail == 0) {
+        setRows([...initialRows.map(row => ({...row, isExistingProduct: true})), { ...initialRowsState, isExistingProduct: false }]);
+      } else {
+        setRows(initialRows);
+      }
       setSpecialRequirements(orderDetail.observation);
     }
-  }, [orderDetail]);
+  }, [orderDetail, percentageDetail, dataLoaded]);
 
   useEffect(() => {
     const fetchPresentationData = async () => {
@@ -555,7 +562,6 @@ export default function EditTable({
         total_tax: parseFloat(totalTaxSum),
         products: filteredProducts,
       };
-      console.log("jsonOrderData", jsonOrderData);
       const response = await axios.post(
         `${editStorageOrder}${orderDetail.reference}`,
         jsonOrderData,
@@ -565,7 +571,6 @@ export default function EditTable({
           },
         }
       );
-      console.log("response", response);
       setSpecialRequirements("");
       setShowConfirmModal(true);
       setConfirmCreateOrder(false);
@@ -820,13 +825,6 @@ export default function EditTable({
                   ))}
                 </tbody>
               </table>
-              <button
-                onClick={addNewRow}
-                type="button"
-                className="bg-primary-blue py-2 px-4 rounded-lg text-white font-medium mr-2"
-              >
-                Add new product
-              </button>
 
               {showCheckboxColumn === true && (
                 <div
