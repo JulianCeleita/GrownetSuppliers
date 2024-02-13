@@ -423,15 +423,20 @@ export default function Table({
   const handleKeyDown = (e, rowIndex, fieldName) => {
     if (e.key === "Enter" && e.target.tagName.toLowerCase() !== "textarea") {
       e.preventDefault();
-
-      if (
-        (fieldName === "Code" && currentValues["Code"]?.trim() !== "") ||
-        (fieldName === "Description" &&
-          currentValues["Description"].trim() !== "")
-      ) {
-        fetchProductCode(rowIndex);
+  
+      let productCode = '';
+  
+      if (fieldName === "Code" && currentValues["Code"]?.trim() !== "") {
+        productCode = currentValues["Code"];
+      } else if (fieldName === "Description" && currentValues["Description"].trim() !== "") {
+        const selectedProduct = DescriptionData.find((item) => item.productName === currentValues["Description"]);
+        productCode = selectedProduct ? selectedProduct.code : '';
       }
-
+  
+      if (productCode) {
+        fetchProductCode(rowIndex, productCode);
+      }
+  
       const nextRowIndex = rowIndex + 1;
       if (nextRowIndex < rows.length) {
         form.current[nextRowIndex].querySelector('input[type="text"]')?.focus();
@@ -448,8 +453,7 @@ export default function Table({
           Authorization: `Bearer ${token}`,
         },
       });
-      const productData = response.data.data[0]; // Asumiendo que la respuesta contiene los datos que necesitas
-      console.log("🚀 ~ fetchProductCode ~ productData:", productData)
+      const productData = response.data.data[0];
 
       // Actualiza las filas con los datos del producto
       const updatedRows = rows.map((row, index) => {
@@ -463,7 +467,6 @@ export default function Table({
             Price: productData.price,
           };
         }
-        console.log("🚀 ~ updatedRows ~ row:", row)
         return row;
       });
       setRows(updatedRows);
@@ -497,11 +500,9 @@ export default function Table({
       const filteredProducts = rows
         .filter((row) => parseFloat(row.quantity) > 0)
         .map((row) => {
-          console.log("🚀 ~ .map ~ row:", row)
           const product = presentations.find(
             (product) => product.code === row.Code
           );
-          console.log("🚀 ~ .map ~ products:", presentations)
 
           return {
             quantity: parseFloat(row.quantity),
@@ -528,13 +529,11 @@ export default function Table({
         products: filteredProducts,
       };
 
-      console.log("jsonOrderData", jsonOrderData);
       const response = await axios.post(createStorageOrder, jsonOrderData, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
-      console.log("response", response);
       setShowConfirmModal(true);
       setConfirmCreateOrder(false);
       setRows(Array.from({ length: 5 }, () => ({ ...initialRowsState })));
@@ -701,14 +700,11 @@ export default function Table({
                                       value: row[column] || "",
                                     }}
                                     onChange={(selectedOption) => {
-                                      // Encuentra el producto seleccionado en DescriptionData por el código
                                       const selectedProduct = DescriptionData.find(
                                         (item) => item.code === selectedOption.code
                                       );
-                                      console.log("🚀 ~ selectedProduct:", selectedProduct)
 
                                       if (selectedProduct) {
-                                        console.log("entré");
                                         fetchProductCode(rowIndex, selectedProduct.code)
                                       }
                                     }}
