@@ -133,7 +133,7 @@ const OrderView = () => {
       selectedOrders.route,
       setTotalNet
     );
-  }, [endDateByNet, startDateByNet]);
+  }, [endDateByNet, startDateByNet, selectedOrders.route]);
 
   useEffect(() => {
     if (routePercentages) {
@@ -442,7 +442,7 @@ const OrderView = () => {
                 <div className="flex justify-center text-center">
                   <div className="flex items-center">
                     <p className="text-4xl font-bold text-primary-blue">
-                      £{totalNet.total_net}
+                      £{totalNet.total_net ? totalNet.total_net : "0.0"}
                     </p>
                   </div>
                 </div>
@@ -454,7 +454,10 @@ const OrderView = () => {
                 <div className="flex justify-center text-center">
                   <div>
                     <p className="text-4xl font-bold text-primary-blue">
-                      {parseFloat(totalNet.profit).toFixed(2)}%
+                      {totalNet.profit
+                        ? parseFloat(totalNet.profit).toFixed(2)
+                        : "0.0"}
+                      %
                     </p>
                   </div>
                 </div>
