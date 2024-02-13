@@ -53,15 +53,18 @@ const OrderView = () => {
   const [selectedDate, setSelectedDate] = useState("");
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
+  const [startDateByNet, setStartDateByNet] = useState("");
+  const [endDateByNet, setEndDateByNet] = useState("");
   const [selectedOrders, setSelectedOrders] = useState({ route: "" });
   const [selectedRoute, setSelectedRoute] = useState("");
   const [filterType, setFilterType] = useState("date");
   const [showPercentage, setShowPercentage] = useState(null);
   const [totalNet, setTotalNet] = useState("");
-  console.log("selectedOrders", selectedOrders);
+  //console.log("selectedOrders", selectedOrders);
   // console.log("endDate", endDate);
-  // console.log("startDate", startDate);
-  console.log("totalNet", totalNet);
+  // console.log("startDateByNet", startDateByNet);
+  // console.log("endDateByNet", endDateByNet);
+  // console.log("totalNet", totalNet);
   // console.log("workDate", workDate);
   // console.log("routePercentages", routePercentages);
 
@@ -108,14 +111,11 @@ const OrderView = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        setFetchWorkDate(token, user.id_supplier, setStartDate, setEndDate);
-
-        fetchOrdersDate(
+        setFetchWorkDate(
           token,
-          endDate,
-          startDate,
-          selectedOrders.route,
-          setTotalNet
+          user.id_supplier,
+          setStartDateByNet,
+          setEndDateByNet
         );
       } catch (error) {
         console.error("Error fetching data: ", error);
@@ -123,7 +123,17 @@ const OrderView = () => {
     };
 
     fetchData();
-  }, [user, token, endDate, startDate, selectedOrders]);
+  }, [user, token, selectedOrders]);
+
+  useEffect(() => {
+    fetchOrdersDate(
+      token,
+      endDateByNet,
+      startDateByNet,
+      selectedOrders.route,
+      setTotalNet
+    );
+  }, [endDateByNet, startDateByNet]);
 
   useEffect(() => {
     if (routePercentages) {
@@ -318,6 +328,7 @@ const OrderView = () => {
                 selected={startDate}
                 onChange={(date) => {
                   setStartDate(date);
+                  setStartDateByNet(formatDateToTransform(date));
                   setEndDate((currentEndDate) => {
                     if (date && currentEndDate) {
                       setDateFilter("range");
@@ -335,6 +346,7 @@ const OrderView = () => {
                 selected={endDate}
                 onChange={(date) => {
                   setEndDate(date);
+                  setEndDateByNet(formatDateToTransform(date));
                   setStartDate((currentStartDate) => {
                     if (currentStartDate && date) {
                       setDateFilter("range");
@@ -390,7 +402,7 @@ const OrderView = () => {
                 <div className="flex items-center justify-center text-center">
                   <div className="pr-1">
                     <p className="text-5xl font-bold text-primary-blue">
-                      {totalNet.orders.length}
+                      {totalNet.orders?.length}
                     </p>
                   </div>
                   <div className="grid grid-cols-1 text-left">
