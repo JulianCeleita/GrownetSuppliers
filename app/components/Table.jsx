@@ -152,14 +152,20 @@ export default function Table({
 
   const sortData = (data, searchTerm) => {
     const lowercasedTerm = searchTerm.toLowerCase();
-  
+
     // Separar coincidencias exactas de coincidencias parciales
-    const exactMatches = data.filter(item => item.code.toLowerCase() === lowercasedTerm);
-    const partialMatches = data.filter(item => item.code.toLowerCase().includes(lowercasedTerm) && item.code.toLowerCase() !== lowercasedTerm);
-  
+    const exactMatches = data.filter(
+      (item) => item.code.toLowerCase() === lowercasedTerm
+    );
+    const partialMatches = data.filter(
+      (item) =>
+        item.code.toLowerCase().includes(lowercasedTerm) &&
+        item.code.toLowerCase() !== lowercasedTerm
+    );
+
     // Clasificar las coincidencias parciales si es necesario
     partialMatches.sort((a, b) => a.code.localeCompare(b.code));
-  
+
     // Retornar primero coincidencias exactas, luego parciales
     return [...exactMatches, ...partialMatches];
   };
@@ -422,6 +428,7 @@ export default function Table({
       // Obtener el valor del input de "Code" desde la fila
       const currentProductCode = rows[rowIndex]["Code"] || "0";
       const currentDescription = rows[rowIndex]["Description"];
+
       const codeToUse =
         currentProductCode && currentProductCode !== currentValues["Code"]
           ? currentDescription
@@ -451,8 +458,9 @@ export default function Table({
       setProductByCode(productByCodeData);
     } catch (error) {
       console.error("Error al hacer la solicitud:", error.message);
-      const currentProductCode = rows[rowIndex]["Code"] || "0";
-      if (currentProductCode == 0) {
+
+      const currentDescription = rows[rowIndex]["Description"];
+      if (currentDescription) {
         setShowErrorCode(false);
       } else {
         setShowErrorCode(true);
