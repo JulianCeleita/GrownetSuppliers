@@ -11,7 +11,11 @@ import { useEffect, useState } from "react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import Select from "react-select";
-import { fetchOrders, fetchOrdersSupplier } from "../api/ordersRequest";
+import {
+  fetchOrders,
+  fetchOrdersDate,
+  fetchOrdersSupplier,
+} from "../api/ordersRequest";
 import { CircleProgressBar } from "../components/CircleProgressBar";
 import Layout from "../layoutS";
 import usePercentageStore from "../store/usePercentageStore";
@@ -35,15 +39,11 @@ export const customStyles = {
   }),
 };
 
-function convertUTCtoTimeZone2(dateUTC, timeZone) {
-  return new Date(dateUTC).toLocaleString("en-US", { timeZone });
-}
 const OrderView = () => {
   const router = useRouter();
   const { token } = useTokenStore();
   const { workDate, setFetchWorkDate } = useWorkDateStore();
   const { routePercentages, setFetchRoutePercentages } = usePercentageStore();
-
   const [isLoading, setIsLoading] = useState(true);
   const [orders, setOrders] = useState([]);
   const { user } = useUserStore();
@@ -57,6 +57,13 @@ const OrderView = () => {
   const [selectedRoute, setSelectedRoute] = useState("");
   const [filterType, setFilterType] = useState("date");
   const [showPercentage, setShowPercentage] = useState(null);
+  const [totalNet, setTotalNet] = useState("");
+  console.log("selectedOrders", selectedOrders);
+  // console.log("endDate", endDate);
+  // console.log("startDate", startDate);
+  // console.log("totalNet", totalNet);
+  // console.log("workDate", workDate);
+  // console.log("routePercentages", routePercentages);
 
   const formatDateToShow = (dateString) => {
     if (!dateString) return "Loading...";
@@ -99,8 +106,24 @@ const OrderView = () => {
   }, [user, token, showDatePicker]);
 
   useEffect(() => {
-    setFetchWorkDate(token, user.id_supplier);
-  }, [user]);
+    const fetchData = async () => {
+      try {
+        setFetchWorkDate(token, user.id_supplier, setStartDate, setEndDate);
+
+        fetchOrdersDate(
+          token,
+          endDate,
+          startDate,
+          selectedOrders.route,
+          setTotalNet
+        );
+      } catch (error) {
+        console.error("Error fetching data: ", error);
+      }
+    };
+
+    fetchData();
+  }, [user, token, endDate, startDate, selectedOrders]);
 
   useEffect(() => {
     if (routePercentages) {
@@ -119,13 +142,16 @@ const OrderView = () => {
   useEffect(() => {
     if (objectToArray(selectedOrders).length === 1) {
       console.log("selectedOrders.[0]", objectToArray(selectedOrders)[0]);
-      getPercentageOrder(token, selectedDate !== "" ? selectedDate : workDate, objectToArray(selectedOrders)[0], setShowPercentage);
+      getPercentageOrder(
+        token,
+        selectedDate !== "" ? selectedDate : workDate,
+        objectToArray(selectedOrders)[0],
+        setShowPercentage
+      );
     } else {
       setShowPercentage(null);
     }
-
-  }, [selectedOrders])
-
+  }, [selectedOrders]);
 
   const subtractDays = (date, days) => {
     const result = new Date(date);
@@ -186,10 +212,13 @@ const OrderView = () => {
     });
   };
 
-  const handleOrderSelect = async (order, checked) => {
+  const handleOrderSelect = (order, checked) => {
+    console.log("order", order);
+
     setSelectedOrders((prevState) => ({
       ...prevState,
       [order.reference]: checked,
+      route: order.route_id,
     }));
   };
 
@@ -206,10 +235,10 @@ const OrderView = () => {
     return Object.entries(object)
       .filter(([reference, checked]) => checked)
       .map(([reference]) => reference);
-  }
+  };
 
   const printOrders = () => {
-    const ordersToPrint = objectToArray(selectedOrders)
+    const ordersToPrint = objectToArray(selectedOrders);
     //TODO: implementar lógica para imprimir las ordenes seleccionadas
   };
 
@@ -243,8 +272,8 @@ const OrderView = () => {
 
   const filteredOrders = selectedRoute
     ? sortedOrders.filter(
-      (order) => order.route.toLowerCase() === selectedRoute.toLowerCase()
-    )
+        (order) => order.route.toLowerCase() === selectedRoute.toLowerCase()
+      )
     : sortedOrders;
 
   const statusColorClass = (status) => {
@@ -375,12 +404,6 @@ const OrderView = () => {
                         {formatDateToShow(workDate)}
                       </h2>
                     </div>
-                    <h2 className="text-gray-grownet text-[12px]">
-                      Active routes today{" "}
-                      <span className="text-primary-blue font-semibold">
-                        15
-                      </span>
-                    </h2>
                   </div>
                 </div>
               </div>
@@ -407,7 +430,7 @@ const OrderView = () => {
                 <div className="flex justify-center text-center">
                   <div className="flex items-center">
                     <p className="text-4xl font-bold text-primary-blue">
-                      £1,000
+                      £{totalNet.total_net}
                     </p>
                   </div>
                 </div>
@@ -418,7 +441,9 @@ const OrderView = () => {
                 </h1>
                 <div className="flex justify-center text-center">
                   <div>
-                    <p className="text-4xl font-bold text-primary-blue">18%</p>
+                    <p className="text-4xl font-bold text-primary-blue">
+                      {parseFloat(totalNet.profit).toFixed(2)}%
+                    </p>
                   </div>
                 </div>
               </div>
@@ -454,7 +479,10 @@ const OrderView = () => {
               {!isLoading &&
                 (filteredOrders.length > 0 ? (
                   filteredOrders.map((order, index) => (
-                    <tr key={index} className="text-dark-blue border-b-[1.5px]">
+                    <tr
+                      key={index}
+                      className="text-dark-blue border-b-[1.5px] cursor-pointer hover:bg-[#F6F6F6]"
+                    >
                       <td className="py-4">
                         <label className="inline-flex items-center">
                           <input
@@ -467,19 +495,29 @@ const OrderView = () => {
                           />
                         </label>
                       </td>
-                      <td className="py-4">{order.reference}</td>
-                      <td
-                        className="py-4 cursor-pointer hover:bg-light-blue"
-                        onClick={(e) => goToOrder(e, order)}
-                      >
+                      <td className="py-4" onClick={(e) => goToOrder(e, order)}>
+                        {order.reference}
+                      </td>
+                      <td className="py-4" onClick={(e) => goToOrder(e, order)}>
                         {order.accountName}
                       </td>
-                      <td className="py-4">{order.net}</td>
-                      <td className="py-4">10%</td>
-                      <td className="py-4">{order.route}</td>
+                      <td className="py-4" onClick={(e) => goToOrder(e, order)}>
+                        {order.net}
+                      </td>
+                      <td className="py-4" onClick={(e) => goToOrder(e, order)}>
+                        10%
+                      </td>
+                      <td className="py-4" onClick={(e) => goToOrder(e, order)}>
+                        {order.route}
+                      </td>
                       <td className="py-4">-</td>
-                      <td className="py-4">{order.date_delivery}</td>
-                      <td className="py-4 flex gap-2 justify-center">
+                      <td className="py-4" onClick={(e) => goToOrder(e, order)}>
+                        {order.date_delivery}
+                      </td>
+                      <td
+                        className="py-4 flex gap-2 justify-center"
+                        onClick={(e) => goToOrder(e, order)}
+                      >
                         <div
                           className={`inline-block mt-1 rounded-full text-white ${statusColorClass(
                             order.name_status
