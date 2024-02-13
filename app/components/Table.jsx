@@ -150,6 +150,20 @@ export default function Table({
     "Total Cost": "number",
   };
 
+  const sortData = (data, searchTerm) => {
+    const lowercasedTerm = searchTerm.toLowerCase();
+  
+    // Separar coincidencias exactas de coincidencias parciales
+    const exactMatches = data.filter(item => item.code.toLowerCase() === lowercasedTerm);
+    const partialMatches = data.filter(item => item.code.toLowerCase().includes(lowercasedTerm) && item.code.toLowerCase() !== lowercasedTerm);
+  
+    // Clasificar las coincidencias parciales si es necesario
+    partialMatches.sort((a, b) => a.code.localeCompare(b.code));
+  
+    // Retornar primero coincidencias exactas, luego parciales
+    return [...exactMatches, ...partialMatches];
+  };
+
   useEffect(() => {
     const fetchPresentationData = async () => {
       try {
@@ -433,22 +447,26 @@ export default function Table({
         }
         return row;
       });
-
       setRows(updatedRows);
       setProductByCode(productByCodeData);
     } catch (error) {
       console.error("Error al hacer la solicitud:", error.message);
-      setShowErrorCode(true);
-      const updatedRows = rows.map((row, index) => {
-        if (index === rowIndex) {
-          return {
-            ...row,
-            Code: "",
-          };
-        }
-        return row;
-      });
-      setRows(updatedRows);
+      const currentProductCode = rows[rowIndex]["Code"] || "0";
+      if (currentProductCode == 0) {
+        setShowErrorCode(false);
+      } else {
+        setShowErrorCode(true);
+        const updatedRows = rows.map((row, index) => {
+          if (index === rowIndex) {
+            return {
+              ...row,
+              Code: "",
+            };
+          }
+          return row;
+        });
+        setRows(updatedRows);
+      }
     }
   };
 
