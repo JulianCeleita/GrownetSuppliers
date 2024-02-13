@@ -109,10 +109,12 @@ export default function EditTable({
   specialRequirements,
   setSpecialRequirements,
 }) {
-  const [rows, setRows] = useState(
-    Array.from({ length: 0 }, () => ({ ...initialRowsState }))
-  );
-  const form = useRef();
+  // const [rows, setRows] = useState(
+  //   Array.from({ length: 0 }, () => ({ ...initialRowsState }))
+  // );
+
+  const [rows, setRows] = useState([{ ...initialRowsState, isExistingProduct: false }]);
+   const form = useRef();
   const { onEnterKey } = useFocusOnEnter(form);
   const { token, setToken } = useTokenStore();
   const [products, setProducts] = useState([]);
@@ -208,7 +210,8 @@ export default function EditTable({
         "Total Cost": "",
       }));
 
-      setRows(initialRows);
+      // setRows(initialRows);
+      setRows([...initialRows.map(row => ({...row, isExistingProduct: true})), { ...initialRowsState, isExistingProduct: false }]);
       setSpecialRequirements(orderDetail.observation);
     }
   }, [orderDetail]);
@@ -820,13 +823,6 @@ export default function EditTable({
                   ))}
                 </tbody>
               </table>
-              <button
-                onClick={addNewRow}
-                type="button"
-                className="bg-primary-blue py-2 px-4 rounded-lg text-white font-medium mr-2"
-              >
-                Add new product
-              </button>
 
               {showCheckboxColumn === true && (
                 <div
