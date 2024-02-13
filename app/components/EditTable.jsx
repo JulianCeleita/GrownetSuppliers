@@ -28,8 +28,6 @@ export const fetchOrderDetail = async (
         Authorization: `Bearer ${token}`,
       },
     });
-    
-    console.log("🚀 ~ response:", response)
     const newOrderDetail = Array.isArray(response.data.order)
       ? response.data.order
       : [];
@@ -108,6 +106,8 @@ export default function EditTable({
   setConfirmCreateOrder,
   specialRequirements,
   setSpecialRequirements,
+  percentageDetail,
+  dataLoaded
 }) {
   // const [rows, setRows] = useState(
   //   Array.from({ length: 0 }, () => ({ ...initialRowsState }))
@@ -187,6 +187,7 @@ export default function EditTable({
 
   useEffect(() => {
     if (
+      dataLoaded &&
       orderDetail &&
       orderDetail.products &&
       orderDetail.products.length > 0
@@ -210,11 +211,14 @@ export default function EditTable({
         "Total Cost": "",
       }));
 
-      // setRows(initialRows);
-      setRows([...initialRows.map(row => ({...row, isExistingProduct: true})), { ...initialRowsState, isExistingProduct: false }]);
+      if(percentageDetail == 0) {
+        setRows([...initialRows.map(row => ({...row, isExistingProduct: true})), { ...initialRowsState, isExistingProduct: false }]);
+      } else {
+        setRows(initialRows);
+      }
       setSpecialRequirements(orderDetail.observation);
     }
-  }, [orderDetail]);
+  }, [orderDetail, percentageDetail, dataLoaded]);
 
   useEffect(() => {
     const fetchPresentationData = async () => {
@@ -558,7 +562,6 @@ export default function EditTable({
         total_tax: parseFloat(totalTaxSum),
         products: filteredProducts,
       };
-      console.log("jsonOrderData", jsonOrderData);
       const response = await axios.post(
         `${editStorageOrder}${orderDetail.reference}`,
         jsonOrderData,
@@ -568,7 +571,6 @@ export default function EditTable({
           },
         }
       );
-      console.log("response", response);
       setSpecialRequirements("");
       setShowConfirmModal(true);
       setConfirmCreateOrder(false);
