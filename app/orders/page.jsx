@@ -14,6 +14,7 @@ import Select from "react-select";
 import {
   fetchOrders,
   fetchOrdersDate,
+  fetchOrdersDateByWorkDate,
   fetchOrdersSupplier,
 } from "../api/ordersRequest";
 import { CircleProgressBar } from "../components/CircleProgressBar";
@@ -43,6 +44,7 @@ const OrderView = () => {
   const router = useRouter();
   const { token } = useTokenStore();
   const { workDate, setFetchWorkDate } = useWorkDateStore();
+  const [ordersWorkDate, setOrdersWorkDate] = useState(0);
   const { routePercentages, setFetchRoutePercentages } = usePercentageStore();
   const [isLoading, setIsLoading] = useState(true);
   const [orders, setOrders] = useState([]);
@@ -60,12 +62,13 @@ const OrderView = () => {
   const [filterType, setFilterType] = useState("date");
   const [showPercentage, setShowPercentage] = useState(null);
   const [totalNet, setTotalNet] = useState("");
+  //console.log("ordersWorkDate", ordersWorkDate);
   //console.log("selectedOrders", selectedOrders);
   // console.log("endDate", endDate);
   // console.log("startDateByNet", startDateByNet);
   // console.log("endDateByNet", endDateByNet);
   // console.log("totalNet", totalNet);
-  // console.log("workDate", workDate);
+  //console.log("workDate", workDate);
   // console.log("routePercentages", routePercentages);
 
   const formatDateToShow = (dateString) => {
@@ -124,6 +127,10 @@ const OrderView = () => {
 
     fetchData();
   }, [user, token, selectedOrders]);
+
+  useEffect(() => {
+    fetchOrdersDateByWorkDate(token, workDate, setOrdersWorkDate);
+  }, [workDate]);
 
   useEffect(() => {
     fetchOrdersDate(
@@ -402,7 +409,7 @@ const OrderView = () => {
                 <div className="flex items-center justify-center text-center">
                   <div className="pr-1">
                     <p className="text-5xl font-bold text-primary-blue">
-                      {totalNet.orders?.length}
+                      {ordersWorkDate}
                     </p>
                   </div>
                   <div className="grid grid-cols-1 text-left">

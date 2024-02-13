@@ -133,3 +133,29 @@ export const fetchOrdersDate = async (
     console.error("Error al obtener el orders by date:", error);
   }
 };
+
+export const fetchOrdersDateByWorkDate = async (
+  token,
+  workDate,
+  setOrdersWorkDate
+) => {
+  const postData = {
+    date: {
+      start: workDate,
+      end: workDate,
+    },
+  };
+  console.log("postData workdate", postData);
+  try {
+    const response = await axios.post(ordersDate, postData, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+    });
+    setOrdersWorkDate(response.data.orders.length);
+    console.log("response data", response.data);
+  } catch (error) {
+    console.error("Error al obtener el orders by date:", error);
+  }
+};
