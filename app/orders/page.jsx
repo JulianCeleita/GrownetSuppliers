@@ -340,7 +340,8 @@ const OrderView = () => {
                 startDate={startDate}
                 endDate={endDate}
                 className="form-input px-4 py-3 rounded-md border border-gray-300"
-                placeholderText="mm/dd/yyyy"
+                dateFormat="dd/MM/yyyy"
+                placeholderText="dd/mm/yyyy"
               />
               <DatePicker
                 selected={endDate}
@@ -359,7 +360,8 @@ const OrderView = () => {
                 endDate={endDate}
                 minDate={startDate}
                 className="form-input px-4 py-3 rounded-md border border-gray-300"
-                placeholderText="mm/dd/yyyy"
+                dateFormat="dd/MM/yyyy"
+                placeholderText="dd/mm/yyyy"
               />
             </>
           )}
@@ -374,6 +376,7 @@ const OrderView = () => {
                 setDateFilter("date");
               }}
               className="form-input px-4 py-3 rounded-md border border-gray-300"
+              dateFormat="dd/MM/yyyy"
               placeholderText="Select a date"
             />
           )}
