@@ -58,6 +58,7 @@ const OrderDetailPage = () => {
   const [accName, setAccName] = useState("");
   const params = useParams();
   const [confirmCreateOrder, setConfirmCreateOrder] = useState(false);
+  const [dataLoaded, setDataLoaded] = useState(false);
   const [specialRequirements, setSpecialRequirements] = useState(
     orderDetail.observation ? orderDetail.observation : ""
   );
@@ -223,7 +224,7 @@ const OrderDetailPage = () => {
 
   useEffect(() => {
     if (selectedDate) {
-      getPercentageOrder(token, selectedDate, orderId, setPercentageDetail);
+      getPercentageOrder(token, selectedDate, orderId, setPercentageDetail, setDataLoaded);
     }
   }, [selectedDate]);
 
@@ -563,6 +564,8 @@ const OrderDetailPage = () => {
                 setConfirmCreateOrder={setConfirmCreateOrder}
                 specialRequirements={specialRequirements}
                 setSpecialRequirements={setSpecialRequirements}
+                percentageDetail={percentageDetail}
+                dataLoaded={dataLoaded}
               />
             </>
           )
