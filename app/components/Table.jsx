@@ -9,9 +9,32 @@ import useTokenStore from "@/app/store/useTokenStore";
 import axios from "axios";
 import React, { useEffect, useRef, useState } from "react";
 import Select from "react-select";
+import { fetchPresentationsSupplier } from "../api/presentationsRequest";
 import useUserStore from "../store/useUserStore";
 import ModalOrderError from "./ModalOrderError";
 import ModalSuccessfull from "./ModalSuccessfull";
+
+export const fetchProducts = async (token) => {
+  try {
+    const response = await axios.get(productsUrl, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    const newProducts = Array.isArray(response.data.products)
+      ? response.data.products
+      : [];
+
+    const sortedProducts = newProducts.sort((a, b) =>
+      a.name.localeCompare(b.name)
+    );
+    setProducts(sortedProducts);
+    setIsLoading(false);
+  } catch (error) {
+    console.error("Error al obtener los productos:", error);
+  }
+};
 
 const initialRowsState = {
   Code: "",
@@ -114,6 +137,8 @@ export default function Table({
   const [mouseCoords, setMouseCoords] = useState({ x: 0, y: 0 });
   const { user, setUser } = useUserStore();
   const [isReadOnly, setIsReadOnly] = useState(true);
+  const [presentations, setPresentations] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
 
   const columns = [
     "Code",
@@ -152,19 +177,18 @@ export default function Table({
 
   const sortData = (data, searchTerm) => {
     const lowercasedTerm = searchTerm.toLowerCase();
-  
-    // Separar coincidencias exactas de coincidencias parciales
+
     const exactMatches = data.filter(item => item.code.toLowerCase() === lowercasedTerm);
     const partialMatches = data.filter(item => item.code.toLowerCase().includes(lowercasedTerm) && item.code.toLowerCase() !== lowercasedTerm);
-  
-    // Clasificar las coincidencias parciales si es necesario
+
     partialMatches.sort((a, b) => a.code.localeCompare(b.code));
-  
-    // Retornar primero coincidencias exactas, luego parciales
+
     return [...exactMatches, ...partialMatches];
   };
 
   useEffect(() => {
+    fetchPresentationsSupplier(token, user, setPresentations, setIsLoading)
+
     const fetchPresentationData = async () => {
       try {
         const response = await axios.get(presentationData, {
@@ -417,56 +441,46 @@ export default function Table({
     }
   };
 
-  const fetchProductCode = async (rowIndex) => {
+  const fetchProductCode = async (rowIndex, code) => {
     try {
-      // Obtener el valor del input de "Code" desde la fila
-      const currentProductCode = rows[rowIndex]["Code"] || "0";
-      const currentDescription = rows[rowIndex]["Description"];
-      const codeToUse =
-        currentProductCode && currentProductCode !== currentValues["Code"]
-          ? currentDescription
-          : currentProductCode;
-
-      const response = await axios.get(`${presentationsCode}${codeToUse}`, {
+      const response = await axios.get(`${presentationsCode}${code}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
-      const productByCodeData = response.data.data[0];
+      const productData = response.data.data[0]; // Asumiendo que la respuesta contiene los datos que necesitas
+      console.log("🚀 ~ fetchProductCode ~ productData:", productData)
 
+      // Actualiza las filas con los datos del producto
       const updatedRows = rows.map((row, index) => {
-        if (
-          index === rowIndex &&
-          (row["Code"] === currentProductCode ||
-            row["Description"] === currentProductCode)
-        ) {
+        if (index === rowIndex) {
           return {
             ...row,
-            id_presentations: productByCodeData.id_presentations,
+            Code: productData.presentation_code,
+            Description: productData.product_name,
+            Packsize: productData.presentation_name,
+            UOM: productData.uom,
+            Price: productData.price,
+          };
+        }
+        console.log("🚀 ~ updatedRows ~ row:", row)
+        return row;
+      });
+      setRows(updatedRows);
+    } catch (error) {
+      console.error("Error al hacer la solicitud:", error.message);
+      // const currentProductCode = rows[rowIndex]["Code"] || "0"
+      setShowErrorCode(true);
+      const updatedRows = rows.map((row, index) => {
+        if (index === rowIndex) {
+          return {
+            ...row,
+            Code: "",
           };
         }
         return row;
       });
       setRows(updatedRows);
-      setProductByCode(productByCodeData);
-    } catch (error) {
-      console.error("Error al hacer la solicitud:", error.message);
-      const currentProductCode = rows[rowIndex]["Code"] || "0";
-      if (currentProductCode == 0) {
-        setShowErrorCode(false);
-      } else {
-        setShowErrorCode(true);
-        const updatedRows = rows.map((row, index) => {
-          if (index === rowIndex) {
-            return {
-              ...row,
-              Code: "",
-            };
-          }
-          return row;
-        });
-        setRows(updatedRows);
-      }
     }
   };
 
@@ -483,13 +497,15 @@ export default function Table({
       const filteredProducts = rows
         .filter((row) => parseFloat(row.quantity) > 0)
         .map((row) => {
-          const product = products.find(
-            (product) => product.presentation_code === row.Code
+          console.log("🚀 ~ .map ~ row:", row)
+          const product = presentations.find(
+            (product) => product.code === row.Code
           );
+          console.log("🚀 ~ .map ~ products:", presentations)
 
           return {
             quantity: parseFloat(row.quantity),
-            id_presentations: product ? product.id_presentations : undefined,
+            id_presentations: product ? product.id : undefined,
             price: Number(row.Net),
           };
         });
@@ -597,25 +613,22 @@ export default function Table({
                       <th
                         key={index}
                         scope="col"
-                        className={`py-2 px-2 capitalize ${
-                          index === firstVisibleColumnIndex
+                        className={`py-2 px-2 capitalize ${index === firstVisibleColumnIndex
                             ? "rounded-tl-lg"
                             : ""
-                        } ${
-                          index === lastVisibleColumnIndex
+                          } ${index === lastVisibleColumnIndex
                             ? "rounded-tr-lg"
                             : ""
-                        } ${
-                          column === "quantity" ||
-                          column === "Code" ||
-                          column === "VAT %" ||
-                          column === "UOM" ||
-                          column === "Net"
+                          } ${column === "quantity" ||
+                            column === "Code" ||
+                            column === "VAT %" ||
+                            column === "UOM" ||
+                            column === "Net"
                             ? "w-20"
                             : column === "Packsize" || column === "Total Price"
-                            ? "w-40"
-                            : ""
-                        }`}
+                              ? "w-40"
+                              : ""
+                          }`}
                         onContextMenu={(e) => handleContextMenu(e)}
                       >
                         <p className="text-base text-dark-blue my-2">
@@ -677,33 +690,26 @@ export default function Table({
                                     options={
                                       DescriptionData
                                         ? DescriptionData.map((item) => ({
-                                            value: item.productName,
-                                            label: item.concatenatedName,
-                                            code: item.code,
-                                          }))
+                                          value: item.productName,
+                                          label: item.concatenatedName,
+                                          code: item.code,
+                                        }))
                                         : []
                                     }
                                     value={{
                                       label: row[column] || "",
                                       value: row[column] || "",
                                     }}
-                                    onChange={(selectedDescription, e) => {
-                                      setCurrentValues((prevValues) => ({
-                                        // ...prevValues,
-                                        [column]: selectedDescription.code,
-                                      }));
+                                    onChange={(selectedOption) => {
+                                      // Encuentra el producto seleccionado en DescriptionData por el código
+                                      const selectedProduct = DescriptionData.find(
+                                        (item) => item.code === selectedOption.code
+                                      );
+                                      console.log("🚀 ~ selectedProduct:", selectedProduct)
 
-                                      const updatedRows = [...rows];
-                                      updatedRows[rowIndex][column] =
-                                        selectedDescription.code;
-                                      if (selectedDescription.code) {
-                                        fetchProductCode(rowIndex);
-                                      }
-                                      setRows(updatedRows);
-                                    }}
-                                    onKeyDown={(selectedDescription) => {
-                                      if (selectedDescription.code) {
-                                        fetchProductCode(rowIndex);
+                                      if (selectedProduct) {
+                                        console.log("entré");
+                                        fetchProductCode(rowIndex, selectedProduct.code)
                                       }
                                     }}
                                     styles={{
@@ -729,11 +735,10 @@ export default function Table({
                                 type={inputTypes[column]}
                                 ref={inputRefs[column][rowIndex]}
                                 data-field-name={column}
-                                className={`pl-2 h-[30px] outline-none w-full ${
-                                  inputTypes[column] === "number"
+                                className={`pl-2 h-[30px] outline-none w-full ${inputTypes[column] === "number"
                                     ? "hide-number-arrows"
                                     : ""
-                                }`}
+                                  }`}
                                 value={row[column] || ""}
                                 onChange={(e) => {
                                   if (column === "Net") {
