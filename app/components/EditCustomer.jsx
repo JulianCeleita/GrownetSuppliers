@@ -447,11 +447,9 @@ const CustomerDetailPage = ({
                         >
                           {groups &&
                             groups.map((group) => (
-                              <>
                                 <option key={group.id} value={group.id}>
                                   {group.group}
                                 </option>
-                              </>
                             ))}
                         </select>
                       </div>
