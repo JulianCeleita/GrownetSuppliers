@@ -113,9 +113,11 @@ export default function EditTable({
   //   Array.from({ length: 0 }, () => ({ ...initialRowsState }))
   // );
 
+
   const [rows, setRows] = useState([
     { ...initialRowsState, isExistingProduct: false },
   ]);
+
   const form = useRef();
   const { onEnterKey } = useFocusOnEnter(form);
   const { token, setToken } = useTokenStore();
@@ -141,12 +143,15 @@ export default function EditTable({
   const [DescriptionData, setDescriptionData] = useState(null);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [showErrorOrderModal, setShowErrorOrderModal] = useState(false);
+  const [showErrorCode, setShowErrorCode] = useState(false)
 
   const [mouseCoords, setMouseCoords] = useState({ x: 0, y: 0 });
   const router = useRouter();
   const [isReadOnly, setIsReadOnly] = useState(true);
   const [orderError, setOrderError] = useState("");
+
   const isEditable = orderDetail?.state_name === "Preparing";
+
 
   const columns = [
     "Code",
@@ -194,6 +199,7 @@ export default function EditTable({
       orderDetail.products &&
       orderDetail.products.length > 0
     ) {
+
       const initialRows = orderDetail.products.map((product) => {
         const quantity = !product.state_definitive
           ? product.quantity
@@ -229,6 +235,7 @@ export default function EditTable({
           ...initialRows.map((row) => ({ ...row, isExistingProduct: true })),
           { ...initialRowsState, isExistingProduct: false },
         ]);
+
       } else {
         setRows(initialRows);
       }
@@ -542,6 +549,21 @@ export default function EditTable({
       setProductByCode(productByCodeData);
     } catch (error) {
       console.error("Error al hacer la solicitud:", error.message);
+      const currentProductCode = rows[rowIndex]["Code"] || "0"
+      console.log("🚀 ~ fetchProductCode ~ currentProductCode:", currentProductCode)
+      if(currentProductCode != 0) {
+        setShowErrorCode(true);
+      }
+      const updatedRows = rows.map((row, index) => {
+        if (index === rowIndex) {
+          return {
+            ...row,
+            Code: "",
+          };
+        }
+        return row;
+      });
+      setRows(updatedRows);
     }
   };
 
@@ -655,12 +677,14 @@ export default function EditTable({
                           <th
                             key={index}
                             scope="col"
+
                             className={`py-3 px-2 bg-white capitalize ${
                               index === firstVisibleColumnIndex
                                 ? "rounded-tl-lg"
                                 : ""
                             } ${
                               index === lastVisibleColumnIndex
+
                                 ? "rounded-tr-lg"
                                 : ""
                             } ${
@@ -766,11 +790,6 @@ export default function EditTable({
                                           }
                                           setRows(updatedRows);
                                         }}
-                                        onKeyDown={(selectedDescription) => {
-                                          if (selectedDescription.code) {
-                                            fetchProductCode(rowIndex);
-                                          }
-                                        }}
                                         styles={{
                                           control: (provided) => ({
                                             ...provided,
@@ -800,6 +819,7 @@ export default function EditTable({
                                     type={inputTypes[column]}
                                     ref={inputRefs[column][rowIndex]}
                                     data-field-name={column}
+
                                     disabled={
                                       row.isExistingProduct && isEditable
                                     }
@@ -812,6 +832,7 @@ export default function EditTable({
                                         ? " line-through text-primary-blue"
                                         : ""
                                     }`}
+
                                     value={row[column] || ""}
                                     onChange={(e) => {
                                       if (column === "Net") {
@@ -936,6 +957,16 @@ export default function EditTable({
           sendOrder={editOrder}
         />
       )}
+
+      <ModalOrderError
+        isvisible={showErrorCode}
+        onClose={() => setShowErrorCode(false)}
+        error={orderError}
+        title={"Incorrect code"}
+        message={
+          "The entered code is incorrect. Please verify and try again with a valid code."
+        }
+      />
 
       <ModalOrderError
         isvisible={showErrorOrderModal}
