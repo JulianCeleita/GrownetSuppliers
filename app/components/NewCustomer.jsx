@@ -120,7 +120,7 @@ function NewCustomer({ isvisible, onClose, setUpdateCustomers }) {
     setDrop("");
     setCrates("");
     setVip("");
-    setSelectedGroup(null);
+    setSelectedGroup("");
     setSelectedRoutes({});
     setStartHour("");
     setEndHour("");
@@ -323,11 +323,9 @@ function NewCustomer({ isvisible, onClose, setUpdateCustomers }) {
                   >
                     {groups &&
                       groups.map((group) => (
-                        <>
                           <option key={group.id} value={group.id}>
                             {group.group}
                           </option>
-                        </>
                       ))}
                   </select>
                 </div>
