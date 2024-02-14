@@ -28,11 +28,11 @@ const CustomersView = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [customers, setCustomers] = useState([]);
   const [routes, setRoutes] = useState([]);
-  const [selectedRoute, setSelectedRoute] = useState(null);
-  const [selectedGroup, setSelectedGroup] = useState(null);
+  const [selectedRoute, setSelectedRoute] = useState("");
+  const [selectedGroup, setSelectedGroup] = useState("");
   const [status, setStatus] = useState("all");
   const [filteredRoutes, setFilteredRoutes] = useState([]);
-  const [selectedCustomer, setSelectedCustomer] = useState(null);
+  const [selectedCustomer, setSelectedCustomer] = useState("");
   const { user } = useUserStore();
   const [showNewCustomers, setShowNewCustomers] = useState(false);
   const [showEditCustomer, setShowEditCustomer] = useState(false);
@@ -144,11 +144,11 @@ const CustomersView = () => {
             w-auto border-gray-200 px-4 py-2 pr-8 leading-tight
             focus:outline-none focus:shadow-outline text-gray-400 hover:border-gray-300 shadow-md hover:shadow-lg transition-shadow duration-150 ease-in-out"
           >
-            <option value="all">All status</option>
-            <option value="active" className="text-black">
+            <option value="all" key={1}>All status</option>
+            <option value="active"  key={2} className="text-black">
               Active
             </option>
-            <option value="inactive" className="text-black">
+            <option value="inactive"  key={3} className="text-black">
               Inactive
             </option>
           </select>

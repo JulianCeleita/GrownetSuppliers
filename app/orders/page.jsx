@@ -306,6 +306,8 @@ const OrderView = () => {
     }
   };
 
+  console.log("filteredOrders", filteredOrders);
+
   return (
     <Layout>
       <div className="-mt-24">
@@ -533,7 +535,7 @@ const OrderView = () => {
                         {order.net}
                       </td>
                       <td className="py-4" onClick={(e) => goToOrder(e, order)}>
-                        10%
+                        {order.profit.toFixed(2)}
                       </td>
                       <td className="py-4" onClick={(e) => goToOrder(e, order)}>
                         {order.route}

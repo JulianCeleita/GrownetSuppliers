@@ -41,6 +41,7 @@ export const fetchPresentationsSupplier = async (
         },
       }
     );
+    console.log("🚀 ~ response:", response)
 
     const newPresentation = Array.isArray(response.data.presentations)
       ? response.data.presentations
