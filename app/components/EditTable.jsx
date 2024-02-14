@@ -711,7 +711,7 @@ export default function EditTable({
                       key={rowIndex}
                       className={`${
                         row.state === "N/A"
-                          ? " line-through text-primary-blue decoration-black"
+                          ? " line-through text-primary-blue decoration-dark-blue"
                           : ""
                       }`}
                     >
