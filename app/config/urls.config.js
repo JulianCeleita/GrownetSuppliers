@@ -70,6 +70,9 @@ export const ordersDate =
 export const customerSupplier =
   "https://api.grownetapp.com/grownet/api/customers/supplier/";
 
+export const printInvoices = 
+  "https://api.grownetapp.com/grownet/api/invoice/generate"
+
 export const customersData =
   "https://api.grownetapp.com/grownet/api/customers/serch/";
 

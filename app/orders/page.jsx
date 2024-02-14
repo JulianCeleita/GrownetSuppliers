@@ -24,6 +24,8 @@ import useTokenStore from "../store/useTokenStore";
 import useUserStore from "../store/useUserStore";
 import useWorkDateStore from "../store/useWorkDateStore";
 import { getPercentageOrder } from "../api/percentageOrderRequest";
+import { printInvoices } from "../config/urls.config";
+import axios from "axios";
 
 export const customStyles = {
   placeholder: (provided) => ({
@@ -62,6 +64,7 @@ const OrderView = () => {
   const [filterType, setFilterType] = useState("date");
   const [showPercentage, setShowPercentage] = useState(null);
   const [totalNet, setTotalNet] = useState("");
+  const [selectedReferences, setSelectedReferences] = useState([])
   //console.log("ordersWorkDate", ordersWorkDate);
   //console.log("selectedOrders", selectedOrders);
   // console.log("endDate", endDate);
@@ -235,6 +238,10 @@ const OrderView = () => {
       [order.reference]: checked,
       route: order.route_id,
     }));
+    setSelectedReferences((prevState) => ({
+      ...prevState,
+      [order.reference]: checked
+    }))
   };
 
   const selectAll = (checked) => {
@@ -253,8 +260,41 @@ const OrderView = () => {
   };
 
   const printOrders = () => {
-    const ordersToPrint = objectToArray(selectedOrders);
-    //TODO: implementar lógica para imprimir las ordenes seleccionadas
+    console.log(selectedReferences);
+    const ordersToPrint = objectToArray(selectedReferences);
+
+    const postDataPrint = {
+      references: ordersToPrint
+    }
+    console.log("🚀 ~ printOrders ~ ordersToPrint:", postDataPrint)
+
+    axios.post(printInvoices, postDataPrint, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      responseType: 'blob',
+    })
+      .then((response) => {
+        console.log("🚀 ~ .then ~ response:", response);
+        // para guardar el pdf
+        const blob = new Blob([response.data], { type: 'application/pdf' });
+        const downloadUrl = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = downloadUrl;
+        link.setAttribute('download', 'invoice.pdf');
+        link.style.display = 'none';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(downloadUrl);
+
+        // Para abrir automaticamente el archivo
+        const fileURL = URL.createObjectURL(blob);
+        window.open(fileURL);
+      })
+      .catch((error) => {
+        console.error("Error al imprimir invoice: ", error);
+      });
   };
 
   const sortedOrders = orders
@@ -287,8 +327,8 @@ const OrderView = () => {
 
   const filteredOrders = selectedRoute
     ? sortedOrders.filter(
-        (order) => order.route.toLowerCase() === selectedRoute.toLowerCase()
-      )
+      (order) => order.route.toLowerCase() === selectedRoute.toLowerCase()
+    )
     : sortedOrders;
 
   const statusColorClass = (status) => {
@@ -406,7 +446,7 @@ const OrderView = () => {
             <PrinterIcon className="h-6 w-6" />
           </button>
         </div>
-        <section className="fixed top-0 right-10 mt-8 ">
+        <section className="absolute top-0 right-10 mt-8 ">
           <div className="flex gap-4">
             <div className="px-4 py-4 rounded-3xl flex items-center justify-center bg-white shadow-[0_8px_30px_rgb(0,0,0,0.12)]">
               <div>
@@ -483,7 +523,7 @@ const OrderView = () => {
 
         <div className="flex items-center justify-center mb-20 mt-8  p-2">
           <table className="w-[90%] bg-white first-line:bg-white rounded-2xl text-center shadow-[rgba(17,_17,_26,_0.1)_0px_0px_16px]">
-            <thead className="sticky top-0  shadow-[0px_11px_15px_-3px_#edf2f7]">
+            <thead className="relative top-0  shadow-[0px_11px_15px_-3px_#edf2f7]">
               <tr className="  text-dark-blue">
                 <th className="py-4 flex items-center justify-center rounded-tl-lg">
                   <label className="inline-flex items-center">
