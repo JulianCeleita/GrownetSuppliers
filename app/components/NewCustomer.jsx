@@ -120,7 +120,7 @@ function NewCustomer({ isvisible, onClose, setUpdateCustomers }) {
     setDrop("");
     setCrates("");
     setVip("");
-    setSelectedGroup(null);
+    setSelectedGroup("");
     setSelectedRoutes({});
     setStartHour("");
     setEndHour("");
@@ -323,11 +323,9 @@ function NewCustomer({ isvisible, onClose, setUpdateCustomers }) {
                   >
                     {groups &&
                       groups.map((group) => (
-                        <>
                           <option key={group.id} value={group.id}>
                             {group.group}
                           </option>
-                        </>
                       ))}
                   </select>
                 </div>
@@ -456,28 +454,36 @@ function NewCustomer({ isvisible, onClose, setUpdateCustomers }) {
                   <label className="mr-2 w-[90px]">
                     Route: <span className="text-primary-blue">*</span>
                   </label>
-                  <div className="flex flex-wrap border p-2 w-full rounded-lg ">
+                  <div className="grid grid-cols-2 border p-2 w-full rounded-lg">
                     {["Mon", "Tues", "Wed", "Thur", "Fri", "Sat"].map((day) => (
-                      <div key={day} className="flex items-center my-1 w-[50%]">
-                        <label className="mx-2 w-[65px]">{day}:</label>
-                        <select
-                          value={selectedRoutes[day]}
-                          onChange={(e) => {
-                            const selectedRouteId = e.target.value;
-                            setSelectedRoutes((prevSelectedRoutes) => ({
-                              ...prevSelectedRoutes,
-                              [day]: selectedRouteId,
-                            }));
-                          }}
-                          className="ml-2 border rounded-md bg-white bg-clip-padding bg-no-repeat w-full border-gray-200 p-1 leading-tight focus:outline-none text-dark-blue hover:border-gray-300 duration-150 ease-in-out"
-                        >
-                          <option value="">R100</option>
-                          {routes.map((route) => (
-                            <option key={route.id} value={route.id}>
-                              {route.name}
-                            </option>
-                          ))}
-                        </select>
+
+                      <div key={day} className="flex flex-col my-1 items-center">
+
+                        <div className="flex items-center w-full">
+                          <label className="mx-2 w-[90px]">{day}:</label>
+                          <select
+                            className="border rounded-md bg-white bg-clip-padding bg-no-repeat border-gray-200 p-1 leading-tight focus:outline-none text-dark-blue hover:border-gray-300 duration-150 ease-in-out w-[100px]"
+                            value={selectedRoutes[day]}
+                            onChange={(e) => {
+                              const selectedRouteId = e.target.value;
+                              setSelectedRoutes((prevSelectedRoutes) => ({
+                                ...prevSelectedRoutes,
+                                [day]: selectedRouteId,
+                              }));
+                            }}
+                          >
+                            <option value="">R100</option>
+                            {routes.map((route) => (
+                              <option key={route.id} value={route.id}>
+                                {route.name}
+                              </option>
+                            ))}
+                          </select>
+                          <input
+                            placeholder="# Drop"
+                            className="border rounded-md bg-white border-gray-200 p-1 text-dark-blue w-full ml-2"
+                          />
+                        </div>
                       </div>
                     ))}
                   </div>

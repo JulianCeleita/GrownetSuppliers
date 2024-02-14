@@ -332,7 +332,7 @@ const CustomerDetailPage = ({
     <>
       {token ? (
         <div className="fixed z-50 inset-0 bg-black bg-opacity-25 backdrop-blur-sm flex flex-col justify-center items-center font-poppins">
-          <div className="bg-white p-8 rounded-2xl w-[950px] 2xl:w-[900px] flex flex-col items-center   2xl:h-hidden max-h-screen">
+          <div className="bg-white p-8 rounded-2xl w-[1100px] 2xl:w-[900px] flex flex-col items-center 2xl:h-hidden max-h-screen">
             <div className="overflow-y-auto">
               {!isLoading && (
                 <div className="flex justify-end">
@@ -447,11 +447,9 @@ const CustomerDetailPage = ({
                         >
                           {groups &&
                             groups.map((group) => (
-                              <>
                                 <option key={group.id} value={group.id}>
                                   {group.group}
                                 </option>
-                              </>
                             ))}
                         </select>
                       </div>
@@ -582,15 +580,15 @@ const CustomerDetailPage = ({
                         <label className="mr-2 w-[90px]">
                           Route: <span className="text-primary-blue">*</span>
                         </label>
-                        <div className="flex flex-wrap border p-2 w-full rounded-lg ">
-                          {["Mon", "Tues", "Wed", "Thur", "Fri", "Sat"].map(
-                            (day) => (
-                              <div
-                                key={day}
-                                className="flex items-center my-1 w-[50%]"
-                              >
-                                <label className="mx-2 w-[65px]">{day}:</label>
+                        <div className="grid grid-cols-2 border p-2 w-full rounded-lg">
+                          {["Mon", "Tues", "Wed", "Thur", "Fri", "Sat"].map((day) => (
+
+                            <div key={day} className="flex flex-col my-1 items-center">
+
+                              <div className="flex items-center w-full">
+                                <label className="mx-2 w-[90px]">{day}:</label>
                                 <select
+                                  className="border rounded-md bg-white bg-clip-padding bg-no-repeat border-gray-200 p-1 leading-tight focus:outline-none text-dark-blue hover:border-gray-300 duration-150 ease-in-out w-[100px]"
                                   value={selectedRoutes[day]?.toString() || ""}
                                   onChange={(e) => {
                                     const selectedRouteId = e.target.value;
@@ -599,21 +597,21 @@ const CustomerDetailPage = ({
                                       [day]: selectedRouteId,
                                     }));
                                   }}
-                                  className="ml-2 border rounded-md bg-white bg-clip-padding bg-no-repeat w-full border-gray-200 p-1 leading-tight focus:outline-none text-dark-blue hover:border-gray-300 duration-150 ease-in-out"
                                 >
                                   <option value="">R100</option>
                                   {routes.map((route) => (
-                                    <option
-                                      key={route.id}
-                                      value={route.id.toString()}
-                                    >
+                                    <option key={route.id} value={route.id.toString()}>
                                       {route.name}
                                     </option>
                                   ))}
                                 </select>
+                                <input
+                                  placeholder="# Drop"
+                                  className="border rounded-md bg-white border-gray-200 p-1 text-dark-blue w-full ml-2"
+                                />
                               </div>
-                            )
-                          )}
+                            </div>
+                          ))}
                         </div>
                       </div>
                     </div>
