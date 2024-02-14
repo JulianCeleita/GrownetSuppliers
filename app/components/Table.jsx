@@ -139,6 +139,7 @@ export default function Table({
   const [isReadOnly, setIsReadOnly] = useState(true);
   const [presentations, setPresentations] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
 
   const columns = [
     "Code",
@@ -178,12 +179,19 @@ export default function Table({
   const sortData = (data, searchTerm) => {
     const lowercasedTerm = searchTerm.toLowerCase();
 
-    const exactMatches = data.filter(item => item.code.toLowerCase() === lowercasedTerm);
-    const partialMatches = data.filter(item => item.code.toLowerCase().includes(lowercasedTerm) && item.code.toLowerCase() !== lowercasedTerm);
+    const exactMatchesCode = data.filter(item => item.code.toLowerCase() === lowercasedTerm);
+    exactMatchesCode.sort((a, b) => a.product_name.localeCompare(b.product_name));
 
-    partialMatches.sort((a, b) => a.code.localeCompare(b.code));
+    const partialMatchesCode = data.filter(item => item.code.toLowerCase().includes(lowercasedTerm) && item.code.toLowerCase() !== lowercasedTerm);
+    partialMatchesCode.sort((a, b) => a.product_name.localeCompare(b.product_name));
 
-    return [...exactMatches, ...partialMatches];
+    const exactMatchesProductName = data.filter(item => item.product_name.toLowerCase() === lowercasedTerm);
+    exactMatchesProductName.sort((a, b) => a.product_name.localeCompare(b.product_name));
+
+    const partialMatchesProductName = data.filter(item => item.product_name.toLowerCase().includes(lowercasedTerm) && item.product_name.toLowerCase() !== lowercasedTerm && !exactMatchesCode.includes(item) && !partialMatchesCode.includes(item));
+    partialMatchesProductName.sort((a, b) => a.product_name.localeCompare(b.product_name));
+
+    return [...exactMatchesCode, ...partialMatchesCode, ...exactMatchesProductName, ...partialMatchesProductName];
   };
 
   useEffect(() => {
@@ -423,20 +431,20 @@ export default function Table({
   const handleKeyDown = (e, rowIndex, fieldName) => {
     if (e.key === "Enter" && e.target.tagName.toLowerCase() !== "textarea") {
       e.preventDefault();
-  
+
       let productCode = '';
-  
+
       if (fieldName === "Code" && currentValues["Code"]?.trim() !== "") {
         productCode = currentValues["Code"];
       } else if (fieldName === "Description" && currentValues["Description"].trim() !== "") {
         const selectedProduct = DescriptionData.find((item) => item.productName === currentValues["Description"]);
         productCode = selectedProduct ? selectedProduct.code : '';
       }
-  
+
       if (productCode) {
         fetchProductCode(rowIndex, productCode);
       }
-  
+
       const nextRowIndex = rowIndex + 1;
       if (nextRowIndex < rows.length) {
         form.current[nextRowIndex].querySelector('input[type="text"]')?.focus();
@@ -613,8 +621,8 @@ export default function Table({
                         key={index}
                         scope="col"
                         className={`py-2 px-2 capitalize ${index === firstVisibleColumnIndex
-                            ? "rounded-tl-lg"
-                            : ""
+                          ? "rounded-tl-lg"
+                          : ""
                           } ${index === lastVisibleColumnIndex
                             ? "rounded-tr-lg"
                             : ""
@@ -686,11 +694,15 @@ export default function Table({
                                   <Select
                                     className="w-full"
                                     menuPortalTarget={document.body}
+                                    onInputChange={(newValue) => {
+                                      const sortedAndFilteredData = sortData(presentations, newValue);
+                                      setDescriptionData(sortedAndFilteredData);
+                                    }}
                                     options={
                                       DescriptionData
                                         ? DescriptionData.map((item) => ({
-                                          value: item.productName,
-                                          label: item.concatenatedName,
+                                          value: item.product_name,
+                                          label: `${item.code} - ${item.product_name} - ${item.name}`,
                                           code: item.code,
                                         }))
                                         : []
@@ -700,6 +712,7 @@ export default function Table({
                                       value: row[column] || "",
                                     }}
                                     onChange={(selectedOption) => {
+                                      console.log("🚀 ~ DescriptionData:", DescriptionData)
                                       const selectedProduct = DescriptionData.find(
                                         (item) => item.code === selectedOption.code
                                       );
@@ -732,8 +745,8 @@ export default function Table({
                                 ref={inputRefs[column][rowIndex]}
                                 data-field-name={column}
                                 className={`pl-2 h-[30px] outline-none w-full ${inputTypes[column] === "number"
-                                    ? "hide-number-arrows"
-                                    : ""
+                                  ? "hide-number-arrows"
+                                  : ""
                                   }`}
                                 value={row[column] || ""}
                                 onChange={(e) => {

@@ -11,6 +11,7 @@ import axios from "axios";
 import { useRouter } from "next/navigation";
 import React, { useEffect, useRef, useState } from "react";
 import Select from "react-select";
+import { fetchPresentationsSupplier } from "../api/presentationsRequest";
 import useUserStore from "../store/useUserStore";
 import ModalOrderError from "./ModalOrderError";
 import ModalSuccessfull from "./ModalSuccessfull";
@@ -118,6 +119,7 @@ export default function EditTable({
   const { onEnterKey } = useFocusOnEnter(form);
   const { token, setToken } = useTokenStore();
   const [products, setProducts] = useState([]);
+  const { user } = useUserStore();
   const [isLoading, setIsLoading] = useState(true);
   const {
     initialColumns,
@@ -137,6 +139,7 @@ export default function EditTable({
   const [currentValues, setCurrentValues] = useState({});
   const [productByCode, setProductByCode] = useState({});
   const [DescriptionData, setDescriptionData] = useState(null);
+  const [presentations, setPresentations] = useState([]);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [showErrorOrderModal, setShowErrorOrderModal] = useState(false);
   const [showErrorCode, setShowErrorCode] = useState(false)
@@ -182,7 +185,27 @@ export default function EditTable({
     "Total Cost": "number",
   };
 
+  const sortData = (data, searchTerm) => {
+    console.log("🚀 ~ sortData ~ data:", data)
+    const lowercasedTerm = searchTerm.toLowerCase();
+
+    const exactMatchesCode = data.filter(item => item.code.toLowerCase() === lowercasedTerm);
+    exactMatchesCode.sort((a, b) => a.product_name.localeCompare(b.product_name));
+
+    const partialMatchesCode = data.filter(item => item.code.toLowerCase().includes(lowercasedTerm) && item.code.toLowerCase() !== lowercasedTerm);
+    partialMatchesCode.sort((a, b) => a.product_name.localeCompare(b.product_name));
+
+    const exactMatchesProductName = data.filter(item => item.product_name.toLowerCase() === lowercasedTerm);
+    exactMatchesProductName.sort((a, b) => a.product_name.localeCompare(b.product_name));
+
+    const partialMatchesProductName = data.filter(item => item.product_name.toLowerCase().includes(lowercasedTerm) && item.product_name.toLowerCase() !== lowercasedTerm && !exactMatchesCode.includes(item) && !partialMatchesCode.includes(item));
+    partialMatchesProductName.sort((a, b) => a.product_name.localeCompare(b.product_name));
+
+    return [...exactMatchesCode, ...partialMatchesCode, ...exactMatchesProductName, ...partialMatchesProductName];
+  };
+
   useEffect(() => {
+    fetchPresentationsSupplier(token, user, setPresentations, setIsLoading(false))
     fetchOrderDetail(token, setOrderDetail, setIsLoading, orderId);
   }, [orderId, token, setOrderDetail]);
 
@@ -235,6 +258,8 @@ export default function EditTable({
           .map((item) => ({
             ...item,
             concatenatedName: `${item.code} - ${item.productName} - ${item.presentationName}`,
+            product_name: item.productName,
+            name: item.presentationName
           }))
           .sort((a, b) => a.concatenatedName.localeCompare(b.concatenatedName));
 
@@ -729,11 +754,15 @@ export default function EditTable({
                                       <Select
                                         className="w-full"
                                         menuPortalTarget={document.body}
+                                        onInputChange={(newValue) => {
+                                          const sortedAndFilteredData = sortData(presentations, newValue);
+                                          setDescriptionData(sortedAndFilteredData);
+                                        }}
                                         options={
                                           DescriptionData
                                             ? DescriptionData.map((item) => ({
                                               value: item.productName,
-                                              label: item.concatenatedName,
+                                              label: `${item.code} - ${item.product_name} - ${item.name}`,
                                               code: item.code,
                                             }))
                                             : []
@@ -743,6 +772,7 @@ export default function EditTable({
                                           value: row[column] || "",
                                         }}
                                         onChange={(selectedDescription, e) => {
+                                          console.log(DescriptionData);
                                           setCurrentValues((prevValues) => ({
                                             // ...prevValues,
                                             [column]: selectedDescription.code,
