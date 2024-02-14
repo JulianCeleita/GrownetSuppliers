@@ -107,14 +107,16 @@ export default function EditTable({
   specialRequirements,
   setSpecialRequirements,
   percentageDetail,
-  dataLoaded
+  dataLoaded,
 }) {
   // const [rows, setRows] = useState(
   //   Array.from({ length: 0 }, () => ({ ...initialRowsState }))
   // );
 
-  const [rows, setRows] = useState([{ ...initialRowsState, isExistingProduct: false }]);
-   const form = useRef();
+  const [rows, setRows] = useState([
+    { ...initialRowsState, isExistingProduct: false },
+  ]);
+  const form = useRef();
   const { onEnterKey } = useFocusOnEnter(form);
   const { token, setToken } = useTokenStore();
   const [products, setProducts] = useState([]);
@@ -144,8 +146,8 @@ export default function EditTable({
   const router = useRouter();
   const [isReadOnly, setIsReadOnly] = useState(true);
   const [orderError, setOrderError] = useState("");
-  const isEditable = (orderDetail?.state_name === "Preparing");
-  
+  const isEditable = orderDetail?.state_name === "Preparing";
+
   const columns = [
     "Code",
     "Description",
@@ -192,27 +194,41 @@ export default function EditTable({
       orderDetail.products &&
       orderDetail.products.length > 0
     ) {
-      const initialRows = orderDetail.products.map((product) => ({
-        isExistingProduct: true,
-        Code: product.presentations_code,
-        Description: product.name,
-        Packsize: product.presentation_name,
-        UOM: product.uom,
-        quantity: product.quantity,
-        price: product.price + product.price * product.tax,
-        Net: product.price?.toFixed(2),
-        "Total Net": "",
-        "VAT %": product.tax,
-        "VAT £": "",
-        "Total Price": "",
-        "Unit Cost": product.cost,
-        Profit: "",
-        "Price Band": "",
-        "Total Cost": "",
-      }));
+      const initialRows = orderDetail.products.map((product) => {
+        const quantity = !product.state_definitive
+          ? product.quantity
+          : product.state_definitive
+          ? product.quantity_definitive
+          : product.state_definitive === "N/A"
+          ? product.quantity_definitive
+          : "";
 
-      if(percentageDetail == 0) {
-        setRows([...initialRows.map(row => ({...row, isExistingProduct: true})), { ...initialRowsState, isExistingProduct: false }]);
+        return {
+          state: product.state_definitive,
+          isExistingProduct: true,
+          Code: product.presentations_code,
+          Description: product.name,
+          Packsize: product.presentation_name,
+          UOM: product.uom,
+          quantity: quantity?.toString(),
+          price: product.price + product.price * product.tax,
+          Net: (product.price || 0).toFixed(2),
+          "Total Net": "",
+          "VAT %": product.tax,
+          "VAT £": "",
+          "Total Price": "",
+          "Unit Cost": product.cost,
+          Profit: "",
+          "Price Band": "",
+          "Total Cost": "",
+        };
+      });
+
+      if (percentageDetail == 0) {
+        setRows([
+          ...initialRows.map((row) => ({ ...row, isExistingProduct: true })),
+          { ...initialRowsState, isExistingProduct: false },
+        ]);
       } else {
         setRows(initialRows);
       }
@@ -639,23 +655,26 @@ export default function EditTable({
                           <th
                             key={index}
                             scope="col"
-                            className={`py-3 px-2 bg-white capitalize ${index === firstVisibleColumnIndex
+                            className={`py-3 px-2 bg-white capitalize ${
+                              index === firstVisibleColumnIndex
                                 ? "rounded-tl-lg"
                                 : ""
-                              } ${index === lastVisibleColumnIndex
+                            } ${
+                              index === lastVisibleColumnIndex
                                 ? "rounded-tr-lg"
                                 : ""
-                              } ${column === "quantity" ||
-                                column === "Code" ||
-                                column === "VAT %" ||
-                                column === "UOM" ||
-                                column === "Net"
+                            } ${
+                              column === "quantity" ||
+                              column === "Code" ||
+                              column === "VAT %" ||
+                              column === "UOM" ||
+                              column === "Net"
                                 ? "w-20"
                                 : column === "Packsize" ||
                                   column === "Total Price"
-                                  ? "w-40"
-                                  : ""
-                              }`}
+                                ? "w-40"
+                                : ""
+                            }`}
                             onContextMenu={(e) => handleContextMenu(e)}
                           >
                             <p className="text-lg text-dark-blue">{column}</p>
@@ -667,7 +686,14 @@ export default function EditTable({
                 </thead>
                 <tbody className="border border-1 bg-white">
                   {rows.map((row, rowIndex) => (
-                    <tr key={rowIndex}>
+                    <tr
+                      key={rowIndex}
+                      className={`${
+                        row.state === "N/A"
+                          ? " line-through text-primary-blue"
+                          : ""
+                      }`}
+                    >
                       {/* CODIGO DE PRODUCTO */}
                       {columns.map(
                         (column, columnIndex) =>
@@ -716,10 +742,10 @@ export default function EditTable({
                                         options={
                                           DescriptionData
                                             ? DescriptionData.map((item) => ({
-                                              value: item.productName,
-                                              label: item.concatenatedName,
-                                              code: item.code,
-                                            }))
+                                                value: item.productName,
+                                                label: item.concatenatedName,
+                                                code: item.code,
+                                              }))
                                             : []
                                         }
                                         value={{
@@ -750,6 +776,9 @@ export default function EditTable({
                                             ...provided,
                                             border: "none",
                                             boxShadow: "none",
+                                            backgroundColor: isEditable
+                                              ? "white"
+                                              : "",
                                           }),
                                           dropdownIndicator: (provided) => ({
                                             ...provided,
@@ -760,7 +789,9 @@ export default function EditTable({
                                             display: "none",
                                           }),
                                         }}
-                                        isDisabled={row.isExistingProduct && isEditable}
+                                        isDisabled={
+                                          row.isExistingProduct && isEditable
+                                        }
                                       />
                                     )}
                                   </span>
@@ -769,11 +800,18 @@ export default function EditTable({
                                     type={inputTypes[column]}
                                     ref={inputRefs[column][rowIndex]}
                                     data-field-name={column}
-                                    disabled={row.isExistingProduct && isEditable}
-                                    className={`pl-2 h-[30px] outline-none w-full ${inputTypes[column] === "number"
+                                    disabled={
+                                      row.isExistingProduct && isEditable
+                                    }
+                                    className={`pl-2 h-[30px] outline-none w-full ${
+                                      inputTypes[column] === "number"
                                         ? "hide-number-arrows"
                                         : ""
-                                      }`}
+                                    } ${
+                                      row.state === "N/A"
+                                        ? " line-through text-primary-blue"
+                                        : ""
+                                    }`}
                                     value={row[column] || ""}
                                     onChange={(e) => {
                                       if (column === "Net") {
