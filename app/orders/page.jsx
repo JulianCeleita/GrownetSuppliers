@@ -575,7 +575,7 @@ const OrderView = () => {
                         {order.net}
                       </td>
                       <td className="py-4" onClick={(e) => goToOrder(e, order)}>
-                        {order.profit.toFixed(2)}
+                        {order.profit ? order.profit.toFixed(2) : ""}
                       </td>
                       <td className="py-4" onClick={(e) => goToOrder(e, order)}>
                         {order.route}
