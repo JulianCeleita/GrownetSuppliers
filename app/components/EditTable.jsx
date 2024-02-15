@@ -203,7 +203,7 @@ export default function EditTable({
 
     return [...exactMatchesCode, ...partialMatchesCode, ...exactMatchesProductName, ...partialMatchesProductName];
   };
-
+  
   useEffect(() => {
     fetchPresentationsSupplier(token, user, setPresentations, setIsLoading(false))
     fetchOrderDetail(token, setOrderDetail, setIsLoading, orderId);
