@@ -214,6 +214,8 @@ export default function EditTable({
   }, [orderId, token, setOrderDetail]);
 
   useEffect(() => {
+    console.log(orderDetail.products);
+    console.log("🚀 ~ useEffect ~ dataLoaded:", dataLoaded)
     if (
       dataLoaded &&
       orderDetail &&
