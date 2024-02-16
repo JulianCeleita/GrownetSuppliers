@@ -20,6 +20,7 @@ import {
 import NewCustomer from "../components/NewCustomer";
 import CustomerDetailPage from "../customer/[customerId]/page";
 import Editcustomer from "../components/EditCustomer";
+import Select from "react-select";
 
 const CustomersView = () => {
   const router = useRouter();
@@ -38,6 +39,8 @@ const CustomersView = () => {
   const [showEditCustomer, setShowEditCustomer] = useState(false);
   const [updateCustomers, setUpdateCustomers] = useState(false);
   const [displayedCustomers, setDisplayedCustomers] = useState([]);
+  const [selectedClient, setSelectedClient] = useState(null);
+  const [accNumberList, setAccNumberList] = useState([]);
 
   useEffect(() => {
     if (user && user?.rol_name === "AdminGrownet") {
@@ -65,6 +68,7 @@ const CustomersView = () => {
     );
 
     setDisplayedCustomers(filteredCustomers);
+    setAccNumberList(filteredCustomers);
   }, [searchTerm, customers]);
 
   const [showDeleteModal, setShowDeleteModal] = useState(false);
@@ -101,6 +105,32 @@ const CustomersView = () => {
     setSelectedGroup(e.target.value);
   };
 
+  //Select acc number
+  const selectOptions = [
+    { value: "all", label: "All" },
+    ...accNumberList.map((customer) => ({
+      value: customer.accountNumber,
+      label: customer.accountNumber,
+    })),
+  ];
+  const handleClientChange = (selectedOption) => {
+    if (selectedOption.value === "all") {
+      const sortedCustomers = customers.sort((a, b) =>
+        a.accountName?.localeCompare(b.accountName)
+      );
+      const filteredCustomers = sortedCustomers.filter((customer) =>
+        customer?.accountName?.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+
+      setDisplayedCustomers(filteredCustomers);
+    } else {
+      const filteredCustomers = customers.filter(
+        (customer) => customer.accountNumber === selectedOption.value
+      );
+      setDisplayedCustomers(filteredCustomers);
+    }
+  };
+  //---
   const statusColorClass = (status) => {
     switch (status) {
       case 1:
@@ -137,6 +167,12 @@ const CustomersView = () => {
               <MagnifyingGlassIcon className="h-5 w-5 text-gray-400 mr-5" />
             </div>
           </div>
+          <Select
+            options={selectOptions}
+            onChange={handleClientChange}
+            placeholder="Select"
+            className="w-auto"
+          />
           <select
             value={status}
             onChange={handleStatusChange}
@@ -144,11 +180,13 @@ const CustomersView = () => {
             w-auto border-gray-200 px-4 py-2 pr-8 leading-tight
             focus:outline-none focus:shadow-outline text-gray-400 hover:border-gray-300 shadow-md hover:shadow-lg transition-shadow duration-150 ease-in-out"
           >
-            <option value="all" key={1}>All status</option>
-            <option value="active"  key={2} className="text-black">
+            <option value="all" key={1}>
+              All status
+            </option>
+            <option value="active" key={2} className="text-black">
               Active
             </option>
-            <option value="inactive"  key={3} className="text-black">
+            <option value="inactive" key={3} className="text-black">
               Inactive
             </option>
           </select>
@@ -196,6 +234,7 @@ const CustomersView = () => {
           <table className="w-[90%] bg-white rounded-2xl text-center shadow-[rgba(17,_17,_26,_0.1)_0px_0px_16px]">
             <thead className="sticky top-0 bg-white shadow-[0px_11px_15px_-3px_#edf2f7]">
               <tr className="border-stone-100 border-b-0 text-dark-blue rounded-t-3xl">
+                <th className="py-4 rounded-tl-lg">Acc Number</th>
                 <th className="py-4 rounded-tl-lg">Name</th>
                 <th className="py-4 ">Telephone</th>
                 <th className="py-4">Group</th>
@@ -242,6 +281,7 @@ const CustomersView = () => {
                         }}
                         className="text-dark-blue border-2 border-stone-100 border-t-0 cursor-pointer hover:bg-[#F6F6F6] transition-all"
                       >
+                        <td className="py-4">{customer.accountNumber}</td>
                         <td className="py-4">{customer.accountName}</td>
                         <td className="py-4 w-[110px">{customer.telephone}</td>
                         <td className="py-4 w-[150px]">
