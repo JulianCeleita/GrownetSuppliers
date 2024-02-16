@@ -156,7 +156,7 @@ export default function EditTable({
   const router = useRouter();
   const [isReadOnly, setIsReadOnly] = useState(true);
   const [orderError, setOrderError] = useState("");
-
+  const [isSelectDisabled, setIsSelectDisabled] = useState(true);
   const isEditable = orderDetail?.state_name === "Preparing";
 
   const columns = [
@@ -828,7 +828,11 @@ export default function EditTable({
                                   "Price Band",
                                   "Total Cost",
                                 ].includes(column) ? (
-                                  <span>
+                                  <span
+                                    onDoubleClick={() =>
+                                      setIsSelectDisabled(false)
+                                    }
+                                  >
                                     {column === "Packsize" && row[column]}
                                     {column === "UOM" && row[column]}
                                     {column === "price" && calculatePrice(row)}
@@ -909,9 +913,8 @@ export default function EditTable({
                                             display: "none",
                                           }),
                                         }}
-                                        isDisabled={
-                                          row.isExistingProduct && isEditable
-                                        }
+                                        isDisabled={isSelectDisabled}
+                                        onBlur={() => setIsSelectDisabled(true)}
                                       />
                                     )}
                                   </span>
