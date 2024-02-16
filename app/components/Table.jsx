@@ -757,9 +757,7 @@ export default function Table({
                               "Price Band",
                               "Total Cost",
                             ].includes(column) ? (
-                              <span
-                                onDoubleClick={() => setIsSelectDisabled(false)}
-                              >
+                              <span onClick={() => setIsSelectDisabled(false)}>
                                 {column === "Packsize" && row[column]}
                                 {column === "UOM" && row[column]}
                                 {column === "price" && calculatePrice(row)}

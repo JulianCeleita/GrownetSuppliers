@@ -829,9 +829,7 @@ export default function EditTable({
                                   "Total Cost",
                                 ].includes(column) ? (
                                   <span
-                                    onDoubleClick={() =>
-                                      setIsSelectDisabled(false)
-                                    }
+                                    onClick={() => setIsSelectDisabled(false)}
                                   >
                                     {column === "Packsize" && row[column]}
                                     {column === "UOM" && row[column]}
