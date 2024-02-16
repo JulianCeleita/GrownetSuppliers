@@ -62,9 +62,9 @@ function EditPresentation({
 
   useEffect(() => {
     if (presentation && presentation.name) {
-      const [name, name2] = presentation.name.split(" ");
-      setEditedName(name);
-      setEditedName2(name2);
+      const [firstPart, ...rest] = presentation.name.split(" ");
+      setEditedName(firstPart);
+      setEditedName2(rest.join(" "));
     } else {
       setEditedName("UOM");
       setEditedName2("");
@@ -162,7 +162,7 @@ function EditPresentation({
       tax: selectedTax,
       supplier_id: user ? user.id_supplier : null,
     };
-   
+
     try {
       const response = await axios.post(
         `${updatePresentationUrl}${presentation.id}`,
@@ -224,7 +224,7 @@ function EditPresentation({
             </option>
             {products?.map((product) => (
               <option key={product.id} value={product.id}>
-                {product.id} - {product.name}
+                {product.name}
               </option>
             ))}
           </select>
