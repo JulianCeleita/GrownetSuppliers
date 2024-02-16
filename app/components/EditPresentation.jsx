@@ -22,6 +22,7 @@ function EditPresentation({
   setPresentations,
   setIsLoading,
 }) {
+  console.log("🚀 ~ presentation:", presentation)
   const { token } = useTokenStore();
   const [uoms, setUoms] = useState([]);
   const [products, setProducts] = useState([]);
@@ -36,6 +37,8 @@ function EditPresentation({
       return "UOM";
     }
   });
+
+  const [editedName2, setEditedName2] = useState("");
 
   const [editedCost, setEditedCost] = useState(
     presentation ? presentation.cost : ""
@@ -58,17 +61,14 @@ function EditPresentation({
   );
 
   useEffect(() => {
-    setEditedName(() => {
-      if (
-        presentation &&
-        presentation.name &&
-        presentation.name.includes("-")
-      ) {
-        return presentation.name;
-      } else {
-        return "UOM";
-      }
-    });
+    if (presentation && presentation.name) {
+      const [name, name2] = presentation.name.split(" ");
+      setEditedName(name);
+      setEditedName2(name2);
+    } else {
+      setEditedName("UOM");
+      setEditedName2("");
+    }
     setEditedCost(presentation ? presentation.cost : "");
     setEditedQuantity(presentation ? presentation.quantity : "");
     setSelectedUomsStatus(presentation ? presentation.uoms_id : "");
@@ -155,14 +155,14 @@ function EditPresentation({
     const postData = {
       uoms_id: selectedUomsStatus,
       quantity: editedQuantity,
-      name: `${editedName}  ${selecteUomsStatus2}`,
+      name: `${editedName}  ${editedName2}`,
       cost: editedCost,
       products_id: selectedProductsStatus,
       code: codePresentation,
       tax: selectedTax,
       supplier_id: user ? user.id_supplier : null,
     };
-
+   
     try {
       const response = await axios.post(
         `${updatePresentationUrl}${presentation.id}`,
@@ -224,7 +224,7 @@ function EditPresentation({
             </option>
             {products?.map((product) => (
               <option key={product.id} value={product.id}>
-                {product.id} - {product.name}
+                {product.name}
               </option>
             ))}
           </select>
@@ -283,7 +283,7 @@ function EditPresentation({
               placeholder="UOM"
               type="text"
               required
-              value={editedName.split(" ")[0]}
+              value={editedName}
               onChange={(e) => setEditedName(e.target.value)}
             ></input>
             <select
@@ -291,7 +291,8 @@ function EditPresentation({
               name="uom"
               className="border p-3 rounded-md mr-3 mt-3"
               required
-              onChange={(e) => setSelectedUomsStatus2(e.target.value)}
+              value={editedName2}
+              onChange={(e) => setEditedName2(e.target.value)}
             >
               <option value="" disabled>
                 UOM
