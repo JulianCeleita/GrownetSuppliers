@@ -826,7 +826,7 @@ export default function Table({
                                       }),
                                       menu: (provided) => ({
                                         ...provided,
-                                        width: "28em",
+                                        width: "33em",
                                       }),
 
                                       singleValue: (provided, state) => ({

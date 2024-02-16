@@ -897,7 +897,7 @@ export default function EditTable({
                                           }),
                                           menu: (provided) => ({
                                             ...provided,
-                                            width: "28em",
+                                            width: "33em",
                                           }),
                                           singleValue: (provided, state) => ({
                                             ...provided,
