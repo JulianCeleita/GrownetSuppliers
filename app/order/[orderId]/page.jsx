@@ -242,10 +242,10 @@ const OrderDetailPage = () => {
 
   return (
     <Layout>
-      <div className="max-w-[400px] -mt-[110px] ml-[115px]">
+      <div className="max-w-[650px] -mt-[110px] ml-[115px]">
         <div className="flex mt-1 items-center">
-          <h3 className="w-[38%] text-white">Account name:</h3>
-          <div className="relative mb-2 w-[62%]">
+          <h3 className="w-[42%] text-white">Account name:</h3>
+          <div className="relative mb-2 w-[100%]">
             <Select
               instanceId
               options={restaurantList.map((restaurant) => ({
@@ -271,8 +271,8 @@ const OrderDetailPage = () => {
           </div>
         </div>
         <div className="flex items-center">
-          <h3 className="w-[38%] text-white">Account number:</h3>
-          <div className="relative mb-2 w-[62%]">
+          <h3 className="w-[42%] text-white">Account number:</h3>
+          <div className="relative mb-2 w-[100%]">
             <Select
               instanceId
               options={restaurantList.map((restaurant) => ({
