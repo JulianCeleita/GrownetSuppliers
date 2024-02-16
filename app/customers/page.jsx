@@ -167,12 +167,12 @@ const CustomersView = () => {
               <MagnifyingGlassIcon className="h-5 w-5 text-gray-400 mr-5" />
             </div>
           </div>
-          {/* <Select
+          <Select
             options={selectOptions}
             onChange={handleClientChange}
             placeholder="Select"
             className="w-auto"
-          /> */}
+          />
           <select
             value={status}
             onChange={handleStatusChange}
