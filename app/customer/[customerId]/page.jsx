@@ -125,6 +125,8 @@ const CustomerDetailPage = () => {
     setHasMounted(true);
   }, []);
 
+  console.log('detailcustomer:', detailCustomer)
+
   const mapDayNumberToName = (dayNumber) => {
     switch (dayNumber) {
       case 1:

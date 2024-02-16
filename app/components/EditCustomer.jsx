@@ -121,6 +121,7 @@ const CustomerDetailPage = ({
 
       setSelectedRoutes(selectedRoutesData);
     }
+    console.log("SELECTED ROUTES", selectedRoutes)
       console.log("🚀 ~ useEffect ~ detailCustomer:", detailCustomer)
   }, [detailCustomer]);
 
@@ -599,13 +600,14 @@ const CustomerDetailPage = ({
                                 <label className="mx-2 w-[90px]">{day}:</label>
                                 <select
                                   className="border rounded-md bg-white bg-clip-padding bg-no-repeat border-gray-200 p-1 leading-tight focus:outline-none text-dark-blue hover:border-gray-300 duration-150 ease-in-out w-[100px]"
-                                  value={selectedRoutes[day]?.routeId || ""}
+                                  value={selectedRoutes[day] || ""}
                                   onChange={(e) => {
                                     const selectedRouteId = e.target.value;
                                     const dropValue = selectedRoutes[day]?.drop || "";
                                     handleRouteAndDropSelection(day, selectedRouteId, dropValue);
                                   }}
                                 >
+                                  {console.log("SelectedRoutes", selectedRoutes)}
                                   <option value="">R100</option>
                                   {routes.map((route) => (
                                     <option key={route.id} value={route.id.toString()}>
