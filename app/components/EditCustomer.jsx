@@ -121,6 +121,7 @@ const CustomerDetailPage = ({
 
       setSelectedRoutes(selectedRoutesData);
     }
+      console.log("🚀 ~ useEffect ~ detailCustomer:", detailCustomer)
   }, [detailCustomer]);
 
   useEffect(() => {
@@ -165,16 +166,24 @@ const CustomerDetailPage = ({
   };
 
   const prepareDataForBackend = () => {
-    const daysData = {};
-
-    const allDays = ["Mon", "Tues", "Wed", "Thur", "Fri", "Sat"];
-
-    allDays.forEach((day) => {
-      const dayNumber = getDayNumber(day.toLowerCase());
-      daysData[dayNumber] = selectedRoutes[day] || "R100";
+    const daysRoutesArray = Object.entries(selectedRoutes).map(([day, { routeId, drop }]) => {
+      return {
+        route_id: routeId,
+        drop: parseInt(drop, 10),
+        days_id: getDayNumber(day.toLowerCase())
+      };
     });
 
-    return { days_routes: daysData };
+    const filteredDaysRoutesArray = daysRoutesArray.filter(entry => entry.route_id && entry.drop);
+
+    return { days_routes: filteredDaysRoutesArray };
+  };
+
+  const handleRouteAndDropSelection = (day, routeId, dropValue) => {
+    setSelectedRoutes(prevRoutes => ({
+      ...prevRoutes,
+      [day]: { routeId: routeId || "12", drop: dropValue || prevRoutes[day]?.drop || "" }
+    }));
   };
 
   const getDayNumber = (day) => {
@@ -252,6 +261,7 @@ const CustomerDetailPage = ({
       customer: customerId,
       ...prepareDataForBackend(),
     };
+    console.log("🚀 ~ enviarData ~ postDataAssign:", postDataAssign)
     axios
       .post(`${customerUpdate}${customerId}`, postData, {
         headers: {
@@ -447,9 +457,9 @@ const CustomerDetailPage = ({
                         >
                           {groups &&
                             groups.map((group) => (
-                                <option key={group.id} value={group.id}>
-                                  {group.group}
-                                </option>
+                              <option key={group.id} value={group.id}>
+                                {group.group}
+                              </option>
                             ))}
                         </select>
                       </div>
@@ -589,13 +599,11 @@ const CustomerDetailPage = ({
                                 <label className="mx-2 w-[90px]">{day}:</label>
                                 <select
                                   className="border rounded-md bg-white bg-clip-padding bg-no-repeat border-gray-200 p-1 leading-tight focus:outline-none text-dark-blue hover:border-gray-300 duration-150 ease-in-out w-[100px]"
-                                  value={selectedRoutes[day]?.toString() || ""}
+                                  value={selectedRoutes[day]?.routeId || ""}
                                   onChange={(e) => {
                                     const selectedRouteId = e.target.value;
-                                    setSelectedRoutes((prevSelectedRoutes) => ({
-                                      ...prevSelectedRoutes,
-                                      [day]: selectedRouteId,
-                                    }));
+                                    const dropValue = selectedRoutes[day]?.drop || "";
+                                    handleRouteAndDropSelection(day, selectedRouteId, dropValue);
                                   }}
                                 >
                                   <option value="">R100</option>
@@ -608,6 +616,8 @@ const CustomerDetailPage = ({
                                 <input
                                   placeholder="# Drop"
                                   className="border rounded-md bg-white border-gray-200 p-1 text-dark-blue w-full ml-2"
+                                  value={selectedRoutes[day]?.drop || ""}
+                                  onChange={(e) => handleRouteAndDropSelection(day, selectedRoutes[day]?.routeId, e.target.value)}
                                 />
                               </div>
                             </div>

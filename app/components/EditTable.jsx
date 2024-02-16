@@ -176,7 +176,7 @@ export default function EditTable({
     Description: "text",
     Packsize: "text",
     UOM: "text",
-    quantity: "number",
+    quantity: "text",
     price: "number",
     Net: "number",
     "Total Net": "number",
@@ -214,6 +214,8 @@ export default function EditTable({
   }, [orderId, token, setOrderDetail]);
 
   useEffect(() => {
+    console.log(orderDetail.products);
+    console.log("🚀 ~ useEffect ~ dataLoaded:", dataLoaded)
     if (
       dataLoaded &&
       orderDetail &&
@@ -224,10 +226,10 @@ export default function EditTable({
         const quantity = !product.state_definitive
           ? product.quantity
           : product.state_definitive
-          ? product.quantity_definitive
-          : product.state_definitive === "N/A"
-          ? product.quantity_definitive
-          : "";
+            ? product.quantity_definitive
+            : product.state_definitive === "N/A"
+              ? product.quantity_definitive
+              : "";
 
         return {
           state: product.state_definitive,
@@ -518,12 +520,17 @@ export default function EditTable({
     if (e.key === "Enter" && e.target.tagName.toLowerCase() !== "textarea") {
       e.preventDefault();
 
-      if (
-        (fieldName === "Code" && currentValues["Code"]?.trim() !== "") ||
-        (fieldName === "Description" &&
-          currentValues["Description"].trim() !== "")
-      ) {
-        fetchProductCode(rowIndex);
+      let productCode = '';
+
+      if (fieldName === "Code" && currentValues["Code"]?.trim() !== "") {
+        productCode = currentValues["Code"];
+      } else if (fieldName === "Description" && currentValues["Description"].trim() !== "") {
+        const selectedProduct = DescriptionData.find((item) => item.productName === currentValues["Description"]);
+        productCode = selectedProduct ? selectedProduct.code : '';
+      }
+
+      if (productCode) {
+        fetchProductCode(rowIndex, productCode);
       }
 
       const nextRowIndex = rowIndex + 1;
@@ -531,6 +538,18 @@ export default function EditTable({
         form.current[nextRowIndex].querySelector('input[type="text"]')?.focus();
       } else {
         addNewRow();
+      }
+    }
+  };
+
+  const handleKeyPress = (e, column) => {
+    if (column === "quantity") {
+      if (!/[0-9.]/.test(e.key) || (e.key === '.' && e.target.value.includes('.'))) {
+        e.preventDefault();
+      }
+    } else if (inputTypes[column] === "number") {
+      if (e.charCode < 48 || e.charCode > 57) {
+        e.preventDefault();
       }
     }
   };
@@ -701,26 +720,23 @@ export default function EditTable({
                           <th
                             key={index}
                             scope="col"
-                            className={`py-3 px-2 bg-white capitalize ${
-                              index === firstVisibleColumnIndex
+                            className={`py-3 px-2 bg-white capitalize ${index === firstVisibleColumnIndex
                                 ? "rounded-tl-lg"
                                 : ""
-                            } ${
-                              index === lastVisibleColumnIndex
+                              } ${index === lastVisibleColumnIndex
                                 ? "rounded-tr-lg"
                                 : ""
-                            } ${
-                              column === "quantity" ||
-                              column === "Code" ||
-                              column === "VAT %" ||
-                              column === "UOM" ||
-                              column === "Net"
+                              } ${column === "quantity" ||
+                                column === "Code" ||
+                                column === "VAT %" ||
+                                column === "UOM" ||
+                                column === "Net"
                                 ? "w-20"
                                 : column === "Packsize" ||
                                   column === "Total Price"
-                                ? "w-40"
-                                : ""
-                            }`}
+                                  ? "w-40"
+                                  : ""
+                              }`}
                             onContextMenu={(e) => handleContextMenu(e)}
                           >
                             <p className="text-lg text-dark-blue">{column}</p>
@@ -734,11 +750,10 @@ export default function EditTable({
                   {rows.map((row, rowIndex) => (
                     <tr
                       key={rowIndex}
-                      className={`${
-                        row.state === "N/A"
+                      className={`${row.state === "N/A"
                           ? " line-through text-primary-blue decoration-dark-blue"
                           : ""
-                      }`}
+                        }`}
                     >
                       {/* CODIGO DE PRODUCTO */}
                       {columns.map(
@@ -857,15 +872,13 @@ export default function EditTable({
                                     disabled={
                                       row.isExistingProduct && isEditable
                                     }
-                                    className={`pl-2 h-[30px] outline-none w-full ${
-                                      inputTypes[column] === "number"
+                                    className={`pl-2 h-[30px] outline-none w-full ${inputTypes[column] === "number"
                                         ? "hide-number-arrows"
                                         : ""
-                                    } ${
-                                      row.state === "N/A"
+                                      } ${row.state === "N/A"
                                         ? " line-through text-primary-blue decoration-black"
                                         : ""
-                                    }`}
+                                      }`}
                                     value={row[column] || ""}
                                     onChange={(e) => {
                                       if (column === "Net") {
@@ -896,6 +909,9 @@ export default function EditTable({
                                         e.charCode === 46
                                       ) {
                                         return;
+                                      }
+                                      if (column === "quantity") {
+                                        handleKeyPress(e, column)
                                       }
                                       if (
                                         inputTypes[column] === "number" &&

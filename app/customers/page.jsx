@@ -20,6 +20,7 @@ import {
 import NewCustomer from "../components/NewCustomer";
 import CustomerDetailPage from "../customer/[customerId]/page";
 import Editcustomer from "../components/EditCustomer";
+import Select from "react-select";
 
 const CustomersView = () => {
   const router = useRouter();
@@ -60,8 +61,14 @@ const CustomersView = () => {
     const sortedCustomers = customers.sort((a, b) =>
       a.accountName?.localeCompare(b.accountName)
     );
-    const filteredCustomers = sortedCustomers.filter((customer) =>
-      customer?.accountName?.toLowerCase().includes(searchTerm.toLowerCase())
+    const filteredCustomers = sortedCustomers.filter(
+      (customer) =>
+        customer?.accountName
+          ?.toLowerCase()
+          .includes(searchTerm.toLowerCase()) ||
+        customer?.accountNumber
+          ?.toLowerCase()
+          .includes(searchTerm.toLowerCase())
     );
 
     setDisplayedCustomers(filteredCustomers);
@@ -124,11 +131,11 @@ const CustomersView = () => {
             <PlusCircleIcon className="h-6 w-6 mr-1" /> New Customer
           </button>
         </div>
-        <div className="w-full flex items-center justify-center mb-8 mt-2 mr-5 ml-2 ">
+        <div className="w-[98%] flex items-center justify-center mb-8 mt-2 mr-5 ml-2 ">
           <div className="relative w-[55%] max-w-[65%] ">
             <input
               type="text"
-              placeholder="Search customers by name"
+              placeholder="Search customers by name or account number"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="pl-12 pr-4 py-3 h-[45px] w-full rounded-lg border border-gray-200 bg-white text-gray-700 placeholder-gray-400 focus:outline-none shadow-md hover:shadow-lg transition-shadow duration-150 ease-in-out"
@@ -137,6 +144,7 @@ const CustomersView = () => {
               <MagnifyingGlassIcon className="h-5 w-5 text-gray-400 mr-5" />
             </div>
           </div>
+
           <select
             value={status}
             onChange={handleStatusChange}
@@ -144,11 +152,13 @@ const CustomersView = () => {
             w-auto border-gray-200 px-4 py-2 pr-8 leading-tight
             focus:outline-none focus:shadow-outline text-gray-400 hover:border-gray-300 shadow-md hover:shadow-lg transition-shadow duration-150 ease-in-out"
           >
-            <option value="all" key={1}>All status</option>
-            <option value="active"  key={2} className="text-black">
+            <option value="all" key={1}>
+              All status
+            </option>
+            <option value="active" key={2} className="text-black">
               Active
             </option>
-            <option value="inactive"  key={3} className="text-black">
+            <option value="inactive" key={3} className="text-black">
               Inactive
             </option>
           </select>
@@ -196,6 +206,7 @@ const CustomersView = () => {
           <table className="w-[90%] bg-white rounded-2xl text-center shadow-[rgba(17,_17,_26,_0.1)_0px_0px_16px]">
             <thead className="sticky top-0 bg-white shadow-[0px_11px_15px_-3px_#edf2f7]">
               <tr className="border-stone-100 border-b-0 text-dark-blue rounded-t-3xl">
+                <th className="py-4 rounded-tl-lg">Acc Number</th>
                 <th className="py-4 rounded-tl-lg">Name</th>
                 <th className="py-4 ">Telephone</th>
                 <th className="py-4">Group</th>
@@ -242,6 +253,7 @@ const CustomersView = () => {
                         }}
                         className="text-dark-blue border-2 border-stone-100 border-t-0 cursor-pointer hover:bg-[#F6F6F6] transition-all"
                       >
+                        <td className="py-4">{customer.accountNumber}</td>
                         <td className="py-4">{customer.accountName}</td>
                         <td className="py-4 w-[110px">{customer.telephone}</td>
                         <td className="py-4 w-[150px]">

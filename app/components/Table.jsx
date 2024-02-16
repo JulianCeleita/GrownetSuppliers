@@ -163,7 +163,7 @@ export default function Table({
     Description: "text",
     Packsize: "text",
     UOM: "text",
-    quantity: "number",
+    quantity: "text",
     price: "number",
     Net: "number",
     "Total Net": "number",
@@ -431,20 +431,20 @@ export default function Table({
   const handleKeyDown = (e, rowIndex, fieldName) => {
     if (e.key === "Enter" && e.target.tagName.toLowerCase() !== "textarea") {
       e.preventDefault();
-
+  
       let productCode = '';
-
+  
       if (fieldName === "Code" && currentValues["Code"]?.trim() !== "") {
         productCode = currentValues["Code"];
       } else if (fieldName === "Description" && currentValues["Description"].trim() !== "") {
         const selectedProduct = DescriptionData.find((item) => item.productName === currentValues["Description"]);
         productCode = selectedProduct ? selectedProduct.code : '';
       }
-
+  
       if (productCode) {
         fetchProductCode(rowIndex, productCode);
       }
-
+  
       const nextRowIndex = rowIndex + 1;
       if (nextRowIndex < rows.length) {
         form.current[nextRowIndex].querySelector('input[type="text"]')?.focus();
@@ -454,6 +454,18 @@ export default function Table({
     }
   };
 
+  const handleKeyPress = (e, column) => {
+    if (column === "quantity") {
+      if (!/[0-9.]/.test(e.key) || (e.key === '.' && e.target.value.includes('.'))) {
+        e.preventDefault();
+      }
+    } else if (inputTypes[column] === "number") {
+      if (e.charCode < 48 || e.charCode > 57) {
+        e.preventDefault();
+      }
+    }
+  };
+  
   const fetchProductCode = async (rowIndex, code) => {
     try {
       const response = await axios.get(`${presentationsCode}${code}`, {
@@ -542,6 +554,13 @@ export default function Table({
           Authorization: `Bearer ${token}`,
         },
       });
+      if (response.data.status !== 200) {
+        setShowErrorOrderModal(true);
+        setOrderError("Please check that the delivery day is available for this customer and that all products are correct.");
+        setConfirmCreateOrder(false);
+        return;
+      }
+      console.log('Response from create order:', response.data);
       setShowConfirmModal(true);
       setConfirmCreateOrder(false);
       setRows(Array.from({ length: 5 }, () => ({ ...initialRowsState })));
@@ -740,6 +759,7 @@ export default function Table({
                                 )}
                               </span>
                             ) : (
+                              
                               <input
                                 type={inputTypes[column]}
                                 ref={inputRefs[column][rowIndex]}
@@ -755,6 +775,7 @@ export default function Table({
 
                                     newValue = newValue.toFixed(2);
                                   }
+                                  
                                   setCurrentValues((prevValues) => ({
                                     ...prevValues,
                                     [column]: e.target.value,
@@ -772,6 +793,9 @@ export default function Table({
                                 onKeyPress={(e) => {
                                   if (column === "Net" && e.charCode === 46) {
                                     return;
+                                  }
+                                  if(column === "quantity") {
+                                    handleKeyPress(e, column)
                                   }
                                   if (
                                     inputTypes[column] === "number" &&

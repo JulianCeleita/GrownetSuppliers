@@ -42,6 +42,8 @@ const OrderDetailPage = () => {
     orderDetail,
   } = useTableStore();
 
+  console.log("Detalles de la orden:", orderDetail);
+
   const [restaurants, setRestaurants] = useState(null);
   const [selectedAccNumber, setSelectedAccNumber] = useState("");
   const [selectedAccName, setSelectedAccName] = useState("");
