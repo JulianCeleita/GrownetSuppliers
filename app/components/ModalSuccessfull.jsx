@@ -40,6 +40,8 @@ function ModalSuccessfull({
     if (event.key === 'Enter') {
       if (sendOrder) {
         sendOrder()
+      } else {
+        onClose()
       }
     }
 
