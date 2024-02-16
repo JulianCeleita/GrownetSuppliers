@@ -162,31 +162,30 @@ function EditPresentation({
       tax: selectedTax,
       supplier_id: user ? user.id_supplier : null,
     };
-    console.log("🚀 ~ handleEditPresentation ~ postData:", postData)
+   
+    try {
+      const response = await axios.post(
+        `${updatePresentationUrl}${presentation.id}`,
+        postData,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
 
-    // try {
-    //   const response = await axios.post(
-    //     `${updatePresentationUrl}${presentation.id}`,
-    //     postData,
-    //     {
-    //       headers: {
-    //         Authorization: `Bearer ${token}`,
-    //       },
-    //     }
-    //   );
+      if (user && user?.ron_name !== "AdminGrownet") {
+        fetchPresentationsSupplier(token, user, setPresentations, setIsLoading);
+      } else {
+        fetchPresentations(token, setPresentations, setIsLoading);
+      }
 
-    //   if (user && user?.ron_name !== "AdminGrownet") {
-    //     fetchPresentationsSupplier(token, user, setPresentations, setIsLoading);
-    //   } else {
-    //     fetchPresentations(token, setPresentations, setIsLoading);
-    //   }
-
-    //   setSelectedUomsStatus("");
-    //   setSelectedProductsStatus("");
-    //   onClose();
-    // } catch (error) {
-    //   console.error("Error editando la presentación:", error);
-    // }
+      setSelectedUomsStatus("");
+      setSelectedProductsStatus("");
+      onClose();
+    } catch (error) {
+      console.error("Error editando la presentación:", error);
+    }
   };
 
   if (!isvisible) {
