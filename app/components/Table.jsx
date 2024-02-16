@@ -824,6 +824,11 @@ export default function Table({
                                         boxShadow: "none",
                                         backgroundColor: "transparent",
                                       }),
+                                      menu: (provided) => ({
+                                        ...provided,
+                                        width: "28em",
+                                      }),
+
                                       singleValue: (provided, state) => ({
                                         ...provided,
                                         color: "#04444F",

@@ -895,6 +895,10 @@ export default function EditTable({
                                               ? "white"
                                               : "",
                                           }),
+                                          menu: (provided) => ({
+                                            ...provided,
+                                            width: "28em",
+                                          }),
                                           singleValue: (provided, state) => ({
                                             ...provided,
                                             color:
