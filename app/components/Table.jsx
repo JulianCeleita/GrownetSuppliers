@@ -147,6 +147,7 @@ export default function Table({
   const [isLoading, setIsLoading] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [existingCodes, setExistingCodes] = useState(new Set());
+  const [isSelectDisabled, setIsSelectDisabled] = useState(true);
 
   const columns = [
     "Code",
@@ -756,7 +757,9 @@ export default function Table({
                               "Price Band",
                               "Total Cost",
                             ].includes(column) ? (
-                              <span>
+                              <span
+                                onDoubleClick={() => setIsSelectDisabled(false)}
+                              >
                                 {column === "Packsize" && row[column]}
                                 {column === "UOM" && row[column]}
                                 {column === "price" && calculatePrice(row)}
@@ -814,11 +817,18 @@ export default function Table({
                                         );
                                       }
                                     }}
+                                    isDisabled={isSelectDisabled}
+                                    onBlur={() => setIsSelectDisabled(true)}
                                     styles={{
                                       control: (provided) => ({
                                         ...provided,
                                         border: "none",
                                         boxShadow: "none",
+                                        backgroundColor: "transparent",
+                                      }),
+                                      singleValue: (provided, state) => ({
+                                        ...provided,
+                                        color: "#04444F",
                                       }),
                                       dropdownIndicator: (provided) => ({
                                         ...provided,
