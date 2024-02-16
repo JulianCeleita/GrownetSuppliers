@@ -155,7 +155,7 @@ function EditPresentation({
     const postData = {
       uoms_id: selectedUomsStatus,
       quantity: editedQuantity,
-      name: `${editedName}  ${editedName2}`,
+      name: `${editedName.trim()}  ${editedName2}`,
       cost: editedCost,
       products_id: selectedProductsStatus,
       code: codePresentation,
