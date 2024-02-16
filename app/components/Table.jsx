@@ -147,6 +147,7 @@ export default function Table({
   const [presentations, setPresentations] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
+  const [existingCodes, setExistingCodes] = useState(new Set());
 
   const columns = [
     "Code",
@@ -510,6 +511,21 @@ export default function Table({
 
   const fetchProductCode = async (rowIndex, code) => {
     try {
+      if (existingCodes.has(code)) {
+        // Si el código existe, muestra una alerta y no continúa con la función
+        alert("Este producto ya existe en la orden.");
+        const updatedRows = rows.map((row, index) => {
+          if (index === rowIndex) {
+            return {
+              ...row,
+              Code: "",
+            };
+          }
+          return row;
+        });
+        setRows(updatedRows);
+        return;
+      }
       const response = await axios.get(`${presentationsCode}${code}`, {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -531,6 +547,7 @@ export default function Table({
         }
         return row;
       });
+      setExistingCodes(new Set([...existingCodes, code]));
       setRows(updatedRows);
     } catch (error) {
       console.error("Error al hacer la solicitud:", error.message);
