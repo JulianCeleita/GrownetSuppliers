@@ -14,27 +14,27 @@ import useUserStore from "../store/useUserStore";
 import ModalOrderError from "./ModalOrderError";
 import ModalSuccessfull from "./ModalSuccessfull";
 
-export const fetchProducts = async (token) => {
-  try {
-    const response = await axios.get(productsUrl, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
+// export const fetchProducts = async (token) => {
+//   try {
+//     const response = await axios.get(productsUrl, {
+//       headers: {
+//         Authorization: `Bearer ${token}`,
+//       },
+//     });
 
-    const newProducts = Array.isArray(response.data.products)
-      ? response.data.products
-      : [];
+//     const newProducts = Array.isArray(response.data.products)
+//       ? response.data.products
+//       : [];
 
-    const sortedProducts = newProducts.sort((a, b) =>
-      a.name.localeCompare(b.name)
-    );
-    setProducts(sortedProducts);
-    setIsLoading(false);
-  } catch (error) {
-    console.error("Error al obtener los productos:", error);
-  }
-};
+//     const sortedProducts = newProducts.sort((a, b) =>
+//       a.name.localeCompare(b.name)
+//     );
+//     setProducts(sortedProducts);
+//     setIsLoading(false);
+//   } catch (error) {
+//     console.error("Error al obtener los productos:", error);
+//   }
+// };
 
 const initialRowsState = {
   Code: "",
@@ -83,6 +83,11 @@ const useFocusOnEnter = (formRef) => {
     ) {
       const form = event.target.form;
       const index = Array.prototype.indexOf.call(form, event.target);
+      const fieldName = event.target.getAttribute("data-field-name");
+
+      if (fieldName === "quantity" && event.target.value.trim() === "") {
+        return;
+      }
       for (let i = index + 1; i < formRef.current.length; i++) {
         if (formRef.current[i].getAttribute("data-field-name") === "Net") {
           continue;
@@ -109,6 +114,7 @@ export default function Table({
     Array.from({ length: 5 }, () => ({ ...initialRowsState }))
   );
   const form = useRef();
+
   const { onEnterKey } = useFocusOnEnter(form);
   const { token } = useTokenStore();
   const [products, setProducts] = useState([]);
@@ -140,6 +146,8 @@ export default function Table({
   const [presentations, setPresentations] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
+  const [existingCodes, setExistingCodes] = useState(new Set());
+  const [isSelectDisabled, setIsSelectDisabled] = useState(true);
 
   const columns = [
     "Code",
@@ -179,23 +187,50 @@ export default function Table({
   const sortData = (data, searchTerm) => {
     const lowercasedTerm = searchTerm.toLowerCase();
 
-    const exactMatchesCode = data.filter(item => item.code.toLowerCase() === lowercasedTerm);
-    exactMatchesCode.sort((a, b) => a.product_name.localeCompare(b.product_name));
+    const exactMatchesCode = data.filter(
+      (item) => item.code.toLowerCase() === lowercasedTerm
+    );
+    exactMatchesCode.sort((a, b) =>
+      a.product_name.localeCompare(b.product_name)
+    );
 
-    const partialMatchesCode = data.filter(item => item.code.toLowerCase().includes(lowercasedTerm) && item.code.toLowerCase() !== lowercasedTerm);
-    partialMatchesCode.sort((a, b) => a.product_name.localeCompare(b.product_name));
+    const partialMatchesCode = data.filter(
+      (item) =>
+        item.code.toLowerCase().includes(lowercasedTerm) &&
+        item.code.toLowerCase() !== lowercasedTerm
+    );
+    partialMatchesCode.sort((a, b) =>
+      a.product_name.localeCompare(b.product_name)
+    );
 
-    const exactMatchesProductName = data.filter(item => item.product_name.toLowerCase() === lowercasedTerm);
-    exactMatchesProductName.sort((a, b) => a.product_name.localeCompare(b.product_name));
+    const exactMatchesProductName = data.filter(
+      (item) => item.product_name.toLowerCase() === lowercasedTerm
+    );
+    exactMatchesProductName.sort((a, b) =>
+      a.product_name.localeCompare(b.product_name)
+    );
 
-    const partialMatchesProductName = data.filter(item => item.product_name.toLowerCase().includes(lowercasedTerm) && item.product_name.toLowerCase() !== lowercasedTerm && !exactMatchesCode.includes(item) && !partialMatchesCode.includes(item));
-    partialMatchesProductName.sort((a, b) => a.product_name.localeCompare(b.product_name));
+    const partialMatchesProductName = data.filter(
+      (item) =>
+        item.product_name.toLowerCase().includes(lowercasedTerm) &&
+        item.product_name.toLowerCase() !== lowercasedTerm &&
+        !exactMatchesCode.includes(item) &&
+        !partialMatchesCode.includes(item)
+    );
+    partialMatchesProductName.sort((a, b) =>
+      a.product_name.localeCompare(b.product_name)
+    );
 
-    return [...exactMatchesCode, ...partialMatchesCode, ...exactMatchesProductName, ...partialMatchesProductName];
+    return [
+      ...exactMatchesCode,
+      ...partialMatchesCode,
+      ...exactMatchesProductName,
+      ...partialMatchesProductName,
+    ];
   };
 
   useEffect(() => {
-    fetchPresentationsSupplier(token, user, setPresentations, setIsLoading)
+    fetchPresentationsSupplier(token, user, setPresentations, setIsLoading);
 
     const fetchPresentationData = async () => {
       try {
@@ -431,20 +466,25 @@ export default function Table({
   const handleKeyDown = (e, rowIndex, fieldName) => {
     if (e.key === "Enter" && e.target.tagName.toLowerCase() !== "textarea") {
       e.preventDefault();
-  
-      let productCode = '';
-  
+
+      let productCode = "";
+
       if (fieldName === "Code" && currentValues["Code"]?.trim() !== "") {
         productCode = currentValues["Code"];
-      } else if (fieldName === "Description" && currentValues["Description"].trim() !== "") {
-        const selectedProduct = DescriptionData.find((item) => item.productName === currentValues["Description"]);
-        productCode = selectedProduct ? selectedProduct.code : '';
+      } else if (
+        fieldName === "Description" &&
+        currentValues["Description"].trim() !== ""
+      ) {
+        const selectedProduct = DescriptionData.find(
+          (item) => item.productName === currentValues["Description"]
+        );
+        productCode = selectedProduct ? selectedProduct.code : "";
       }
-  
+
       if (productCode) {
         fetchProductCode(rowIndex, productCode);
       }
-  
+
       const nextRowIndex = rowIndex + 1;
       if (nextRowIndex < rows.length) {
         form.current[nextRowIndex].querySelector('input[type="text"]')?.focus();
@@ -456,7 +496,10 @@ export default function Table({
 
   const handleKeyPress = (e, column) => {
     if (column === "quantity") {
-      if (!/[0-9.]/.test(e.key) || (e.key === '.' && e.target.value.includes('.'))) {
+      if (
+        !/[0-9.]/.test(e.key) ||
+        (e.key === "." && e.target.value.includes("."))
+      ) {
         e.preventDefault();
       }
     } else if (inputTypes[column] === "number") {
@@ -465,9 +508,24 @@ export default function Table({
       }
     }
   };
-  
+
   const fetchProductCode = async (rowIndex, code) => {
     try {
+      if (existingCodes.has(code)) {
+        // Si el código existe, muestra una alerta y no continúa con la función
+        alert("Este producto ya existe en la orden.");
+        const updatedRows = rows.map((row, index) => {
+          if (index === rowIndex) {
+            return {
+              ...row,
+              Code: "",
+            };
+          }
+          return row;
+        });
+        setRows(updatedRows);
+        return;
+      }
       const response = await axios.get(`${presentationsCode}${code}`, {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -489,6 +547,7 @@ export default function Table({
         }
         return row;
       });
+      setExistingCodes(new Set([...existingCodes, code]));
       setRows(updatedRows);
     } catch (error) {
       console.error("Error al hacer la solicitud:", error.message);
@@ -556,11 +615,13 @@ export default function Table({
       });
       if (response.data.status !== 200) {
         setShowErrorOrderModal(true);
-        setOrderError("Please check that the delivery day is available for this customer and that all products are correct.");
+        setOrderError(
+          "Please check that the delivery day is available for this customer and that all products are correct."
+        );
         setConfirmCreateOrder(false);
         return;
       }
-      console.log('Response from create order:', response.data);
+      console.log("Response from create order:", response.data);
       setShowConfirmModal(true);
       setConfirmCreateOrder(false);
       setRows(Array.from({ length: 5 }, () => ({ ...initialRowsState })));
@@ -639,22 +700,25 @@ export default function Table({
                       <th
                         key={index}
                         scope="col"
-                        className={`py-2 px-2 capitalize ${index === firstVisibleColumnIndex
-                          ? "rounded-tl-lg"
-                          : ""
-                          } ${index === lastVisibleColumnIndex
+                        className={`py-2 px-2 capitalize ${
+                          index === firstVisibleColumnIndex
+                            ? "rounded-tl-lg"
+                            : ""
+                        } ${
+                          index === lastVisibleColumnIndex
                             ? "rounded-tr-lg"
                             : ""
-                          } ${column === "quantity" ||
-                            column === "Code" ||
-                            column === "VAT %" ||
-                            column === "UOM" ||
-                            column === "Net"
+                        } ${
+                          column === "quantity" ||
+                          column === "Code" ||
+                          column === "VAT %" ||
+                          column === "UOM" ||
+                          column === "Net"
                             ? "w-20"
                             : column === "Packsize" || column === "Total Price"
-                              ? "w-40"
-                              : ""
-                          }`}
+                            ? "w-40"
+                            : ""
+                        }`}
                         onContextMenu={(e) => handleContextMenu(e)}
                       >
                         <p className="text-base text-dark-blue my-2">
@@ -693,7 +757,9 @@ export default function Table({
                               "Price Band",
                               "Total Cost",
                             ].includes(column) ? (
-                              <span>
+                              <span
+                                onDoubleClick={() => setIsSelectDisabled(false)}
+                              >
                                 {column === "Packsize" && row[column]}
                                 {column === "UOM" && row[column]}
                                 {column === "price" && calculatePrice(row)}
@@ -714,16 +780,19 @@ export default function Table({
                                     className="w-full"
                                     menuPortalTarget={document.body}
                                     onInputChange={(newValue) => {
-                                      const sortedAndFilteredData = sortData(presentations, newValue);
+                                      const sortedAndFilteredData = sortData(
+                                        presentations,
+                                        newValue
+                                      );
                                       setDescriptionData(sortedAndFilteredData);
                                     }}
                                     options={
                                       DescriptionData
                                         ? DescriptionData.map((item) => ({
-                                          value: item.product_name,
-                                          label: `${item.code} - ${item.product_name} - ${item.name}`,
-                                          code: item.code,
-                                        }))
+                                            value: item.product_name,
+                                            label: `${item.code} - ${item.product_name} - ${item.name}`,
+                                            code: item.code,
+                                          }))
                                         : []
                                     }
                                     value={{
@@ -731,20 +800,35 @@ export default function Table({
                                       value: row[column] || "",
                                     }}
                                     onChange={(selectedOption) => {
-                                      console.log("🚀 ~ DescriptionData:", DescriptionData)
-                                      const selectedProduct = DescriptionData.find(
-                                        (item) => item.code === selectedOption.code
+                                      console.log(
+                                        "🚀 ~ DescriptionData:",
+                                        DescriptionData
                                       );
+                                      const selectedProduct =
+                                        DescriptionData.find(
+                                          (item) =>
+                                            item.code === selectedOption.code
+                                        );
 
                                       if (selectedProduct) {
-                                        fetchProductCode(rowIndex, selectedProduct.code)
+                                        fetchProductCode(
+                                          rowIndex,
+                                          selectedProduct.code
+                                        );
                                       }
                                     }}
+                                    isDisabled={isSelectDisabled}
+                                    onBlur={() => setIsSelectDisabled(true)}
                                     styles={{
                                       control: (provided) => ({
                                         ...provided,
                                         border: "none",
                                         boxShadow: "none",
+                                        backgroundColor: "transparent",
+                                      }),
+                                      singleValue: (provided, state) => ({
+                                        ...provided,
+                                        color: "#04444F",
                                       }),
                                       dropdownIndicator: (provided) => ({
                                         ...provided,
@@ -759,55 +843,57 @@ export default function Table({
                                 )}
                               </span>
                             ) : (
-                              
-                              <input
-                                type={inputTypes[column]}
-                                ref={inputRefs[column][rowIndex]}
-                                data-field-name={column}
-                                className={`pl-2 h-[30px] outline-none w-full ${inputTypes[column] === "number"
-                                  ? "hide-number-arrows"
-                                  : ""
-                                  }`}
-                                value={row[column] || ""}
-                                onChange={(e) => {
-                                  if (column === "Net") {
-                                    let newValue = parseFloat(e.target.value);
+                              <>
+                                <input
+                                  type={inputTypes[column]}
+                                  ref={inputRefs[column][rowIndex]}
+                                  data-field-name={column}
+                                  className={`pl-2 h-[30px] outline-none w-full ${
+                                    inputTypes[column] === "number"
+                                      ? "hide-number-arrows"
+                                      : ""
+                                  } `}
+                                  value={row[column] || ""}
+                                  onChange={(e) => {
+                                    if (column === "Net") {
+                                      let newValue = parseFloat(e.target.value);
 
-                                    newValue = newValue.toFixed(2);
+                                      newValue = newValue.toFixed(2);
+                                    }
+
+                                    setCurrentValues((prevValues) => ({
+                                      ...prevValues,
+                                      [column]: e.target.value,
+                                    }));
+                                    const updatedRows = [...rows];
+                                    updatedRows[rowIndex][column] =
+                                      e.target.value;
+                                    setRows(updatedRows);
+                                    handleCodeChange(e, rowIndex, column);
+                                  }}
+                                  step={0.1}
+                                  onKeyDown={(e) =>
+                                    handleKeyDown(e, rowIndex, column)
                                   }
-                                  
-                                  setCurrentValues((prevValues) => ({
-                                    ...prevValues,
-                                    [column]: e.target.value,
-                                  }));
-                                  const updatedRows = [...rows];
-                                  updatedRows[rowIndex][column] =
-                                    e.target.value;
-                                  setRows(updatedRows);
-                                  handleCodeChange(e, rowIndex, column);
-                                }}
-                                step={0.1}
-                                onKeyDown={(e) =>
-                                  handleKeyDown(e, rowIndex, column)
-                                }
-                                onKeyPress={(e) => {
-                                  if (column === "Net" && e.charCode === 46) {
-                                    return;
-                                  }
-                                  if(column === "quantity") {
-                                    handleKeyPress(e, column)
-                                  }
-                                  if (
-                                    inputTypes[column] === "number" &&
-                                    (e.charCode < 48 || e.charCode > 57)
-                                  ) {
-                                    e.preventDefault();
-                                  }
-                                }}
-                                readOnly={column === "Net" && isReadOnly}
-                                onDoubleClick={() => setIsReadOnly(false)}
-                                onBlur={() => setIsReadOnly(true)}
-                              />
+                                  onKeyPress={(e) => {
+                                    if (column === "Net" && e.charCode === 46) {
+                                      return;
+                                    }
+                                    if (column === "quantity") {
+                                      handleKeyPress(e, column);
+                                    }
+                                    if (
+                                      inputTypes[column] === "number" &&
+                                      (e.charCode < 48 || e.charCode > 57)
+                                    ) {
+                                      e.preventDefault();
+                                    }
+                                  }}
+                                  readOnly={column === "Net" && isReadOnly}
+                                  onDoubleClick={() => setIsReadOnly(false)}
+                                  onBlur={() => setIsReadOnly(true)}
+                                />
+                              </>
                             )}
                           </td>
                         </React.Fragment>
