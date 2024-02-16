@@ -72,7 +72,7 @@ const inputRefs = {
   "Total Cost": [],
 };
 
-const useFocusOnEnter = (formRef, setSpanQuantity) => {
+const useFocusOnEnter = (formRef) => {
   const onEnterKey = (event) => {
     if (
       event &&
@@ -86,7 +86,6 @@ const useFocusOnEnter = (formRef, setSpanQuantity) => {
       const fieldName = event.target.getAttribute("data-field-name");
 
       if (fieldName === "quantity" && event.target.value.trim() === "") {
-        setSpanQuantity(true);
         return;
       }
       for (let i = index + 1; i < formRef.current.length; i++) {
@@ -115,8 +114,8 @@ export default function Table({
     Array.from({ length: 5 }, () => ({ ...initialRowsState }))
   );
   const form = useRef();
-  const [spanQuantity, setSpanQuantity] = useState(false);
-  const { onEnterKey } = useFocusOnEnter(form, setSpanQuantity);
+
+  const { onEnterKey } = useFocusOnEnter(form);
   const { token } = useTokenStore();
   const [products, setProducts] = useState([]);
   const {
@@ -670,7 +669,6 @@ export default function Table({
     "Price Band": "Enter price band",
     "Total Cost": "Enter total cost",
   };
-  console.log("spanQuantity", spanQuantity);
 
   return (
     <div className="flex flex-col p-5">
@@ -885,11 +883,6 @@ export default function Table({
                                   onDoubleClick={() => setIsReadOnly(false)}
                                   onBlur={() => setIsReadOnly(true)}
                                 />
-                                {spanQuantity && (
-                                  <span className="error-message">
-                                    Quantity is required
-                                  </span>
-                                )}
                               </>
                             )}
                           </td>
