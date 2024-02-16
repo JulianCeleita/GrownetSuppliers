@@ -39,8 +39,6 @@ const CustomersView = () => {
   const [showEditCustomer, setShowEditCustomer] = useState(false);
   const [updateCustomers, setUpdateCustomers] = useState(false);
   const [displayedCustomers, setDisplayedCustomers] = useState([]);
-  const [selectedClient, setSelectedClient] = useState(null);
-  const [accNumberList, setAccNumberList] = useState([]);
 
   useEffect(() => {
     if (user && user?.rol_name === "AdminGrownet") {
@@ -63,12 +61,17 @@ const CustomersView = () => {
     const sortedCustomers = customers.sort((a, b) =>
       a.accountName?.localeCompare(b.accountName)
     );
-    const filteredCustomers = sortedCustomers.filter((customer) =>
-      customer?.accountName?.toLowerCase().includes(searchTerm.toLowerCase())
+    const filteredCustomers = sortedCustomers.filter(
+      (customer) =>
+        customer?.accountName
+          ?.toLowerCase()
+          .includes(searchTerm.toLowerCase()) ||
+        customer?.accountNumber
+          ?.toLowerCase()
+          .includes(searchTerm.toLowerCase())
     );
 
     setDisplayedCustomers(filteredCustomers);
-    setAccNumberList(filteredCustomers);
   }, [searchTerm, customers]);
 
   const [showDeleteModal, setShowDeleteModal] = useState(false);
@@ -105,32 +108,6 @@ const CustomersView = () => {
     setSelectedGroup(e.target.value);
   };
 
-  //Select acc number
-  const selectOptions = [
-    { value: "all", label: "All" },
-    ...accNumberList.map((customer) => ({
-      value: customer.accountNumber,
-      label: customer.accountNumber,
-    })),
-  ];
-  const handleClientChange = (selectedOption) => {
-    if (selectedOption.value === "all") {
-      const sortedCustomers = customers.sort((a, b) =>
-        a.accountName?.localeCompare(b.accountName)
-      );
-      const filteredCustomers = sortedCustomers.filter((customer) =>
-        customer?.accountName?.toLowerCase().includes(searchTerm.toLowerCase())
-      );
-
-      setDisplayedCustomers(filteredCustomers);
-    } else {
-      const filteredCustomers = customers.filter(
-        (customer) => customer.accountNumber === selectedOption.value
-      );
-      setDisplayedCustomers(filteredCustomers);
-    }
-  };
-  //---
   const statusColorClass = (status) => {
     switch (status) {
       case 1:
@@ -154,11 +131,11 @@ const CustomersView = () => {
             <PlusCircleIcon className="h-6 w-6 mr-1" /> New Customer
           </button>
         </div>
-        <div className="w-full flex items-center justify-center mb-8 mt-2 mr-5 ml-2 ">
+        <div className="w-[98%] flex items-center justify-center mb-8 mt-2 mr-5 ml-2 ">
           <div className="relative w-[55%] max-w-[65%] ">
             <input
               type="text"
-              placeholder="Search customers by name"
+              placeholder="Search customers by name or account number"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="pl-12 pr-4 py-3 h-[45px] w-full rounded-lg border border-gray-200 bg-white text-gray-700 placeholder-gray-400 focus:outline-none shadow-md hover:shadow-lg transition-shadow duration-150 ease-in-out"
@@ -167,12 +144,7 @@ const CustomersView = () => {
               <MagnifyingGlassIcon className="h-5 w-5 text-gray-400 mr-5" />
             </div>
           </div>
-          <Select
-            options={selectOptions}
-            onChange={handleClientChange}
-            placeholder="Select"
-            className="w-auto"
-          />
+
           <select
             value={status}
             onChange={handleStatusChange}
