@@ -224,7 +224,7 @@ function EditPresentation({
             </option>
             {products?.map((product) => (
               <option key={product.id} value={product.id}>
-                {product.id} - {product.name}
+                {product.name}
               </option>
             ))}
           </select>
