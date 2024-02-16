@@ -554,6 +554,13 @@ export default function Table({
           Authorization: `Bearer ${token}`,
         },
       });
+      if (response.data.status !== 200) {
+        setShowErrorOrderModal(true);
+        setOrderError("Please check that the delivery day is available for this customer and that all products are correct.");
+        setConfirmCreateOrder(false);
+        return;
+      }
+      console.log('Response from create order:', response.data);
       setShowConfirmModal(true);
       setConfirmCreateOrder(false);
       setRows(Array.from({ length: 5 }, () => ({ ...initialRowsState })));
