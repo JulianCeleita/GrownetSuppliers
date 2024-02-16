@@ -166,6 +166,7 @@ export default function Table({
     "Price Band",
     "Total Cost",
   ];
+
   const inputTypes = {
     Code: "text",
     Description: "text",
@@ -272,6 +273,7 @@ export default function Table({
       setShowCheckboxColumn(false);
     }
   };
+
   useEffect(() => {
     document.addEventListener("click", handleClickOutside);
     return () => {
@@ -462,7 +464,6 @@ export default function Table({
   };
 
   // FUNCIONALIDAD TECLA ENTER
-
   const handleKeyDown = (e, rowIndex, fieldName) => {
     if (e.key === "Enter" && e.target.tagName.toLowerCase() !== "textarea") {
       e.preventDefault();
@@ -567,13 +568,13 @@ export default function Table({
   };
 
   const createOrder = async () => {
+    setConfirmCreateOrder(false);
     try {
       if (!customers) {
         setShowErrorOrderModal(true);
         setOrderError(
           "Please select the customer you want to create the order for."
         );
-        setConfirmCreateOrder(false);
         return;
       }
       const filteredProducts = rows
@@ -593,7 +594,6 @@ export default function Table({
       if (!filteredProducts || filteredProducts.length === 0) {
         setShowErrorOrderModal(true);
         setOrderError("Please choose a product for your order.");
-        setConfirmCreateOrder(false);
         return;
       }
       const jsonOrderData = {
@@ -618,12 +618,10 @@ export default function Table({
         setOrderError(
           "Please check that the delivery day is available for this customer and that all products are correct."
         );
-        setConfirmCreateOrder(false);
         return;
       }
       console.log("Response from create order:", response.data);
       setShowConfirmModal(true);
-      setConfirmCreateOrder(false);
       setRows(Array.from({ length: 5 }, () => ({ ...initialRowsState })));
       setSpecialRequirements("");
       setProducts([]);
@@ -700,25 +698,22 @@ export default function Table({
                       <th
                         key={index}
                         scope="col"
-                        className={`py-2 px-2 capitalize ${
-                          index === firstVisibleColumnIndex
-                            ? "rounded-tl-lg"
-                            : ""
-                        } ${
-                          index === lastVisibleColumnIndex
+                        className={`py-2 px-2 capitalize ${index === firstVisibleColumnIndex
+                          ? "rounded-tl-lg"
+                          : ""
+                          } ${index === lastVisibleColumnIndex
                             ? "rounded-tr-lg"
                             : ""
-                        } ${
-                          column === "quantity" ||
-                          column === "Code" ||
-                          column === "VAT %" ||
-                          column === "UOM" ||
-                          column === "Net"
+                          } ${column === "quantity" ||
+                            column === "Code" ||
+                            column === "VAT %" ||
+                            column === "UOM" ||
+                            column === "Net"
                             ? "w-20"
                             : column === "Packsize" || column === "Total Price"
-                            ? "w-40"
-                            : ""
-                        }`}
+                              ? "w-40"
+                              : ""
+                          }`}
                         onContextMenu={(e) => handleContextMenu(e)}
                       >
                         <p className="text-base text-dark-blue my-2">
@@ -787,10 +782,10 @@ export default function Table({
                                     options={
                                       DescriptionData
                                         ? DescriptionData.map((item) => ({
-                                            value: item.product_name,
-                                            label: `${item.code} - ${item.product_name} - ${item.name}`,
-                                            code: item.code,
-                                          }))
+                                          value: item.product_name,
+                                          label: `${item.code} - ${item.product_name} - ${item.name}`,
+                                          code: item.code,
+                                        }))
                                         : []
                                     }
                                     value={{
@@ -851,11 +846,10 @@ export default function Table({
                                   type={inputTypes[column]}
                                   ref={inputRefs[column][rowIndex]}
                                   data-field-name={column}
-                                  className={`pl-2 h-[30px] outline-none w-full ${
-                                    inputTypes[column] === "number"
-                                      ? "hide-number-arrows"
-                                      : ""
-                                  } `}
+                                  className={`pl-2 h-[30px] outline-none w-full ${inputTypes[column] === "number"
+                                    ? "hide-number-arrows"
+                                    : ""
+                                    } `}
                                   value={row[column] || ""}
                                   onChange={(e) => {
                                     if (column === "Net") {

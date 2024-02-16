@@ -1,11 +1,29 @@
 import { ExclamationCircleIcon, XMarkIcon } from "@heroicons/react/24/outline";
+import { useEffect, useRef } from "react";
 
 function ModalOrderError({ isvisible, onClose, error, title, message }) {
+
+  const modalRef = useRef()
+
+  useEffect(() => {
+    if (isvisible) {
+      modalRef.current.focus()
+    }
+  }, [isvisible])
+
+
   if (!isvisible) {
     return null;
   }
+
+  const handleKeyCloseModal = (event) => {
+    if (event.key === 'Enter' || event.key === 'Escape') {
+      onClose()
+    }
+  };
+
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-25 backdrop-blur-sm flex flex-col justify-center items-center">
+    <div ref={modalRef} tabIndex="0" onKeyDown={handleKeyCloseModal} className="fixed inset-0 bg-black bg-opacity-25 backdrop-blur-sm flex flex-col justify-center items-center">
       <div className="bg-white p-8 rounded-2xl w-[400px] flex flex-col items-center">
         <button
           className="text-dark-blue place-self-end "
