@@ -5,14 +5,11 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import Swal from "sweetalert2";
 import {
-  fetchCustomers,
-  fetchCustomersSupplier,
   fetchGroups,
   fetchRoutes,
 } from "../api/customerRequest";
 import { assignCustomer, createCustomer } from "../config/urls.config";
 import useTokenStore from "../store/useTokenStore";
-import { set } from "date-fns";
 
 function NewCustomer({ isvisible, onClose, setUpdateCustomers }) {
   const { token } = useTokenStore();
@@ -75,9 +72,23 @@ function NewCustomer({ isvisible, onClose, setUpdateCustomers }) {
   };
 
   const handleRouteAndDropSelection = (day, routeId, dropValue) => {
+    if (dropValue === '') {
+      setSelectedRoutes(prevRoutes => ({
+        ...prevRoutes,
+        [day]: { 
+          routeId: routeId || "12", 
+          drop: ""
+        }
+      }));
+      return;
+    }
+
+    const numericDropValue = parseInt(dropValue, 10);
+    const validatedDropValue = !isNaN(numericDropValue) ? Math.max(-1, Math.min(100, numericDropValue)) : "";
+
     setSelectedRoutes(prevRoutes => ({
       ...prevRoutes,
-      [day]: { routeId: routeId || "12", drop: dropValue || prevRoutes[day]?.drop || "" }
+      [day]: { routeId: routeId || "12", drop: validatedDropValue.toString() || prevRoutes[day]?.drop || "" }
     }));
   };
 
@@ -106,12 +117,6 @@ function NewCustomer({ isvisible, onClose, setUpdateCustomers }) {
     setVip(value);
     const isYes = value === "yes";
     setVipSelected(isYes);
-  };
-
-  const handleDropChange = (e) => {
-    const inputValue = e.target.value;
-    const newValue = inputValue === "" ? "0" : inputValue <= 100 ? inputValue : "100";
-    setDrop(newValue);
   };
 
   const clearStates = () => {
@@ -388,15 +393,6 @@ function NewCustomer({ isvisible, onClose, setUpdateCustomers }) {
                   />
                 </div>
                 <div className="flex items-center mb-3">
-                  <label className="mr-2">Drop:</label>
-                  <input
-                    className="border p-3 rounded-md w-full hide-number-arrows"
-                    placeholder="557"
-                    type="number"
-                    maxLength={3}
-                    value={drop}
-                    onChange={handleDropChange}
-                  />
                   <label className="mx-2">Crates:</label>
                   <select
                     value={crates}

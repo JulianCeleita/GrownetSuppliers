@@ -160,16 +160,6 @@ const CustomerDetailPage = ({
     return { start, end };
   };
 
-  const handleRouteCheckboxChange = (routeId, day) => {
-    setSelectedRoutes((prevSelectedRoutes) => {
-      const updatedRoutes = { ...prevSelectedRoutes };
-
-      updatedRoutes[day] = { [routeId]: !updatedRoutes[day]?.[routeId] };
-
-      return updatedRoutes;
-    });
-  };
-
   const prepareDataForBackend = () => {
     const daysRoutesArray = Object.entries(selectedRoutes).map(([day, { routeId, drop }]) => {
       return {
@@ -185,9 +175,23 @@ const CustomerDetailPage = ({
   };
 
   const handleRouteAndDropSelection = (day, routeId, dropValue, routeName) => {
+    if (dropValue === '') {
+      setSelectedRoutes(prevRoutes => ({
+        ...prevRoutes,
+        [day]: { 
+          routeId: routeId || "12", 
+          drop: ""
+        }
+      }));
+      return;
+    }
+
+    const numericDropValue = parseInt(dropValue, 10);
+    const validatedDropValue = !isNaN(numericDropValue) ? Math.max(-1, Math.min(100, numericDropValue)) : "";
+
     setSelectedRoutes(prevRoutes => ({
       ...prevRoutes,
-      [day]: { routeId: routeId || "12", drop: dropValue || prevRoutes[day]?.drop || "", routeName: routeName || "R100"}
+      [day]: { routeId: routeId || "12", drop: validatedDropValue.toString() || prevRoutes[day]?.drop || "", routeName: routeName || "R100"}
     }));
   };  
 
@@ -204,9 +208,6 @@ const CustomerDetailPage = ({
     return daysMap[day.toLowerCase()] || null;
   };
 
-  const handleRouteChange = (e) => {
-    setSelectedRoute(e.target.value);
-  };
   const handleCratesChange = (e) => {
     const value = e.target.value;
     setCrates(value);
@@ -219,15 +220,6 @@ const CustomerDetailPage = ({
     setVip(value);
     const isYes = value === "yes";
     setVipSelected(isYes);
-  };
-  const handleGroupChange = (e) => {
-    setSelectedGroup(e.target.value);
-  };
-
-  const handleDropChange = (e) => {
-    const inputValue = e.target.value;
-    const newValue = inputValue <= 100 ? inputValue : 100;
-    setDrop(newValue);
   };
 
   const clearStates = () => {
@@ -521,15 +513,6 @@ const CustomerDetailPage = ({
                         />
                       </div>
                       <div className="flex items-center mb-3">
-                        <label className="mr-2">Drop:</label>
-                        <input
-                          className="border p-3 rounded-md w-full hide-number-arrows"
-                          placeholder="557"
-                          type="number"
-                          maxLength={3}
-                          value={drop}
-                          onChange={handleDropChange}
-                        />
                         <label className="mx-2">Crates:</label>
                         <select
                           value={crates}
@@ -613,8 +596,6 @@ const CustomerDetailPage = ({
                                     handleRouteAndDropSelection(day, selectedRouteId, dropValue, selectedRouteName);
                                   }}
                                 >
-                                  {console.log('SelectedRoutes[day]', selectedRoutes[day])}
-                                  {console.log("SelectedRoutes", selectedRoutes)}
                                   <option value={selectedRoutes[day] ? selectedRoutes[day].routeName : '12'}>{selectedRoutes[day] ? selectedRoutes[day].routeName : 'R100'}</option>
                                   {routes.map((route) => (
                                     <option key={route.id} value={route.id.toString()}>
