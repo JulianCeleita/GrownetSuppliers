@@ -699,8 +699,8 @@ export default function Table({
                         key={index}
                         scope="col"
                         className={`py-2 px-2 capitalize ${index === firstVisibleColumnIndex
-                            ? "rounded-tl-lg"
-                            : ""
+                          ? "rounded-tl-lg"
+                          : ""
                           } ${index === lastVisibleColumnIndex
                             ? "rounded-tr-lg"
                             : ""
@@ -849,8 +849,8 @@ export default function Table({
                                   ref={inputRefs[column][rowIndex]}
                                   data-field-name={column}
                                   className={`pl-2 h-[30px] outline-none w-full ${inputTypes[column] === "number"
-                                      ? "hide-number-arrows"
-                                      : ""
+                                    ? "hide-number-arrows"
+                                    : ""
                                     } `}
                                   value={row[column] || ""}
                                   onChange={(e) => {
@@ -962,6 +962,7 @@ export default function Table({
         text="Your order has been shipped, thank you for using"
         textGrownet="Grownet"
         button=" Close"
+        confirmed={true}
       />
       {confirmCreateOrder && (
         <ModalSuccessfull
