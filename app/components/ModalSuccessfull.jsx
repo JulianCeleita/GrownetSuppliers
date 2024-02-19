@@ -4,6 +4,7 @@ import {
   XMarkIcon,
 } from "@heroicons/react/24/outline";
 import { motion, AnimatePresence } from "framer-motion";
+import { useEffect, useRef } from "react";
 
 function ModalSuccessfull({
   isvisible,
@@ -14,6 +15,17 @@ function ModalSuccessfull({
   button,
   sendOrder,
 }) {
+
+  const modalRef = useRef()
+
+  useEffect(() => {
+    if (isvisible) {
+      modalRef.current.focus()
+    }
+
+  }, [isvisible])
+
+
   const modalVariants = {
     hidden: { opacity: 0, scale: 1 },
     visible: { opacity: 1, scale: 1, transition: { duration: 0.8 } },
@@ -24,9 +36,23 @@ function ModalSuccessfull({
     return null;
   }
 
+  const handleKeyCloseModal = (event) => {
+    if (event.key === 'Enter') {
+      if (sendOrder) {
+        sendOrder()
+      } else {
+        onClose()
+      }
+    }
+
+    if (event.key === 'Escape') {
+      onClose()
+    }
+  };
+
   return (
     <AnimatePresence mode="wait">
-      <div className="fixed inset-0 bg-black bg-opacity-25 backdrop-blur-sm flex flex-col justify-center items-center">
+      <div ref={modalRef} tabIndex="0" onKeyDown={handleKeyCloseModal} className="fixed inset-0 bg-black bg-opacity-25 backdrop-blur-sm flex flex-col justify-center items-center">
         <motion.div
           initial="hidden"
           animate="visible"
