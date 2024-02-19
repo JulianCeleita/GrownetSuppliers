@@ -13,6 +13,7 @@ import useUserStore from "../store/useUserStore";
 import {
   fetchPresentations,
   fetchPresentationsSupplier,
+  fetchTypes,
 } from "../api/presentationsRequest";
 
 function CreateProduct({ isvisible, onClose, setProducts, setIsLoading }) {
@@ -29,8 +30,10 @@ function CreateProduct({ isvisible, onClose, setProducts, setIsLoading }) {
   const [codePresentation, setCodePresentation] = useState("");
   const [tax, setTax] = useState([]);
   const [selectedTax, setSelectedTax] = useState("");
+  const [selectedType, setSelectedType] = useState("");
   const { user, setUser } = useUserStore();
   const [bulk, setBulk] = useState(true);
+  const [types, setTypes] = useState([]);
   const toggleBulk = () => {
     setBulk((current) => !current);
   };
@@ -78,6 +81,8 @@ function CreateProduct({ isvisible, onClose, setProducts, setIsLoading }) {
     };
 
     fetchData();
+    fetchTypes(token, setTypes);
+    console.log(types)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -124,6 +129,7 @@ function CreateProduct({ isvisible, onClose, setProducts, setIsLoading }) {
           cost: costPresentation,
           code: codePresentation,
           tax: selectedTax,
+          type: selectedType,
           supplier_id: user.id_supplier,
         }
       : {
@@ -133,8 +139,10 @@ function CreateProduct({ isvisible, onClose, setProducts, setIsLoading }) {
           name: `${namePresentation.trim()} ${selecteUomsStatus2}`,
           cost: costPresentation,
           code: codePresentation,
+          type: selectedType,
           supplier_id: user.id_supplier,
         };
+        console.log("🚀 ~ SendData ~ postData:", postData)
     axios
       .post(addPresentationUrl, postData, {
         headers: {
@@ -149,6 +157,7 @@ function CreateProduct({ isvisible, onClose, setProducts, setIsLoading }) {
         }
         setSelectedUomsStatus("");
         setSelectedProductsStatus("");
+        setSelectedType("");
         onClose();
       })
       .catch((error) => {
@@ -247,6 +256,25 @@ function CreateProduct({ isvisible, onClose, setProducts, setIsLoading }) {
                       {tax.name}
                     </option>
                   ) : null
+                )}
+              </select>
+            </div>
+            <div>
+            <label htmlFor="taxes">Type product: </label>
+              <select
+                id="type"
+                name="type"
+                className="border p-3 rounded-md mr-3 mt-3"
+                required
+                onChange={(e) => setSelectedType(e.target.value)}
+              >
+                <option value="" disabled selected>
+                  Type product
+                </option>
+                {types.map((type) =>
+                    <option key={type.id} value={type.id}>
+                      {type.name}
+                    </option>
                 )}
               </select>
             </div>
