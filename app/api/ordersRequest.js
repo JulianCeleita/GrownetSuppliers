@@ -133,7 +133,7 @@ export const fetchOrdersDate = async (
     setTotalNet(response.data);
     setOrders(response.data.orders);
     setIsLoading(false);
-    console.log("response data", response.data);
+    // console.log("response data ", response.data);
   } catch (error) {
     console.error("Error al obtener el orders by date:", error);
   }
