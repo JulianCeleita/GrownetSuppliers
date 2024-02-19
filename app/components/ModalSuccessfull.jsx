@@ -42,12 +42,13 @@ function ModalSuccessfull({
         sendOrder()
       } else {
         onClose();
-        router.push('/orders')
+        router.push('/orders');
       }
     }
 
     if (event.key === 'Escape') {
-      onClose()
+      onClose();
+      router.push('/orders');
     }
   };
 
