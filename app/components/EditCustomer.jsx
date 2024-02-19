@@ -102,13 +102,13 @@ const CustomerDetailPage = ({
       setRouteName(detailCustomer[0]?.route);
       setGroupName(detailCustomer[0]?.group);
 
-      const { inicio, fin } = extraerHoras(
+      const { start, end } = handleGetHours(
         detailCustomer[0]?.delivery_window || ""
       );
 
-      if (inicio !== "" && fin !== "") {
-        const sHour = inicio.split(":");
-        const eHour = fin.split(":");
+      if (start !== "" && end !== "") {
+        const sHour = start.split(":");
+        const eHour = end.split(":");
         setStartHour({ hour: sHour[0], minute: Number(sHour[1]) < 30 ? "00" : "30" });
         setEndHour({ hour: eHour[0], minute: Number(eHour[1]) < 30 ? "00" : "30" });
       }
@@ -116,7 +116,11 @@ const CustomerDetailPage = ({
       const selectedRoutesData = {};
       detailCustomer[0].routes.forEach((route) => {
         const day = mapDayNumberToName(route.days_id);
-        selectedRoutesData[day] = route.route_id.toString();
+        selectedRoutesData[day] = {
+          routeId: route.route_id,
+          drop: route.drop,
+          routeName: route.name,
+        };
       });
 
       setSelectedRoutes(selectedRoutesData);
@@ -151,9 +155,9 @@ const CustomerDetailPage = ({
         return "";
     }
   };
-  const extraerHoras = (deliveryWindow) => {
-    const [inicio, fin] = deliveryWindow.split(" - ");
-    return { inicio, fin };
+  const handleGetHours = (deliveryWindow) => {
+    const [start, end] = deliveryWindow.split(" - ");
+    return { start, end };
   };
 
   const handleRouteCheckboxChange = (routeId, day) => {
@@ -180,12 +184,12 @@ const CustomerDetailPage = ({
     return { days_routes: filteredDaysRoutesArray };
   };
 
-  const handleRouteAndDropSelection = (day, routeId, dropValue) => {
+  const handleRouteAndDropSelection = (day, routeId, dropValue, routeName) => {
     setSelectedRoutes(prevRoutes => ({
       ...prevRoutes,
-      [day]: { routeId: routeId || "12", drop: dropValue || prevRoutes[day]?.drop || "" }
+      [day]: { routeId: routeId || "12", drop: dropValue || prevRoutes[day]?.drop || "", routeName: routeName || "R100"}
     }));
-  };
+  };  
 
   const getDayNumber = (day) => {
     const daysMap = {
@@ -600,15 +604,18 @@ const CustomerDetailPage = ({
                                 <label className="mx-2 w-[90px]">{day}:</label>
                                 <select
                                   className="border rounded-md bg-white bg-clip-padding bg-no-repeat border-gray-200 p-1 leading-tight focus:outline-none text-dark-blue hover:border-gray-300 duration-150 ease-in-out w-[100px]"
-                                  value={selectedRoutes[day] || ""}
+                                  value={selectedRoutes[day] ? selectedRoutes[day].routeId : '12'}
                                   onChange={(e) => {
                                     const selectedRouteId = e.target.value;
+                                    const selectedRouteName = e.target.options[e.target.selectedIndex].text;
                                     const dropValue = selectedRoutes[day]?.drop || "";
-                                    handleRouteAndDropSelection(day, selectedRouteId, dropValue);
+                                    console.log("SelectedRoutes", selectedRoutes[day])
+                                    handleRouteAndDropSelection(day, selectedRouteId, dropValue, selectedRouteName);
                                   }}
                                 >
+                                  {console.log('SelectedRoutes[day]', selectedRoutes[day])}
                                   {console.log("SelectedRoutes", selectedRoutes)}
-                                  <option value="">R100</option>
+                                  <option value={selectedRoutes[day] ? selectedRoutes[day].routeName : '12'}>{selectedRoutes[day] ? selectedRoutes[day].routeName : 'R100'}</option>
                                   {routes.map((route) => (
                                     <option key={route.id} value={route.id.toString()}>
                                       {route.name}
@@ -619,7 +626,7 @@ const CustomerDetailPage = ({
                                   placeholder="# Drop"
                                   className="border rounded-md bg-white border-gray-200 p-1 text-dark-blue w-full ml-2"
                                   value={selectedRoutes[day]?.drop || ""}
-                                  onChange={(e) => handleRouteAndDropSelection(day, selectedRoutes[day]?.routeId, e.target.value)}
+                                  onChange={(e) => handleRouteAndDropSelection(day, selectedRoutes[day].routeId, e.target.value, selectedRoutes[day].routeName)}
                                 />
                               </div>
                             </div>

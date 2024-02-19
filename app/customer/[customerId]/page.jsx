@@ -101,11 +101,11 @@ const CustomerDetailPage = () => {
       setSelectedGroup(detailCustomer[0]?.group_id);
       setRouteName(detailCustomer[0]?.route);
       setGroupName(detailCustomer[0]?.group);
-      const { inicio, fin } = extraerHoras(
+      const { start, end } = handleGetHours(
         detailCustomer[0]?.delivery_window || ""
       );
-      setStartHour(inicio);
-      setEndHour(fin);
+      setStartHour(start);
+      setEndHour(end);
       const selectedRoutesData = {};
       detailCustomer[0].routes.forEach((route) => {
         const day = mapDayNumberToName(route.days_id);
@@ -130,22 +130,22 @@ const CustomerDetailPage = () => {
   const mapDayNumberToName = (dayNumber) => {
     switch (dayNumber) {
       case 1:
-        return "lunes";
+        return "monday";
       case 2:
-        return "martes";
+        return "tuesday";
       case 3:
-        return "miercoles";
+        return "wednesday";
       case 4:
-        return "jueves";
+        return "thursday";
       case 5:
-        return "viernes";
+        return "friday";
       default:
         return "";
     }
   };
-  const extraerHoras = (deliveryWindow) => {
-    const [inicio, fin] = deliveryWindow.split(" - ");
-    return { inicio, fin };
+  const handleGetHours = (deliveryWindow) => {
+    const [start, end] = deliveryWindow.split(" - ");
+    return { start, end };
   };
 
   const handleRouteCheckboxChange = (routeId, day) => {
@@ -176,15 +176,15 @@ const CustomerDetailPage = () => {
 
   const getDayNumber = (day) => {
     switch (day.toLowerCase()) {
-      case "lunes":
+      case "monday":
         return "1";
-      case "martes":
+      case "tuesday":
         return "2";
-      case "miercoles":
+      case "wednesday":
         return "3";
-      case "jueves":
+      case "thursday":
         return "4";
-      case "viernes":
+      case "friday":
         return "5";
       default:
         return null;
@@ -550,11 +550,11 @@ const CustomerDetailPage = () => {
                       <thead></thead>
                       <tbody>
                         {[
-                          "lunes",
-                          "martes",
-                          "miercoles",
-                          "jueves",
-                          "viernes",
+                          "monday",
+                          "tuesday",
+                          "wednesday",
+                          "thursday",
+                          "friday",
                         ].map((day) => (
                           <tr key={day}>
                             <td>{day}</td>
