@@ -29,6 +29,7 @@ function EditPresentation({
   const [tax, setTax] = useState([]);
   const { user, setUser } = useUserStore();
   const [types, setTypes] = useState([]);
+  const [selectedTypeId, setSelectedTypeId] = useState([]);
 
   //Variables formulario
   const [editedName, setEditedName] = useState(() => {
@@ -79,6 +80,10 @@ function EditPresentation({
     setCodePresentation(presentation ? presentation.code : "");
     setSelectedTax(presentation ? presentation.taxes_id : "");
     setSelectedType(presentation ? presentation.type : "")
+    setSelectedTypeId(presentation ? presentation.type_id : "");
+    console.log(selectedType)
+    console.log(selectedTypeId)
+    console.log("🚀 ~ presentation:", presentation)
   }, [presentation]);
 
   // Api products
@@ -165,8 +170,10 @@ function EditPresentation({
       products_id: selectedProductsStatus,
       code: codePresentation,
       tax: selectedTax,
+      type: selectedTypeId,
       supplier_id: user ? user.id_supplier : null,
     };
+    console.log("🚀 ~ handleEditPresentation ~ postData:", postData)
 
     try {
       const response = await axios.post(
@@ -178,6 +185,7 @@ function EditPresentation({
           },
         }
       );
+      console.log("🚀 ~ handleEditPresentation ~ response:", response)
 
       if (user && user?.ron_name !== "AdminGrownet") {
         fetchPresentationsSupplier(token, user, setPresentations, setIsLoading);
@@ -187,6 +195,8 @@ function EditPresentation({
 
       setSelectedUomsStatus("");
       setSelectedProductsStatus("");
+      setSelectedType("");
+      setSelectedTypeId("");
       onClose();
     } catch (error) {
       console.error("Error editando la presentación:", error);
@@ -280,8 +290,8 @@ function EditPresentation({
               name="type"
               className="border p-3 rounded-md mr-3 mt-3"
               required
-              onChange={(e) => setSelectedType(e.target.value)}
-              value={selectedType}
+              onChange={(e) => setSelectedTypeId(e.target.value)}
+              value={selectedTypeId}
             >
               <option value="" disabled selected>
                 Type product
