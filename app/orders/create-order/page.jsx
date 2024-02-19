@@ -189,14 +189,14 @@ const CreateOrderView = () => {
     { name: "Profit (%)", price: totalProfitPercentage + "%" },
   ];
 
-  const handleContextMenuTotal = (e) => {
-    e.preventDefault();
-    setShowCheckboxColumnTotal(!showCheckboxColumnTotal);
-    setMouseCoords({ x: e.clientX, y: e.clientY });
-  };
-  const handleCheckboxChangeTotal = (columnName) => {
-    toggleTotalRowVisibility(columnName);
-  };
+  // const handleContextMenuTotal = (e) => {
+  //   e.preventDefault();
+  //   setShowCheckboxColumnTotal(!showCheckboxColumnTotal);
+  //   setMouseCoords({ x: e.clientX, y: e.clientY });
+  // };
+  // const handleCheckboxChangeTotal = (columnName) => {
+  //   toggleTotalRowVisibility(columnName);
+  // };
   const handleClickOutsideTotal = (e) => {
     if (menuRefTotal.current && !menuRefTotal.current.contains(e.target)) {
       setShowCheckboxColumnTotal(false);
@@ -218,6 +218,8 @@ const CreateOrderView = () => {
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  console.log("customers", customers);
 
   return (
     <Layout>
@@ -412,29 +414,51 @@ const CreateOrderView = () => {
         )}
       </div>
       {details && (
-        <div className="bg-light-blue flex items-center justify-around mx-10 mt-2 px-2 py-1 rounded-md">
-          <h3 className="font-medium">Post Code:</h3>
-          <h3>
-            {customers && customers[0].postCode ? customers[0].postCode : ""}
-          </h3>
-          <h3 className="font-medium">Telephone:</h3>
-          <h3>
-            {customers && customers[0].telephone ? customers[0].telephone : ""}
-          </h3>
-          <h3 className="font-medium">Address:</h3>
-          <h3>
-            {customers && customers[0].address ? customers[0].address : ""}
-          </h3>
-          <h3 className="font-medium">Contact:</h3>
-          <h3>{customers && customers[0].email ? customers[0].email : ""}</h3>
-          <h3 className="font-medium">Special requirements:</h3>
-          <input
-            type="text"
-            value={specialRequirements}
-            onChange={(e) => setSpecialRequirements(e.target.value)}
-            className="p-2 border border-dark-blue rounded-lg m-1 w-[300px]"
-            placeholder="Write your comments here"
-          />
+        <div className="bg-light-blue flex flex-wrap items-center justify-around mx-10 mt-2 px-2 py-1 rounded-md">
+          <div className="flex flex-col items-start">
+            <h3 className="font-medium">Post Code:</h3>
+            <h3>
+              {customers && customers[0].postCode ? customers[0].postCode : ""}
+            </h3>
+          </div>
+          <div className="flex flex-col items-start">
+            <h3 className="font-medium">Telephone:</h3>
+            <h3>
+              {customers && customers[0].telephone
+                ? customers[0].telephone
+                : "-"}
+            </h3>
+          </div>
+          <div className="flex flex-col items-start">
+            <h3 className="font-medium">Address:</h3>
+            <h3>
+              {customers && customers[0].address ? customers[0].address : ""}
+            </h3>
+          </div>
+          <div className="flex flex-col items-start">
+            <h3 className="font-medium">Contact:</h3>
+            <h3>
+              {customers && customers[0].email ? customers[0].email : "-"}
+            </h3>
+          </div>
+          <div className="flex flex-col items-start">
+            <h3 className="font-medium">Route:</h3>
+            <h3>{"Loading..."}</h3>
+          </div>
+          <div className="flex flex-col items-start">
+            <h3 className="font-medium">Drop:</h3>
+            <h3>{"Loading..."}</h3>
+          </div>
+          <div className="flex flex-col items-start">
+            <h3 className="font-medium">Special requirements:</h3>
+            <input
+              type="text"
+              value={specialRequirements}
+              onChange={(e) => setSpecialRequirements(e.target.value)}
+              className="p-2 border border-dark-blue rounded-lg m-1 w-[300px]"
+              placeholder="Write your comments here"
+            />
+          </div>
         </div>
       )}
       <div className="">
