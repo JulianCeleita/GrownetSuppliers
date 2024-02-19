@@ -4,6 +4,8 @@ import {
   XMarkIcon,
 } from "@heroicons/react/24/outline";
 import { motion, AnimatePresence } from "framer-motion";
+import { useRouter } from "next/navigation";
+import { useEffect, useRef } from "react";
 
 function ModalSuccessfull({
   isvisible,
@@ -13,7 +15,17 @@ function ModalSuccessfull({
   textGrownet,
   button,
   sendOrder,
+  confirmed,
 }) {
+  const router = useRouter();
+  const modalRef = useRef()
+
+  useEffect(() => {
+    if (isvisible) {
+      modalRef.current.focus()
+    }
+  }, [isvisible])
+
   const modalVariants = {
     hidden: { opacity: 0, scale: 1 },
     visible: { opacity: 1, scale: 1, transition: { duration: 0.8 } },
@@ -24,9 +36,25 @@ function ModalSuccessfull({
     return null;
   }
 
+  const handleKeyCloseModal = (event) => {
+    if (event.key === 'Enter') {
+      if (!confirmed) {
+        sendOrder()
+      } else {
+        onClose();
+        router.push('/orders');
+      }
+    }
+
+    if (event.key === 'Escape') {
+      onClose();
+      router.push('/orders');
+    }
+  };
+
   return (
     <AnimatePresence mode="wait">
-      <div className="fixed inset-0 bg-black bg-opacity-25 backdrop-blur-sm flex flex-col justify-center items-center">
+      <div ref={modalRef} tabIndex="0" onKeyDown={handleKeyCloseModal} className="fixed inset-0 bg-black bg-opacity-25 backdrop-blur-sm flex flex-col justify-center items-center">
         <motion.div
           initial="hidden"
           animate="visible"
@@ -36,7 +64,10 @@ function ModalSuccessfull({
           <div className="bg-white p-8 rounded-2xl w-[400px] flex flex-col items-center">
             <button
               className="text-dark-blue place-self-end "
-              onClick={() => onClose()}
+              onClick={() => {
+                onClose();
+                router.push('/orders');
+              }}
             >
               {!sendOrder && <XMarkIcon className="h-6 w-6 text-gray-500" />}
             </button>
@@ -56,7 +87,14 @@ function ModalSuccessfull({
             </p>
             <div className="flex">
               <button
-                onClick={() => (sendOrder ? sendOrder() : onClose())}
+                onClick={() => {
+                  if (sendOrder) {
+                    sendOrder();
+                  } else {
+                    onClose();
+                    router.push('/orders');
+                  }
+                }}
                 className="bg-primary-blue py-3 px-4 rounded-lg text-white font-medium mr-3 hover:bg-green mt-5"
               >
                 {button}
