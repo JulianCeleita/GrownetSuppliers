@@ -775,7 +775,6 @@ export default function EditTable({
                                 : ""
                             } ${
                               column === "quantity" ||
-                              column === "Code" ||
                               column === "VAT %" ||
                               column === "UOM" ||
                               column === "Net"
@@ -783,6 +782,8 @@ export default function EditTable({
                                 : column === "Packsize" ||
                                   column === "Total Price"
                                 ? "w-40"
+                                : column === "Code"
+                                ? "w-[8em]"
                                 : ""
                             }`}
                             onContextMenu={(e) => handleContextMenu(e)}
@@ -810,7 +811,7 @@ export default function EditTable({
                           initialColumns.includes(column) && (
                             <React.Fragment key={columnIndex}>
                               <td
-                                className={`px-3 py-2 border border-1 border-x-0 `}
+                                className={`px-3 py-[0.2em] border border-1 border-x-0 `}
                                 tabIndex={0}
                                 style={{ overflow: "visible" }}
                               >

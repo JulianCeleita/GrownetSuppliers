@@ -698,22 +698,26 @@ export default function Table({
                       <th
                         key={index}
                         scope="col"
-                        className={`py-2 px-2 capitalize ${index === firstVisibleColumnIndex
-                          ? "rounded-tl-lg"
-                          : ""
-                          } ${index === lastVisibleColumnIndex
+                        className={`py-2 px-2 capitalize ${
+                          index === firstVisibleColumnIndex
+                            ? "rounded-tl-lg"
+                            : ""
+                        } ${
+                          index === lastVisibleColumnIndex
                             ? "rounded-tr-lg"
                             : ""
-                          } ${column === "quantity" ||
-                            column === "Code" ||
-                            column === "VAT %" ||
-                            column === "UOM" ||
-                            column === "Net"
+                        } ${
+                          column === "quantity" ||
+                          column === "VAT %" ||
+                          column === "UOM" ||
+                          column === "Net"
                             ? "w-20"
                             : column === "Packsize" || column === "Total Price"
-                              ? "w-40"
-                              : ""
-                          }`}
+                            ? "w-40"
+                            : column === "Code"
+                            ? "w-[8em]"
+                            : ""
+                        }`}
                         onContextMenu={(e) => handleContextMenu(e)}
                       >
                         <p className="text-base text-dark-blue my-2">
@@ -734,7 +738,7 @@ export default function Table({
                       initialColumns.includes(column) && (
                         <React.Fragment key={columnIndex}>
                           <td
-                            className={`px-3 py-2 border-b-[1.5px]`}
+                            className={`px-3 py-[0.2em] border-b-[1.5px]`}
                             tabIndex={0}
                             style={{ overflow: "visible" }}
                           >
@@ -782,10 +786,10 @@ export default function Table({
                                     options={
                                       DescriptionData
                                         ? DescriptionData.map((item) => ({
-                                          value: item.product_name,
-                                          label: `${item.code} - ${item.product_name} - ${item.name}`,
-                                          code: item.code,
-                                        }))
+                                            value: item.product_name,
+                                            label: `${item.code} - ${item.product_name} - ${item.name}`,
+                                            code: item.code,
+                                          }))
                                         : []
                                     }
                                     value={{
@@ -846,10 +850,11 @@ export default function Table({
                                   type={inputTypes[column]}
                                   ref={inputRefs[column][rowIndex]}
                                   data-field-name={column}
-                                  className={`pl-2 h-[30px] outline-none w-full ${inputTypes[column] === "number"
-                                    ? "hide-number-arrows"
-                                    : ""
-                                    } `}
+                                  className={`pl-2 h-[30px] outline-none w-full ${
+                                    inputTypes[column] === "number"
+                                      ? "hide-number-arrows"
+                                      : ""
+                                  } `}
                                   value={row[column] || ""}
                                   onChange={(e) => {
                                     if (column === "Net") {
