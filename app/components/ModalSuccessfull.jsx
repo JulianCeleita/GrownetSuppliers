@@ -4,6 +4,7 @@ import {
   XMarkIcon,
 } from "@heroicons/react/24/outline";
 import { motion, AnimatePresence } from "framer-motion";
+import { useRouter } from "next/navigation";
 import { useEffect, useRef } from "react";
 
 function ModalSuccessfull({
@@ -14,17 +15,16 @@ function ModalSuccessfull({
   textGrownet,
   button,
   sendOrder,
+  confirmed,
 }) {
-
+  const router = useRouter();
   const modalRef = useRef()
 
   useEffect(() => {
     if (isvisible) {
       modalRef.current.focus()
     }
-
   }, [isvisible])
-
 
   const modalVariants = {
     hidden: { opacity: 0, scale: 1 },
@@ -37,16 +37,13 @@ function ModalSuccessfull({
   }
 
   const handleKeyCloseModal = (event) => {
-    if (event.key === 'Enter') {
-      if (sendOrder) {
+    if (event.key === 'Enter' || event.key === 'Escape') {
+      if (!confirmed) {
         sendOrder()
       } else {
-        onClose()
+        onClose();
+        router.push('/orders')
       }
-    }
-
-    if (event.key === 'Escape') {
-      onClose()
     }
   };
 
