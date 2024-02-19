@@ -263,10 +263,10 @@ export default function EditTable({
         const quantity = !product.state_definitive
           ? product.quantity
           : product.state_definitive
-          ? product.quantity_definitive
-          : product.state_definitive === "N/A"
-          ? product.quantity_definitive
-          : "";
+            ? product.quantity_definitive
+            : product.state_definitive === "N/A"
+              ? product.quantity_definitive
+              : "";
 
         return {
           state: product.state_definitive,
@@ -656,6 +656,7 @@ export default function EditTable({
   };
 
   const editOrder = async () => {
+    setConfirmCreateOrder(false);
     try {
       const filteredProducts = rows
         .filter((row) => parseFloat(row.quantity) > 0)
@@ -675,7 +676,6 @@ export default function EditTable({
       if (!filteredProducts || filteredProducts.length === 0) {
         setShowErrorOrderModal(true);
         setOrderError("You must leave at least one product in the order.");
-        setConfirmCreateOrder(false);
         return;
       }
 
@@ -699,7 +699,6 @@ export default function EditTable({
       );
       setSpecialRequirements("");
       setShowConfirmModal(true);
-      setConfirmCreateOrder(false);
       setTimeout(() => {
         router.push("/");
       }, 1000);
@@ -765,27 +764,24 @@ export default function EditTable({
                           <th
                             key={index}
                             scope="col"
-                            className={`py-3 px-2 bg-white capitalize ${
-                              index === firstVisibleColumnIndex
-                                ? "rounded-tl-lg"
-                                : ""
-                            } ${
-                              index === lastVisibleColumnIndex
+                            className={`py-3 px-2 bg-white capitalize ${index === firstVisibleColumnIndex
+                              ? "rounded-tl-lg"
+                              : ""
+                              } ${index === lastVisibleColumnIndex
                                 ? "rounded-tr-lg"
                                 : ""
-                            } ${
-                              column === "quantity" ||
-                              column === "VAT %" ||
-                              column === "UOM" ||
-                              column === "Net"
+                              } ${column === "quantity" ||
+                                column === "VAT %" ||
+                                column === "UOM" ||
+                                column === "Net"
                                 ? "w-20"
                                 : column === "Packsize" ||
                                   column === "Total Price"
-                                ? "w-40"
-                                : column === "Code"
-                                ? "w-[8em]"
-                                : ""
-                            }`}
+                                  ? "w-40"
+                                  : column === "Code"
+                                    ? "w-[8em]"
+                                    : ""
+                              }`}
                             onContextMenu={(e) => handleContextMenu(e)}
                           >
                             <p className="text-lg text-dark-blue">{column}</p>
@@ -799,11 +795,10 @@ export default function EditTable({
                   {rows.map((row, rowIndex) => (
                     <tr
                       key={rowIndex}
-                      className={`${
-                        row.state === "N/A"
-                          ? " line-through text-primary-blue decoration-dark-blue"
-                          : ""
-                      }`}
+                      className={`${row.state === "N/A"
+                        ? " line-through text-primary-blue decoration-dark-blue"
+                        : ""
+                        }`}
                     >
                       {/* CODIGO DE PRODUCTO */}
                       {columns.map(
@@ -852,6 +847,7 @@ export default function EditTable({
                                       <Select
                                         className="w-full"
                                         menuPortalTarget={document.body}
+                                        menuPlacement="auto"
                                         onInputChange={(newValue) => {
                                           const sortedAndFilteredData =
                                             sortData(presentations, newValue);
@@ -862,10 +858,10 @@ export default function EditTable({
                                         options={
                                           DescriptionData
                                             ? DescriptionData.map((item) => ({
-                                                value: item.productName,
-                                                label: `${item.code} - ${item.product_name} - ${item.name}`,
-                                                code: item.code,
-                                              }))
+                                              value: item.productName,
+                                              label: `${(item.code && item.product_name && item.name) ? `${item.code} - ${item.product_name} - ${item.name}` : "Loading..."}`,
+                                              code: item.code,
+                                            }))
                                             : []
                                         }
                                         value={{
@@ -929,15 +925,13 @@ export default function EditTable({
                                     disabled={
                                       row.isExistingProduct && isEditable
                                     }
-                                    className={`pl-2 h-[30px] outline-none w-full ${
-                                      inputTypes[column] === "number"
-                                        ? "hide-number-arrows"
-                                        : ""
-                                    } ${
-                                      row.state === "N/A"
+                                    className={`pl-2 h-[30px] outline-none w-full ${inputTypes[column] === "number"
+                                      ? "hide-number-arrows"
+                                      : ""
+                                      } ${row.state === "N/A"
                                         ? " line-through text-primary-blue decoration-black"
                                         : ""
-                                    }`}
+                                      }`}
                                     value={row[column] || ""}
                                     onChange={(e) => {
                                       if (column === "Net") {
@@ -1053,6 +1047,7 @@ export default function EditTable({
         text="Your request has been edited, thank you for using"
         textGrownet="Grownet"
         button=" Close"
+        confirmed={true}
       />
       {confirmCreateOrder && (
         <ModalSuccessfull

@@ -50,6 +50,7 @@ const OrderView = () => {
   const { routePercentages, setFetchRoutePercentages } = usePercentageStore();
   const [isLoading, setIsLoading] = useState(true);
   const [orders, setOrders] = useState([]);
+  console.log("🚀 ~ OrderView ~ orders:", orders);
   const { user } = useUserStore();
   const [dateFilter, setDateFilter] = useState("today");
   const [showAllOrders, setShowAllOrders] = useState(false);
@@ -64,7 +65,7 @@ const OrderView = () => {
   const [filterType, setFilterType] = useState("date");
   const [showPercentage, setShowPercentage] = useState(null);
   const [totalNet, setTotalNet] = useState("");
-  const [selectedReferences, setSelectedReferences] = useState([])
+  const [selectedReferences, setSelectedReferences] = useState([]);
   //console.log("ordersWorkDate", ordersWorkDate);
   //console.log("selectedOrders", selectedOrders);
   // console.log("endDate", endDate);
@@ -95,11 +96,11 @@ const OrderView = () => {
   };
 
   useEffect(() => {
-    if (user && user.rol_name === "AdminGrownet") {
-      fetchOrders(token, setOrders, setIsLoading);
-    } else {
-      fetchOrdersSupplier(token, user, setOrders, setIsLoading);
-    }
+    // if (user && user.rol_name === "AdminGrownet") {
+    //   fetchOrders(token, setOrders, setIsLoading);
+    // } else {
+    //   fetchOrdersSupplier(token, user, setOrders, setIsLoading);
+    // }
 
     const handleOutsideClick = (e) => {
       if (showDatePicker && !e.target.closest(".react-datepicker")) {
@@ -141,7 +142,9 @@ const OrderView = () => {
       endDateByNet,
       startDateByNet,
       selectedOrders.route,
-      setTotalNet
+      setTotalNet,
+      setOrders,
+      setIsLoading
     );
   }, [endDateByNet, startDateByNet, selectedOrders.route]);
 
@@ -240,8 +243,8 @@ const OrderView = () => {
     }));
     setSelectedReferences((prevState) => ({
       ...prevState,
-      [order.reference]: checked
-    }))
+      [order.reference]: checked,
+    }));
   };
 
   const selectAll = (checked) => {
@@ -264,25 +267,26 @@ const OrderView = () => {
     const ordersToPrint = objectToArray(selectedReferences);
 
     const postDataPrint = {
-      references: ordersToPrint
-    }
-    console.log("🚀 ~ printOrders ~ ordersToPrint:", postDataPrint)
+      references: ordersToPrint,
+    };
+    console.log("🚀 ~ printOrders ~ ordersToPrint:", postDataPrint);
 
-    axios.post(printInvoices, postDataPrint, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-      responseType: 'blob',
-    })
+    axios
+      .post(printInvoices, postDataPrint, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        responseType: "blob",
+      })
       .then((response) => {
         console.log("🚀 ~ .then ~ response:", response);
         // para guardar el pdf
-        const blob = new Blob([response.data], { type: 'application/pdf' });
+        const blob = new Blob([response.data], { type: "application/pdf" });
         const downloadUrl = URL.createObjectURL(blob);
-        const link = document.createElement('a');
+        const link = document.createElement("a");
         link.href = downloadUrl;
-        link.setAttribute('download', 'invoice.pdf');
-        link.style.display = 'none';
+        link.setAttribute("download", "invoice.pdf");
+        link.style.display = "none";
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
@@ -327,8 +331,8 @@ const OrderView = () => {
 
   const filteredOrders = selectedRoute
     ? sortedOrders.filter(
-      (order) => order.route.toLowerCase() === selectedRoute.toLowerCase()
-    )
+        (order) => order.route.toLowerCase() === selectedRoute.toLowerCase()
+      )
     : sortedOrders;
 
   const statusColorClass = (status) => {
@@ -575,7 +579,7 @@ const OrderView = () => {
                         {order.net}
                       </td>
                       <td className="py-4" onClick={(e) => goToOrder(e, order)}>
-                        {order.profit ? order.profit.toFixed(2) : ""}
+                        {order.profitOrder ? order.profitOrder.toFixed(2) : ""}
                       </td>
                       <td className="py-4" onClick={(e) => goToOrder(e, order)}>
                         {order.route}
@@ -590,10 +594,10 @@ const OrderView = () => {
                       >
                         <div
                           className={`inline-block mt-1 rounded-full text-white ${statusColorClass(
-                            order.name_status
+                            order.status_order
                           )} w-3 h-3 flex items-center justify-center`}
                         ></div>
-                        {order.name_status}
+                        {order.status_order}
                       </td>
                     </tr>
                   ))
