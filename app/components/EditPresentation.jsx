@@ -13,6 +13,7 @@ import useUserStore from "../store/useUserStore";
 import {
   fetchPresentations,
   fetchPresentationsSupplier,
+  fetchTypes,
 } from "../api/presentationsRequest";
 
 function EditPresentation({
@@ -22,12 +23,12 @@ function EditPresentation({
   setPresentations,
   setIsLoading,
 }) {
-  console.log("🚀 ~ presentation:", presentation)
   const { token } = useTokenStore();
   const [uoms, setUoms] = useState([]);
   const [products, setProducts] = useState([]);
   const [tax, setTax] = useState([]);
   const { user, setUser } = useUserStore();
+  const [types, setTypes] = useState([]);
 
   //Variables formulario
   const [editedName, setEditedName] = useState(() => {
@@ -37,6 +38,8 @@ function EditPresentation({
       return "UOM";
     }
   });
+
+  const [selectedType, setSelectedType] = useState("");
 
   const [editedName2, setEditedName2] = useState("");
 
@@ -75,6 +78,7 @@ function EditPresentation({
     setSelectedProductsStatus(presentation ? presentation.products_id : "");
     setCodePresentation(presentation ? presentation.code : "");
     setSelectedTax(presentation ? presentation.taxes_id : "");
+    setSelectedType(presentation ? presentation.type : "")
   }, [presentation]);
 
   // Api products
@@ -145,6 +149,7 @@ function EditPresentation({
     };
 
     fetchData();
+    fetchTypes(token, setTypes);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -265,6 +270,26 @@ function EditPresentation({
                     {tax.name}
                   </option>
                 ) : null
+              )}
+            </select>
+          </div>
+          <div>
+            <label htmlFor="taxes">Type product: </label>
+            <select
+              id="type"
+              name="type"
+              className="border p-3 rounded-md mr-3 mt-3"
+              required
+              onChange={(e) => setSelectedType(e.target.value)}
+              value={selectedType}
+            >
+              <option value="" disabled selected>
+                Type product
+              </option>
+              {types.map((type) =>
+                <option key={type.id} value={type.id}>
+                  {type.name}
+                </option>
               )}
             </select>
           </div>
