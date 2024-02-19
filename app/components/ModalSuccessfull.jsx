@@ -37,13 +37,17 @@ function ModalSuccessfull({
   }
 
   const handleKeyCloseModal = (event) => {
-    if (event.key === 'Enter' || event.key === 'Escape') {
+    if (event.key === 'Enter') {
       if (!confirmed) {
         sendOrder()
       } else {
         onClose();
         router.push('/orders')
       }
+    }
+
+    if (event.key === 'Escape') {
+      onClose()
     }
   };
 
