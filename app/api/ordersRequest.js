@@ -110,8 +110,11 @@ export const fetchOrdersDate = async (
   end,
   start,
   routeId,
-  setTotalNet
+  setTotalNet,
+  setOrders,
+  setIsLoading
 ) => {
+  setIsLoading(true);
   const postData = {
     date: {
       start: start,
@@ -128,7 +131,9 @@ export const fetchOrdersDate = async (
       },
     });
     setTotalNet(response.data);
-    // console.log("response data", response.data);
+    setOrders(response.data.orders);
+    setIsLoading(false);
+    console.log("response data", response.data);
   } catch (error) {
     console.error("Error al obtener el orders by date:", error);
   }

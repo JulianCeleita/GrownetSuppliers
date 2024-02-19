@@ -863,7 +863,7 @@ export default function EditTable({
                                           DescriptionData
                                             ? DescriptionData.map((item) => ({
                                                 value: item.productName,
-                                                label: `${item.code} - ${item.product_name} - ${item.name}`,
+                                                label: `${(item.code && item.product_name && item.name) ? `${item.code} - ${item.product_name} - ${item.name}` : "Loading..."}`,
                                                 code: item.code,
                                               }))
                                             : []

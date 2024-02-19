@@ -14,27 +14,6 @@ import useUserStore from "../store/useUserStore";
 import ModalOrderError from "./ModalOrderError";
 import ModalSuccessfull from "./ModalSuccessfull";
 
-// export const fetchProducts = async (token) => {
-//   try {
-//     const response = await axios.get(productsUrl, {
-//       headers: {
-//         Authorization: `Bearer ${token}`,
-//       },
-//     });
-
-//     const newProducts = Array.isArray(response.data.products)
-//       ? response.data.products
-//       : [];
-
-//     const sortedProducts = newProducts.sort((a, b) =>
-//       a.name.localeCompare(b.name)
-//     );
-//     setProducts(sortedProducts);
-//     setIsLoading(false);
-//   } catch (error) {
-//     console.error("Error al obtener los productos:", error);
-//   }
-// };
 
 const initialRowsState = {
   Code: "",
@@ -148,6 +127,7 @@ export default function Table({
   const [searchTerm, setSearchTerm] = useState("");
   const [existingCodes, setExistingCodes] = useState(new Set());
   const [isSelectDisabled, setIsSelectDisabled] = useState(true);
+  const [previousCode, setPreviousCode] = useState({});
 
   const columns = [
     "Code",
@@ -458,6 +438,12 @@ export default function Table({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [productByCode]);
 
+  useEffect(() => {
+
+    console.log("existing codes", existingCodes)
+  }, [existingCodes])
+
+
   // AGREGAR NUEVA FILA
   const addNewRow = () => {
     setRows((prevRows) => [...prevRows, { ...initialRowsState }]);
@@ -512,9 +498,9 @@ export default function Table({
 
   const fetchProductCode = async (rowIndex, code) => {
     try {
-      if (existingCodes.has(code)) {
-        // Si el código existe, muestra una alerta y no continúa con la función
-        alert("Este producto ya existe en la orden.");
+      const lowerCaseCode = code.toLowerCase();
+      if (existingCodes.has(lowerCaseCode) || existingCodes.has(rows[rowIndex].Code.toLowerCase())) {
+        alert("This product is exist.");
         const updatedRows = rows.map((row, index) => {
           if (index === rowIndex) {
             return {
@@ -548,7 +534,7 @@ export default function Table({
         }
         return row;
       });
-      setExistingCodes(new Set([...existingCodes, code]));
+      setExistingCodes(new Set([...existingCodes].map(code => code.toLowerCase()).concat(lowerCaseCode)));
       setRows(updatedRows);
     } catch (error) {
       console.error("Error al hacer la solicitud:", error.message);
@@ -630,24 +616,70 @@ export default function Table({
     }
   };
 
+  const handleFocusOnCodeInput = (rowIndex, code) => {
+    // Establecer el código anterior solo si no se ha establecido previamente para esta fila
+    setPreviousCode(prev => {
+      if (prev[rowIndex] === undefined) {
+        return { ...prev, [rowIndex]: code.toLowerCase() };
+      }
+      return prev;
+    });
+  };
+
   // BORRAR CASILLAS SI SE BORRA EL CODE
   const handleCodeChange = (e, rowIndex, column) => {
-    const newCodeValue = e.target.value;
-    setCurrentValues((prevValues) => ({
+    console.log("🚀 ~ handleCodeChange ~ previousCode[rowIndex]:", previousCode[rowIndex]);
+    const newCodeValue = e.target.value.toLowerCase();
+    setCurrentValues(prevValues => ({
       ...prevValues,
       [column]: newCodeValue,
     }));
 
-    if (column === "Code" && newCodeValue.trim() === "") {
-      const updatedRows = rows.map((row, index) => {
-        if (index === rowIndex) {
-          return {
-            ...initialRowsState,
-          };
+    if (column === "Code") {
+      // Verifica si el código se está borrando
+      if (newCodeValue.trim() === "") {
+        // Utiliza el código anterior para las operaciones de borrado y actualización de existingCodes
+        const currentCode = previousCode[rowIndex];
+
+        // Procede a limpiar el código de la fila
+        const updatedRows = rows.map((row, index) => {
+          if (index === rowIndex) {
+            return {
+              ...initialRowsState,
+            };
+          }
+          return row;
+        });
+        setRows(updatedRows);
+
+        // Elimina el código anterior de existingCodes si existe
+        if (existingCodes.has(currentCode)) {
+          const updatedExistingCodes = new Set([...existingCodes]);
+          updatedExistingCodes.delete(currentCode);
+          setExistingCodes(updatedExistingCodes);
         }
-        return row;
-      });
-      setRows(updatedRows);
+
+        // Restablece el previousCode para esta fila después de la eliminación
+        setPreviousCode(prev => {
+          const newPrev = { ...prev };
+          delete newPrev[rowIndex]; // Asegura remover el estado previo para esta fila
+          return newPrev;
+        });
+      } else {
+        // Actualizar el código en la fila sin borrar
+        const updatedRows = rows.map((row, index) => {
+          if (index === rowIndex) {
+            return {
+              ...row,
+              Code: newCodeValue,
+            };
+          }
+          return row;
+        });
+        setRows(updatedRows);
+
+        // No actualiza previousCode aquí para evitar sobrescribir el valor original
+      }
     }
   };
 
@@ -698,26 +730,23 @@ export default function Table({
                       <th
                         key={index}
                         scope="col"
-                        className={`py-2 px-2 capitalize ${
-                          index === firstVisibleColumnIndex
-                            ? "rounded-tl-lg"
-                            : ""
-                        } ${
-                          index === lastVisibleColumnIndex
+                        className={`py-2 px-2 capitalize ${index === firstVisibleColumnIndex
+                          ? "rounded-tl-lg"
+                          : ""
+                          } ${index === lastVisibleColumnIndex
                             ? "rounded-tr-lg"
                             : ""
-                        } ${
-                          column === "quantity" ||
-                          column === "VAT %" ||
-                          column === "UOM" ||
-                          column === "Net"
+                          } ${column === "quantity" ||
+                            column === "VAT %" ||
+                            column === "UOM" ||
+                            column === "Net"
                             ? "w-20"
                             : column === "Packsize" || column === "Total Price"
-                            ? "w-40"
-                            : column === "Code"
-                            ? "w-[8em]"
-                            : ""
-                        }`}
+                              ? "w-40"
+                              : column === "Code"
+                                ? "w-[8em]"
+                                : ""
+                          }`}
                         onContextMenu={(e) => handleContextMenu(e)}
                       >
                         <p className="text-base text-dark-blue my-2">
@@ -786,10 +815,10 @@ export default function Table({
                                     options={
                                       DescriptionData
                                         ? DescriptionData.map((item) => ({
-                                            value: item.product_name,
-                                            label: `${item.code} - ${item.product_name} - ${item.name}`,
-                                            code: item.code,
-                                          }))
+                                          value: item.product_name,
+                                          label: `${(item.code && item.product_name && item.name) ? `${item.code} - ${item.product_name} - ${item.name}` : "Loading..."}`,
+                                          code: item.code,
+                                        }))
                                         : []
                                     }
                                     value={{
@@ -850,11 +879,10 @@ export default function Table({
                                   type={inputTypes[column]}
                                   ref={inputRefs[column][rowIndex]}
                                   data-field-name={column}
-                                  className={`pl-2 h-[30px] outline-none w-full ${
-                                    inputTypes[column] === "number"
-                                      ? "hide-number-arrows"
-                                      : ""
-                                  } `}
+                                  className={`pl-2 h-[30px] outline-none w-full ${inputTypes[column] === "number"
+                                    ? "hide-number-arrows"
+                                    : ""
+                                    } `}
                                   value={row[column] || ""}
                                   onChange={(e) => {
                                     if (column === "Net") {
@@ -877,6 +905,12 @@ export default function Table({
                                   onKeyDown={(e) =>
                                     handleKeyDown(e, rowIndex, column)
                                   }
+                                  onFocus={(e) => {
+                                    if (column == "Code") {
+                                      console.log("Hola")
+                                      handleFocusOnCodeInput(rowIndex, row.Code)
+                                    }
+                                  }}
                                   onKeyPress={(e) => {
                                     if (column === "Net" && e.charCode === 46) {
                                       return;

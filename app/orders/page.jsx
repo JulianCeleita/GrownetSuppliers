@@ -50,6 +50,7 @@ const OrderView = () => {
   const { routePercentages, setFetchRoutePercentages } = usePercentageStore();
   const [isLoading, setIsLoading] = useState(true);
   const [orders, setOrders] = useState([]);
+  console.log("🚀 ~ OrderView ~ orders:", orders)
   const { user } = useUserStore();
   const [dateFilter, setDateFilter] = useState("today");
   const [showAllOrders, setShowAllOrders] = useState(false);
@@ -95,11 +96,11 @@ const OrderView = () => {
   };
 
   useEffect(() => {
-    if (user && user.rol_name === "AdminGrownet") {
-      fetchOrders(token, setOrders, setIsLoading);
-    } else {
-      fetchOrdersSupplier(token, user, setOrders, setIsLoading);
-    }
+    // if (user && user.rol_name === "AdminGrownet") {
+    //   fetchOrders(token, setOrders, setIsLoading);
+    // } else {
+    //   fetchOrdersSupplier(token, user, setOrders, setIsLoading);
+    // }
 
     const handleOutsideClick = (e) => {
       if (showDatePicker && !e.target.closest(".react-datepicker")) {
@@ -141,7 +142,9 @@ const OrderView = () => {
       endDateByNet,
       startDateByNet,
       selectedOrders.route,
-      setTotalNet
+      setTotalNet,
+      setOrders,
+      setIsLoading
     );
   }, [endDateByNet, startDateByNet, selectedOrders.route]);
 
@@ -590,10 +593,10 @@ const OrderView = () => {
                       >
                         <div
                           className={`inline-block mt-1 rounded-full text-white ${statusColorClass(
-                            order.name_status
+                            order.status_order
                           )} w-3 h-3 flex items-center justify-center`}
                         ></div>
-                        {order.name_status}
+                        {order.status_order}
                       </td>
                     </tr>
                   ))
