@@ -775,6 +775,7 @@ export default function Table({
                                 {column === "Description" && (
                                   <Select
                                     className="w-full"
+                                    menuPlacement="top"
                                     menuPortalTarget={document.body}
                                     onInputChange={(newValue) => {
                                       const sortedAndFilteredData = sortData(
