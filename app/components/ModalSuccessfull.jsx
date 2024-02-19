@@ -64,7 +64,10 @@ function ModalSuccessfull({
           <div className="bg-white p-8 rounded-2xl w-[400px] flex flex-col items-center">
             <button
               className="text-dark-blue place-self-end "
-              onClick={() => onClose()}
+              onClick={() => {
+                onClose();
+                router.push('/orders');
+              }}
             >
               {!sendOrder && <XMarkIcon className="h-6 w-6 text-gray-500" />}
             </button>
@@ -84,7 +87,14 @@ function ModalSuccessfull({
             </p>
             <div className="flex">
               <button
-                onClick={() => (sendOrder ? sendOrder() : onClose())}
+                onClick={() => {
+                  if (sendOrder) {
+                    sendOrder();
+                  } else {
+                    onClose();
+                    router.push('/orders');
+                  }
+                }}
                 className="bg-primary-blue py-3 px-4 rounded-lg text-white font-medium mr-3 hover:bg-green mt-5"
               >
                 {button}
