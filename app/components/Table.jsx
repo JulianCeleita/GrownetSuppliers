@@ -804,6 +804,7 @@ export default function Table({
                                 {column === "Description" && (
                                   <Select
                                     className="w-full"
+                                    menuPlacement="auto"
                                     menuPortalTarget={document.body}
                                     onInputChange={(newValue) => {
                                       const sortedAndFilteredData = sortData(
@@ -817,6 +818,7 @@ export default function Table({
                                         ? DescriptionData.map((item) => ({
                                           value: item.product_name,
                                           label: `${(item.code && item.product_name && item.name) ? `${item.code} - ${item.product_name} - ${item.name}` : "Loading..."}`,
+
                                           code: item.code,
                                         }))
                                         : []
@@ -999,6 +1001,7 @@ export default function Table({
         text="Your order has been shipped, thank you for using"
         textGrownet="Grownet"
         button=" Close"
+        confirmed={true}
       />
       {confirmCreateOrder && (
         <ModalSuccessfull
