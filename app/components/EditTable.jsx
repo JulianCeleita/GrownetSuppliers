@@ -113,7 +113,7 @@ export default function EditTable({
   specialRequirements,
   setSpecialRequirements,
   percentageDetail,
-  dataLoaded,
+  dataLoaded
 }) {
   // const [rows, setRows] = useState(
   //   Array.from({ length: 0 }, () => ({ ...initialRowsState }))
