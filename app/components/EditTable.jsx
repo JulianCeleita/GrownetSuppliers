@@ -806,7 +806,7 @@ export default function EditTable({
                           initialColumns.includes(column) && (
                             <React.Fragment key={columnIndex}>
                               <td
-                                className={`px-3 py-[0.2em] border border-1 border-x-0 `}
+                                className={`px-3 py-[0.2em] border border-1 border-x-gray-100 `}
                                 tabIndex={0}
                                 style={{ overflow: "visible" }}
                               >
