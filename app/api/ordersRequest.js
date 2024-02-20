@@ -183,7 +183,7 @@ export const fetchCustomersDate = async (
         Authorization: `Bearer ${token}`,
       },
     });
-    setCustomerDate(response.data.routes);
+    setCustomerDate(response.data.route);
     console.log("response data customer date", response.data);
   } catch (error) {
     console.error("Error al obtener customer date:", error);

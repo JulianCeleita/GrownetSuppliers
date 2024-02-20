@@ -21,7 +21,7 @@ import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { fetchOrderDetail } from "@/app/api/ordersRequest";
+import { fetchCustomersDate, fetchOrderDetail } from "@/app/api/ordersRequest";
 import { CircleProgressBar } from "@/app/components/CircleProgressBar";
 import Select from "react-select";
 import { getPercentageOrder } from "../../api/percentageOrderRequest";
@@ -42,10 +42,9 @@ const OrderDetailPage = () => {
     orderDetail,
   } = useTableStore();
 
-  console.log("Detalles de la orden:", orderDetail);
-
   const [restaurants, setRestaurants] = useState(null);
   const [selectedAccNumber, setSelectedAccNumber] = useState("");
+  const [selectedAccNumber2, setSelectedAccNumber2] = useState("");
   const [selectedAccName, setSelectedAccName] = useState("");
   const [isDropdownVisible, setIsDropdownVisible] = useState(false);
   const [isNameDropdownVisible, setIsNameDropdownVisible] = useState(false);
@@ -64,6 +63,7 @@ const OrderDetailPage = () => {
   const [specialRequirements, setSpecialRequirements] = useState(
     orderDetail.observation ? orderDetail.observation : ""
   );
+  const [customerDate, setCustomerDate] = useState();
   let orderId;
   if (params) {
     ({ orderId } = params);
@@ -77,6 +77,7 @@ const OrderDetailPage = () => {
     const day = String(today.getDate()).padStart(2, "0");
     return `${year}-${month}-${day}`;
   }
+
   useEffect(() => {
     if (!token) {
       router.push("/");
@@ -96,6 +97,7 @@ const OrderDetailPage = () => {
 
   useEffect(() => {
     setAccName(orderDetail ? orderDetail.accountName : "");
+    setSelectedAccNumber2(orderDetail.accountNumber);
   }, [orderDetail]);
 
   useEffect(() => {
@@ -143,6 +145,7 @@ const OrderDetailPage = () => {
 
   const handleDateChange = (e) => {
     setSelectedDate(e.target.value);
+    setOrderDate(e.target.value);
   };
 
   const fetchDataAccNumber = async () => {
@@ -243,6 +246,11 @@ const OrderDetailPage = () => {
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+  useEffect(() => {
+    fetchCustomersDate(token, orderDate, selectedAccNumber2, setCustomerDate);
+  }, [orderDate, selectedAccNumber2]);
+
+  console.log("customerDate", customerDate);
 
   if (!hasMounted) {
     return null;
@@ -259,10 +267,12 @@ const OrderDetailPage = () => {
               options={restaurantList.map((restaurant) => ({
                 value: restaurant.accountName,
                 label: restaurant.accountName,
+                accNumber: restaurant.accountNumber,
               }))}
               onChange={(selectedOption) => {
                 setSelectedAccName(selectedOption.value);
                 setIsDropdownVisible(false);
+                setSelectedAccNumber2(selectedOption.accNumber);
               }}
               value={{
                 value:
@@ -290,6 +300,7 @@ const OrderDetailPage = () => {
               onChange={(selectedOption) => {
                 setSelectedAccNumber(selectedOption.value);
                 setIsDropdownVisible(false);
+                setSelectedAccNumber2(selectedOption.value);
               }}
               value={{
                 value:
@@ -436,14 +447,19 @@ const OrderDetailPage = () => {
                 {orderDetail && orderDetail.email ? orderDetail.email : "-"}
               </h3>
             </div>
-            <div className="flex flex-col items-start">
-              <h3 className="font-medium">Route:</h3>
-              <h3>{"Loading..."}</h3>
-            </div>
-            <div className="flex flex-col items-start">
-              <h3 className="font-medium">Drop:</h3>
-              <h3>{"Loading..."}</h3>
-            </div>
+            {customerDate && (
+              <>
+                <div className="flex flex-col items-start">
+                  <h3 className="font-medium">Route:</h3>
+                  <h3>{customerDate.nameRoute}</h3>
+                </div>
+                <div className="flex flex-col items-start">
+                  <h3 className="font-medium">Drop:</h3>
+                  <h3>{customerDate.drop}</h3>
+                </div>
+              </>
+            )}
+
             <div className="flex flex-col items-start">
               <h3 className="font-medium">Special requirements:</h3>
               <input
