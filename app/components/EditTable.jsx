@@ -158,7 +158,7 @@ export default function EditTable({
   const [isReadOnly, setIsReadOnly] = useState(true);
   const [orderError, setOrderError] = useState("");
   const [isSelectDisabled, setIsSelectDisabled] = useState(true);
-  const isEditable = orderDetail?.state_name === "Loading";
+  const isEditable = orderDetail?.state_name === "Loaded";
   const [existingCodes, setExistingCodes] = useState(new Set());
   const [previousCode, setPreviousCode] = useState({});
 
@@ -982,7 +982,9 @@ export default function EditTable({
                                             display: "none",
                                           }),
                                         }}
-                                        isDisabled={isSelectDisabled}
+                                        isDisabled={
+                                          row.isExistingProduct && isEditable
+                                        }
                                         onBlur={() => setIsSelectDisabled(true)}
                                       />
                                     )}
