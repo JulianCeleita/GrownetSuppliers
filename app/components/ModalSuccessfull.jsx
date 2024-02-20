@@ -48,7 +48,10 @@ function ModalSuccessfull({
 
     if (event.key === 'Escape') {
       onClose();
-      router.push('/orders');
+
+      if (confirmed) {
+        router.push('/orders');
+      }
     }
   };
 

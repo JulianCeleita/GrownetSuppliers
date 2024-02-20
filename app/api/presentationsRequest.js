@@ -2,6 +2,7 @@ import axios from "axios";
 import {
   presentationsSupplierUrl,
   presentationsUrl,
+  typesUrl,
 } from "../config/urls.config";
 
 export const fetchPresentations = async (
@@ -50,5 +51,30 @@ export const fetchPresentationsSupplier = async (
     setIsLoading(false);
   } catch (error) {
     console.error("Error al obtener las presentaciones:", error);
+  }
+};
+
+// Obtener types
+export const fetchTypes = async (
+  token,
+  setTypes,
+) => {
+  try {
+    const response = await axios.get(
+      typesUrl,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    console.log("🚀 ~ response:", response.data)
+
+    const newType = Array.isArray(response.data.type)
+    ? response.data.type
+      : [];
+    setTypes(newType);
+  } catch (error) {
+    console.error("Error al obtener los types:", error);
   }
 };

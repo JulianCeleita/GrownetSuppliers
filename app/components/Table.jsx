@@ -767,7 +767,7 @@ export default function Table({
                       initialColumns.includes(column) && (
                         <React.Fragment key={columnIndex}>
                           <td
-                            className={`px-3 py-[0.2em] border-b-[1.5px]`}
+                            className={`px-3 py-[0.2em] border-b-[1.5px] border-x-[0.5px] border-x-gray-100`}
                             tabIndex={0}
                             style={{ overflow: "visible" }}
                           >
