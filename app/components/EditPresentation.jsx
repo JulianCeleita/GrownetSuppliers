@@ -1,15 +1,20 @@
 import { ExclamationCircleIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import axios from "axios";
 import { useEffect, useState } from "react";
+import ReactCountryFlag from "react-country-flag";
 import {
   productsUrl,
+  taxexUrl,
   uomUrl,
   updatePresentationUrl,
-  taxexUrl,
 } from "../config/urls.config";
-import { fetchPresentations } from "../presentations/page";
 import useTokenStore from "../store/useTokenStore";
-import ReactCountryFlag from "react-country-flag";
+import useUserStore from "../store/useUserStore";
+import {
+  fetchPresentations,
+  fetchPresentationsSupplier,
+  fetchTypes,
+} from "../api/presentationsRequest";
 
 function EditPresentation({
   isvisible,
@@ -22,15 +27,22 @@ function EditPresentation({
   const [uoms, setUoms] = useState([]);
   const [products, setProducts] = useState([]);
   const [tax, setTax] = useState([]);
+  const { user, setUser } = useUserStore();
+  const [types, setTypes] = useState([]);
+  const [selectedTypeId, setSelectedTypeId] = useState([]);
 
   //Variables formulario
   const [editedName, setEditedName] = useState(() => {
-    if (presentation && presentation.name && presentation.name.includes("-")) {
+    if (presentation && presentation.name) {
       return presentation.name;
     } else {
       return "UOM";
     }
   });
+
+  const [selectedType, setSelectedType] = useState("");
+
+  const [editedName2, setEditedName2] = useState("");
 
   const [editedCost, setEditedCost] = useState(
     presentation ? presentation.cost : ""
@@ -53,24 +65,25 @@ function EditPresentation({
   );
 
   useEffect(() => {
-    setEditedName(() => {
-      if (
-        presentation &&
-        presentation.name &&
-        presentation.name.includes("-")
-      ) {
-        return presentation.name;
-      } else {
-        return "UOM";
-      }
-    });
+    if (presentation && presentation.name) {
+      const [firstPart, ...rest] = presentation.name.split(" ");
+      setEditedName(firstPart);
+      setEditedName2(rest.join(" "));
+    } else {
+      setEditedName("UOM");
+      setEditedName2("");
+    }
     setEditedCost(presentation ? presentation.cost : "");
     setEditedQuantity(presentation ? presentation.quantity : "");
     setSelectedUomsStatus(presentation ? presentation.uoms_id : "");
     setSelectedProductsStatus(presentation ? presentation.products_id : "");
     setCodePresentation(presentation ? presentation.code : "");
     setSelectedTax(presentation ? presentation.taxes_id : "");
-    console.log("Tax que recibo:", presentation);
+    setSelectedType(presentation ? presentation.type : "")
+    setSelectedTypeId(presentation ? presentation.type_id : "");
+    console.log(selectedType)
+    console.log(selectedTypeId)
+    console.log("🚀 ~ presentation:", presentation)
   }, [presentation]);
 
   // Api products
@@ -83,10 +96,10 @@ function EditPresentation({
           },
         });
 
-        const sortedProducts = response.data.products.sort((a, b) =>
+        const sortedProducts = response?.data?.products.sort((a, b) =>
           a.name.localeCompare(b.name)
         );
-        const filteredProducts = sortedProducts.filter(
+        const filteredProducts = sortedProducts?.filter(
           (product) => product.stateProduct_id !== 2
         );
         setProducts(filteredProducts);
@@ -108,11 +121,10 @@ function EditPresentation({
             Authorization: `Bearer ${token}`,
           },
         });
-        const sortedTaxes = response.data.taxes.sort(
+        const sortedTaxes = response?.data?.taxes.sort(
           (a, b) => a.worth - b.worth
         );
         setTax(sortedTaxes);
-        console.log(sortedTaxes);
       } catch (error) {
         console.error("Error al obtener Taxes productos:", error);
       }
@@ -131,7 +143,7 @@ function EditPresentation({
           },
         });
 
-        const sortedUoms = response.data.uoms.sort((a, b) =>
+        const sortedUoms = response?.data?.uoms?.sort((a, b) =>
           a.name.localeCompare(b.name)
         );
 
@@ -142,39 +154,53 @@ function EditPresentation({
     };
 
     fetchData();
+    fetchTypes(token, setTypes);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   //Api editar
-  const handleEditPresentation = (event) => {
+  const handleEditPresentation = async (event) => {
     event.preventDefault();
 
     const postData = {
       uoms_id: selectedUomsStatus,
       quantity: editedQuantity,
-      name: `${editedName} - ${selecteUomsStatus2}`,
+      name: `${editedName.trim()}  ${editedName2}`,
       cost: editedCost,
       products_id: selectedProductsStatus,
       code: codePresentation,
       tax: selectedTax,
+      type: selectedTypeId,
+      supplier_id: user ? user.id_supplier : null,
     };
-    console.log("Esto es lo que envio:", postData);
-    axios
-      .post(`${updatePresentationUrl}${presentation.id}`, postData, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      })
-      .then((response) => {
+    console.log("🚀 ~ handleEditPresentation ~ postData:", postData)
+
+    try {
+      const response = await axios.post(
+        `${updatePresentationUrl}${presentation.id}`,
+        postData,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      console.log("🚀 ~ handleEditPresentation ~ response:", response)
+
+      if (user && user?.ron_name !== "AdminGrownet") {
+        fetchPresentationsSupplier(token, user, setPresentations, setIsLoading);
+      } else {
         fetchPresentations(token, setPresentations, setIsLoading);
-        setSelectedUomsStatus("");
-        setSelectedProductsStatus("");
-        onClose();
-        console.log("Respuesta de editar presentación:", response.data);
-      })
-      .catch((error) => {
-        console.error("Error editando la presentación:", error);
-      });
+      }
+
+      setSelectedUomsStatus("");
+      setSelectedProductsStatus("");
+      setSelectedType("");
+      setSelectedTypeId("");
+      onClose();
+    } catch (error) {
+      console.error("Error editando la presentación:", error);
+    }
   };
 
   if (!isvisible) {
@@ -197,7 +223,7 @@ function EditPresentation({
           className="text-left  flex flex-col"
           onSubmit={handleEditPresentation}
         >
-          <label for="produvt" className="mt-2">
+          <label htmlFor="produvt" className="mt-2">
             Product:
           </label>
           <select
@@ -208,12 +234,12 @@ function EditPresentation({
             value={selectedProductsStatus}
             required
           >
-            <option value="" disabled selected>
+            <option value="" disabled>
               Select product
             </option>
-            {products.map((product) => (
+            {products?.map((product) => (
               <option key={product.id} value={product.id}>
-                {product.id} - {product.name}
+                {product.name}
               </option>
             ))}
           </select>
@@ -227,12 +253,12 @@ function EditPresentation({
               onChange={(e) => setSelectedUomsStatus(e.target.value)}
               value={selectedUomsStatus}
             >
-              <option value="" disabled selected>
+              <option value="" disabled>
                 Select uom
               </option>
-              {uoms.map((uom) => (
+              {uoms?.map((uom) => (
                 <option key={uom.id} value={uom.id}>
-                  {uom.id} - {uom.name}
+                  {uom.name}
                 </option>
               ))}
             </select>
@@ -245,23 +271,36 @@ function EditPresentation({
               onChange={(e) => setSelectedTax(e.target.value)}
               value={selectedTax}
             >
-              <option value="" disabled selected>
+              <option value="" disabled>
                 Select tax
               </option>
-              {tax.map((tax) => (
-                <option key={tax.id} value={tax.id}>
-                  {tax.countries_indicative === 44 ? (
-                    <ReactCountryFlag countryCode="GB" />
-                  ) : tax.countries_indicative === 57 ? (
-                    <ReactCountryFlag countryCode="CO" />
-                  ) : tax.countries_indicative === 351 ? (
-                    <ReactCountryFlag countryCode="PT" />
-                  ) : tax.countries_indicative === 34 ? (
-                    <ReactCountryFlag countryCode="ES" />
-                  ) : null}{" "}
-                  {tax.name}
+              {tax.map((tax) =>
+                tax.countries_indicative === 44 ? (
+                  <option key={tax.id} value={tax.id}>
+                    {tax.name}
+                  </option>
+                ) : null
+              )}
+            </select>
+          </div>
+          <div>
+            <label htmlFor="taxes">Type product: </label>
+            <select
+              id="type"
+              name="type"
+              className="border p-3 rounded-md mr-3 mt-3"
+              required
+              onChange={(e) => setSelectedTypeId(e.target.value)}
+              value={selectedTypeId}
+            >
+              <option value="" disabled selected>
+                Type product
+              </option>
+              {types.map((type) =>
+                <option key={type.id} value={type.id}>
+                  {type.name}
                 </option>
-              ))}
+              )}
             </select>
           </div>
           <div>
@@ -279,7 +318,7 @@ function EditPresentation({
               placeholder="UOM"
               type="text"
               required
-              value={editedName.split("-")[0]}
+              value={editedName}
               onChange={(e) => setEditedName(e.target.value)}
             ></input>
             <select
@@ -287,12 +326,13 @@ function EditPresentation({
               name="uom"
               className="border p-3 rounded-md mr-3 mt-3"
               required
-              onChange={(e) => setSelectedUomsStatus2(e.target.value)}
+              value={editedName2}
+              onChange={(e) => setEditedName2(e.target.value)}
             >
-              <option value="" disabled selected>
+              <option value="" disabled>
                 UOM
               </option>
-              {uoms.map((uom) => (
+              {uoms?.map((uom) => (
                 <option key={uom.id} value={uom.name}>
                   {uom.name}
                 </option>
@@ -328,7 +368,7 @@ function EditPresentation({
               value="Submit"
               className="bg-primary-blue py-3 px-4 rounded-lg text-white font-medium mr-3 "
             >
-              Adit Presentation
+              Edit Presentation
             </button>
             <button
               onClick={() => onClose()}

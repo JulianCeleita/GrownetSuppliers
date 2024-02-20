@@ -1,7 +1,7 @@
 "use client";
 import {
-  presentationData,
   createStorageOrder,
+  presentationData,
   presentationsCode,
 } from "@/app/config/urls.config";
 import { useTableStore } from "@/app/store/useTableStore";
@@ -9,8 +9,11 @@ import useTokenStore from "@/app/store/useTokenStore";
 import axios from "axios";
 import React, { useEffect, useRef, useState } from "react";
 import Select from "react-select";
+import { fetchPresentationsSupplier } from "../api/presentationsRequest";
+import useUserStore from "../store/useUserStore";
 import ModalOrderError from "./ModalOrderError";
 import ModalSuccessfull from "./ModalSuccessfull";
+
 
 const initialRowsState = {
   Code: "",
@@ -59,10 +62,16 @@ const useFocusOnEnter = (formRef) => {
     ) {
       const form = event.target.form;
       const index = Array.prototype.indexOf.call(form, event.target);
+      const fieldName = event.target.getAttribute("data-field-name");
+
+      if (fieldName === "quantity" && event.target.value.trim() === "") {
+        return;
+      }
       for (let i = index + 1; i < formRef.current.length; i++) {
-        if (formRef.current[i].tabIndex === -1) {
+        if (formRef.current[i].getAttribute("data-field-name") === "Net") {
           continue;
         }
+
         formRef.current[i].focus();
         if (document.activeElement === formRef.current[i]) {
           break;
@@ -73,19 +82,24 @@ const useFocusOnEnter = (formRef) => {
   return { onEnterKey };
 };
 
-export default function Table() {
+export default function Table({
+  orderDate,
+  confirmCreateOrder,
+  setConfirmCreateOrder,
+  specialRequirements,
+  setSpecialRequirements,
+}) {
   const [rows, setRows] = useState(
     Array.from({ length: 5 }, () => ({ ...initialRowsState }))
   );
   const form = useRef();
+
   const { onEnterKey } = useFocusOnEnter(form);
   const { token } = useTokenStore();
   const [products, setProducts] = useState([]);
   const {
     initialColumns,
     toggleColumnVisibility,
-    initialTotalRows,
-    toggleTotalRowVisibility,
     customers,
     setTotalNetSum,
     setTotalPriceSum,
@@ -94,18 +108,27 @@ export default function Table() {
     setTotalProfit,
     setTotalProfitPercentage,
   } = useTableStore();
-  const [showCheckboxColumnTotal, setShowCheckboxColumnTotal] = useState(false);
+
   const menuRef = useRef(null);
-  const menuRefTotal = useRef(null);
+
   const [showCheckboxColumn, setShowCheckboxColumn] = useState(false);
   const [currentValues, setCurrentValues] = useState({});
   const [productByCode, setProductByCode] = useState({});
   const [DescriptionData, setDescriptionData] = useState(null);
-  const lastActiveColumn = initialColumns[initialColumns.length - 1];
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [showErrorOrderModal, setShowErrorOrderModal] = useState(false);
-  const [specialRequirements, setSpecialRequirements] = useState("");
+  const [showErrorCode, setShowErrorCode] = useState(false);
+  const [orderError, setOrderError] = useState("");
   const [mouseCoords, setMouseCoords] = useState({ x: 0, y: 0 });
+  const { user, setUser } = useUserStore();
+  const [isReadOnly, setIsReadOnly] = useState(true);
+  const [presentations, setPresentations] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [existingCodes, setExistingCodes] = useState(new Set());
+  const [isSelectDisabled, setIsSelectDisabled] = useState(true);
+  const [previousCode, setPreviousCode] = useState({});
+  const [showErrorDuplicate, setShowErrorDuplicate] = useState(false);
 
   const columns = [
     "Code",
@@ -124,12 +147,13 @@ export default function Table() {
     "Price Band",
     "Total Cost",
   ];
+
   const inputTypes = {
     Code: "text",
     Description: "text",
     Packsize: "text",
     UOM: "text",
-    quantity: "number",
+    quantity: "text",
     price: "number",
     Net: "number",
     "Total Net": "number",
@@ -142,7 +166,54 @@ export default function Table() {
     "Total Cost": "number",
   };
 
+  const sortData = (data, searchTerm) => {
+    const lowercasedTerm = searchTerm.toLowerCase();
+
+    const exactMatchesCode = data.filter(
+      (item) => item.code.toLowerCase() === lowercasedTerm
+    );
+    exactMatchesCode.sort((a, b) =>
+      a.product_name.localeCompare(b.product_name)
+    );
+
+    const partialMatchesCode = data.filter(
+      (item) =>
+        item.code.toLowerCase().includes(lowercasedTerm) &&
+        item.code.toLowerCase() !== lowercasedTerm
+    );
+    partialMatchesCode.sort((a, b) =>
+      a.product_name.localeCompare(b.product_name)
+    );
+
+    const exactMatchesProductName = data.filter(
+      (item) => item.product_name.toLowerCase() === lowercasedTerm
+    );
+    exactMatchesProductName.sort((a, b) =>
+      a.product_name.localeCompare(b.product_name)
+    );
+
+    const partialMatchesProductName = data.filter(
+      (item) =>
+        item.product_name.toLowerCase().includes(lowercasedTerm) &&
+        item.product_name.toLowerCase() !== lowercasedTerm &&
+        !exactMatchesCode.includes(item) &&
+        !partialMatchesCode.includes(item)
+    );
+    partialMatchesProductName.sort((a, b) =>
+      a.product_name.localeCompare(b.product_name)
+    );
+
+    return [
+      ...exactMatchesCode,
+      ...partialMatchesCode,
+      ...exactMatchesProductName,
+      ...partialMatchesProductName,
+    ];
+  };
+
   useEffect(() => {
+    fetchPresentationsSupplier(token, user, setPresentations, setIsLoading);
+
     const fetchPresentationData = async () => {
       try {
         const response = await axios.get(presentationData, {
@@ -155,7 +226,7 @@ export default function Table() {
           .filter((item) => item.code !== null)
           .map((item) => ({
             ...item,
-            concatenatedName: `${item.productName} - ${item.presentationName}`,
+            concatenatedName: `${item.code} - ${item.productName} - ${item.presentationName}`,
           }))
           .sort((a, b) => a.concatenatedName.localeCompare(b.concatenatedName));
 
@@ -183,6 +254,7 @@ export default function Table() {
       setShowCheckboxColumn(false);
     }
   };
+
   useEffect(() => {
     document.addEventListener("click", handleClickOutside);
     return () => {
@@ -345,7 +417,10 @@ export default function Table() {
             quantity: row.quantity,
             price:
               productByCode.price + productByCode.price * productByCode.tax,
-            Net: productByCode.price,
+            Net:
+              (productByCode.price !== null &&
+                productByCode.price.toFixed(2)) ||
+              0,
             "Total Net": "",
             "VAT %": productByCode.tax,
             "VAT £": "",
@@ -359,6 +434,7 @@ export default function Table() {
         return row;
       });
       setRows(updatedRows);
+      products.push(productByCode);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [productByCode]);
@@ -368,120 +444,174 @@ export default function Table() {
     setRows((prevRows) => [...prevRows, { ...initialRowsState }]);
   };
 
-  // OBTENER NOMBRE DEL CAMPO SIGUIENTE
-  const getNextFieldName = (currentFieldName, rowIndex) => {
-    const currentIndex = initialColumns.indexOf(currentFieldName);
-
-    if (currentIndex !== -1) {
-      const nextIndex = currentIndex + 1;
-      if (nextIndex < initialColumns.length) {
-        return initialColumns[nextIndex];
-      } else {
-        return rowIndex === rows.length - 1 ? null : initialColumns[0];
-      }
-    }
-
-    return null;
-  };
-
   // FUNCIONALIDAD TECLA ENTER
-
-  const handleKeyDown = (e, rowIndex, fieldName) => {
+  const handleKeyDown = async (e, rowIndex, fieldName) => {
     if (e.key === "Enter" && e.target.tagName.toLowerCase() !== "textarea") {
       e.preventDefault();
-
-      if (
-        (fieldName === "Code" && currentValues["Code"].trim() !== "") ||
-        (fieldName === "Description" &&
-          currentValues["Description"].trim() !== "")
+  
+      let productCode = "";
+  
+      if (fieldName === "Code" && currentValues["Code"]?.trim() !== "") {
+        productCode = currentValues["Code"];
+      } else if (
+        fieldName === "Description" &&
+        currentValues["Description"].trim() !== ""
       ) {
-        fetchProductCode(rowIndex);
+        const selectedProduct = DescriptionData.find(
+          (item) => item.productName === currentValues["Description"]
+        );
+        productCode = selectedProduct ? selectedProduct.code : "";
       }
-
-      if (fieldName === "Net") {
-        const isLastRow = rowIndex === rows.length - 1;
-        if (isLastRow) {
-          addNewRow();
-          return;
-        }
+  
+      if (productCode) {
+        await fetchProductCode(rowIndex, productCode);
+        synchronizeExistingCodes();
+      }
+  
+      const nextRowIndex = rowIndex + 1;
+      if (nextRowIndex < rows.length) {
+        form.current[nextRowIndex].querySelector('input[type="text"]')?.focus();
       } else {
-        const nextFieldName = getNextFieldName(fieldName, rowIndex);
-        const nextFieldRefs = inputRefs[nextFieldName];
-        if (nextFieldRefs && nextFieldRefs[rowIndex]) {
-          nextFieldRefs[rowIndex].current.focus();
-        }
+        addNewRow();
+      }
+    }
+  };
+  
+  const synchronizeExistingCodes = () => {
+    const codesInRows = new Set(rows.map(row => row.Code.toLowerCase()).filter(code => code));
+    setExistingCodes(codesInRows);
+  };
+
+  const handleKeyPress = (e, column) => {
+    if (column === "quantity") {
+      if (
+        !/[0-9.]/.test(e.key) ||
+        (e.key === "." && e.target.value.includes("."))
+      ) {
+        e.preventDefault();
+      }
+    } else if (inputTypes[column] === "number") {
+      if (e.charCode < 48 || e.charCode > 57) {
+        e.preventDefault();
       }
     }
   };
 
-  const fetchProductCode = async (rowIndex) => {
+  const fetchProductCode = async (rowIndex, code) => {
     try {
-      // Obtener el valor del input de "Code" desde la fila
-      const currentProductCode = rows[rowIndex]["Code"] || "0";
-      const currentDescription = rows[rowIndex]["Description"];
-      const codeToUse =
-        currentProductCode && currentProductCode !== currentValues["Code"]
-          ? currentDescription
-          : currentProductCode;
-
-      const response = await axios.get(`${presentationsCode}${codeToUse}`, {
+      const lowerCaseCode = code.toLowerCase();
+      if (existingCodes.has(lowerCaseCode) || existingCodes.has(rows[rowIndex].Code.toLowerCase())) {
+        setShowErrorDuplicate(true);
+        const updatedRows = rows.map((row, index) => {
+          if (index === rowIndex) {
+            return {
+              ...row,
+              Code: "",
+            };
+          }
+          return row;
+        });
+        setRows(updatedRows);
+        return;
+      }
+      const response = await axios.get(`${presentationsCode}${code}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
-      const productByCodeData = response.data.data[0];
-      console.log("PRODUCT BY CODE", productByCodeData);
+      const productData = response.data.data[0];
 
+      // Actualiza las filas con los datos del producto
       const updatedRows = rows.map((row, index) => {
-        if (
-          index === rowIndex &&
-          (row["Code"] === currentProductCode ||
-            row["Description"] === currentProductCode)
-        ) {
+        if (index === rowIndex) {
           return {
             ...row,
-            id_presentations: productByCodeData.id_presentations,
+            Code: productData.presentation_code,
+            Description: productData.product_name,
+            Packsize: productData.presentation_name,
+            UOM: productData.uom,
+            Price: productData.price,
           };
         }
         return row;
       });
-
+      setExistingCodes(new Set([...existingCodes].map(code => code.toLowerCase()).concat(lowerCaseCode)));
       setRows(updatedRows);
-      setProductByCode(productByCodeData);
     } catch (error) {
       console.error("Error al hacer la solicitud:", error.message);
+      // const currentProductCode = rows[rowIndex]["Code"] || "0"
+      setShowErrorCode(true);
+      const updatedRows = rows.map((row, index) => {
+        if (index === rowIndex) {
+          return {
+            ...row,
+            Code: "",
+          };
+        }
+        return row;
+      });
+      setRows(updatedRows);
     }
   };
 
   const createOrder = async () => {
+    setConfirmCreateOrder(false);
     try {
+      if (!customers) {
+        setShowErrorOrderModal(true);
+        setOrderError(
+          "Please select the customer you want to create the order for."
+        );
+        return;
+      }
       const filteredProducts = rows
         .filter((row) => parseFloat(row.quantity) > 0)
-        .map(({ quantity, price, id_presentations }) => ({
-          quantity: parseFloat(quantity),
-          price,
-          id_presentations,
-        }));
+        .map((row) => {
+          const product = presentations.find(
+            (product) => product.code === row.Code
+          );
 
+          return {
+            quantity: parseFloat(row.quantity),
+            id_presentations: product ? product.id : undefined,
+            price: Number(row.Net),
+          };
+        });
+
+      if (!filteredProducts || filteredProducts.length === 0) {
+        setShowErrorOrderModal(true);
+        setOrderError("Please choose a product for your order.");
+        return;
+      }
       const jsonOrderData = {
-        accountNumber_customers: customers?.accountNumber,
-        address_delivery: customers?.address,
-        date_delivery: customers?.orderDate,
-        id_suppliers: 1,
+        accountNumber_customers: customers[0]?.accountNumber,
+        address_delivery: customers[0]?.address,
+        date_delivery: orderDate,
+        id_suppliers: user?.id_supplier,
         net: parseFloat(totalNetSum),
         observation: specialRequirements,
         total: parseFloat(totalPriceSum),
         total_tax: parseFloat(totalTaxSum),
         products: filteredProducts,
       };
+
       const response = await axios.post(createStorageOrder, jsonOrderData, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
+      if (response.data.status !== 200) {
+        setShowErrorOrderModal(true);
+        setOrderError(
+          "Please check that the delivery day is available for this customer and that all products are correct."
+        );
+        return;
+      }
+      console.log("Response from create order:", response.data);
       setShowConfirmModal(true);
       setRows(Array.from({ length: 5 }, () => ({ ...initialRowsState })));
       setSpecialRequirements("");
+      setProducts([]);
     } catch (error) {
       setShowErrorOrderModal(true);
     }
@@ -489,66 +619,130 @@ export default function Table() {
 
   // BORRAR CASILLAS SI SE BORRA EL CODE
   const handleCodeChange = (e, rowIndex, column) => {
-    const newCodeValue = e.target.value;
-    setCurrentValues((prevValues) => ({
+    console.log("🚀 ~ handleCodeChange ~ previousCode[rowIndex]:", previousCode[rowIndex]);
+    const newCodeValue = e.target.value.toLowerCase();
+    setCurrentValues(prevValues => ({
       ...prevValues,
       [column]: newCodeValue,
     }));
 
-    if (column === "Code" && newCodeValue.trim() === "") {
-      const updatedRows = rows.map((row, index) => {
-        if (index === rowIndex) {
-          return {
-            ...initialRowsState,
-          };
+    if (column === "Code") {
+      if (newCodeValue.trim() === "") {
+        const currentCode = previousCode[rowIndex];
+        synchronizeExistingCodes();
+
+        const updatedRows = rows.map((row, index) => {
+          if (index === rowIndex) {
+            return {
+              ...initialRowsState,
+            };
+          }
+          return row;
+        });
+        setRows(updatedRows);
+
+        if (existingCodes.has(currentCode)) {
+          const updatedExistingCodes = new Set([...existingCodes]);
+          updatedExistingCodes.delete(currentCode);
+          setExistingCodes(updatedExistingCodes);
         }
-        return row;
-      });
-      setRows(updatedRows);
+
+        setPreviousCode(prev => {
+          const newPrev = { ...prev };
+          delete newPrev[rowIndex];
+          return newPrev;
+        });
+      } else {
+        const updatedRows = rows.map((row, index) => {
+          if (index === rowIndex) {
+            return {
+              ...row,
+              Code: newCodeValue,
+            };
+          }
+          return row;
+        });
+        setRows(updatedRows);
+      }
     }
   };
 
+  const placeholders = {
+    Code: "Enter code",
+    Description: "Enter description",
+    Packsize: "Enter pack size",
+    UOM: "Enter unit of measure",
+    quantity: "Enter quantity",
+    price: "Enter price",
+    Net: "Enter net",
+    "Total Net": "Enter total net",
+    "VAT %": "Enter VAT %",
+    "VAT £": "Enter VAT £",
+    "Total Price": "Enter total price",
+    "Unit Cost": "Enter unit cost",
+    Profit: "Enter profit",
+    "Price Band": "Enter price band",
+    "Total Cost": "Enter total cost",
+  };
+
   return (
-    <div className="flex flex-col p-8">
+    <div className="flex flex-col p-5">
       <div className="overflow-x-auto">
         <form
           ref={form}
           onKeyUp={(event) => onEnterKey(event)}
-          className="m-1 whitespace-nowrap"
+          className="m-2 whitespace-nowrap"
         >
-          <table className="w-full text-sm text-center table-auto">
-            <thead className="text-white">
+          <table className="w-full text-sm bg-white rounded-2xl text-center shadow-[rgba(17,_17,_26,_0.1)_0px_0px_16px]">
+            <thead className="sticky top-0 bg-white shadow-[0px_11px_15px_-3px_#edf2f7] ">
               <tr>
-                {columns.map(
-                  (column, index) =>
-                    initialColumns.includes(column) && (
+                {columns.map((column, index) => {
+                  const isVisible = initialColumns.includes(column);
+                  // Encuentra el índice de la primera y última columna visible
+                  const firstVisibleColumnIndex = columns.findIndex((col) =>
+                    initialColumns.includes(col)
+                  );
+                  const lastVisibleColumnIndex =
+                    columns.length -
+                    1 -
+                    [...columns]
+                      .reverse()
+                      .findIndex((col) => initialColumns.includes(col));
+
+                  return (
+                    isVisible && (
                       <th
                         key={index}
                         scope="col"
-                        className={`py-2 px-2 bg-dark-blue rounded-lg capitalize ${
-                          column === "quantity" ||
-                          column === "Code" ||
-                          column === "VAT %" ||
-                          column === "UOM" ||
-                          column === "Net"
-                            ? "w-20"
-                            : column === "Packsize"
-                            ? "w-40"
+                        className={`py-2 px-2 capitalize ${index === firstVisibleColumnIndex
+                          ? "rounded-tl-lg"
+                          : ""
+                          } ${index === lastVisibleColumnIndex
+                            ? "rounded-tr-lg"
                             : ""
-                        }`}
+                          } ${column === "quantity" ||
+                            column === "VAT %" ||
+                            column === "UOM" ||
+                            column === "Net"
+                            ? "w-20"
+                            : column === "Packsize" || column === "Total Price"
+                              ? "w-40"
+                              : column === "Code"
+                                ? "w-[8em]"
+                                : ""
+                          }`}
                         onContextMenu={(e) => handleContextMenu(e)}
-                        style={{
-                          boxShadow:
-                            "0px 5px 5px rgba(0, 0, 0, 0.5), 0px 0px 0px rgba(0, 0, 0, 0.2)",
-                        }}
                       >
-                        <p className="text-lg text-white">{column}</p>
+                        <p className="text-base text-dark-blue my-2">
+                          {column}
+                        </p>
                       </th>
                     )
-                )}
+                  );
+                })}
               </tr>
             </thead>
-            <tbody className="shadow-[rgba(0,_0,_0,_0.24)_0px_3px_8px] rounded-xl">
+            <tbody className="">
               {rows.map((row, rowIndex) => (
                 <tr key={rowIndex}>
                   {/* CODIGO DE PRODUCTO */}
@@ -557,9 +751,7 @@ export default function Table() {
                       initialColumns.includes(column) && (
                         <React.Fragment key={columnIndex}>
                           <td
-                            className={`px-3 py-2 border-r-2 border-r-[#0c547a] border-[#808e94] ${
-                              rowIndex === 0 ? "border-t-0" : "border-t-2"
-                            } `}
+                            className={`px-3 py-[0.2em] border-b-[1.5px] border-x-[0.5px] border-x-gray-100`}
                             tabIndex={0}
                             style={{ overflow: "visible" }}
                           >
@@ -577,7 +769,7 @@ export default function Table() {
                               "Price Band",
                               "Total Cost",
                             ].includes(column) ? (
-                              <span>
+                              <span onClick={() => setIsSelectDisabled(false)}>
                                 {column === "Packsize" && row[column]}
                                 {column === "UOM" && row[column]}
                                 {column === "price" && calculatePrice(row)}
@@ -596,44 +788,64 @@ export default function Table() {
                                 {column === "Description" && (
                                   <Select
                                     className="w-full"
+                                    menuPlacement="auto"
                                     menuPortalTarget={document.body}
+                                    onInputChange={(newValue) => {
+                                      const sortedAndFilteredData = sortData(
+                                        presentations,
+                                        newValue
+                                      );
+                                      setDescriptionData(sortedAndFilteredData);
+                                    }}
                                     options={
                                       DescriptionData
                                         ? DescriptionData.map((item) => ({
-                                            value: item.productName,
-                                            label: item.concatenatedName,
-                                            code: item.code,
-                                          }))
+                                          value: item.product_name,
+                                          label: `${(item.code && item.product_name && item.name) ? `${item.code} - ${item.product_name} - ${item.name}` : "Loading..."}`,
+
+                                          code: item.code,
+                                        }))
                                         : []
                                     }
                                     value={{
                                       label: row[column] || "",
                                       value: row[column] || "",
                                     }}
-                                    onChange={(selectedDescription, e) => {
-                                      setCurrentValues((prevValues) => ({
-                                        ...prevValues,
-                                        [column]: selectedDescription.code,
-                                      }));
+                                    onChange={(selectedOption) => {
+                                      console.log(
+                                        "🚀 ~ DescriptionData:",
+                                        DescriptionData
+                                      );
+                                      const selectedProduct =
+                                        DescriptionData.find(
+                                          (item) =>
+                                            item.code === selectedOption.code
+                                        );
 
-                                      const updatedRows = [...rows];
-                                      updatedRows[rowIndex][column] =
-                                        selectedDescription.code;
-                                      if (selectedDescription.code) {
-                                        fetchProductCode(rowIndex);
-                                      }
-                                      setRows(updatedRows);
-                                    }}
-                                    onKeyDown={(selectedDescription) => {
-                                      if (selectedDescription.code) {
-                                        fetchProductCode(rowIndex);
+                                      if (selectedProduct) {
+                                        fetchProductCode(
+                                          rowIndex,
+                                          selectedProduct.code
+                                        );
                                       }
                                     }}
+                                    isDisabled={isSelectDisabled}
+                                    onBlur={() => setIsSelectDisabled(true)}
                                     styles={{
                                       control: (provided) => ({
                                         ...provided,
                                         border: "none",
                                         boxShadow: "none",
+                                        backgroundColor: "transparent",
+                                      }),
+                                      menu: (provided) => ({
+                                        ...provided,
+                                        width: "33em",
+                                      }),
+
+                                      singleValue: (provided, state) => ({
+                                        ...provided,
+                                        color: "#04444F",
                                       }),
                                       dropdownIndicator: (provided) => ({
                                         ...provided,
@@ -648,38 +860,56 @@ export default function Table() {
                                 )}
                               </span>
                             ) : (
-                              <input
-                                type={inputTypes[column]}
-                                ref={inputRefs[column][rowIndex]}
-                                className={`pl-2 h-[30px] outline-none w-full ${
-                                  inputTypes[column] === "number"
+                              <>
+                                <input
+                                  type={inputTypes[column]}
+                                  ref={inputRefs[column][rowIndex]}
+                                  data-field-name={column}
+                                  className={`pl-2 h-[30px] outline-none w-full ${inputTypes[column] === "number"
                                     ? "hide-number-arrows"
                                     : ""
-                                }`}
-                                value={row[column] || ""}
-                                onChange={(e) => {
-                                  setCurrentValues((prevValues) => ({
-                                    ...prevValues,
-                                    [column]: e.target.value,
-                                  }));
-                                  const updatedRows = [...rows];
-                                  updatedRows[rowIndex][column] =
-                                    e.target.value;
-                                  setRows(updatedRows);
-                                  handleCodeChange(e, rowIndex, column);
-                                }}
-                                onKeyDown={(e) =>
-                                  handleKeyDown(e, rowIndex, column)
-                                }
-                                onKeyPress={(e) => {
-                                  if (
-                                    inputTypes[column] === "number" &&
-                                    (e.charCode < 48 || e.charCode > 57)
-                                  ) {
-                                    e.preventDefault();
+                                    } `}
+                                  value={row[column] || ""}
+                                  onChange={(e) => {
+                                    if (column === "Net") {
+                                      let newValue = parseFloat(e.target.value);
+
+                                      newValue = newValue.toFixed(2);
+                                    }
+
+                                    setCurrentValues((prevValues) => ({
+                                      ...prevValues,
+                                      [column]: e.target.value,
+                                    }));
+                                    const updatedRows = [...rows];
+                                    updatedRows[rowIndex][column] =
+                                      e.target.value;
+                                    setRows(updatedRows);
+                                    handleCodeChange(e, rowIndex, column);
+                                  }}
+                                  step={0.1}
+                                  onKeyDown={(e) =>
+                                    handleKeyDown(e, rowIndex, column)
                                   }
-                                }}
-                              />
+                                  onKeyPress={(e) => {
+                                    if (column === "Net" && e.charCode === 46) {
+                                      return;
+                                    }
+                                    if (column === "quantity") {
+                                      handleKeyPress(e, column);
+                                    }
+                                    if (
+                                      inputTypes[column] === "number" &&
+                                      (e.charCode < 48 || e.charCode > 57)
+                                    ) {
+                                      e.preventDefault();
+                                    }
+                                  }}
+                                  readOnly={column === "Net" && isReadOnly}
+                                  onDoubleClick={() => setIsReadOnly(false)}
+                                  onBlur={() => setIsReadOnly(true)}
+                                />
+                              </>
                             )}
                           </td>
                         </React.Fragment>
@@ -693,14 +923,14 @@ export default function Table() {
           {showCheckboxColumn === true && (
             <div
               ref={menuRef}
-              className="absolute bg-white p-2 border rounded"
+              className="absolute p-2 border rounded bg-white"
               style={{
                 top: `${mouseCoords.y}px`,
                 left: `${mouseCoords.x}px`,
               }}
             >
               <h4 className="font-bold mb-2">Show/Hide Columns</h4>
-              {columns.map((column) => (
+              {columns.map((column, columnIndex) => (
                 <div key={column} className={`flex items-center`}>
                   <input
                     type="checkbox"
@@ -723,7 +953,7 @@ export default function Table() {
           )}
         </form>
       </div>
-      <div className="flex justify-center mb-40 w-full mt-5">
+      {/* <div className="flex justify-center mb-20 w-full mt-5">
         <h1 className="bg-dark-blue text-white font-semibold p-3 rounded-tl-lg rounded-bl-lg w-[30%] items-center text-center flex justify-center">
           Special requirements
         </h1>
@@ -735,19 +965,57 @@ export default function Table() {
           placeholder="Write your comments here"
         />
         <button
-          onClick={createOrder}
+          onClick={() => setConfirmCreateOrder(true)}
           className="bg-primary-blue py-2 px-4 rounded-lg text-white font-medium mr-2 w-[15%]"
         >
           Send order
-        </button>
-      </div>
+        </button> 
+      </div>*/}
+
       <ModalSuccessfull
         isvisible={showConfirmModal}
         onClose={() => setShowConfirmModal(false)}
+        title="Congratulations"
+        text="Your order has been shipped, thank you for using"
+        textGrownet="Grownet"
+        button=" Close"
+        confirmed={true}
       />
+      {confirmCreateOrder && (
+        <ModalSuccessfull
+          isvisible={confirmCreateOrder}
+          onClose={() => setConfirmCreateOrder(false)}
+          title="Confirmation!"
+          text="Are you sure about creating this order?"
+          textGrownet=""
+          button="Confirm"
+          sendOrder={createOrder}
+        />
+      )}
+
       <ModalOrderError
         isvisible={showErrorOrderModal}
         onClose={() => setShowErrorOrderModal(false)}
+        error={orderError}
+        title={"Sorry"}
+      />
+      <ModalOrderError
+        isvisible={showErrorCode}
+        onClose={() => setShowErrorCode(false)}
+        error={orderError}
+        title={"Incorrect code"}
+        message={
+          "The entered code is incorrect. Please verify and try again with a valid code."
+        }
+      />
+      <ModalOrderError
+        isvisible={showErrorDuplicate}
+        onClose={() => setShowErrorDuplicate(false)}
+        error={orderError}
+        title={"Duplicate code"}
+        message={
+          "The product you are entering is duplicate."
+        }
       />
     </div>
   );

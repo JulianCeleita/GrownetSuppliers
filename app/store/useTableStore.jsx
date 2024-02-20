@@ -10,6 +10,8 @@ export const useTableStore = create((set) => ({
   totalCostSum: "0.00",
   totalProfit: "0.00",
   totalProfitPercentage: "0.00",
+  orderDetail: [],
+  setOrderDetail: (order) => set({ orderDetail: order }),
   setTotalNetSum: (total) => set({ totalNetSum: total }),
   setTotalPriceSum: (total) => set({ totalPriceSum: total }),
   setTotalTaxSum: (total) => set({ totalTaxSum: total }),

@@ -5,6 +5,7 @@
 /.pnp
 .pnp.js
 .yarn/install-state.gz
+.vscode
 
 # testing
 /coverage
@@ -35,3 +36,6 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 app/components/Table.jsx
+
+# urls.config.js
+/app/config/urls.config.js

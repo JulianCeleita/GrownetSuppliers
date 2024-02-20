@@ -1,7 +1,7 @@
-import { updateSupplierUrl } from "@/app/config/urls.config";
 import { ExclamationCircleIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import axios from "axios";
 import { useEffect, useState } from "react";
+import { updateSupplierUrl } from "../../app/config/urls.config";
 import useTokenStore from "../store/useTokenStore";
 import { fetchSuppliers } from "../suppliers/page";
 
@@ -40,7 +40,7 @@ function EditSupplier({
       formData.append("image", image);
     }
     axios
-      .post(`${updateSupplierUrl}${supplier.id}`, formData, {
+      .post(`${updateSupplierUrl}${supplier?.id}`, formData, {
         headers: {
           Authorization: `Bearer ${token}`,
           "Content-Type": "multipart/form-data",
@@ -68,8 +68,9 @@ function EditSupplier({
         <h1 className="text-2xl font-bold text-green mb-2">Edit Supplier</h1>
         <form className="text-left" onSubmit={handleEditSupplier}>
           <div>
-            <label>Name: </label>
+            <label htmlFor="name">Name: </label>
             <input
+              id="name"
               className="border p-3 rounded-md mr-3 mt-3"
               placeholder="Foodpoint"
               type="text"
@@ -77,10 +78,11 @@ function EditSupplier({
               onChange={(e) => setEditedName(e.target.value)}
               required
             ></input>
-            <label>Email: </label>
+            <label htmlFor="email">Email: </label>
             <input
+              id="email"
               className="border p-3 rounded-md mr-3 mt-3 w-200"
-              placeholder="email@grownet.com"
+              placeholder="your-email@grownetapp.com"
               type="email"
               value={editedEmail}
               onChange={(e) => setEditedEmail(e.target.value)}

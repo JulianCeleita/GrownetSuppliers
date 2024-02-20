@@ -1,7 +1,7 @@
-import { addSupplierUrl } from "@/app/config/urls.config";
 import { XMarkIcon } from "@heroicons/react/24/outline";
 import axios from "axios";
 import { useState } from "react";
+import { addSupplierUrl } from "../../app/config/urls.config";
 import useTokenStore from "../store/useTokenStore";
 import { fetchSuppliers } from "../suppliers/page";
 
@@ -36,8 +36,6 @@ function NewSupplier({ isvisible, onClose, setSuppliers }) {
     formData.forEach((value, key) => {
       formDataObject[key] = value;
     });
-
-    console.log("FormData:", formDataObject);
 
     try {
       const response = await axios.post(addSupplierUrl, formData, {
@@ -90,7 +88,7 @@ function NewSupplier({ isvisible, onClose, setSuppliers }) {
             <label>Email: </label>
             <input
               className="border p-3 rounded-md mr-3 mt-3 w-200"
-              placeholder="email@grownet.com"
+              placeholder="your-email@grownetapp.com"
               type="email"
               value={emailSupplier}
               onChange={(e) => setEmailSupplier(e.target.value)}

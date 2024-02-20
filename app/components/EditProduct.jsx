@@ -4,11 +4,10 @@ import {
 } from "@heroicons/react/24/outline";
 import axios from "axios";
 import { useEffect, useState } from "react";
-import ReactCountryFlag from "react-country-flag";
 import {
   familiesUrl,
   uomUrl,
-  updateProductUrl,
+  updateProductUrl
 } from "../config/urls.config";
 import useCategoryStore from "../store/useCategoryStore";
 import useTokenStore from "../store/useTokenStore";
@@ -42,6 +41,7 @@ function EditProduct({ isvisible, onClose, fetchProducts, product }) {
 
   // Api families
   useEffect(() => {
+    // TODO: realizar test a editProduct
     const fetchFamilies = async () => {
       try {
         const response = await axios.get(familiesUrl, {
@@ -50,7 +50,7 @@ function EditProduct({ isvisible, onClose, fetchProducts, product }) {
           },
         });
 
-        const sortedFamilies = response.data.families.sort((a, b) =>
+        const sortedFamilies = response?.data?.families?.sort((a, b) =>
           a.name.localeCompare(b.name)
         );
         setFamilies(sortedFamilies);
@@ -104,19 +104,16 @@ function EditProduct({ isvisible, onClose, fetchProducts, product }) {
     const formData = new FormData();
     formData.append("name", addProduct);
     formData.append("category_id", selectedCategoryId);
-    formData.append("country_indicative", "44");
     formData.append("family_id", selectedFamiliesStatus);
     formData.append("state", statusMapping[selectedStatus]);
     if (selectedImageName !== null) {
       formData.append("image", selectedImageName);
     }
-    formData.append("code", "Y100");
 
     const formDataObject = {};
     formData.forEach((value, key) => {
       formDataObject[key] = value;
     });
-    console.log("ESTO ENVIA:", formDataObject);
 
     try {
       const response = await axios.post(
@@ -131,7 +128,6 @@ function EditProduct({ isvisible, onClose, fetchProducts, product }) {
       );
       onClose();
       await fetchProducts(token);
-      console.log("ESTO ENVIA:", formDataObject);
     } catch (error) {
       console.error("Error al editar el producto:", error);
     }
@@ -170,7 +166,7 @@ function EditProduct({ isvisible, onClose, fetchProducts, product }) {
               value={selectedFamiliesStatus}
               required
             >
-              <option value="" disabled selected>
+              <option value="" disabled>
                 Select family
               </option>
               {families.map((family) => (
@@ -191,7 +187,7 @@ function EditProduct({ isvisible, onClose, fetchProducts, product }) {
                 value={selectedCategoryId}
                 required
               >
-                <option value="" disabled selected>
+                <option value="" disabled >
                   Select category
                 </option>
                 {categories.map((category) => (
@@ -199,7 +195,7 @@ function EditProduct({ isvisible, onClose, fetchProducts, product }) {
                     {category.name}
                   </option>
                 ))}
-              </select>              
+              </select>
             </div>
           </div>
           <label className="mt-4">Attach the product&apos;s photo: </label>
