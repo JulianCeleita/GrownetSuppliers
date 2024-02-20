@@ -1,10 +1,11 @@
 "use client";
 import {
-  PlusCircleIcon,
-  PrinterIcon,
   CalendarIcon,
   ExclamationCircleIcon,
+  PlusCircleIcon,
+  PrinterIcon,
 } from "@heroicons/react/24/outline";
+import axios from "axios";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -12,20 +13,16 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import Select from "react-select";
 import {
-  fetchOrders,
   fetchOrdersDate,
-  fetchOrdersDateByWorkDate,
-  fetchOrdersSupplier,
+  fetchOrdersDateByWorkDate
 } from "../api/ordersRequest";
 import { CircleProgressBar } from "../components/CircleProgressBar";
+import { printInvoices } from "../config/urls.config";
 import Layout from "../layoutS";
 import usePercentageStore from "../store/usePercentageStore";
 import useTokenStore from "../store/useTokenStore";
 import useUserStore from "../store/useUserStore";
 import useWorkDateStore from "../store/useWorkDateStore";
-import { getPercentageOrder } from "../api/percentageOrderRequest";
-import { printInvoices } from "../config/urls.config";
-import axios from "axios";
 
 export const customStyles = {
   placeholder: (provided) => ({
@@ -66,14 +63,6 @@ const OrderView = () => {
   const [showPercentage, setShowPercentage] = useState(null);
   const [totalNet, setTotalNet] = useState("");
   const [routeId, setRouteId] = useState()
-  //console.log("ordersWorkDate", ordersWorkDate);
-  //console.log("selectedOrders", selectedOrders);
-  // console.log("endDate", endDate);
-  // console.log("startDateByNet", startDateByNet);
-  // console.log("endDateByNet", endDateByNet);
-  // console.log("totalNet", totalNet);
-  //console.log("workDate", workDate);
-  // console.log("routePercentages", routePercentages);
 
   const formatDateToShow = (dateString) => {
     if (!dateString) return "Loading...";
@@ -161,19 +150,6 @@ const OrderView = () => {
       }
     }
   }, [routePercentages]);
-
-  useEffect(() => {
-    if (objectToArray(selectedOrders).length === 1) {
-      getPercentageOrder(
-        token,
-        selectedDate !== "" ? selectedDate : workDate,
-        objectToArray(selectedOrders)[0],
-        setShowPercentage
-      );
-    } else {
-      setShowPercentage(null);
-    }
-  }, [selectedOrders]);
 
   const subtractDays = (date, days) => {
     const result = new Date(date);
@@ -617,4 +593,5 @@ const OrderView = () => {
     </Layout>
   );
 };
+
 export default OrderView;
