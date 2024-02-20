@@ -65,7 +65,7 @@ const OrderView = () => {
   const [filterType, setFilterType] = useState("date");
   const [showPercentage, setShowPercentage] = useState(null);
   const [totalNet, setTotalNet] = useState("");
-  const [selectedReferences, setSelectedReferences] = useState([]);
+  const [routeId, setRouteId] = useState()
   //console.log("ordersWorkDate", ordersWorkDate);
   //console.log("selectedOrders", selectedOrders);
   // console.log("endDate", endDate);
@@ -130,7 +130,7 @@ const OrderView = () => {
     };
 
     fetchData();
-  }, [user, token, selectedOrders]);
+  }, [user, token]);
 
   useEffect(() => {
     fetchOrdersDateByWorkDate(token, workDate, setOrdersWorkDate);
@@ -141,12 +141,12 @@ const OrderView = () => {
       token,
       endDateByNet,
       startDateByNet,
-      selectedOrders.route,
+      routeId,
       setTotalNet,
       setOrders,
       setIsLoading
     );
-  }, [endDateByNet, startDateByNet, selectedOrders.route]);
+  }, [endDateByNet, startDateByNet, routeId]);
 
   useEffect(() => {
     if (routePercentages) {
@@ -164,7 +164,6 @@ const OrderView = () => {
 
   useEffect(() => {
     if (objectToArray(selectedOrders).length === 1) {
-      console.log("selectedOrders.[0]", objectToArray(selectedOrders)[0]);
       getPercentageOrder(
         token,
         selectedDate !== "" ? selectedDate : workDate,
@@ -239,17 +238,12 @@ const OrderView = () => {
     setSelectedOrders((prevState) => ({
       ...prevState,
       [order.reference]: checked,
-      route: order.route_id,
-    }));
-    setSelectedReferences((prevState) => ({
-      ...prevState,
-      [order.reference]: checked,
     }));
   };
 
   const selectAll = (checked) => {
     const newSelectedOrders = {};
-    sortedOrders.forEach((order) => {
+    filteredOrders.forEach((order) => {
       newSelectedOrders[order.reference] = checked;
     });
     setSelectedOrders(newSelectedOrders);
@@ -263,13 +257,11 @@ const OrderView = () => {
   };
 
   const printOrders = () => {
-    console.log(selectedReferences);
-    const ordersToPrint = objectToArray(selectedReferences);
+    const ordersToPrint = objectToArray(selectedOrders);
 
     const postDataPrint = {
       references: ordersToPrint,
     };
-    console.log("🚀 ~ printOrders ~ ordersToPrint:", postDataPrint);
 
     axios
       .post(printInvoices, postDataPrint, {
@@ -331,8 +323,8 @@ const OrderView = () => {
 
   const filteredOrders = selectedRoute
     ? sortedOrders.filter(
-        (order) => order.route.toLowerCase() === selectedRoute.toLowerCase()
-      )
+      (order) => order.route.toLowerCase() === selectedRoute.toLowerCase()
+    )
     : sortedOrders;
 
   const statusColorClass = (status) => {
@@ -349,8 +341,6 @@ const OrderView = () => {
         return "bg-gray-500";
     }
   };
-
-  console.log("filteredOrders", filteredOrders);
 
   return (
     <Layout>
@@ -563,8 +553,12 @@ const OrderView = () => {
                             type="checkbox"
                             className="form-checkbox h-5 w-5 text-blue-500"
                             checked={!!selectedOrders[order.reference]}
-                            onChange={(e) =>
+                            onChange={(e) => {
                               handleOrderSelect(order, e.target.checked)
+                              if (e.target.checked) {
+                                setRouteId(order.route_id)
+                              }
+                            }
                             }
                           />
                         </label>
