@@ -18,6 +18,7 @@ import Layout from "../../layoutS";
 import { useTableStore } from "../../store/useTableStore";
 import useTokenStore from "../../store/useTokenStore";
 import useUserStore from "../../store/useUserStore";
+import { fetchCustomersDate } from "@/app/api/ordersRequest";
 
 const CreateOrderView = () => {
   const { token } = useTokenStore();
@@ -34,6 +35,7 @@ const CreateOrderView = () => {
   const [details, setDetails] = useState(false);
   const [restaurants, setRestaurants] = useState(null);
   const [selectedAccNumber, setSelectedAccNumber] = useState("");
+  const [selectedAccNumber2, setSelectedAccNumber2] = useState("");
   const [selectedAccName, setSelectedAccName] = useState("");
   const [isDropdownVisible, setIsDropdownVisible] = useState(false);
   const [isNameDropdownVisible, setIsNameDropdownVisible] = useState(false);
@@ -42,6 +44,7 @@ const CreateOrderView = () => {
   const [confirmCreateOrder, setConfirmCreateOrder] = useState(false);
   const [specialRequirements, setSpecialRequirements] = useState("");
   const { user, setUser } = useUserStore();
+  const [customerDate, setCustomerDate] = useState();
   //Fecha input
   function getCurrentDate() {
     const today = new Date();
@@ -170,6 +173,11 @@ const CreateOrderView = () => {
       console.error("Error fetching AccNumber data", error);
     }
   };
+  console.log("customerDate", customerDate);
+
+  useEffect(() => {
+    fetchCustomersDate(token, orderDate, selectedAccNumber2, setCustomerDate);
+  }, [orderDate, selectedAccNumber2]);
 
   const restaurantList = Array.isArray(restaurants) ? restaurants : [];
 
@@ -219,8 +227,6 @@ const CreateOrderView = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  console.log("customers", customers);
-
   return (
     <Layout>
       <div className="max-w-[650px] -mt-[110px] ml-[115px]">
@@ -232,10 +238,12 @@ const CreateOrderView = () => {
               options={restaurantList.map((restaurant) => ({
                 value: restaurant.accountName,
                 label: restaurant.accountName,
+                accNumber: restaurant.accountNumber,
               }))}
               onChange={(selectedOption) => {
                 setSelectedAccName(selectedOption.value);
                 setIsDropdownVisible(false);
+                setSelectedAccNumber2(selectedOption.accNumber);
               }}
               value={{
                 value: selectedAccNumber,
@@ -261,6 +269,7 @@ const CreateOrderView = () => {
               onChange={(selectedOption) => {
                 setSelectedAccNumber(selectedOption.value);
                 setIsDropdownVisible(false);
+                setSelectedAccNumber2(selectedOption.value);
               }}
               value={{
                 value: selectedAccNumber,
@@ -441,14 +450,19 @@ const CreateOrderView = () => {
               {customers && customers[0].email ? customers[0].email : "-"}
             </h3>
           </div>
-          <div className="flex flex-col items-start">
-            <h3 className="font-medium">Route:</h3>
-            <h3>{"Loading..."}</h3>
-          </div>
-          <div className="flex flex-col items-start">
-            <h3 className="font-medium">Drop:</h3>
-            <h3>{"Loading..."}</h3>
-          </div>
+          {customerDate && (
+            <>
+              <div className="flex flex-col items-start">
+                <h3 className="font-medium">Route:</h3>
+                <h3>{customerDate.nameRoute}</h3>
+              </div>
+              <div className="flex flex-col items-start">
+                <h3 className="font-medium">Drop:</h3>
+                <h3>{customerDate.drop}</h3>
+              </div>
+            </>
+          )}
+
           <div className="flex flex-col items-start">
             <h3 className="font-medium">Special requirements:</h3>
             <input

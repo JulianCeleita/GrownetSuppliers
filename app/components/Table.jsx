@@ -520,7 +520,7 @@ export default function Table({
         },
       });
       const productData = response.data.data[0];
-
+      console.log("Product data:", productData);
       // Actualiza las filas con los datos del producto
       const updatedRows = rows.map((row, index) => {
         if (index === rowIndex) {
@@ -531,6 +531,8 @@ export default function Table({
             Packsize: productData.presentation_name,
             UOM: productData.uom,
             Price: productData.price,
+            "Unit Cost": productData.cost,
+            //TODO: Si van agregar mas campos, agregarlos aqui
           };
         }
         return row;
@@ -812,10 +814,6 @@ export default function Table({
                                       value: row[column] || "",
                                     }}
                                     onChange={(selectedOption) => {
-                                      console.log(
-                                        "🚀 ~ DescriptionData:",
-                                        DescriptionData
-                                      );
                                       const selectedProduct =
                                         DescriptionData.find(
                                           (item) =>
