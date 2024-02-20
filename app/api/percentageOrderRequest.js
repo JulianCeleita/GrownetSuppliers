@@ -8,7 +8,6 @@ export const getPercentageOrder = async (
   setPercentage,
   setDataLoaded
 ) => {
-  console.log({ token, date, order_id, setPercentage });
   try {
     const { data } = await axios.post(
       routesByDate,
@@ -19,22 +18,17 @@ export const getPercentageOrder = async (
         },
       }
     );
-
-    console.log(data);
     setDataLoaded(true);
-
     data.routes.forEach((route) => {
       route.accounts.forEach((account) => {
-        // console.log("order reference", account.orders_reference);
-        // console.log("order reference", order_id);
         if (account.orders_reference === Number(order_id)) {
           const percentage = Number(account.percentage_loading).toFixed(0);
           setPercentage(percentage);
-          console.log("holaaaaa");
         }
       });
     });
   } catch (error) {
+    setDataLoaded(false);
     console.log("Error in getPercentageOrder:", error);
   }
 };
