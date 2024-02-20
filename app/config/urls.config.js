@@ -150,3 +150,7 @@ export const dateAvailable =
 // }
 export const routesByDate =
   "https://api.grownetapp.com/grownet/api/deliveryRoutes/show";
+
+// Types
+export const typesUrl =
+  "https://api.grownetapp.com/grownet/api/types/all"
