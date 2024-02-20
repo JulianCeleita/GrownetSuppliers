@@ -1,6 +1,5 @@
 import axios from "axios";
 import {
-  customersDate,
   orderDetail,
   ordersDate,
   ordersSupplierUrl,
@@ -163,29 +162,5 @@ export const fetchOrdersDateByWorkDate = async (
     // console.log("response data", response.data);
   } catch (error) {
     console.error("Error al obtener el orders by date:", error);
-  }
-};
-
-export const fetchCustomersDate = async (
-  token,
-  date,
-  accountNumber,
-  setCustomerDate
-) => {
-  const postData = {
-    date: date,
-    accountNumber: accountNumber,
-  };
-  console.log("postData customer", postData);
-  try {
-    const response = await axios.post(customersDate, postData, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
-    setCustomerDate(response.data.routes);
-    console.log("response data customer date", response.data);
-  } catch (error) {
-    console.error("Error al obtener customer date:", error);
   }
 };
