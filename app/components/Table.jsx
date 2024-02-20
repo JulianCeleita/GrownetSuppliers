@@ -128,6 +128,7 @@ export default function Table({
   const [existingCodes, setExistingCodes] = useState(new Set());
   const [isSelectDisabled, setIsSelectDisabled] = useState(true);
   const [previousCode, setPreviousCode] = useState({});
+  const [showErrorDuplicate, setShowErrorDuplicate] = useState(false);
 
   const columns = [
     "Code",
@@ -438,24 +439,18 @@ export default function Table({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [productByCode]);
 
-  useEffect(() => {
-
-    console.log("existing codes", existingCodes)
-  }, [existingCodes])
-
-
   // AGREGAR NUEVA FILA
   const addNewRow = () => {
     setRows((prevRows) => [...prevRows, { ...initialRowsState }]);
   };
 
   // FUNCIONALIDAD TECLA ENTER
-  const handleKeyDown = (e, rowIndex, fieldName) => {
+  const handleKeyDown = async (e, rowIndex, fieldName) => {
     if (e.key === "Enter" && e.target.tagName.toLowerCase() !== "textarea") {
       e.preventDefault();
-
+  
       let productCode = "";
-
+  
       if (fieldName === "Code" && currentValues["Code"]?.trim() !== "") {
         productCode = currentValues["Code"];
       } else if (
@@ -467,11 +462,12 @@ export default function Table({
         );
         productCode = selectedProduct ? selectedProduct.code : "";
       }
-
+  
       if (productCode) {
-        fetchProductCode(rowIndex, productCode);
+        await fetchProductCode(rowIndex, productCode);
+        synchronizeExistingCodes();
       }
-
+  
       const nextRowIndex = rowIndex + 1;
       if (nextRowIndex < rows.length) {
         form.current[nextRowIndex].querySelector('input[type="text"]')?.focus();
@@ -479,6 +475,11 @@ export default function Table({
         addNewRow();
       }
     }
+  };
+  
+  const synchronizeExistingCodes = () => {
+    const codesInRows = new Set(rows.map(row => row.Code.toLowerCase()).filter(code => code));
+    setExistingCodes(codesInRows);
   };
 
   const handleKeyPress = (e, column) => {
@@ -500,7 +501,7 @@ export default function Table({
     try {
       const lowerCaseCode = code.toLowerCase();
       if (existingCodes.has(lowerCaseCode) || existingCodes.has(rows[rowIndex].Code.toLowerCase())) {
-        alert("This product is exist.");
+        setShowErrorDuplicate(true);
         const updatedRows = rows.map((row, index) => {
           if (index === rowIndex) {
             return {
@@ -616,16 +617,6 @@ export default function Table({
     }
   };
 
-  const handleFocusOnCodeInput = (rowIndex, code) => {
-    // Establecer el código anterior solo si no se ha establecido previamente para esta fila
-    setPreviousCode(prev => {
-      if (prev[rowIndex] === undefined) {
-        return { ...prev, [rowIndex]: code.toLowerCase() };
-      }
-      return prev;
-    });
-  };
-
   // BORRAR CASILLAS SI SE BORRA EL CODE
   const handleCodeChange = (e, rowIndex, column) => {
     console.log("🚀 ~ handleCodeChange ~ previousCode[rowIndex]:", previousCode[rowIndex]);
@@ -636,12 +627,10 @@ export default function Table({
     }));
 
     if (column === "Code") {
-      // Verifica si el código se está borrando
       if (newCodeValue.trim() === "") {
-        // Utiliza el código anterior para las operaciones de borrado y actualización de existingCodes
         const currentCode = previousCode[rowIndex];
+        synchronizeExistingCodes();
 
-        // Procede a limpiar el código de la fila
         const updatedRows = rows.map((row, index) => {
           if (index === rowIndex) {
             return {
@@ -652,21 +641,18 @@ export default function Table({
         });
         setRows(updatedRows);
 
-        // Elimina el código anterior de existingCodes si existe
         if (existingCodes.has(currentCode)) {
           const updatedExistingCodes = new Set([...existingCodes]);
           updatedExistingCodes.delete(currentCode);
           setExistingCodes(updatedExistingCodes);
         }
 
-        // Restablece el previousCode para esta fila después de la eliminación
         setPreviousCode(prev => {
           const newPrev = { ...prev };
-          delete newPrev[rowIndex]; // Asegura remover el estado previo para esta fila
+          delete newPrev[rowIndex];
           return newPrev;
         });
       } else {
-        // Actualizar el código en la fila sin borrar
         const updatedRows = rows.map((row, index) => {
           if (index === rowIndex) {
             return {
@@ -677,8 +663,6 @@ export default function Table({
           return row;
         });
         setRows(updatedRows);
-
-        // No actualiza previousCode aquí para evitar sobrescribir el valor original
       }
     }
   };
@@ -907,12 +891,6 @@ export default function Table({
                                   onKeyDown={(e) =>
                                     handleKeyDown(e, rowIndex, column)
                                   }
-                                  onFocus={(e) => {
-                                    if (column == "Code") {
-                                      console.log("Hola")
-                                      handleFocusOnCodeInput(rowIndex, row.Code)
-                                    }
-                                  }}
                                   onKeyPress={(e) => {
                                     if (column === "Net" && e.charCode === 46) {
                                       return;
@@ -1028,6 +1006,15 @@ export default function Table({
         title={"Incorrect code"}
         message={
           "The entered code is incorrect. Please verify and try again with a valid code."
+        }
+      />
+      <ModalOrderError
+        isvisible={showErrorDuplicate}
+        onClose={() => setShowErrorDuplicate(false)}
+        error={orderError}
+        title={"Duplicate code"}
+        message={
+          "The product you are entering is duplicate."
         }
       />
     </div>

@@ -151,6 +151,7 @@ export default function EditTable({
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [showErrorOrderModal, setShowErrorOrderModal] = useState(false);
   const [showErrorCode, setShowErrorCode] = useState(false);
+  const [showErrorDuplicate, setShowErrorDuplicate] = useState(false);
 
   const [mouseCoords, setMouseCoords] = useState({ x: 0, y: 0 });
   const router = useRouter();
@@ -158,6 +159,8 @@ export default function EditTable({
   const [orderError, setOrderError] = useState("");
   const [isSelectDisabled, setIsSelectDisabled] = useState(true);
   const isEditable = orderDetail?.state_name === "Preparing";
+  const [existingCodes, setExistingCodes] = useState(new Set());
+  const [previousCode, setPreviousCode] = useState({});
 
   const columns = [
     "Code",
@@ -298,8 +301,22 @@ export default function EditTable({
         setRows(initialRows);
       }
       setSpecialRequirements(orderDetail.observation);
+
+      const newExistingCodes = new Set();
+      orderDetail.products.forEach(product => {
+        const code = product.presentations_code;
+        if (code) {
+          newExistingCodes.add(code.toLowerCase());
+        }
+      });
+      setExistingCodes(newExistingCodes);
     }
   }, [orderDetail, percentageDetail, dataLoaded]);
+
+  useEffect(() => {
+    console.log("existing codes", existingCodes);
+  }, [existingCodes])
+
 
   useEffect(() => {
     const fetchPresentationData = async () => {
@@ -532,7 +549,7 @@ export default function EditTable({
   const addNewRow = () => {
     setRows((prevRows) => [
       ...prevRows,
-      { ...initialRowsState, isExistingProduct: false }, // Aquí se agrega la nueva fila sin marcar como existente
+      { ...initialRowsState, isExistingProduct: false },
     ]);
   };
   // OBTENER NOMBRE DEL CAMPO SIGUIENTE
@@ -553,7 +570,7 @@ export default function EditTable({
 
   // FUNCIONALIDAD TECLA ENTER
 
-  const handleKeyDown = (e, rowIndex, fieldName) => {
+  const handleKeyDown = async (e, rowIndex, fieldName) => {
     if (e.key === "Enter" && e.target.tagName.toLowerCase() !== "textarea") {
       e.preventDefault();
 
@@ -572,7 +589,8 @@ export default function EditTable({
       }
 
       if (productCode) {
-        fetchProductCode(rowIndex, productCode);
+        await fetchProductCode(rowIndex, productCode);
+        synchronizeExistingCodes();
       }
 
       const nextRowIndex = rowIndex + 1;
@@ -582,6 +600,11 @@ export default function EditTable({
         addNewRow();
       }
     }
+  };
+
+  const synchronizeExistingCodes = () => {
+    const codesInRows = new Set(rows.map(row => row.Code.toLowerCase()).filter(code => code));
+    setExistingCodes(codesInRows);
   };
 
   const handleKeyPress = (e, column) => {
@@ -603,12 +626,33 @@ export default function EditTable({
     try {
       // Obtener el valor del input de "Code" desde la fila
       const currentProductCode = rows[rowIndex]["Code"] || "0";
+      const lowerCaseCode = currentProductCode.toLowerCase();
       const currentDescription = rows[rowIndex]["Description"];
       const codeToUse =
-        currentProductCode && currentProductCode !== currentValues["Code"]
-          ? currentDescription
-          : currentProductCode;
+      currentProductCode && currentProductCode !== currentValues["Code"]
+      ? currentDescription
+      : currentProductCode;
 
+      const lowerCodeToUse = codeToUse.toLowerCase();
+      
+      console.log("🚀 ~ fetchProductCode ~ lowerCaseCode:", lowerCodeToUse)
+      if (existingCodes.has(lowerCaseCode) || existingCodes.has(rows[rowIndex].Code.toLowerCase()) || existingCodes.has(lowerCaseCode) || existingCodes.has(lowerCodeToUse)) {
+        console.log(existingCodes)
+        setShowErrorDuplicate(true);
+        const updatedRows = rows.map((row, index) => {
+          if (index === rowIndex) {
+            console.log("ENTRÉ")
+            return {
+              ...row,
+              Code: "",
+              Description: "",
+            };
+          }
+          return row;
+        });
+        setRows(updatedRows);
+        return;
+      }
       const response = await axios.get(`${presentationsCode}${codeToUse}`, {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -630,6 +674,7 @@ export default function EditTable({
         return row;
       });
 
+      setExistingCodes(new Set([...existingCodes].map(code => code.toLowerCase()).concat(lowerCaseCode)));
       setRows(updatedRows);
       setProductByCode(productByCodeData);
     } catch (error) {
@@ -709,24 +754,51 @@ export default function EditTable({
 
   // BORRAR CASILLAS SI SE BORRA EL CODE
   const handleCodeChange = (e, rowIndex, column) => {
-    const newCodeValue = e.target.value;
-
-    setCurrentValues((prevValues) => ({
+    console.log("🚀 ~ handleCodeChange ~ previousCode[rowIndex]:", previousCode[rowIndex]);
+    const newCodeValue = e.target.value.toLowerCase();
+    setCurrentValues(prevValues => ({
       ...prevValues,
       [column]: newCodeValue,
     }));
 
-    // Si la columna es "Code" y el nuevo valor está en blanco, elimina completamente la fila
-    if (column === "Code" && newCodeValue.trim() === "") {
-      const updatedRows = rows.map((row, index) => {
-        if (index === rowIndex) {
-          return {
-            ...initialRowsState,
-          };
+    if (column === "Code") {
+      if (newCodeValue.trim() === "") {
+        const currentCode = previousCode[rowIndex];
+        synchronizeExistingCodes();
+
+        const updatedRows = rows.map((row, index) => {
+          if (index === rowIndex) {
+            return {
+              ...initialRowsState,
+            };
+          }
+          return row;
+        });
+        setRows(updatedRows);
+
+        if (existingCodes.has(currentCode)) {
+          const updatedExistingCodes = new Set([...existingCodes]);
+          updatedExistingCodes.delete(currentCode);
+          setExistingCodes(updatedExistingCodes);
         }
-        return row;
-      });
-      setRows(updatedRows);
+
+        setPreviousCode(prev => {
+          const newPrev = { ...prev };
+          delete newPrev[rowIndex];
+          return newPrev;
+        });
+      } else {
+        const updatedRows = rows.map((row, index) => {
+          if (index === rowIndex) {
+            return {
+              ...row,
+              Code: newCodeValue,
+            };
+          }
+          return row;
+        });
+        setRows(updatedRows);
+      }
     }
   };
 
@@ -1075,6 +1147,15 @@ export default function EditTable({
         isvisible={showErrorOrderModal}
         onClose={() => setShowErrorOrderModal(false)}
         error={orderError}
+      />
+      <ModalOrderError
+        isvisible={showErrorDuplicate}
+        onClose={() => setShowErrorDuplicate(false)}
+        error={orderError}
+        title={"Duplicate code"}
+        message={
+          "The product you are entering is duplicate."
+        }
       />
     </div>
   );
