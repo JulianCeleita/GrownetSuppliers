@@ -953,7 +953,7 @@ export default function EditTable({
                                           if (selectedDescription.code) {
                                             fetchProductCode(rowIndex);
                                           }
-                                          setRows(updatedRows);
+                                          // setRows(updatedRows);
                                         }}
                                         styles={{
                                           control: (provided) => ({
