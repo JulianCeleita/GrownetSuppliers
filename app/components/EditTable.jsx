@@ -113,7 +113,7 @@ export default function EditTable({
   specialRequirements,
   setSpecialRequirements,
   percentageDetail,
-  dataLoaded
+  dataLoaded,
 }) {
   // const [rows, setRows] = useState(
   //   Array.from({ length: 0 }, () => ({ ...initialRowsState }))
@@ -158,7 +158,7 @@ export default function EditTable({
   const [isReadOnly, setIsReadOnly] = useState(true);
   const [orderError, setOrderError] = useState("");
   const [isSelectDisabled, setIsSelectDisabled] = useState(true);
-  const isEditable = orderDetail?.state_name === "Loaded";
+  const isEditable = orderDetail?.state_name === "Preparing";
   const [existingCodes, setExistingCodes] = useState(new Set());
   const [previousCode, setPreviousCode] = useState({});
 
@@ -254,6 +254,8 @@ export default function EditTable({
   }, [orderId, token, setOrderDetail]);
 
   useEffect(() => {
+    console.log(orderDetail.products);
+    console.log("🚀 ~ useEffect ~ dataLoaded:", dataLoaded);
     if (
       dataLoaded &&
       orderDetail &&
@@ -642,8 +644,7 @@ export default function EditTable({
             console.log("ENTRÉ")
             return {
               ...row,
-              Code: "",
-              Description: "",
+              Code: ""
             };
           }
           return row;
@@ -651,6 +652,7 @@ export default function EditTable({
         setRows(updatedRows);
         return;
       }
+      console.log("no entré al condicional, este es el codigo", codeToUse);
       const response = await axios.get(`${presentationsCode}${codeToUse}`, {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -672,7 +674,14 @@ export default function EditTable({
         return row;
       });
 
-      setExistingCodes(new Set([...existingCodes].map(code => code.toLowerCase()).concat(lowerCaseCode)));
+      let codeToPush;
+      if (lowerCaseCode != 0) {
+        codeToPush = lowerCaseCode;
+      } else {
+        codeToPush = lowerCodeToUse;
+      }
+
+      setExistingCodes(new Set([...existingCodes].map(code => code.toLowerCase()).concat(codeToPush)));
       setRows(updatedRows);
       setProductByCode(productByCodeData);
     } catch (error) {
@@ -982,9 +991,7 @@ export default function EditTable({
                                             display: "none",
                                           }),
                                         }}
-                                        isDisabled={
-                                          row.isExistingProduct && isEditable
-                                        }
+                                        isDisabled={isSelectDisabled}
                                         onBlur={() => setIsSelectDisabled(true)}
                                       />
                                     )}
