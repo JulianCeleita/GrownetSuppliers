@@ -173,7 +173,6 @@ const CreateOrderView = () => {
       console.error("Error fetching AccNumber data", error);
     }
   };
-  console.log("customerDate", customerDate);
 
   useEffect(() => {
     fetchCustomersDate(token, orderDate, selectedAccNumber2, setCustomerDate);
@@ -226,7 +225,7 @@ const CreateOrderView = () => {
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
+  console.log("customerDate", customerDate);
   return (
     <Layout>
       <div className="max-w-[650px] -mt-[110px] ml-[115px]">
@@ -457,11 +456,11 @@ const CreateOrderView = () => {
               <>
                 <div className="flex flex-col items-start">
                   <h3 className="font-medium">Route:</h3>
-                  <h3>{customerDate.nameRoute}</h3>
+                  <h3>{customerDate[0].nameRoute}</h3>
                 </div>
                 <div className="flex flex-col items-start">
                   <h3 className="font-medium">Drop:</h3>
-                  <h3>{customerDate.drop}</h3>
+                  <h3>{customerDate[0].drop}</h3>
                 </div>
               </>
             )}
