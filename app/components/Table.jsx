@@ -14,7 +14,6 @@ import useUserStore from "../store/useUserStore";
 import ModalOrderError from "./ModalOrderError";
 import ModalSuccessfull from "./ModalSuccessfull";
 
-
 const initialRowsState = {
   Code: "",
   Description: "",
@@ -129,6 +128,7 @@ export default function Table({
   const [isSelectDisabled, setIsSelectDisabled] = useState(true);
   const [previousCode, setPreviousCode] = useState({});
   const [showErrorDuplicate, setShowErrorDuplicate] = useState(false);
+  const [showErrorOrdenRoutes, setShowErrorOrdenRoutes] = useState(false);
 
   const columns = [
     "Code",
@@ -448,9 +448,9 @@ export default function Table({
   const handleKeyDown = async (e, rowIndex, fieldName) => {
     if (e.key === "Enter" && e.target.tagName.toLowerCase() !== "textarea") {
       e.preventDefault();
-  
+
       let productCode = "";
-  
+
       if (fieldName === "Code" && currentValues["Code"]?.trim() !== "") {
         productCode = currentValues["Code"];
       } else if (
@@ -462,12 +462,12 @@ export default function Table({
         );
         productCode = selectedProduct ? selectedProduct.code : "";
       }
-  
+
       if (productCode) {
         await fetchProductCode(rowIndex, productCode);
         synchronizeExistingCodes();
       }
-  
+
       const nextRowIndex = rowIndex + 1;
       if (nextRowIndex < rows.length) {
         form.current[nextRowIndex].querySelector('input[type="text"]')?.focus();
@@ -476,9 +476,11 @@ export default function Table({
       }
     }
   };
-  
+
   const synchronizeExistingCodes = () => {
-    const codesInRows = new Set(rows.map(row => row.Code.toLowerCase()).filter(code => code));
+    const codesInRows = new Set(
+      rows.map((row) => row.Code.toLowerCase()).filter((code) => code)
+    );
     setExistingCodes(codesInRows);
   };
 
@@ -500,7 +502,10 @@ export default function Table({
   const fetchProductCode = async (rowIndex, code) => {
     try {
       const lowerCaseCode = code.toLowerCase();
-      if (existingCodes.has(lowerCaseCode) || existingCodes.has(rows[rowIndex].Code.toLowerCase())) {
+      if (
+        existingCodes.has(lowerCaseCode) ||
+        existingCodes.has(rows[rowIndex].Code.toLowerCase())
+      ) {
         setShowErrorDuplicate(true);
         const updatedRows = rows.map((row, index) => {
           if (index === rowIndex) {
@@ -537,7 +542,13 @@ export default function Table({
         }
         return row;
       });
-      setExistingCodes(new Set([...existingCodes].map(code => code.toLowerCase()).concat(lowerCaseCode)));
+      setExistingCodes(
+        new Set(
+          [...existingCodes]
+            .map((code) => code.toLowerCase())
+            .concat(lowerCaseCode)
+        )
+      );
       setRows(updatedRows);
     } catch (error) {
       console.error("Error al hacer la solicitud:", error.message);
@@ -621,9 +632,12 @@ export default function Table({
 
   // BORRAR CASILLAS SI SE BORRA EL CODE
   const handleCodeChange = (e, rowIndex, column) => {
-    console.log("🚀 ~ handleCodeChange ~ previousCode[rowIndex]:", previousCode[rowIndex]);
+    console.log(
+      "🚀 ~ handleCodeChange ~ previousCode[rowIndex]:",
+      previousCode[rowIndex]
+    );
     const newCodeValue = e.target.value.toLowerCase();
-    setCurrentValues(prevValues => ({
+    setCurrentValues((prevValues) => ({
       ...prevValues,
       [column]: newCodeValue,
     }));
@@ -649,7 +663,7 @@ export default function Table({
           setExistingCodes(updatedExistingCodes);
         }
 
-        setPreviousCode(prev => {
+        setPreviousCode((prev) => {
           const newPrev = { ...prev };
           delete newPrev[rowIndex];
           return newPrev;
@@ -716,23 +730,26 @@ export default function Table({
                       <th
                         key={index}
                         scope="col"
-                        className={`py-2 px-2 capitalize ${index === firstVisibleColumnIndex
-                          ? "rounded-tl-lg"
-                          : ""
-                          } ${index === lastVisibleColumnIndex
+                        className={`py-2 px-2 capitalize ${
+                          index === firstVisibleColumnIndex
+                            ? "rounded-tl-lg"
+                            : ""
+                        } ${
+                          index === lastVisibleColumnIndex
                             ? "rounded-tr-lg"
                             : ""
-                          } ${column === "quantity" ||
-                            column === "VAT %" ||
-                            column === "UOM" ||
-                            column === "Net"
+                        } ${
+                          column === "quantity" ||
+                          column === "VAT %" ||
+                          column === "UOM" ||
+                          column === "Net"
                             ? "w-20"
                             : column === "Packsize" || column === "Total Price"
-                              ? "w-40"
-                              : column === "Code"
-                                ? "w-[8em]"
-                                : ""
-                          }`}
+                            ? "w-40"
+                            : column === "Code"
+                            ? "w-[8em]"
+                            : ""
+                        }`}
                         onContextMenu={(e) => handleContextMenu(e)}
                       >
                         <p className="text-base text-dark-blue my-2">
@@ -802,11 +819,17 @@ export default function Table({
                                     options={
                                       DescriptionData
                                         ? DescriptionData.map((item) => ({
-                                          value: item.product_name,
-                                          label: `${(item.code && item.product_name && item.name) ? `${item.code} - ${item.product_name} - ${item.name}` : "Loading..."}`,
+                                            value: item.product_name,
+                                            label: `${
+                                              item.code &&
+                                              item.product_name &&
+                                              item.name
+                                                ? `${item.code} - ${item.product_name} - ${item.name}`
+                                                : "Loading..."
+                                            }`,
 
-                                          code: item.code,
-                                        }))
+                                            code: item.code,
+                                          }))
                                         : []
                                     }
                                     value={{
@@ -863,10 +886,11 @@ export default function Table({
                                   type={inputTypes[column]}
                                   ref={inputRefs[column][rowIndex]}
                                   data-field-name={column}
-                                  className={`pl-2 h-[30px] outline-none w-full ${inputTypes[column] === "number"
-                                    ? "hide-number-arrows"
-                                    : ""
-                                    } `}
+                                  className={`pl-2 h-[30px] outline-none w-full ${
+                                    inputTypes[column] === "number"
+                                      ? "hide-number-arrows"
+                                      : ""
+                                  } `}
                                   value={row[column] || ""}
                                   onChange={(e) => {
                                     if (column === "Net") {
@@ -1011,8 +1035,15 @@ export default function Table({
         onClose={() => setShowErrorDuplicate(false)}
         error={orderError}
         title={"Duplicate code"}
+        message={"The product you are entering is duplicate."}
+      />
+      <ModalOrderError
+        isvisible={showErrorOrdenRoutes}
+        onClose={() => setShowErrorOrdenRoutes(false)}
+        error={orderError}
+        title={"Date without routes"}
         message={
-          "The product you are entering is duplicate."
+          "There are no routes assigned for the selected date. Are you sure you want to send it?"
         }
       />
     </div>
