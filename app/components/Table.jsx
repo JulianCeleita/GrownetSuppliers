@@ -669,24 +669,6 @@ export default function Table({
     }
   };
 
-  const placeholders = {
-    Code: "Enter code",
-    Description: "Enter description",
-    Packsize: "Enter pack size",
-    UOM: "Enter unit of measure",
-    quantity: "Enter quantity",
-    price: "Enter price",
-    Net: "Enter net",
-    "Total Net": "Enter total net",
-    "VAT %": "Enter VAT %",
-    "VAT £": "Enter VAT £",
-    "Total Price": "Enter total price",
-    "Unit Cost": "Enter unit cost",
-    Profit: "Enter profit",
-    "Price Band": "Enter price band",
-    "Total Cost": "Enter total cost",
-  };
-
   return (
     <div className="flex flex-col p-5">
       <div className="overflow-x-auto">
