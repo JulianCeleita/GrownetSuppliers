@@ -250,7 +250,20 @@ const OrderDetailPage = () => {
     fetchCustomersDate(token, orderDate, selectedAccNumber2, setCustomerDate);
   }, [orderDate, selectedAccNumber2]);
 
-  console.log("customerDate", customerDate);
+  //RUN BUTTON WITH CRT + ENTER
+  const handleKeyDown = (event) => {
+    if (event.ctrlKey && event.key === "Enter") {
+      setConfirmCreateOrder(true);
+    }
+  };
+
+  useEffect(() => {
+    document.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, []);
 
   if (!hasMounted) {
     return null;

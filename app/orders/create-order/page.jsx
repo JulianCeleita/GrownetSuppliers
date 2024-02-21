@@ -224,7 +224,21 @@ const CreateOrderView = () => {
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-  //console.log("customerDate", customerDate);
+
+  //RUN BUTTON WITH CRT + ENTER
+  const handleKeyDown = (event) => {
+    if (event.ctrlKey && event.key === "Enter") {
+      setConfirmCreateOrder(true);
+    }
+  };
+
+  useEffect(() => {
+    document.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, []);
 
   return (
     <Layout>
