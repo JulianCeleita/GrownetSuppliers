@@ -13,6 +13,7 @@ import { fetchPresentationsSupplier } from "../api/presentationsRequest";
 import useUserStore from "../store/useUserStore";
 import ModalOrderError from "./ModalOrderError";
 import ModalSuccessfull from "./ModalSuccessfull";
+import ModalRoutes from "./ModalRoutes";
 
 const initialRowsState = {
   Code: "",
@@ -87,6 +88,8 @@ export default function Table({
   setConfirmCreateOrder,
   specialRequirements,
   setSpecialRequirements,
+  customerDate,
+  setCustomerDate,
 }) {
   const [rows, setRows] = useState(
     Array.from({ length: 5 }, () => ({ ...initialRowsState }))
@@ -129,7 +132,6 @@ export default function Table({
   const [isSelectDisabled, setIsSelectDisabled] = useState(true);
   const [previousCode, setPreviousCode] = useState({});
   const [showErrorDuplicate, setShowErrorDuplicate] = useState(false);
-  const [showErrorOrdenRoutes, setShowErrorOrdenRoutes] = useState(false);
 
   const columns = [
     "Code",
@@ -669,24 +671,6 @@ export default function Table({
     }
   };
 
-  const placeholders = {
-    Code: "Enter code",
-    Description: "Enter description",
-    Packsize: "Enter pack size",
-    UOM: "Enter unit of measure",
-    quantity: "Enter quantity",
-    price: "Enter price",
-    Net: "Enter net",
-    "Total Net": "Enter total net",
-    "VAT %": "Enter VAT %",
-    "VAT £": "Enter VAT £",
-    "Total Price": "Enter total price",
-    "Unit Cost": "Enter unit cost",
-    Profit: "Enter profit",
-    "Price Band": "Enter price band",
-    "Total Cost": "Enter total cost",
-  };
-
   return (
     <div className="flex flex-col p-5">
       <div className="overflow-x-auto">
@@ -993,6 +977,17 @@ export default function Table({
           sendOrder={createOrder}
         />
       )}
+      {confirmCreateOrder && customerDate === undefined && (
+        <ModalSuccessfull
+          isvisible={confirmCreateOrder}
+          onClose={() => setConfirmCreateOrder(false)}
+          title="Date without routes"
+          text="There are no routes assigned for the selected date. Are you sure you want to send it?"
+          textGrownet=""
+          button="Confirm"
+          sendOrder={createOrder}
+        />
+      )}
 
       <ModalOrderError
         isvisible={showErrorOrderModal}
@@ -1015,15 +1010,6 @@ export default function Table({
         error={orderError}
         title={"Duplicate code"}
         message={"The product you are entering is duplicate."}
-      />
-      <ModalOrderError
-        isvisible={showErrorOrdenRoutes}
-        onClose={() => setShowErrorOrdenRoutes(false)}
-        error={orderError}
-        title={"Date without routes"}
-        message={
-          "There are no routes assigned for the selected date. Are you sure you want to send it?"
-        }
       />
     </div>
   );
