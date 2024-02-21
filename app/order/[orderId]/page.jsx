@@ -453,11 +453,11 @@ const OrderDetailPage = () => {
               <>
                 <div className="flex flex-col items-start">
                   <h3 className="font-medium">Route:</h3>
-                  <h3>{customerDate.nameRoute}</h3>
+                  <h3>{customerDate[0].nameRoute}</h3>
                 </div>
                 <div className="flex flex-col items-start">
                   <h3 className="font-medium">Drop:</h3>
-                  <h3>{customerDate.drop}</h3>
+                  <h3>{customerDate[0].drop}</h3>
                 </div>
               </>
             )}
