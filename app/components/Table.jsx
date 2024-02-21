@@ -88,6 +88,8 @@ export default function Table({
   setConfirmCreateOrder,
   specialRequirements,
   setSpecialRequirements,
+  customerDate,
+  setCustomerDate,
 }) {
   const [rows, setRows] = useState(
     Array.from({ length: 5 }, () => ({ ...initialRowsState }))
@@ -130,7 +132,6 @@ export default function Table({
   const [isSelectDisabled, setIsSelectDisabled] = useState(true);
   const [previousCode, setPreviousCode] = useState({});
   const [showErrorDuplicate, setShowErrorDuplicate] = useState(false);
-  const [showErrorOrdenRoutes, setShowErrorOrdenRoutes] = useState(false);
 
   const columns = [
     "Code",
@@ -994,6 +995,17 @@ export default function Table({
           sendOrder={createOrder}
         />
       )}
+      {confirmCreateOrder && customerDate === undefined && (
+        <ModalSuccessfull
+          isvisible={confirmCreateOrder}
+          onClose={() => setConfirmCreateOrder(false)}
+          title="Date without routes"
+          text="There are no routes assigned for the selected date. Are you sure you want to send it?"
+          textGrownet=""
+          button="Confirm"
+          sendOrder={createOrder}
+        />
+      )}
 
       <ModalOrderError
         isvisible={showErrorOrderModal}
@@ -1016,16 +1028,6 @@ export default function Table({
         error={orderError}
         title={"Duplicate code"}
         message={"The product you are entering is duplicate."}
-      />
-      <ModalRoutes
-        isvisible={showErrorOrdenRoutes}
-        onClose={() => setShowErrorOrdenRoutes(false)}
-        error={orderError}
-        title={"Date without routes"}
-        message={
-          "There are no routes assigned for the selected date. Are you sure you want to send it?"
-        }
-        btnText={"Send order"}
       />
     </div>
   );

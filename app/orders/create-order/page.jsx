@@ -177,7 +177,6 @@ const CreateOrderView = () => {
   useEffect(() => {
     fetchCustomersDate(token, orderDate, selectedAccNumber2, setCustomerDate);
   }, [orderDate, selectedAccNumber2]);
-
   const restaurantList = Array.isArray(restaurants) ? restaurants : [];
 
   //VENTANA TOTAL
@@ -225,7 +224,8 @@ const CreateOrderView = () => {
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-  console.log("customerDate", customerDate);
+  //console.log("customerDate", customerDate);
+
   return (
     <Layout>
       <div className="max-w-[650px] -mt-[110px] ml-[115px]">
@@ -485,6 +485,8 @@ const CreateOrderView = () => {
           setConfirmCreateOrder={setConfirmCreateOrder}
           specialRequirements={specialRequirements}
           setSpecialRequirements={setSpecialRequirements}
+          customerDate={customerDate}
+          setCustomerDate={setCustomerDate}
         />
       </div>
     </Layout>
