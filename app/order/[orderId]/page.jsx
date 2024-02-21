@@ -440,7 +440,7 @@ const OrderDetailPage = () => {
               <h3>
                 {orderDetail && orderDetail.address_delivery
                   ? orderDetail.address_delivery
-                  : ""}
+                  : "-"}
               </h3>
             </div>
             <div className="flex flex-col items-start">
