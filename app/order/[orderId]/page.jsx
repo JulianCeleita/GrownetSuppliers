@@ -337,7 +337,9 @@ const OrderDetailPage = () => {
           <div className="px-4 py-4 rounded-3xl flex items-center justify-center bg-white shadow-[0_8px_30px_rgb(0,0,0,0.12)]">
             <div className="flex flex-col col-span-1 pr-2 items-center justify-center">
               <h1 className="text-xl font-bold text-primary-blue">Status</h1>
-              <h2 className="text-sm px-1 font-semibold">TBC</h2>
+              <h2 className="text-sm px-1 font-semibold">
+                {orderDetail.state_name}
+              </h2>
             </div>
             {/* TODO AGREGAR EN ESTE DIV EL PORCENTAJE DE LOADING PARA RUTA SELECCIONADA */}
             <div className="flex col-span-1 items-center justify-center">
@@ -400,23 +402,23 @@ const OrderDetailPage = () => {
         />
         <label className="mx-3 text-lg">Customer Ref: </label>
         <input type="text" className="border p-2 rounded-md w-20" />
-        {details ? (
-          <button
-            className="bg-dark-blue rounded-md ml-3 transition-all hover:scale-110"
-            onClick={() => setDetails(false)}
-          >
-            <ChevronUpIcon className="h-7 w-7 text-white p-1" />
-          </button>
-        ) : (
-          <button
-            className="bg-dark-blue rounded-md ml-3 transition-all hover:scale-110"
-            onClick={() => setDetails(true)}
-          >
-            <ChevronDownIcon className="h-7 w-7 text-white p-1" />
-          </button>
-        )}
+        <button
+          className="bg-dark-blue rounded-md ml-3 hover:scale-110 focus:outline-none"
+          onClick={() => setDetails(!details)}
+        >
+          <ChevronDownIcon
+            className={`h-7 w-7 text-white p-1 transform transition duration-500 ${
+              details ? "rotate-180" : "rotate-0"
+            }`}
+          />
+        </button>
       </div>
-      <div>
+      <div
+        className={`transition-opacity duration-500 ease-out ${
+          details ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-10"
+        } transform`}
+        style={{ transitionProperty: "opacity, transform" }}
+      >
         {details && (
           <div className="bg-light-blue flex flex-wrap items-center justify-around mx-10 mt-2 px-2 py-1 rounded-md">
             <div className="flex flex-col items-start mx-3">

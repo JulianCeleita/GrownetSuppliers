@@ -97,6 +97,7 @@ function Presentations() {
                 <th className="py-4">Product</th>
                 <th className="py-4">Unit of measurement</th>
                 <th className="py-4">Packsize</th>
+                <th className="py-4">Type</th>
                 <th className="py-4">Cost</th>
                 <th className="py-4">Qty</th>
                 <th className="py-4 rounded-tr-lg">Operate</th>
@@ -112,6 +113,7 @@ function Presentations() {
                   <td className="py-4">{presentation.product_name}</td>
                   <td className="py-4">{presentation.uom}</td>
                   <td className="py-4">{presentation.name}</td>
+                  <td className="py-4">{presentation.type}</td>
                   <td className="py-4">£ {presentation.cost}</td>
                   <td className="py-4">{presentation.quantity}</td>
                   <td className="py-4 flex justify-center">
