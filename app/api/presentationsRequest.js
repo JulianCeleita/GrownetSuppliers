@@ -31,7 +31,8 @@ export const fetchPresentationsSupplier = async (
   token,
   user,
   setPresentations,
-  setIsLoading
+  setIsLoading,
+  setDescriptionData
 ) => {
   try {
     const response = await axios.get(
@@ -42,12 +43,14 @@ export const fetchPresentationsSupplier = async (
         },
       }
     );
-    console.log("🚀 ~ response:", response)
+    console.log("🚀 ~ response: presentationsSupplierUrl", response);
 
     const newPresentation = Array.isArray(response.data.presentations)
       ? response.data.presentations
       : [];
+
     setPresentations(newPresentation);
+    setDescriptionData(newPresentation);
     setIsLoading(false);
   } catch (error) {
     console.error("Error al obtener las presentaciones:", error);
@@ -55,24 +58,16 @@ export const fetchPresentationsSupplier = async (
 };
 
 // Obtener types
-export const fetchTypes = async (
-  token,
-  setTypes,
-) => {
+export const fetchTypes = async (token, setTypes) => {
   try {
-    const response = await axios.get(
-      typesUrl,
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    );
-    console.log("🚀 ~ response:", response.data)
+    const response = await axios.get(typesUrl, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    console.log("🚀 ~ response:", response.data);
 
-    const newType = Array.isArray(response.data.type)
-    ? response.data.type
-      : [];
+    const newType = Array.isArray(response.data.type) ? response.data.type : [];
     setTypes(newType);
   } catch (error) {
     console.error("Error al obtener los types:", error);

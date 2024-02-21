@@ -250,7 +250,20 @@ const OrderDetailPage = () => {
     fetchCustomersDate(token, orderDate, selectedAccNumber2, setCustomerDate);
   }, [orderDate, selectedAccNumber2]);
 
-  console.log("customerDate", customerDate);
+  //RUN BUTTON WITH CRT + ENTER
+  const handleKeyDown = (event) => {
+    if (event.ctrlKey && event.key === "Enter") {
+      setConfirmCreateOrder(true);
+    }
+  };
+
+  useEffect(() => {
+    document.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, []);
 
   if (!hasMounted) {
     return null;
@@ -453,11 +466,11 @@ const OrderDetailPage = () => {
               <>
                 <div className="flex flex-col items-start">
                   <h3 className="font-medium">Route:</h3>
-                  <h3>{customerDate.nameRoute}</h3>
+                  <h3>{customerDate[0].nameRoute}</h3>
                 </div>
                 <div className="flex flex-col items-start">
                   <h3 className="font-medium">Drop:</h3>
-                  <h3>{customerDate.drop}</h3>
+                  <h3>{customerDate[0].drop}</h3>
                 </div>
               </>
             )}
