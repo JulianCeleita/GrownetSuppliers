@@ -796,11 +796,6 @@ export default function Table({
                                     menuPlacement="auto"
                                     menuPortalTarget={document.body}
                                     onInputChange={(newValue) => {
-                                      console.log(
-                                        "entro aquiii--",
-                                        newValue,
-                                        "--entro aquiii"
-                                      );
                                       const sortedAndFilteredData = sortData(
                                         presentations,
                                         newValue
@@ -811,7 +806,7 @@ export default function Table({
                                       DescriptionData
                                         ? DescriptionData.map((item) => ({
                                             value: item.product_name,
-                                            label: `${`${item.code} - ${item.product_name} - ${item.name}`}`,
+                                            label: `${item.code} - ${item.product_name} - ${item.name}`,
                                             code: item.code,
                                           }))
                                         : []
