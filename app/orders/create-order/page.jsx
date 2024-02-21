@@ -412,7 +412,7 @@ const CreateOrderView = () => {
         >
           <ChevronDownIcon
             className={`h-7 w-7 text-white p-1 transform transition duration-500 ${
-              details ? "rotate-0" : "rotate-180"
+              details ? "rotate-180" : "rotate-0"
             }`}
           />
         </button>
