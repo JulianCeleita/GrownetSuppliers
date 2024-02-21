@@ -100,6 +100,7 @@ export default function Table({
     initialColumns,
     toggleColumnVisibility,
     customers,
+    setCustomers,
     setTotalNetSum,
     setTotalPriceSum,
     setTotalTaxSum,
@@ -628,6 +629,8 @@ export default function Table({
     } catch (error) {
       setShowErrorOrderModal(true);
     }
+
+    setCustomers(null);
   };
 
   // BORRAR CASILLAS SI SE BORRA EL CODE
