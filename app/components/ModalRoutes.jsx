@@ -1,7 +1,7 @@
 import { ExclamationCircleIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import { useEffect, useRef } from "react";
 
-function ModalOrderError({ isvisible, onClose, error, title, message }) {
+function ModalRoutes({ isvisible, onClose, error, title, message, btnText }) {
   const modalRef = useRef();
 
   useEffect(() => {
@@ -19,7 +19,6 @@ function ModalOrderError({ isvisible, onClose, error, title, message }) {
       onClose();
     }
   };
-
   return (
     <div
       ref={modalRef}
@@ -38,14 +37,23 @@ function ModalOrderError({ isvisible, onClose, error, title, message }) {
         <h1 className="text-2xl font-medium text-dark-blue mb-2">{title}</h1>
         <p className="text-dark-blue text-lg text-center">{error}</p>
         <p className="text-dark-blue text-lg text-center">{message}</p>
-        <button
-          onClick={() => onClose()}
-          className="bg-primary-blue py-3 px-4 rounded-lg text-white font-medium mr-3 hover:bg-green mt-5"
-        >
-          Close
-        </button>
+        <div className="mt-3 text-center">
+          <button
+            onClick={() => onClose()}
+            className="bg-primary-blue py-3 px-4 rounded-lg text-white font-medium mr-3 hover:bg-green"
+          >
+            {btnText}
+          </button>
+          <button
+            onClick={() => onClose()}
+            className=" py-3 px-4 rounded-lg text-primary-blue border border-primary-blue font-medium"
+          >
+            Close
+          </button>
+        </div>
       </div>
     </div>
   );
 }
-export default ModalOrderError;
+
+export default ModalRoutes;

@@ -13,6 +13,7 @@ import { fetchPresentationsSupplier } from "../api/presentationsRequest";
 import useUserStore from "../store/useUserStore";
 import ModalOrderError from "./ModalOrderError";
 import ModalSuccessfull from "./ModalSuccessfull";
+import ModalRoutes from "./ModalRoutes";
 
 const initialRowsState = {
   Code: "",
@@ -1037,7 +1038,7 @@ export default function Table({
         title={"Duplicate code"}
         message={"The product you are entering is duplicate."}
       />
-      <ModalOrderError
+      <ModalRoutes
         isvisible={showErrorOrdenRoutes}
         onClose={() => setShowErrorOrdenRoutes(false)}
         error={orderError}
@@ -1045,6 +1046,7 @@ export default function Table({
         message={
           "There are no routes assigned for the selected date. Are you sure you want to send it?"
         }
+        btnText={"Send order"}
       />
     </div>
   );
