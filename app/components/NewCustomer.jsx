@@ -59,14 +59,16 @@ function NewCustomer({ isvisible, onClose, setUpdateCustomers }) {
 
   const prepareDataForBackend = () => {
     const daysRoutesArray = Object.entries(selectedRoutes).map(([day, { routeId, drop }]) => {
+      const numericDrop = parseInt(drop, 10);
+      const safeDrop = isNaN(numericDrop) ? 0 : numericDrop;
       return {
         route_id: routeId,
-        drop: parseInt(drop, 10),
+        drop: safeDrop,
         days_id: getDayNumber(day.toLowerCase())
       };
     });
 
-    const filteredDaysRoutesArray = daysRoutesArray.filter(entry => entry.route_id && entry.drop);
+    const filteredDaysRoutesArray = daysRoutesArray.filter(entry => entry.route_id && entry.drop >= 0);
 
     return { days_routes: filteredDaysRoutesArray };
   };
