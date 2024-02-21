@@ -408,7 +408,7 @@ const OrderDetailPage = () => {
         >
           <ChevronDownIcon
             className={`h-7 w-7 text-white p-1 transform transition duration-500 ${
-              details ? "rotate-0" : "rotate-180"
+              details ? "rotate-180" : "rotate-0"
             }`}
           />
         </button>
@@ -440,7 +440,7 @@ const OrderDetailPage = () => {
               <h3>
                 {orderDetail && orderDetail.address_delivery
                   ? orderDetail.address_delivery
-                  : ""}
+                  : "-"}
               </h3>
             </div>
             <div className="flex flex-col items-start">
@@ -453,11 +453,11 @@ const OrderDetailPage = () => {
               <>
                 <div className="flex flex-col items-start">
                   <h3 className="font-medium">Route:</h3>
-                  <h3>{customerDate.nameRoute}</h3>
+                  <h3>{customerDate[0].nameRoute}</h3>
                 </div>
                 <div className="flex flex-col items-start">
                   <h3 className="font-medium">Drop:</h3>
-                  <h3>{customerDate.drop}</h3>
+                  <h3>{customerDate[0].drop}</h3>
                 </div>
               </>
             )}

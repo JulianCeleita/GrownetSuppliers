@@ -113,7 +113,7 @@ export default function EditTable({
   specialRequirements,
   setSpecialRequirements,
   percentageDetail,
-  dataLoaded
+  dataLoaded,
 }) {
   // const [rows, setRows] = useState(
   //   Array.from({ length: 0 }, () => ({ ...initialRowsState }))
@@ -248,12 +248,15 @@ export default function EditTable({
       token,
       user,
       setPresentations,
-      setIsLoading(false)
+      setIsLoading(false),
+      setDescriptionData
     );
     fetchOrderDetail(token, setOrderDetail, setIsLoading, orderId);
   }, [orderId, token, setOrderDetail]);
 
   useEffect(() => {
+    console.log(orderDetail.products);
+    console.log("🚀 ~ useEffect ~ dataLoaded:", dataLoaded);
     if (
       dataLoaded &&
       orderDetail &&
@@ -264,10 +267,10 @@ export default function EditTable({
         const quantity = !product.state_definitive
           ? product.quantity
           : product.state_definitive
-            ? product.quantity_definitive
-            : product.state_definitive === "N/A"
-              ? product.quantity_definitive
-              : "";
+          ? product.quantity_definitive
+          : product.state_definitive === "N/A"
+          ? product.quantity_definitive
+          : "";
 
         return {
           state: product.state_definitive,
@@ -301,7 +304,7 @@ export default function EditTable({
       setSpecialRequirements(orderDetail.observation);
 
       const newExistingCodes = new Set();
-      orderDetail.products.forEach(product => {
+      orderDetail.products.forEach((product) => {
         const code = product.presentations_code;
         if (code) {
           newExistingCodes.add(code.toLowerCase());
@@ -313,36 +316,7 @@ export default function EditTable({
 
   useEffect(() => {
     console.log("existing codes", existingCodes);
-  }, [existingCodes])
-
-
-  useEffect(() => {
-    const fetchPresentationData = async () => {
-      try {
-        const response = await axios.get(presentationData, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-
-        const modifiedData = response.data.presentations
-          .filter((item) => item.code !== null)
-          .map((item) => ({
-            ...item,
-            concatenatedName: `${item.code} - ${item.productName} - ${item.presentationName}`,
-            product_name: item.productName,
-            name: item.presentationName,
-          }))
-          .sort((a, b) => a.concatenatedName.localeCompare(b.concatenatedName));
-
-        setDescriptionData(modifiedData);
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      }
-    };
-
-    fetchPresentationData();
-  }, [token]);
+  }, [existingCodes]);
 
   const handleContextMenu = (e) => {
     e.preventDefault();
@@ -601,7 +575,9 @@ export default function EditTable({
   };
 
   const synchronizeExistingCodes = () => {
-    const codesInRows = new Set(rows.map(row => row.Code.toLowerCase()).filter(code => code));
+    const codesInRows = new Set(
+      rows.map((row) => row.Code.toLowerCase()).filter((code) => code)
+    );
     setExistingCodes(codesInRows);
   };
 
@@ -627,23 +603,27 @@ export default function EditTable({
       const lowerCaseCode = currentProductCode.toLowerCase();
       const currentDescription = rows[rowIndex]["Description"];
       const codeToUse =
-      currentProductCode && currentProductCode !== currentValues["Code"]
-      ? currentDescription
-      : currentProductCode;
+        currentProductCode && currentProductCode !== currentValues["Code"]
+          ? currentDescription
+          : currentProductCode;
 
       const lowerCodeToUse = codeToUse.toLowerCase();
-      
-      console.log("🚀 ~ fetchProductCode ~ lowerCaseCode:", lowerCodeToUse)
-      if (existingCodes.has(lowerCaseCode) || existingCodes.has(rows[rowIndex].Code.toLowerCase()) || existingCodes.has(lowerCaseCode) || existingCodes.has(lowerCodeToUse)) {
-        console.log(existingCodes)
+
+      console.log("🚀 ~ fetchProductCode ~ lowerCaseCode:", lowerCodeToUse);
+      if (
+        existingCodes.has(lowerCaseCode) ||
+        existingCodes.has(rows[rowIndex].Code.toLowerCase()) ||
+        existingCodes.has(lowerCaseCode) ||
+        existingCodes.has(lowerCodeToUse)
+      ) {
+        console.log(existingCodes);
         setShowErrorDuplicate(true);
         const updatedRows = rows.map((row, index) => {
           if (index === rowIndex) {
-            console.log("ENTRÉ")
+            console.log("ENTRÉ");
             return {
               ...row,
               Code: "",
-              Description: "",
             };
           }
           return row;
@@ -651,6 +631,7 @@ export default function EditTable({
         setRows(updatedRows);
         return;
       }
+      console.log("no entré al condicional, este es el codigo", codeToUse);
       const response = await axios.get(`${presentationsCode}${codeToUse}`, {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -672,7 +653,20 @@ export default function EditTable({
         return row;
       });
 
-      setExistingCodes(new Set([...existingCodes].map(code => code.toLowerCase()).concat(lowerCaseCode)));
+      let codeToPush;
+      if (lowerCaseCode != 0) {
+        codeToPush = lowerCaseCode;
+      } else {
+        codeToPush = lowerCodeToUse;
+      }
+
+      setExistingCodes(
+        new Set(
+          [...existingCodes]
+            .map((code) => code.toLowerCase())
+            .concat(codeToPush)
+        )
+      );
       setRows(updatedRows);
       setProductByCode(productByCodeData);
     } catch (error) {
@@ -752,9 +746,12 @@ export default function EditTable({
 
   // BORRAR CASILLAS SI SE BORRA EL CODE
   const handleCodeChange = (e, rowIndex, column) => {
-    console.log("🚀 ~ handleCodeChange ~ previousCode[rowIndex]:", previousCode[rowIndex]);
+    console.log(
+      "🚀 ~ handleCodeChange ~ previousCode[rowIndex]:",
+      previousCode[rowIndex]
+    );
     const newCodeValue = e.target.value.toLowerCase();
-    setCurrentValues(prevValues => ({
+    setCurrentValues((prevValues) => ({
       ...prevValues,
       [column]: newCodeValue,
     }));
@@ -780,7 +777,7 @@ export default function EditTable({
           setExistingCodes(updatedExistingCodes);
         }
 
-        setPreviousCode(prev => {
+        setPreviousCode((prev) => {
           const newPrev = { ...prev };
           delete newPrev[rowIndex];
           return newPrev;
@@ -834,24 +831,27 @@ export default function EditTable({
                           <th
                             key={index}
                             scope="col"
-                            className={`py-3 px-2 bg-white capitalize ${index === firstVisibleColumnIndex
-                              ? "rounded-tl-lg"
-                              : ""
-                              } ${index === lastVisibleColumnIndex
+                            className={`py-3 px-2 bg-white capitalize ${
+                              index === firstVisibleColumnIndex
+                                ? "rounded-tl-lg"
+                                : ""
+                            } ${
+                              index === lastVisibleColumnIndex
                                 ? "rounded-tr-lg"
                                 : ""
-                              } ${column === "quantity" ||
-                                column === "VAT %" ||
-                                column === "UOM" ||
-                                column === "Net"
+                            } ${
+                              column === "quantity" ||
+                              column === "VAT %" ||
+                              column === "UOM" ||
+                              column === "Net"
                                 ? "w-20"
                                 : column === "Packsize" ||
                                   column === "Total Price"
-                                  ? "w-40"
-                                  : column === "Code"
-                                    ? "w-[8em]"
-                                    : ""
-                              }`}
+                                ? "w-40"
+                                : column === "Code"
+                                ? "w-[8em]"
+                                : ""
+                            }`}
                             onContextMenu={(e) => handleContextMenu(e)}
                           >
                             <p className="text-lg text-dark-blue">{column}</p>
@@ -865,10 +865,11 @@ export default function EditTable({
                   {rows.map((row, rowIndex) => (
                     <tr
                       key={rowIndex}
-                      className={`${row.state === "N/A"
-                        ? " line-through text-primary-blue decoration-dark-blue"
-                        : ""
-                        }`}
+                      className={`${
+                        row.state === "N/A"
+                          ? " line-through text-primary-blue decoration-dark-blue"
+                          : ""
+                      }`}
                     >
                       {/* CODIGO DE PRODUCTO */}
                       {columns.map(
@@ -928,10 +929,10 @@ export default function EditTable({
                                         options={
                                           DescriptionData
                                             ? DescriptionData.map((item) => ({
-                                              value: item.productName,
-                                              label: `${(item.code && item.product_name && item.name) ? `${item.code} - ${item.product_name} - ${item.name}` : "Loading..."}`,
-                                              code: item.code,
-                                            }))
+                                                value: item.productName,
+                                                label: `${item.code} - ${item.product_name} - ${item.name}`,
+                                                code: item.code,
+                                              }))
                                             : []
                                         }
                                         value={{
@@ -997,13 +998,15 @@ export default function EditTable({
                                     disabled={
                                       row.isExistingProduct && isEditable
                                     }
-                                    className={`pl-2 h-[30px] outline-none w-full ${inputTypes[column] === "number"
-                                      ? "hide-number-arrows"
-                                      : ""
-                                      } ${row.state === "N/A"
+                                    className={`pl-2 h-[30px] outline-none w-full ${
+                                      inputTypes[column] === "number"
+                                        ? "hide-number-arrows"
+                                        : ""
+                                    } ${
+                                      row.state === "N/A"
                                         ? " line-through text-primary-blue decoration-black"
                                         : ""
-                                      }`}
+                                    }`}
                                     value={row[column] || ""}
                                     onChange={(e) => {
                                       if (column === "Net") {
@@ -1153,9 +1156,7 @@ export default function EditTable({
         onClose={() => setShowErrorDuplicate(false)}
         error={orderError}
         title={"Duplicate code"}
-        message={
-          "The product you are entering is duplicate."
-        }
+        message={"The product you are entering is duplicate."}
       />
     </div>
   );

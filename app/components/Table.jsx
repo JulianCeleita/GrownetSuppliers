@@ -101,6 +101,7 @@ export default function Table({
     initialColumns,
     toggleColumnVisibility,
     customers,
+    setCustomers,
     setTotalNetSum,
     setTotalPriceSum,
     setTotalTaxSum,
@@ -168,6 +169,7 @@ export default function Table({
   };
 
   const sortData = (data, searchTerm) => {
+    console.log("data", data, "search", searchTerm);
     const lowercasedTerm = searchTerm.toLowerCase();
 
     const exactMatchesCode = data.filter(
@@ -213,31 +215,13 @@ export default function Table({
   };
 
   useEffect(() => {
-    fetchPresentationsSupplier(token, user, setPresentations, setIsLoading);
-
-    const fetchPresentationData = async () => {
-      try {
-        const response = await axios.get(presentationData, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-
-        const modifiedData = response.data.presentations
-          .filter((item) => item.code !== null)
-          .map((item) => ({
-            ...item,
-            concatenatedName: `${item.code} - ${item.productName} - ${item.presentationName}`,
-          }))
-          .sort((a, b) => a.concatenatedName.localeCompare(b.concatenatedName));
-
-        setDescriptionData(modifiedData);
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      }
-    };
-
-    fetchPresentationData();
+    fetchPresentationsSupplier(
+      token,
+      user,
+      setPresentations,
+      setIsLoading,
+      setDescriptionData
+    );
   }, [token]);
 
   const handleContextMenu = (e) => {
@@ -629,6 +613,8 @@ export default function Table({
     } catch (error) {
       setShowErrorOrderModal(true);
     }
+
+    setCustomers(null);
   };
 
   // BORRAR CASILLAS SI SE BORRA EL CODE
@@ -821,14 +807,7 @@ export default function Table({
                                       DescriptionData
                                         ? DescriptionData.map((item) => ({
                                             value: item.product_name,
-                                            label: `${
-                                              item.code &&
-                                              item.product_name &&
-                                              item.name
-                                                ? `${item.code} - ${item.product_name} - ${item.name}`
-                                                : "Loading..."
-                                            }`,
-
+                                            label: `${item.code} - ${item.product_name} - ${item.name}`,
                                             code: item.code,
                                           }))
                                         : []
