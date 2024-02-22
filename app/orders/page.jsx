@@ -14,7 +14,7 @@ import "react-datepicker/dist/react-datepicker.css";
 import Select from "react-select";
 import {
   fetchOrdersDate,
-  fetchOrdersDateByWorkDate
+  fetchOrdersDateByWorkDate,
 } from "../api/ordersRequest";
 import { CircleProgressBar } from "../components/CircleProgressBar";
 import { printInvoices } from "../config/urls.config";
@@ -62,7 +62,7 @@ const OrderView = () => {
   const [filterType, setFilterType] = useState("date");
   const [showPercentage, setShowPercentage] = useState(null);
   const [totalNet, setTotalNet] = useState("");
-  const [routeId, setRouteId] = useState()
+  const [routeId, setRouteId] = useState();
 
   const formatDateToShow = (dateString) => {
     if (!dateString) return "Loading...";
@@ -299,22 +299,28 @@ const OrderView = () => {
 
   const filteredOrders = selectedRoute
     ? sortedOrders.filter(
-      (order) => order.route.toLowerCase() === selectedRoute.toLowerCase()
-    )
+        (order) => order.route.toLowerCase() === selectedRoute.toLowerCase()
+      )
     : sortedOrders;
 
   const statusColorClass = (status) => {
     switch (status) {
       case "Delivered":
+      case "Solved":
+      case "Loaded":
+      case "Printed":
         return "bg-green";
       case "Dispute":
-        return "bg-red-500";
+        return "bg-danger";
       case "Generated":
-        return "bg-orange-500";
+      case "Received":
       case "Preparing":
-        return "bg-orange-500";
+      case "Sent":
+        return "bg-primary-blue";
+      case "Packed":
+        return "bg-orange-grownet";
       default:
-        return "bg-gray-500";
+        return "bg-primary-blue";
     }
   };
 
@@ -530,12 +536,11 @@ const OrderView = () => {
                             className="form-checkbox h-5 w-5 text-blue-500"
                             checked={!!selectedOrders[order.reference]}
                             onChange={(e) => {
-                              handleOrderSelect(order, e.target.checked)
+                              handleOrderSelect(order, e.target.checked);
                               if (e.target.checked) {
-                                setRouteId(order.route_id)
+                                setRouteId(order.route_id);
                               }
-                            }
-                            }
+                            }}
                           />
                         </label>
                       </td>
