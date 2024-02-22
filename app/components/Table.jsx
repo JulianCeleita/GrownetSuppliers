@@ -496,10 +496,7 @@ export default function Table({
         setShowErrorDuplicate(true);
         const updatedRows = rows.map((row, index) => {
           if (index === rowIndex) {
-            return {
-              ...row,
-              Code: "",
-            };
+            return { ...initialRowsState, isExistingProduct: row.isExistingProduct };
           }
           return row;
         });
