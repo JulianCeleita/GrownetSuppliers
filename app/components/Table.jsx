@@ -117,7 +117,6 @@ export default function Table({
 
   const [showCheckboxColumn, setShowCheckboxColumn] = useState(false);
   const [currentValues, setCurrentValues] = useState({});
-  const [productByCode, setProductByCode] = useState({});
   const [DescriptionData, setDescriptionData] = useState(null);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [showErrorOrderModal, setShowErrorOrderModal] = useState(false);
@@ -393,45 +392,6 @@ export default function Table({
     setTotalTaxSum,
   ]);
 
-  // VALORES INICIALES DE LA TABLA
-  useEffect(() => {
-    if (productByCode) {
-      const updatedRows = rows.map((row, index) => {
-        if (
-          row["Code"] === currentValues["Code"] ||
-          row["Description"] === currentValues["Description"]
-        ) {
-          return {
-            ...row,
-            Code: productByCode.presentation_code,
-            Description: productByCode.product_name,
-            Packsize: productByCode.presentation_name,
-            UOM: productByCode.uom,
-            quantity: row.quantity,
-            price:
-              productByCode.price + productByCode.price * productByCode.tax,
-            Net:
-              (productByCode.price !== null &&
-                productByCode.price.toFixed(2)) ||
-              0,
-            "Total Net": "",
-            "VAT %": productByCode.tax,
-            "VAT £": "",
-            "Total Price": "",
-            "Unit Cost": productByCode.cost,
-            "Total Cost": "",
-            Profit: "",
-            "Price Band": "",
-          };
-        }
-        return row;
-      });
-      setRows(updatedRows);
-      products.push(productByCode);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [productByCode]);
-
   // AGREGAR NUEVA FILA
   const addNewRow = () => {
     setRows((prevRows) => [...prevRows, { ...initialRowsState }]);
@@ -439,6 +399,7 @@ export default function Table({
 
   // FUNCIONALIDAD TECLA ENTER
   const handleKeyDown = async (e, rowIndex, fieldName) => {
+    console.log("currentvalue", currentValues);
     if (e.key === "Enter" && e.target.tagName.toLowerCase() !== "textarea") {
       e.preventDefault();
 
@@ -624,12 +585,12 @@ export default function Table({
     console.log("🚀 ~ handleCodeChange entro acaa:");
     const newCodeValue = e.target.value.toLowerCase();
     setCurrentValues((prevValues) => ({
-      ...prevValues,
       [column]: newCodeValue,
     }));
 
     if (column === "Code") {
       if (newCodeValue.trim() === "") {
+        console.log("🚀 ~  entro acaa wCodeValue.trim:");
         const currentCode = previousCode[rowIndex];
         synchronizeExistingCodes();
 
@@ -655,6 +616,8 @@ export default function Table({
           return newPrev;
         });
       } else {
+        console.log("🚀 ~  entro acaa wCodeValue.trim:NO ES STRIN VACIO");
+
         const updatedRows = rows.map((row, index) => {
           if (index === rowIndex) {
             return {
@@ -668,6 +631,11 @@ export default function Table({
       }
     }
   };
+  useEffect(() => {
+    if (showErrorDuplicate) {
+      setCurrentValues({});
+    }
+  }, [showErrorDuplicate]);
 
   return (
     <div className="flex flex-col p-5">
@@ -859,9 +827,8 @@ export default function Table({
 
                                       newValue = newValue.toFixed(2);
                                     }
-
+                                    console.log("taget value", e.target.value);
                                     setCurrentValues((prevValues) => ({
-                                      ...prevValues,
                                       [column]: e.target.value,
                                     }));
                                     const updatedRows = [...rows];
@@ -871,9 +838,9 @@ export default function Table({
                                     handleCodeChange(e, rowIndex, column);
                                   }}
                                   step={0.1}
-                                  onKeyDown={(e) =>
-                                    handleKeyDown(e, rowIndex, column)
-                                  }
+                                  onKeyDown={(e) => {
+                                    handleKeyDown(e, rowIndex, column);
+                                  }}
                                   onKeyPress={(e) => {
                                     if (column === "Net" && e.charCode === 46) {
                                       return;
