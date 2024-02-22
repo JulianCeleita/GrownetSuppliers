@@ -29,6 +29,7 @@ export const fetchOrderDetail = async (
         Authorization: `Bearer ${token}`,
       },
     });
+    console.log("🚀 ~ respondí:", response)
     const newOrderDetail = Array.isArray(response.data.order)
       ? response.data.order
       : [];
