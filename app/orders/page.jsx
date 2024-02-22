@@ -557,7 +557,7 @@ const OrderView = () => {
                       <td className="py-4" onClick={(e) => goToOrder(e, order)}>
                         {order.route}
                       </td>
-                      <td className="py-4">-</td>
+                      <td className="py-4">{order.created_by}</td>
                       <td className="py-4" onClick={(e) => goToOrder(e, order)}>
                         {order.date_delivery}
                       </td>
