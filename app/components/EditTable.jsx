@@ -563,7 +563,7 @@ export default function EditTable({
 
       if (productCode) {
         await fetchProductCode(rowIndex, productCode);
-        // synchronizeExistingCodes();
+        synchronizeExistingCodes();
       }
 
       const nextRowIndex = rowIndex + 1;
@@ -631,7 +631,7 @@ export default function EditTable({
       ) {
         console.log(existingCodes);
         setShowErrorDuplicate(true);
-        // synchronizeExistingCodes();
+        synchronizeExistingCodes();
         
         const updatedRows = rows.map((row, index) => {
           if (index === rowIndex) {
@@ -772,7 +772,7 @@ export default function EditTable({
     if (column === "Code") {
       if (newCodeValue.trim() === "") {
         const currentCode = previousCode[rowIndex];
-        // synchronizeExistingCodes();
+        synchronizeExistingCodes();
 
         const updatedRows = rows.map((row, index) => {
           if (index === rowIndex) {
