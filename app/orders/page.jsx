@@ -300,8 +300,8 @@ const OrderView = () => {
   const filteredOrders = selectedRoute
     ? sortedOrders.filter(
       (order) => order.route.toLowerCase() === selectedRoute.toLowerCase()
-    )
-    : sortedOrders;
+    ).sort((a, b) => b.reference - a.reference)
+    : sortedOrders.sort((a, b) => b.reference - a.reference);
 
   const statusColorClass = (status) => {
     switch (status) {
