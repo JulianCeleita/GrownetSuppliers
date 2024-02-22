@@ -590,7 +590,6 @@ export default function Table({
 
     if (column === "Code") {
       if (newCodeValue.trim() === "") {
-        console.log("🚀 ~  entro acaa wCodeValue.trim:");
         const currentCode = previousCode[rowIndex];
         synchronizeExistingCodes();
 
@@ -616,8 +615,6 @@ export default function Table({
           return newPrev;
         });
       } else {
-        console.log("🚀 ~  entro acaa wCodeValue.trim:NO ES STRIN VACIO");
-
         const updatedRows = rows.map((row, index) => {
           if (index === rowIndex) {
             return {
