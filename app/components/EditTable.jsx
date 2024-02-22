@@ -158,7 +158,7 @@ export default function EditTable({
   const [isReadOnly, setIsReadOnly] = useState(true);
   const [orderError, setOrderError] = useState("");
   const [isSelectDisabled, setIsSelectDisabled] = useState(true);
-  const isEditable = orderDetail?.state_name === "Loaded";
+  const isEditable = orderDetail?.state_name === "Loaded" || orderDetail?.state_name === "Packed";
   const [existingCodes, setExistingCodes] = useState(new Set());
   const [previousCode, setPreviousCode] = useState({});
 
@@ -594,7 +594,7 @@ export default function EditTable({
         e.preventDefault();
       }
     }
-  };
+  };  
 
   const fetchProductCode = async (rowIndex) => {
     try {
@@ -618,16 +618,14 @@ export default function EditTable({
       ) {
         console.log(existingCodes);
         setShowErrorDuplicate(true);
+        
         const updatedRows = rows.map((row, index) => {
           if (index === rowIndex) {
-            console.log("ENTRÉ");
-            return {
-              ...row,
-              Code: "",
-            };
+            return { ...initialRowsState, isExistingProduct: row.isExistingProduct };
           }
           return row;
         });
+        
         setRows(updatedRows);
         return;
       }
