@@ -81,9 +81,6 @@ function EditPresentation({
     setSelectedTax(presentation ? presentation.taxes_id : "");
     setSelectedType(presentation ? presentation.type : "")
     setSelectedTypeId(presentation ? presentation.type_id : "");
-    console.log(selectedType)
-    console.log(selectedTypeId)
-    console.log("🚀 ~ presentation:", presentation)
   }, [presentation]);
 
   // Api products
@@ -173,7 +170,6 @@ function EditPresentation({
       type: selectedTypeId,
       supplier_id: user ? user.id_supplier : null,
     };
-    console.log("🚀 ~ handleEditPresentation ~ postData:", postData)
 
     try {
       const response = await axios.post(
@@ -185,7 +181,6 @@ function EditPresentation({
           },
         }
       );
-      console.log("🚀 ~ handleEditPresentation ~ response:", response)
 
       if (user && user?.ron_name !== "AdminGrownet") {
         fetchPresentationsSupplier(token, user, setPresentations, setIsLoading);

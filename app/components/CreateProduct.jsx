@@ -82,7 +82,6 @@ function CreateProduct({ isvisible, onClose, setProducts, setIsLoading }) {
 
     fetchData();
     fetchTypes(token, setTypes);
-    console.log(types);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -142,7 +141,6 @@ function CreateProduct({ isvisible, onClose, setProducts, setIsLoading }) {
           type: selectedType,
           supplier_id: user.id_supplier,
         };
-    console.log("🚀 ~ SendData ~ postData:", postData);
     axios
       .post(addPresentationUrl, postData, {
         headers: {

@@ -91,7 +91,6 @@ export const fetchOrderDetail = async (
         Authorization: `Bearer ${token}`,
       },
     });
-    console.log("🚀 ~ response:", response);
 
     if (
       user?.id_suppliers == orderDetail.id_suppliers &&
@@ -123,7 +122,6 @@ export const fetchOrdersDate = async (
     },
     route_id: routeId,
   };
-  console.log("postData", postData);
   try {
     const response = await axios.post(ordersDate, postData, {
       headers: {
@@ -151,7 +149,6 @@ export const fetchOrdersDateByWorkDate = async (
       end: workDate,
     },
   };
-  console.log("postData workdate", postData);
   try {
     const response = await axios.post(ordersDate, postData, {
       headers: {
@@ -176,7 +173,6 @@ export const fetchCustomersDate = async (
     date: date,
     accountNumber: accountNumber,
   };
-  console.log("postData customer", postData);
   try {
     const response = await axios.post(customersDate, postData, {
       headers: {
@@ -184,7 +180,6 @@ export const fetchCustomersDate = async (
       },
     });
     setCustomerDate(response.data.routes);
-    console.log("response data customer date", response.data);
   } catch (error) {
     console.error("Error al obtener customer date:", error);
   }

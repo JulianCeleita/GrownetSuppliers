@@ -29,6 +29,6 @@ export const getPercentageOrder = async (
     });
   } catch (error) {
     setDataLoaded(false);
-    console.log("Error in getPercentageOrder:", error);
+    console.error("Error in getPercentageOrder:", error);
   }
 };

@@ -29,7 +29,6 @@ export const fetchOrderDetail = async (
         Authorization: `Bearer ${token}`,
       },
     });
-    console.log("🚀 ~ respondí:", response)
     const newOrderDetail = Array.isArray(response.data.order)
       ? response.data.order
       : [];
@@ -200,7 +199,6 @@ export default function EditTable({
   };
 
   const sortData = (data, searchTerm) => {
-    console.log("🚀 ~ sortData ~ data:", data);
     const lowercasedTerm = searchTerm.toLowerCase();
 
     const exactMatchesCode = data.filter(
@@ -257,8 +255,6 @@ export default function EditTable({
   }, [orderId, token, setOrderDetail]);
 
   useEffect(() => {
-    console.log(orderDetail.products);
-    console.log("🚀 ~ useEffect ~ dataLoaded:", dataLoaded);
     if (
       dataLoaded &&
       orderDetail &&
@@ -316,9 +312,9 @@ export default function EditTable({
     }
   }, [orderDetail, percentageDetail, dataLoaded]);
 
-  useEffect(() => {
-    console.log("existing codes", existingCodes);
-  }, [existingCodes]);
+  // useEffect(() => {
+  //   console.log("existing codes", existingCodes);
+  // }, [existingCodes]);
 
   const handleContextMenu = (e) => {
     e.preventDefault();
@@ -603,9 +599,9 @@ export default function EditTable({
       synchronizeExistingCodes();
       setShouldSynchronize(false);
 
-      setTimeout(() => {
-        console.log("exist", existingCodes);
-      }, 300);
+      // setTimeout(() => {
+      //   console.log("exist", existingCodes);
+      // }, 300);
     }
   }, [shouldSynchronize])
   
@@ -623,14 +619,12 @@ export default function EditTable({
 
       const lowerCodeToUse = codeToUse.toLowerCase();
 
-      console.log("🚀 ~ fetchProductCode ~ lowerCaseCode:", lowerCodeToUse);
       if (
         existingCodes.has(lowerCaseCode) ||
         existingCodes.has(rows[rowIndex].Code.toLowerCase()) ||
         existingCodes.has(lowerCaseCode) ||
         existingCodes.has(lowerCodeToUse)
       ) {
-        console.log(existingCodes);
         setShowErrorDuplicate(true);
         synchronizeExistingCodes();
         
@@ -645,7 +639,6 @@ export default function EditTable({
         setRows(updatedRows);
         return;
       }
-      console.log("no entré al condicional, este es el codigo", codeToUse);
       const response = await axios.get(`${presentationsCode}${codeToUse}`, {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -686,10 +679,6 @@ export default function EditTable({
     } catch (error) {
       console.error("Error al hacer la solicitud:", error.message);
       const currentProductCode = rows[rowIndex]["Code"] || "0";
-      console.log(
-        "🚀 ~ fetchProductCode ~ currentProductCode:",
-        currentProductCode
-      );
       if (currentProductCode != 0) {
         setShowErrorCode(true);
       }
@@ -760,10 +749,6 @@ export default function EditTable({
 
   // BORRAR CASILLAS SI SE BORRA EL CODE
   const handleCodeChange = (e, rowIndex, column) => {
-    console.log(
-      "🚀 ~ handleCodeChange ~ previousCode[rowIndex]:",
-      previousCode[rowIndex]
-    );
     const newCodeValue = e.target.value.toLowerCase();
     setCurrentValues((prevValues) => ({
       ...prevValues,
@@ -954,7 +939,6 @@ export default function EditTable({
                                           value: row[column] || "",
                                         }}
                                         onChange={(selectedDescription, e) => {
-                                          console.log(DescriptionData);
                                           setCurrentValues((prevValues) => ({
                                             // ...prevValues,
                                             [column]: selectedDescription.code,

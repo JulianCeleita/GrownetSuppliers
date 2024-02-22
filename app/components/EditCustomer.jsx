@@ -125,8 +125,6 @@ const CustomerDetailPage = ({
 
       setSelectedRoutes(selectedRoutesData);
     }
-    console.log("SELECTED ROUTES", selectedRoutes)
-      console.log("🚀 ~ useEffect ~ detailCustomer:", detailCustomer)
   }, [detailCustomer]);
 
   useEffect(() => {
@@ -260,7 +258,6 @@ const CustomerDetailPage = ({
       customer: customerId,
       ...prepareDataForBackend(),
     };
-    console.log("🚀 ~ enviarData ~ postDataAssign:", postDataAssign)
     axios
       .post(`${customerUpdate}${customerId}`, postData, {
         headers: {
@@ -594,7 +591,6 @@ const CustomerDetailPage = ({
                                     const selectedRouteId = e.target.value;
                                     const selectedRouteName = e.target.options[e.target.selectedIndex].text;
                                     const dropValue = selectedRoutes[day]?.drop || "";
-                                    console.log("SelectedRoutes", selectedRoutes[day])
                                     handleRouteAndDropSelection(day, selectedRouteId, dropValue, selectedRouteName);
                                   }}
                                 >

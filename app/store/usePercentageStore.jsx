@@ -15,7 +15,7 @@ const usePercentageStore = create((set) => ({
 
             set({ routePercentages: response.data.routes });
         } catch (error) {
-            console.log('error setFetchWorkDate: ', error);
+            console.error('error setFetchWorkDate: ', error);
         }
     },
 }));

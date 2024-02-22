@@ -47,7 +47,6 @@ const OrderView = () => {
   const { routePercentages, setFetchRoutePercentages } = usePercentageStore();
   const [isLoading, setIsLoading] = useState(true);
   const [orders, setOrders] = useState([]);
-  console.log("🚀 ~ OrderView ~ orders:", orders);
   const { user } = useUserStore();
   const [dateFilter, setDateFilter] = useState("today");
   const [showAllOrders, setShowAllOrders] = useState(false);
@@ -247,7 +246,6 @@ const OrderView = () => {
         responseType: "blob",
       })
       .then((response) => {
-        console.log("🚀 ~ .then ~ response:", response);
         // para guardar el pdf
         const blob = new Blob([response.data], { type: "application/pdf" });
         const downloadUrl = URL.createObjectURL(blob);

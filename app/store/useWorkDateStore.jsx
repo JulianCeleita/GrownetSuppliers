@@ -25,7 +25,7 @@ const useWorkDateStore = create((set) => ({
       setStartDateByNet(response.data.operation.principal[0].fecha);
       set({ workDate: response.data.operation.principal[0].fecha });
     } catch (error) {
-      console.log("error setFetchWorkDate: ", error);
+      console.error("error setFetchWorkDate: ", error);
     }
   },
 }));

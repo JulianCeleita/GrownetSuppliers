@@ -448,7 +448,6 @@ export default function Table({
         productCode = currentValues["Code"];
       }
       if (productCode) {
-        console.log("productCode:", productCode);
         await fetchProductCode(rowIndex, productCode);
         synchronizeExistingCodes();
       }
@@ -485,8 +484,6 @@ export default function Table({
   };
 
   const fetchProductCode = async (rowIndex, code) => {
-    console.log("code:", code);
-    console.log("existingCodes:", existingCodes);
     try {
       const lowerCaseCode = code.toLowerCase();
       if (
@@ -509,7 +506,6 @@ export default function Table({
         },
       });
       const productData = response.data.data[0];
-      console.log("Product data:", productData);
       // Actualiza las filas con los datos del producto
       const updatedRows = rows.map((row, index) => {
         if (index === rowIndex) {
@@ -604,7 +600,6 @@ export default function Table({
         );
         return;
       }
-      console.log("Response from create order:", response.data);
       setShowConfirmModal(true);
       setRows(Array.from({ length: 5 }, () => ({ ...initialRowsState })));
       setSpecialRequirements("");
@@ -618,7 +613,6 @@ export default function Table({
 
   // BORRAR CASILLAS SI SE BORRA EL CODE
   const handleCodeChange = (e, rowIndex, column) => {
-    console.log("🚀 ~ handleCodeChange entro acaa:");
     const newCodeValue = e.target.value.toLowerCase();
     setCurrentValues((prevValues) => ({
       ...prevValues,
