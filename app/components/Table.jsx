@@ -132,7 +132,8 @@ export default function Table({
   const [isSelectDisabled, setIsSelectDisabled] = useState(true);
   const [previousCode, setPreviousCode] = useState({});
   const [showErrorDuplicate, setShowErrorDuplicate] = useState(false);
-
+  const [showErrorRoutes, setShowErrorRoutes] = useState(false);
+  console.log(customerDate);
   const columns = [
     "Code",
     "Description",
@@ -214,6 +215,12 @@ export default function Table({
       ...partialMatchesProductName,
     ];
   };
+  //Modal no routes
+  useEffect(() => {
+    if (confirmCreateOrder && customerDate === undefined) {
+      setShowErrorRoutes(true);
+    }
+  }, [confirmCreateOrder, customerDate, setShowErrorRoutes]);
 
   useEffect(() => {
     fetchPresentationsSupplier(
@@ -966,23 +973,13 @@ export default function Table({
         button=" Close"
         confirmed={true}
       />
-      {confirmCreateOrder && (
+
+      {confirmCreateOrder && customerDate !== undefined && (
         <ModalSuccessfull
           isvisible={confirmCreateOrder}
           onClose={() => setConfirmCreateOrder(false)}
           title="Confirmation!"
           text="Are you sure about creating this order?"
-          textGrownet=""
-          button="Confirm"
-          sendOrder={createOrder}
-        />
-      )}
-      {confirmCreateOrder && customerDate === undefined && (
-        <ModalSuccessfull
-          isvisible={confirmCreateOrder}
-          onClose={() => setConfirmCreateOrder(false)}
-          title="Date without routes"
-          text="There are no routes assigned for the selected date. Are you sure you want to send it?"
           textGrownet=""
           button="Confirm"
           sendOrder={createOrder}
@@ -1010,6 +1007,14 @@ export default function Table({
         error={orderError}
         title={"Duplicate code"}
         message={"The product you are entering is duplicate."}
+      />
+      <ModalOrderError
+        isvisible={showErrorRoutes}
+        onClose={() => setShowErrorRoutes(false)}
+        title={"Date without routes"}
+        message={
+          "There are no routes assigned for the selected date. Please change the date to an available day."
+        }
       />
     </div>
   );
