@@ -67,6 +67,7 @@ const useFocusOnEnter = (formRef) => {
       if (fieldName === "quantity" && event.target.value.trim() === "") {
         return;
       }
+
       for (let i = index + 1; i < formRef.current.length; i++) {
         if (formRef.current[i].getAttribute("data-field-name") === "Net") {
           continue;
@@ -133,7 +134,7 @@ export default function Table({
   const [previousCode, setPreviousCode] = useState({});
   const [showErrorDuplicate, setShowErrorDuplicate] = useState(false);
   const [showErrorRoutes, setShowErrorRoutes] = useState(false);
-  console.log(customerDate);
+
   const columns = [
     "Code",
     "Description",
@@ -171,7 +172,6 @@ export default function Table({
   };
 
   const sortData = (data, searchTerm) => {
-    console.log("data", data, "search", searchTerm);
     const lowercasedTerm = searchTerm.toLowerCase();
 
     const exactMatchesCode = data.filter(
@@ -446,17 +446,9 @@ export default function Table({
 
       if (fieldName === "Code" && currentValues["Code"]?.trim() !== "") {
         productCode = currentValues["Code"];
-      } else if (
-        fieldName === "Description" &&
-        currentValues["Description"].trim() !== ""
-      ) {
-        const selectedProduct = DescriptionData.find(
-          (item) => item.productName === currentValues["Description"]
-        );
-        productCode = selectedProduct ? selectedProduct.code : "";
       }
-
       if (productCode) {
+        console.log("productCode:", productCode);
         await fetchProductCode(rowIndex, productCode);
         synchronizeExistingCodes();
       }
@@ -493,6 +485,8 @@ export default function Table({
   };
 
   const fetchProductCode = async (rowIndex, code) => {
+    console.log("code:", code);
+    console.log("existingCodes:", existingCodes);
     try {
       const lowerCaseCode = code.toLowerCase();
       if (
@@ -627,10 +621,7 @@ export default function Table({
 
   // BORRAR CASILLAS SI SE BORRA EL CODE
   const handleCodeChange = (e, rowIndex, column) => {
-    console.log(
-      "🚀 ~ handleCodeChange ~ previousCode[rowIndex]:",
-      previousCode[rowIndex]
-    );
+    console.log("🚀 ~ handleCodeChange entro acaa:");
     const newCodeValue = e.target.value.toLowerCase();
     setCurrentValues((prevValues) => ({
       ...prevValues,
