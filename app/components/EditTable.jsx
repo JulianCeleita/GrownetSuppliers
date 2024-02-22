@@ -152,6 +152,7 @@ export default function EditTable({
   const [showErrorOrderModal, setShowErrorOrderModal] = useState(false);
   const [showErrorCode, setShowErrorCode] = useState(false);
   const [showErrorDuplicate, setShowErrorDuplicate] = useState(false);
+  const [shouldSynchronize, setShouldSynchronize] = useState(false);
 
   const [mouseCoords, setMouseCoords] = useState({ x: 0, y: 0 });
   const router = useRouter();
@@ -562,7 +563,7 @@ export default function EditTable({
 
       if (productCode) {
         await fetchProductCode(rowIndex, productCode);
-        synchronizeExistingCodes();
+        // synchronizeExistingCodes();
       }
 
       const nextRowIndex = rowIndex + 1;
@@ -594,7 +595,19 @@ export default function EditTable({
         e.preventDefault();
       }
     }
-  };  
+  };
+
+  useEffect(() => {
+    if (shouldSynchronize) {
+      synchronizeExistingCodes();
+      setShouldSynchronize(false);
+
+      setTimeout(() => {
+        console.log("exist", existingCodes);
+      }, 300);
+    }
+  }, [shouldSynchronize])
+  
 
   const fetchProductCode = async (rowIndex) => {
     try {
@@ -618,9 +631,11 @@ export default function EditTable({
       ) {
         console.log(existingCodes);
         setShowErrorDuplicate(true);
+        // synchronizeExistingCodes();
         
         const updatedRows = rows.map((row, index) => {
           if (index === rowIndex) {
+            setShouldSynchronize(true);
             return { ...initialRowsState, isExistingProduct: row.isExistingProduct };
           }
           return row;
@@ -757,7 +772,7 @@ export default function EditTable({
     if (column === "Code") {
       if (newCodeValue.trim() === "") {
         const currentCode = previousCode[rowIndex];
-        synchronizeExistingCodes();
+        // synchronizeExistingCodes();
 
         const updatedRows = rows.map((row, index) => {
           if (index === rowIndex) {
