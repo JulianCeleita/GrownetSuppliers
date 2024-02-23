@@ -658,6 +658,12 @@ export default function EditTable({
         ) {
           return {
             ...row,
+            Code: productByCodeData.presentation_code,
+            Description: productByCodeData.product_name,
+            Packsize: productByCodeData.presentation_name,
+            UOM: productByCodeData.uom,
+            Price: productByCodeData.price,
+            "Unit Cost": productByCodeData.cost,
             id_presentations: productByCodeData.id_presentations,
           };
         }
@@ -1021,7 +1027,6 @@ export default function EditTable({
                                     }`}
                                     value={row[column] || ""}
                                     onFocus={(e) => {
-                                      console.log("columns", column);
                                       if (column === "quantity") {
                                         handleInputFocus(e, "quantity")
                                       }
