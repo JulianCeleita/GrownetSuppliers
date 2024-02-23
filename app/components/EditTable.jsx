@@ -755,7 +755,6 @@ export default function EditTable({
   const handleCodeChange = (e, rowIndex, column) => {
     const newCodeValue = e.target.value.toLowerCase();
     setCurrentValues((prevValues) => ({
-      ...prevValues,
       [column]: newCodeValue,
     }));
 
@@ -1021,7 +1020,6 @@ export default function EditTable({
                                         newValue = newValue.toFixed(2);
                                       }
                                       setCurrentValues((prevValues) => ({
-                                        ...prevValues,
                                         [column]: e.target.value,
                                       }));
 
