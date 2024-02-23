@@ -133,6 +133,7 @@ export default function Table({
   const [previousCode, setPreviousCode] = useState({});
   const [showErrorDuplicate, setShowErrorDuplicate] = useState(false);
   const [showErrorRoutes, setShowErrorRoutes] = useState(false);
+  const [sendingOrder, setSendingOrder] = useState(false);
 
   const columns = [
     "Code",
@@ -509,7 +510,14 @@ export default function Table({
   };
 
   const createOrder = async () => {
+    console.log("Checking if I can send order...")
+    if (sendingOrder) {
+      console.log("I am already sending the past order...")
+      return;
+    }
     setConfirmCreateOrder(false);
+    setSendingOrder(true);
+    console.log("I am sending order...");
     try {
       if (!customers) {
         setShowErrorOrderModal(true);
@@ -561,6 +569,8 @@ export default function Table({
         );
         return;
       }
+      setSendingOrder(false);
+      console.log("Order ended", response.data);
       setShowConfirmModal(true);
       setRows(Array.from({ length: 5 }, () => ({ ...initialRowsState })));
       setSpecialRequirements("");
