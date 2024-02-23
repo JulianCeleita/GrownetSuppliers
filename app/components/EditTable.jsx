@@ -799,6 +799,15 @@ export default function EditTable({
     }
   };
 
+  const handleInputFocus = (e, fieldName) => {
+    if (fieldName === "quantity") {
+      const quantityValue = e.target.value.trim() !== "" ? e.target.value.trim() : "0";
+      setCurrentValues(prevValues => ({
+          quantity: quantityValue
+      }));
+    }
+  };
+
   return (
     <div className="flex flex-col p-8">
       {isLoading ? (
@@ -1011,6 +1020,12 @@ export default function EditTable({
                                         : ""
                                     }`}
                                     value={row[column] || ""}
+                                    onFocus={(e) => {
+                                      console.log("columns", column);
+                                      if (column === "quantity") {
+                                        handleInputFocus(e, "quantity")
+                                      }
+                                    }}
                                     onChange={(e) => {
                                       if (column === "Net") {
                                         let newValue = parseFloat(

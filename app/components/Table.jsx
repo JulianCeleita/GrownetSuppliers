@@ -629,6 +629,14 @@ export default function Table({
       }
     }
   };
+  const handleInputFocus = (e, fieldName) => {
+    if (fieldName === "quantity") {
+      const quantityValue = e.target.value.trim() !== "" ? e.target.value.trim() : "0";
+      setCurrentValues(prevValues => ({
+          quantity: quantityValue
+      }));
+    }
+  };
   useEffect(() => {
     if (showErrorDuplicate) {
       setCurrentValues({});
@@ -819,6 +827,12 @@ export default function Table({
                                       : ""
                                   } `}
                                   value={row[column] || ""}
+                                  onFocus={(e) => {
+                                    console.log("columns", column);
+                                    if (column === "quantity") {
+                                      handleInputFocus(e, "quantity")
+                                    }
+                                  }}
                                   onChange={(e) => {
                                     if (column === "Net") {
                                       let newValue = parseFloat(e.target.value);
