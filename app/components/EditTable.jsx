@@ -608,6 +608,7 @@ export default function EditTable({
   }, [shouldSynchronize, rows]);
 
   const fetchProductCode = async (rowIndex) => {
+    console.log("entro a la funcion de peticion")
     try {
       // Obtener el valor del input de "Code" desde la fila
       const currentProductCode = rows[rowIndex]["Code"] || "0";
@@ -643,11 +644,13 @@ export default function EditTable({
         setRows(updatedRows);
         return;
       }
+      console.log("antes de hacer peticion")
       const response = await axios.get(`${presentationsCode}${codeToUse}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
+      console.log("🚀 ~ fetchProductCode ~ response:", response)
       const productByCodeData = response.data.data[0];
 
       const updatedRows = rows.map((row, index) => {
@@ -658,6 +661,12 @@ export default function EditTable({
         ) {
           return {
             ...row,
+            Code: productByCodeData.presentation_code,
+            Description: productByCodeData.product_name,
+            Packsize: productByCodeData.presentation_name,
+            UOM: productByCodeData.uom,
+            Price: productByCodeData.price,
+            "Unit Cost": productByCodeData.cost,
             id_presentations: productByCodeData.id_presentations,
           };
         }
