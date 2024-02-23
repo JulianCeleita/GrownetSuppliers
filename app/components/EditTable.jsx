@@ -159,7 +159,9 @@ export default function EditTable({
   const [isReadOnly, setIsReadOnly] = useState(true);
   const [orderError, setOrderError] = useState("");
   const [isSelectDisabled, setIsSelectDisabled] = useState(true);
-  const isEditable = orderDetail?.state_name === "Loaded" || orderDetail?.state_name === "Packed";
+  const isEditable =
+    orderDetail?.state_name === "Loaded" ||
+    orderDetail?.state_name === "Packed";
   const [existingCodes, setExistingCodes] = useState(new Set());
   const [previousCode, setPreviousCode] = useState({});
 
@@ -265,10 +267,10 @@ export default function EditTable({
         const quantity = !product.state_definitive
           ? product.quantity
           : product.state_definitive
-            ? product.quantity_definitive
-            : product.state_definitive === "N/A"
-              ? product.quantity_definitive
-              : "";
+          ? product.quantity_definitive
+          : product.state_definitive === "N/A"
+          ? product.quantity_definitive
+          : "";
 
         return {
           state: product.state_definitive,
@@ -603,8 +605,7 @@ export default function EditTable({
       console.log("exist", existingCodes);
       // }, 300);
     }
-  }, [shouldSynchronize, rows])
-
+  }, [shouldSynchronize, rows]);
 
   const fetchProductCode = async (rowIndex) => {
     try {
@@ -631,7 +632,10 @@ export default function EditTable({
         const updatedRows = rows.map((row, index) => {
           if (index === rowIndex) {
             setShouldSynchronize(true);
-            return { ...initialRowsState, isExistingProduct: row.isExistingProduct };
+            return {
+              ...initialRowsState,
+              isExistingProduct: row.isExistingProduct,
+            };
           }
           return row;
         });
@@ -830,24 +834,27 @@ export default function EditTable({
                           <th
                             key={index}
                             scope="col"
-                            className={`py-3 px-2 bg-white capitalize ${index === firstVisibleColumnIndex
+                            className={`py-3 px-2 bg-white capitalize ${
+                              index === firstVisibleColumnIndex
                                 ? "rounded-tl-lg"
                                 : ""
-                              } ${index === lastVisibleColumnIndex
+                            } ${
+                              index === lastVisibleColumnIndex
                                 ? "rounded-tr-lg"
                                 : ""
-                              } ${column === "quantity" ||
-                                column === "VAT %" ||
-                                column === "UOM" ||
-                                column === "Net"
+                            } ${
+                              column === "quantity" ||
+                              column === "VAT %" ||
+                              column === "UOM" ||
+                              column === "Net"
                                 ? "w-20"
                                 : column === "Packsize" ||
                                   column === "Total Price"
-                                  ? "w-40"
-                                  : column === "Code"
-                                    ? "w-[8em]"
-                                    : ""
-                              }`}
+                                ? "w-40"
+                                : column === "Code"
+                                ? "w-[8em]"
+                                : ""
+                            }`}
                             onContextMenu={(e) => handleContextMenu(e)}
                           >
                             <p className="text-lg text-dark-blue">{column}</p>
@@ -861,10 +868,11 @@ export default function EditTable({
                   {rows.map((row, rowIndex) => (
                     <tr
                       key={rowIndex}
-                      className={`${row.state === "N/A"
+                      className={`${
+                        row.state === "N/A"
                           ? " line-through text-primary-blue decoration-dark-blue"
                           : ""
-                        }`}
+                      }`}
                     >
                       {/* CODIGO DE PRODUCTO */}
                       {columns.map(
@@ -924,10 +932,10 @@ export default function EditTable({
                                         options={
                                           DescriptionData
                                             ? DescriptionData.map((item) => ({
-                                              value: item.productName,
-                                              label: `${item.code} - ${item.product_name} - ${item.name}`,
-                                              code: item.code,
-                                            }))
+                                                value: item.productName,
+                                                label: `${item.code} - ${item.product_name} - ${item.name}`,
+                                                code: item.code,
+                                              }))
                                             : []
                                         }
                                         value={{
@@ -978,7 +986,9 @@ export default function EditTable({
                                           }),
                                         }}
                                         isDisabled={
-                                          row.isExistingProduct && isEditable
+                                          (row.isExistingProduct &&
+                                            isEditable) ||
+                                          isSelectDisabled
                                         }
                                         onBlur={() => setIsSelectDisabled(true)}
                                       />
@@ -992,13 +1002,15 @@ export default function EditTable({
                                     disabled={
                                       row.isExistingProduct && isEditable
                                     }
-                                    className={`pl-2 h-[30px] outline-none w-full ${inputTypes[column] === "number"
+                                    className={`pl-2 h-[30px] outline-none w-full ${
+                                      inputTypes[column] === "number"
                                         ? "hide-number-arrows"
                                         : ""
-                                      } ${row.state === "N/A"
+                                    } ${
+                                      row.state === "N/A"
                                         ? " line-through text-primary-blue decoration-black"
                                         : ""
-                                      }`}
+                                    }`}
                                     value={row[column] || ""}
                                     onChange={(e) => {
                                       if (column === "Net") {
