@@ -611,13 +611,13 @@ export default function EditTable({
           : currentProductCode;
 
       const lowerCodeToUse = codeToUse.toLowerCase();
+      const condition = codeToUse
+        ? existingCodes.has(lowerCodeToUse)
+        : existingCodes.has(rows[rowIndex].Code.toLowerCase()) ||
+          existingCodes.has(lowerCaseCode) ||
+          existingCodes.has(lowerCodeToUse);
 
-      if (
-        existingCodes.has(lowerCaseCode) ||
-        existingCodes.has(rows[rowIndex].Code.toLowerCase()) ||
-        existingCodes.has(lowerCaseCode) ||
-        existingCodes.has(lowerCodeToUse)
-      ) {
+      if (condition) {
         setShowErrorDuplicate(true);
         synchronizeExistingCodes();
 
