@@ -564,6 +564,8 @@ export default function Table({
       });
       if (response.data.status !== 200) {
         setShowErrorOrderModal(true);
+        setSendingOrder(false);
+        console.log("Order error", response.data);
         setOrderError(
           "Please check that the delivery day is available for this customer and that all products are correct."
         );
