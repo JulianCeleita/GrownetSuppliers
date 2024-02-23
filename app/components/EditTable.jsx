@@ -550,14 +550,6 @@ export default function EditTable({
 
       if (fieldName === "Code" && currentValues["Code"]?.trim() !== "") {
         productCode = currentValues["Code"];
-      } else if (
-        fieldName === "Description" &&
-        currentValues["Description"].trim() !== ""
-      ) {
-        const selectedProduct = DescriptionData.find(
-          (item) => item.productName === currentValues["Description"]
-        );
-        productCode = selectedProduct ? selectedProduct.code : "";
       }
 
       if (productCode) {
@@ -807,9 +799,10 @@ export default function EditTable({
 
   const handleInputFocus = (e, fieldName) => {
     if (fieldName === "quantity") {
-      const quantityValue = e.target.value.trim() !== "" ? e.target.value.trim() : "0";
-      setCurrentValues(prevValues => ({
-          quantity: quantityValue
+      const quantityValue =
+        e.target.value.trim() !== "" ? e.target.value.trim() : "0";
+      setCurrentValues((prevValues) => ({
+        quantity: quantityValue,
       }));
     }
   };
@@ -1028,7 +1021,7 @@ export default function EditTable({
                                     value={row[column] || ""}
                                     onFocus={(e) => {
                                       if (column === "quantity") {
-                                        handleInputFocus(e, "quantity")
+                                        handleInputFocus(e, "quantity");
                                       }
                                     }}
                                     onChange={(e) => {
