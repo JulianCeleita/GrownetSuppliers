@@ -365,7 +365,7 @@ const OrderView = () => {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search..."
-              className="border border-gray-300 rounded-md py-3 px-2 placeholder-[#04444F]"
+              className="border border-gray-300 rounded-md py-3 px-2 placeholder-[#04444F] focus:border-[#04444F] focus:border-2 focus:outline-none"
             />
           </div>
           <select
