@@ -46,7 +46,7 @@ const CreateOrderView = () => {
   const [specialRequirements, setSpecialRequirements] = useState("");
   const { user, setUser } = useUserStore();
   const [customerDate, setCustomerDate] = useState();
-  console.log("customerDate", customerDate);
+
   const [showErrorRoutes, setShowErrorRoutes] = useState(false);
   //Fecha input
   function getCurrentDate() {
