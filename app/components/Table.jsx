@@ -90,7 +90,6 @@ export default function Table({
   specialRequirements,
   setSpecialRequirements,
   customerDate,
-  setCustomerDate,
 }) {
   const [rows, setRows] = useState(
     Array.from({ length: 5 }, () => ({ ...initialRowsState }))
@@ -792,7 +791,9 @@ export default function Table({
                                         );
                                       }
                                     }}
-                                    isDisabled={isSelectDisabled}
+                                    isDisabled={
+                                      isSelectDisabled || !customerDate
+                                    }
                                     onBlur={() => setIsSelectDisabled(true)}
                                     styles={{
                                       control: (provided) => ({
@@ -873,7 +874,10 @@ export default function Table({
                                       e.preventDefault();
                                     }
                                   }}
-                                  readOnly={column === "Net" && isReadOnly}
+                                  readOnly={
+                                    (column === "Net" && isReadOnly) ||
+                                    !customerDate
+                                  }
                                   onDoubleClick={() => setIsReadOnly(false)}
                                   onBlur={() => setIsReadOnly(true)}
                                 />
