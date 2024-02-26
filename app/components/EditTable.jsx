@@ -53,7 +53,7 @@ const initialRowsState = {
   "Total Price": "",
   "Unit Cost": "",
   Profit: "",
-  "Price Band": "",
+  "Band": "",
   "Total Cost": "",
 };
 
@@ -71,7 +71,7 @@ const inputRefs = {
   "Total Price": [],
   "Unit Cost": [],
   Profit: [],
-  "Price Band": [],
+  "Band": [],
   "Total Cost": [],
 };
 
@@ -179,7 +179,7 @@ export default function EditTable({
     "Total Price",
     "Unit Cost",
     "Profit",
-    "Price Band",
+    "Band",
     "Total Cost",
   ];
   const inputTypes = {
@@ -196,7 +196,7 @@ export default function EditTable({
     "Total Price": "number",
     "Unit Cost": "number",
     Profit: "number",
-    "Price Band": "text",
+    "Band": "text",
     "Total Cost": "number",
   };
 
@@ -288,7 +288,7 @@ export default function EditTable({
           "Total Price": "",
           "Unit Cost": product.cost,
           Profit: "",
-          "Price Band": "",
+          "Band": "",
           "Total Cost": "",
         };
       });
@@ -506,7 +506,7 @@ export default function EditTable({
             "Unit Cost": productByCode.cost,
             "Total Cost": "",
             Profit: "",
-            "Price Band": "",
+            "Band": "",
           };
         }
         return row;
@@ -903,7 +903,7 @@ export default function EditTable({
                                   "Total Price",
                                   "Unit Cost",
                                   "Profit",
-                                  "Price Band",
+                                  "Band",
                                   "Total Cost",
                                 ].includes(column) ? (
                                   <span
@@ -922,7 +922,7 @@ export default function EditTable({
                                     {column === "Unit Cost" && row[column]}
                                     {column === "Profit" &&
                                       calculateProfit(row)}
-                                    {column === "Price Band" && row[column]}
+                                    {column === "Band" && row[column]}
                                     {column === "Total Cost" &&
                                       calculateTotalCost(row)}
                                     {column === "Description" && (

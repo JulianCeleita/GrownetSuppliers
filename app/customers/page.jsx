@@ -203,8 +203,8 @@ const CustomersView = () => {
           </select>
         </div>
         <div className="flex items-center justify-center mb-20 ">
-          <table className="w-[90%] bg-white rounded-2xl text-center shadow-[rgba(17,_17,_26,_0.1)_0px_0px_16px]">
-            <thead className="sticky top-0 bg-white shadow-[0px_11px_15px_-3px_#edf2f7]">
+          <table className="w-[90%] bg-white rounded-2xl  shadow-[rgba(17,_17,_26,_0.1)_0px_0px_16px]">
+            <thead className="sticky top-0 bg-white text-center shadow-[0px_11px_15px_-3px_#edf2f7]">
               <tr className="border-stone-100 border-b-0 text-dark-blue rounded-t-3xl">
                 <th className="py-4 rounded-tl-lg">Acc Number</th>
                 <th className="py-4 rounded-tl-lg">Name</th>
@@ -253,15 +253,17 @@ const CustomersView = () => {
                         }}
                         className="text-dark-blue border-2 border-stone-100 border-t-0 cursor-pointer hover:bg-[#F6F6F6] transition-all"
                       >
-                        <td className="py-4">{customer.accountNumber}</td>
-                        <td className="py-4">{customer.accountName}</td>
-                        <td className="py-4 w-[110px">{customer.telephone}</td>
-                        <td className="py-4 w-[150px]">
+                        <td className="py-4 pl-8">{customer.accountNumber}</td>
+                        <td className="py-4 pl-8">{customer.accountName}</td>
+                        <td className="py-4 pl-8 w-[110px">
+                          {customer.telephone}
+                        </td>
+                        <td className="py-4 pl-8 w-[150px]">
                           {customer.group !== null
                             ? customer.group
                             : "No group"}
                         </td>
-                        <td className="py-4">
+                        <td className="py-4 pl-8">
                           {customer.routes && customer.routes.length > 0 ? (
                             customer.routes.map((route, index) => (
                               <span key={route.id}>
@@ -273,7 +275,9 @@ const CustomersView = () => {
                             <span>No routes</span>
                           )}
                         </td>
-                        <td className="py-4 w-[120px]">{customer.postCode}</td>
+                        <td className="py-4 pl-8 w-[120px]">
+                          {customer.postCode}
+                        </td>
                         {/* <td className="py-4 flex gap-2 justify-center">
                           <div
                             className={`inline-block mt-1 rounded-full text-white ${statusColorClass(

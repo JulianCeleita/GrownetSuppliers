@@ -296,9 +296,11 @@ const OrderView = () => {
   };
 
   const filteredOrders = selectedRoute
-    ? sortedOrders.filter(
-      (order) => order.route.toLowerCase() === selectedRoute.toLowerCase()
-    ).sort((a, b) => b.reference - a.reference)
+    ? sortedOrders
+        .filter(
+          (order) => order.route.toLowerCase() === selectedRoute.toLowerCase()
+        )
+        .sort((a, b) => b.reference - a.reference)
     : sortedOrders.sort((a, b) => b.reference - a.reference);
 
   const statusColorClass = (status) => {
@@ -496,8 +498,8 @@ const OrderView = () => {
         </section>
 
         <div className="flex items-center justify-center mb-20 mt-8  p-2">
-          <table className="w-[90%] bg-white first-line:bg-white rounded-2xl text-center shadow-[rgba(17,_17,_26,_0.1)_0px_0px_16px]">
-            <thead className="relative top-0  shadow-[0px_11px_15px_-3px_#edf2f7]">
+          <table className="w-[90%] bg-white first-line:bg-white rounded-2xl text-left shadow-[rgba(17,_17,_26,_0.1)_0px_0px_16px]">
+            <thead className="relative top-0 text-center shadow-[0px_11px_15px_-3px_#edf2f7]">
               <tr className="  text-dark-blue">
                 <th className="py-4 flex items-center justify-center rounded-tl-lg">
                   <label className="inline-flex items-center">
@@ -527,7 +529,7 @@ const OrderView = () => {
                       key={index}
                       className="text-dark-blue border-b-[1.5px] cursor-pointer hover:bg-[#F6F6F6]"
                     >
-                      <td className="py-4">
+                      <td className="py-4 pl-4">
                         <label className="inline-flex items-center">
                           <input
                             type="checkbox"
@@ -542,27 +544,45 @@ const OrderView = () => {
                           />
                         </label>
                       </td>
-                      <td className="py-4" onClick={(e) => goToOrder(e, order)}>
+                      <td
+                        className="py-4 pl-4"
+                        onClick={(e) => goToOrder(e, order)}
+                      >
                         {order.reference}
                       </td>
-                      <td className="py-4" onClick={(e) => goToOrder(e, order)}>
+                      <td
+                        className="py-4 pl-4"
+                        onClick={(e) => goToOrder(e, order)}
+                      >
                         {order.accountName}
                       </td>
-                      <td className="py-4" onClick={(e) => goToOrder(e, order)}>
+                      <td
+                        className="py-4 pl-4"
+                        onClick={(e) => goToOrder(e, order)}
+                      >
                         {order.net}
                       </td>
-                      <td className="py-4" onClick={(e) => goToOrder(e, order)}>
+                      <td
+                        className="py-4 pl-4"
+                        onClick={(e) => goToOrder(e, order)}
+                      >
                         {order.profitOrder ? order.profitOrder.toFixed(2) : ""}
                       </td>
-                      <td className="py-4" onClick={(e) => goToOrder(e, order)}>
+                      <td
+                        className="py-4 pl-4"
+                        onClick={(e) => goToOrder(e, order)}
+                      >
                         {order.route}
                       </td>
-                      {/* <td className="py-4">{order.created_by}</td> */}
-                      <td className="py-4" onClick={(e) => goToOrder(e, order)}>
+                      {/* <td className="py-4 pl-4">{order.created_by}</td> */}
+                      <td
+                        className="py-4 pl-4"
+                        onClick={(e) => goToOrder(e, order)}
+                      >
                         {order.date_delivery}
                       </td>
                       <td
-                        className="py-4 flex gap-2 justify-center"
+                        className="py-4 pl-4 flex gap-2 justify-center"
                         onClick={(e) => goToOrder(e, order)}
                       >
                         <div
