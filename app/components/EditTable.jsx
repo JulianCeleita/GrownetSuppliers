@@ -277,7 +277,7 @@ export default function EditTable({
           isExistingProduct: true,
           Code: product.presentations_code,
           Description: product.name,
-          Packsize: product.presentation_name,
+          Packsize: product.presentationName,
           UOM: product.uom,
           quantity: quantity?.toString(),
           price: product.price + product.price * product.tax,
