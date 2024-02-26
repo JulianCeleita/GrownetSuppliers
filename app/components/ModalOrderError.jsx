@@ -1,11 +1,19 @@
 import { ExclamationCircleIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import { useEffect, useRef } from "react";
 
-function ModalOrderError({ isvisible, onClose, error, title, message }) {
+function ModalOrderError({
+  isvisible,
+  onClose,
+  error,
+  title,
+  message,
+  setCustomerDate = () => {},
+}) {
   const modalRef = useRef();
 
   useEffect(() => {
     if (isvisible) {
+      setCustomerDate();
       modalRef.current.focus();
     }
   }, [isvisible]);

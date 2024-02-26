@@ -59,16 +59,16 @@ function Users() {
           Users <span className="text-light-green">list</span>
         </h1>
         <div className="flex gap-16 items-center justify-center mb-0  mt-12">
-          <table className="w-[90%] bg-white rounded-2xl text-center shadow-[0_8px_30px_rgb(0,0,0,0.12)] mb-10">
-            <thead className="sticky top-0 bg-white shadow-[0px_11px_15px_-3px_#edf2f7]">
-              <tr className="border-b-2 border-stone-100 text-dark-blue">
-                <th className="py-4">User</th>
+          <table className="w-[90%] bg-white rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.12)] mb-10">
+            <thead className="sticky top-0 shadow-[0px_11px_15px_-3px_#edf2f7] bg-white text-center">
+              <tr className="border-b-2 border-stone-100  text-dark-blue">
+                <th className="py-4 rounded-tl-lg">User</th>
                 <th className="py-4">Email</th>
                 <th className="py-4">Rol</th>
                 <th className="py-4">Users</th>
                 <th className="py-4">Orders</th>
                 <th className="py-4">Presentations</th>
-                <th className="py-4">Access</th>
+                <th className="py-4 rounded-tr-lg">Access</th>
               </tr>
             </thead>
             <tbody>
@@ -79,14 +79,14 @@ function Users() {
                       key={user.id}
                       className="text-dark-blue border-b-2 border-stone-100 "
                     >
-                      <td className="py-8">{user.name}</td>
-                      <td className="py-8">{user.email}</td>
-                      <td className="py-8">{user.rol_name}</td>
-                      <td className="py-8">
+                      <td className="py-8 pl-4">{user.name}</td>
+                      <td className="py-8 pl-4">{user.email}</td>
+                      <td className="py-8 pl-4">{user.rol_name}</td>
+                      <td className="py-8 pl-4">
                         {" "}
                         <CheckIcon className="h-6 w-[100%]" />{" "}
                       </td>
-                      <td className="py-8">
+                      <td className="py-8 pl-4">
                         {user.rol_name === "Administrador" ||
                         user.rol_name === "AdminGrownet" ? (
                           <CheckIcon className="h-6 w-[100%]" />
@@ -94,7 +94,7 @@ function Users() {
                           <XMarkIcon className="h-6 w-[100%]" />
                         )}
                       </td>
-                      <td className="py-8">
+                      <td className="py-8 pl-4">
                         {user.rol_name === "Administrador" ||
                         user.rol_name === "AdminGrownet" ? (
                           <CheckIcon className="h-6 w-[100%]" />
@@ -102,7 +102,7 @@ function Users() {
                           <XMarkIcon className="h-6 w-[100%]" />
                         )}
                       </td>
-                      <td className="py-8 w-[100%] flex items-center justify-center">
+                      <td className="py-8 pl-4 w-[100%] flex items-center justify-center">
                         <button
                           onClick={() => {
                             // setSelectedUser(user);
