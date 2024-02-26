@@ -400,7 +400,6 @@ export default function Table({
 
   // FUNCIONALIDAD TECLA ENTER
   const handleKeyDown = async (e, rowIndex, fieldName) => {
-    console.log("currentvalue", currentValues);
     if (e.key === "Enter" && e.target.tagName.toLowerCase() !== "textarea") {
       e.preventDefault();
 
@@ -446,8 +445,6 @@ export default function Table({
   };
 
   const fetchProductCode = async (rowIndex, code) => {
-    console.log("code", code, "existingCodes", existingCodes);
-    console.log("rows[rowIndex].Code", rows[rowIndex].Code);
     const currentDescription = rows[rowIndex]["Description"];
     try {
       const lowerCaseCode = code.toLowerCase();
@@ -487,7 +484,7 @@ export default function Table({
             UOM: productData.uom,
             Price: productData.price,
             "Unit Cost": productData.cost,
-            "VAT %": productData.tax
+            "VAT %": productData.tax,
             //TODO: Si van agregar mas campos, agregarlos aqui
           };
         }
@@ -838,7 +835,6 @@ export default function Table({
                                   } `}
                                   value={row[column] || ""}
                                   onFocus={(e) => {
-                                    console.log("columns", column);
                                     if (column === "quantity") {
                                       handleInputFocus(e, "quantity");
                                     }
@@ -849,7 +845,7 @@ export default function Table({
 
                                       newValue = newValue.toFixed(2);
                                     }
-                                    console.log("taget value", e.target.value);
+
                                     setCurrentValues((prevValues) => ({
                                       [column]: e.target.value,
                                     }));
