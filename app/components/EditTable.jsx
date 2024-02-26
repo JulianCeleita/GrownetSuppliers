@@ -277,7 +277,7 @@ export default function EditTable({
           isExistingProduct: true,
           Code: product.presentations_code,
           Description: product.name,
-          Packsize: product.presentation_name,
+          Packsize: product.presentationName,
           UOM: product.uom,
           quantity: quantity?.toString(),
           price: product.price + product.price * product.tax,
@@ -641,6 +641,7 @@ export default function EditTable({
         },
       });
       const productByCodeData = response.data.data[0];
+      console.log("🚀 ~ fetchProductCode ~ productByCodeData:", productByCodeData)
 
       const updatedRows = rows.map((row, index) => {
         if (

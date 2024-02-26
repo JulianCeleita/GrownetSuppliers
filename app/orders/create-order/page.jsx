@@ -54,6 +54,14 @@ const CreateOrderView = () => {
     const day = String(today.getDate()).padStart(2, "0");
     return `${year}-${month}-${day}`;
   }
+  function getCurrentDateMin() {
+    const today = new Date();
+    today.setDate(today.getDate());
+    const year = today.getFullYear();
+    const month = String(today.getMonth() + 1).padStart(2, "0");
+    const day = String(today.getDate()).padStart(2, "0");
+    return `${year}-${month}-${day}`;
+  }
 
   useEffect(() => {
     const fetchData = async () => {
@@ -401,7 +409,7 @@ const CreateOrderView = () => {
         <input
           type="date"
           className="border ml-2 p-1.5 rounded-md text-dark-blue"
-          min={getCurrentDate()}
+          min={getCurrentDateMin()}
           onChange={handleDateChange}
           value={orderDate}
         />

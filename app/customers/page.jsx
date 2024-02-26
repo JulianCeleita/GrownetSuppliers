@@ -212,7 +212,7 @@ const CustomersView = () => {
                 <th className="py-4">Group</th>
                 <th className="py-4">Routes</th>
                 <th className="py-4">Post Code</th>
-                <th className="py-4">Status</th>
+                {/* <th className="py-4">Status</th> */}
               </tr>
             </thead>
             <tbody>
@@ -274,7 +274,7 @@ const CustomersView = () => {
                           )}
                         </td>
                         <td className="py-4 w-[120px]">{customer.postCode}</td>
-                        <td className="py-4 flex gap-2 justify-center">
+                        {/* <td className="py-4 flex gap-2 justify-center">
                           <div
                             className={`inline-block mt-1 rounded-full text-white ${statusColorClass(
                               customer.stateCustomer_id
@@ -285,7 +285,7 @@ const CustomersView = () => {
                           ) : (
                             <span>Inactive</span>
                           )}
-                        </td>
+                        </td> */}
                       </tr>
                     );
                   }

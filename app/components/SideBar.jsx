@@ -283,23 +283,23 @@ const SideBar = () => {
                       )}
                       {user && user.rol_name === "Administrador" && (
                         <Link
-                          href="/catalogs"
+                          href="/presentations"
                           className="relative group text-white rounded m-2 py-2 transition-all hover:text-light-green hover:scale-110"
                         >
                           <h3
                             className={
                               activeLink === "catalogs" ? "active" : ""
                             }
-                            onClick={() => setActiveLink("catalogs")}
+                            onClick={() => setActiveLink("presentations")}
                           >
                             Catalogue
                           </h3>
 
-                          {activeLink === "catalogs" && (
+                          {activeLink === "presentations" && (
                             <span className="absolute bottom-0 left-0 h-0.5 bg-light-green w-full transition-all duration-300 ease-in-out"></span>
                           )}
 
-                          {activeLink !== "catalogs" && (
+                          {activeLink !== "presentations" && (
                             <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-white group-hover:w-full transition-all duration-300 ease-in-out"></span>
                           )}
                         </Link>
