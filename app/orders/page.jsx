@@ -374,7 +374,7 @@ const OrderView = () => {
             className="form-select px-4 py-3 rounded-md border border-gray-300"
           >
             <option value="range">Filter by range</option>
-            <option value="date">Filter per date</option>
+            <option value="date">Filter by date</option>
           </select>
           {filterType === "range" && (
             <>
