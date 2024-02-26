@@ -487,6 +487,7 @@ export default function Table({
             UOM: productData.uom,
             Price: productData.price,
             "Unit Cost": productData.cost,
+            "VAT %": productData.tax
             //TODO: Si van agregar mas campos, agregarlos aqui
           };
         }

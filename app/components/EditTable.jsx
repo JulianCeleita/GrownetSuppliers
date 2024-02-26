@@ -641,6 +641,7 @@ export default function EditTable({
         },
       });
       const productByCodeData = response.data.data[0];
+      console.log("🚀 ~ fetchProductCode ~ productByCodeData:", productByCodeData)
 
       const updatedRows = rows.map((row, index) => {
         if (
