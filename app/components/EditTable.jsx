@@ -550,14 +550,6 @@ export default function EditTable({
 
       if (fieldName === "Code" && currentValues["Code"]?.trim() !== "") {
         productCode = currentValues["Code"];
-      } else if (
-        fieldName === "Description" &&
-        currentValues["Description"].trim() !== ""
-      ) {
-        const selectedProduct = DescriptionData.find(
-          (item) => item.productName === currentValues["Description"]
-        );
-        productCode = selectedProduct ? selectedProduct.code : "";
       }
 
       if (productCode) {
@@ -619,13 +611,13 @@ export default function EditTable({
           : currentProductCode;
 
       const lowerCodeToUse = codeToUse.toLowerCase();
+      const condition = codeToUse
+        ? existingCodes.has(lowerCodeToUse)
+        : existingCodes.has(rows[rowIndex].Code.toLowerCase()) ||
+          existingCodes.has(lowerCaseCode) ||
+          existingCodes.has(lowerCodeToUse);
 
-      if (
-        existingCodes.has(lowerCaseCode) ||
-        existingCodes.has(rows[rowIndex].Code.toLowerCase()) ||
-        existingCodes.has(lowerCaseCode) ||
-        existingCodes.has(lowerCodeToUse)
-      ) {
+      if (condition) {
         setShowErrorDuplicate(true);
         synchronizeExistingCodes();
 
@@ -658,6 +650,12 @@ export default function EditTable({
         ) {
           return {
             ...row,
+            Code: productByCodeData.presentation_code,
+            Description: productByCodeData.product_name,
+            Packsize: productByCodeData.presentation_name,
+            UOM: productByCodeData.uom,
+            Price: productByCodeData.price,
+            "Unit Cost": productByCodeData.cost,
             id_presentations: productByCodeData.id_presentations,
           };
         }
@@ -796,6 +794,16 @@ export default function EditTable({
         });
         setRows(updatedRows);
       }
+    }
+  };
+
+  const handleInputFocus = (e, fieldName) => {
+    if (fieldName === "quantity") {
+      const quantityValue =
+        e.target.value.trim() !== "" ? e.target.value.trim() : "0";
+      setCurrentValues((prevValues) => ({
+        quantity: quantityValue,
+      }));
     }
   };
 
@@ -1011,6 +1019,11 @@ export default function EditTable({
                                         : ""
                                     }`}
                                     value={row[column] || ""}
+                                    onFocus={(e) => {
+                                      if (column === "quantity") {
+                                        handleInputFocus(e, "quantity");
+                                      }
+                                    }}
                                     onChange={(e) => {
                                       if (column === "Net") {
                                         let newValue = parseFloat(

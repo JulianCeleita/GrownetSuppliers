@@ -446,16 +446,24 @@ export default function Table({
   };
 
   const fetchProductCode = async (rowIndex, code) => {
+    console.log("code", code, "existingCodes", existingCodes);
+    console.log("rows[rowIndex].Code", rows[rowIndex].Code);
+    const currentDescription = rows[rowIndex]["Description"];
     try {
       const lowerCaseCode = code.toLowerCase();
-      if (
-        existingCodes.has(lowerCaseCode) ||
-        existingCodes.has(rows[rowIndex].Code.toLowerCase())
-      ) {
+      const condition = currentDescription
+        ? existingCodes.has(lowerCaseCode)
+        : existingCodes.has(lowerCaseCode) ||
+          existingCodes.has(rows[rowIndex].Code.toLowerCase());
+
+      if (condition) {
         setShowErrorDuplicate(true);
         const updatedRows = rows.map((row, index) => {
           if (index === rowIndex) {
-            return { ...initialRowsState, isExistingProduct: row.isExistingProduct };
+            return {
+              ...initialRowsState,
+              isExistingProduct: row.isExistingProduct,
+            };
           }
           return row;
         });
@@ -510,9 +518,9 @@ export default function Table({
   };
 
   const createOrder = async () => {
-    console.log("Checking if I can send order...")
+    console.log("Checking if I can send order...");
     if (sendingOrder) {
-      console.log("I am already sending the past order...")
+      console.log("I am already sending the past order...");
       return;
     }
     setConfirmCreateOrder(false);
@@ -627,6 +635,15 @@ export default function Table({
         });
         setRows(updatedRows);
       }
+    }
+  };
+  const handleInputFocus = (e, fieldName) => {
+    if (fieldName === "quantity") {
+      const quantityValue =
+        e.target.value.trim() !== "" ? e.target.value.trim() : "0";
+      setCurrentValues((prevValues) => ({
+        quantity: quantityValue,
+      }));
     }
   };
   useEffect(() => {
@@ -819,6 +836,12 @@ export default function Table({
                                       : ""
                                   } `}
                                   value={row[column] || ""}
+                                  onFocus={(e) => {
+                                    console.log("columns", column);
+                                    if (column === "quantity") {
+                                      handleInputFocus(e, "quantity");
+                                    }
+                                  }}
                                   onChange={(e) => {
                                     if (column === "Net") {
                                       let newValue = parseFloat(e.target.value);
