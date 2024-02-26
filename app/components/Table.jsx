@@ -29,7 +29,7 @@ const initialRowsState = {
   "Total Price": "",
   "Unit Cost": "",
   Profit: "",
-  "Band": "",
+  Band: "",
   "Total Cost": "",
 };
 
@@ -47,7 +47,7 @@ const inputRefs = {
   "Total Price": [],
   "Unit Cost": [],
   Profit: [],
-  "Band": [],
+  Band: [],
   "Total Cost": [],
 };
 
@@ -166,7 +166,7 @@ export default function Table({
     "Total Price": "number",
     "Unit Cost": "number",
     Profit: "number",
-    "Band": "text",
+    Band: "text",
     "Total Cost": "number",
   };
 
@@ -658,8 +658,8 @@ export default function Table({
           onKeyUp={(event) => onEnterKey(event)}
           className="m-2 whitespace-nowrap"
         >
-          <table className="w-full text-sm bg-white rounded-2xl text-center shadow-[rgba(17,_17,_26,_0.1)_0px_0px_16px]">
-            <thead className="sticky top-0 bg-white shadow-[0px_11px_15px_-3px_#edf2f7] ">
+          <table className="w-full text-sm bg-white rounded-2xl text-left shadow-[rgba(17,_17,_26,_0.1)_0px_0px_16px]">
+            <thead className="sticky top-0 bg-white text-center shadow-[0px_11px_15px_-3px_#edf2f7] ">
               <tr>
                 {columns.map((column, index) => {
                   const isVisible = initialColumns.includes(column);
