@@ -58,27 +58,29 @@ function NewCustomer({ isvisible, onClose, setUpdateCustomers }) {
   }
 
   const prepareDataForBackend = () => {
-    const daysRoutesArray = Object.entries(selectedRoutes).map(([day, { routeId, drop }]) => {
-      const numericDrop = parseInt(drop, 10);
-      const safeDrop = isNaN(numericDrop) ? 0 : numericDrop;
-      return {
-        route_id: routeId,
-        drop: safeDrop,
+    const allDays = ["Mon", "Tues", "Wed", "Thur", "Fri", "Sat"];
+
+    const daysRoutesArray = allDays.map(day => {
+      const routeInfo = selectedRoutes[day];
+
+      const routeData = {
+        route_id: routeInfo?.routeId || "12",
+        drop: routeInfo?.drop || 0,
         days_id: getDayNumber(day.toLowerCase())
       };
+
+      return routeData;
     });
 
-    const filteredDaysRoutesArray = daysRoutesArray.filter(entry => entry.route_id && entry.drop >= 0);
-
-    return { days_routes: filteredDaysRoutesArray };
+    return { days_routes: daysRoutesArray };
   };
 
   const handleRouteAndDropSelection = (day, routeId, dropValue) => {
     if (dropValue === '') {
       setSelectedRoutes(prevRoutes => ({
         ...prevRoutes,
-        [day]: { 
-          routeId: routeId || "12", 
+        [day]: {
+          routeId: routeId || "12",
           drop: ""
         }
       }));
