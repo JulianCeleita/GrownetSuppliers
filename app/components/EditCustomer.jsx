@@ -178,8 +178,8 @@ const CustomerDetailPage = ({
     if (dropValue === '') {
       setSelectedRoutes(prevRoutes => ({
         ...prevRoutes,
-        [day]: { 
-          routeId: routeId || "12", 
+        [day]: {
+          routeId: routeId || "12",
           drop: ""
         }
       }));
@@ -191,9 +191,9 @@ const CustomerDetailPage = ({
 
     setSelectedRoutes(prevRoutes => ({
       ...prevRoutes,
-      [day]: { routeId: routeId || "12", drop: validatedDropValue.toString() || prevRoutes[day]?.drop || "", routeName: routeName || "R100"}
+      [day]: { routeId: routeId || "12", drop: validatedDropValue.toString() || prevRoutes[day]?.drop || "", routeName: routeName || "R100" }
     }));
-  };  
+  };
 
   const getDayNumber = (day) => {
     const daysMap = {
@@ -338,7 +338,7 @@ const CustomerDetailPage = ({
     <>
       {token ? (
         <div className="fixed z-50 inset-0 bg-black bg-opacity-25 backdrop-blur-sm flex flex-col justify-center items-center font-poppins">
-          <div className="bg-white p-8 rounded-2xl w-[1100px] 2xl:w-[900px] flex flex-col items-center 2xl:h-hidden max-h-screen">
+          <div className="bg-white p-8 rounded-2xl w-[1100px] flex flex-col items-center 2xl:h-hidden max-h-screen">
             <div className="overflow-y-auto">
               {!isLoading && (
                 <div className="flex justify-end">
