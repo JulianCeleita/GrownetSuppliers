@@ -167,20 +167,30 @@ export const fetchCustomersDate = async (
   token,
   date,
   accountNumber,
-  setCustomerDate
+  setCustomerDate,
+  setShowErrorRoutes
 ) => {
-  const postData = {
-    date: date,
-    accountNumber: accountNumber,
-  };
-  try {
-    const response = await axios.post(customersDate, postData, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
-    setCustomerDate(response.data.routes);
-  } catch (error) {
-    console.error("Error al obtener customer date:", error);
+  if (accountNumber && date) {
+    const postData = {
+      date: date,
+      accountNumber: accountNumber,
+    };
+    console.log("postData", postData);
+    try {
+      const response = await axios.post(customersDate, postData, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      if (response.data.routes) {
+        setCustomerDate(response.data.routes);
+      } else if (response.data.message) {
+        setShowErrorRoutes(true);
+      }
+
+      console.log("response.data.routes:", response.data);
+    } catch (error) {
+      console.error("Error al obtener customer date:", error);
+    }
   }
 };

@@ -19,6 +19,7 @@ import { useTableStore } from "../../store/useTableStore";
 import useTokenStore from "../../store/useTokenStore";
 import useUserStore from "../../store/useUserStore";
 import { fetchCustomersDate } from "@/app/api/ordersRequest";
+import ModalOrderError from "@/app/components/ModalOrderError";
 
 const CreateOrderView = () => {
   const { token } = useTokenStore();
@@ -45,6 +46,8 @@ const CreateOrderView = () => {
   const [specialRequirements, setSpecialRequirements] = useState("");
   const { user, setUser } = useUserStore();
   const [customerDate, setCustomerDate] = useState();
+  console.log("customerDate", customerDate);
+  const [showErrorRoutes, setShowErrorRoutes] = useState(false);
   //Fecha input
   function getCurrentDate() {
     const today = new Date();
@@ -179,7 +182,13 @@ const CreateOrderView = () => {
   };
 
   useEffect(() => {
-    fetchCustomersDate(token, orderDate, selectedAccNumber2, setCustomerDate);
+    fetchCustomersDate(
+      token,
+      orderDate,
+      selectedAccNumber2,
+      setCustomerDate,
+      setShowErrorRoutes
+    );
   }, [orderDate, selectedAccNumber2]);
   const restaurantList = Array.isArray(restaurants) ? restaurants : [];
 
@@ -506,6 +515,15 @@ const CreateOrderView = () => {
           customerDate={customerDate}
         />
       </div>
+      <ModalOrderError
+        isvisible={showErrorRoutes}
+        onClose={() => setShowErrorRoutes(false)}
+        title={"Date without routes"}
+        message={
+          "There are no routes assigned for the selected date. Please change the date to an available day."
+        }
+        setCustomerDate={setCustomerDate}
+      />
     </Layout>
   );
 };
