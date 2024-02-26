@@ -504,7 +504,6 @@ const CreateOrderView = () => {
           specialRequirements={specialRequirements}
           setSpecialRequirements={setSpecialRequirements}
           customerDate={customerDate}
-          setCustomerDate={setCustomerDate}
         />
       </div>
     </Layout>
