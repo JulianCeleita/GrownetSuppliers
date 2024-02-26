@@ -12,6 +12,9 @@ import { Dialog, Transition } from "@headlessui/react";
 import useTokenStore from "../store/useTokenStore";
 import grownetLogo from "../img/grownet-logo.png";
 import Image from "next/image";
+import axios from "axios";
+import { closeDay, openDay } from "../config/urls.config";
+import useWorkDateStore from "../store/useWorkDateStore";
 
 const SideBar = () => {
   const { removeToken, setToken } = useTokenStore();
@@ -19,6 +22,9 @@ const SideBar = () => {
   const [open, setOpen] = useState(false);
   const [activeLink, setActiveLink] = useState("");
   const { user, removeUser, setUser } = useUserStore();
+  const { token } = useTokenStore();
+  const { workDate } = useWorkDateStore();
+  console.log("workDate", workDate);
 
   const handleLogout = () => {
     router.push("/");
@@ -27,11 +33,9 @@ const SideBar = () => {
   };
   const handleButtonOpen = async () => {
     try {
-      const currentDate = formatDate(selectedDate);
-
       const data = {
         supplier: user.id_supplier,
-        day: currentDate,
+        day: workDate,
       };
 
       const response = await axios.post(openDay, data, {
@@ -47,11 +51,9 @@ const SideBar = () => {
 
   const handleButtonClose = async () => {
     try {
-      const currentDate = formatDate(selectedDate);
-
       const data = {
         supplier: user.id_supplier,
-        day: currentDate,
+        day: workDate,
       };
 
       const response = await axios.post(closeDay, data, {
@@ -59,6 +61,8 @@ const SideBar = () => {
           Authorization: `Bearer ${token}`,
         },
       });
+      console.log("Respuesta al cerrar el día:", response.data);
+      console.log("Información enviada", closeDay, data);
     } catch (error) {
       console.error("Error al enviar la solicitud POST:", error);
     }
