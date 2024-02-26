@@ -62,6 +62,7 @@ const OrderView = () => {
   const [showPercentage, setShowPercentage] = useState(null);
   const [totalNet, setTotalNet] = useState("");
   const [routeId, setRouteId] = useState();
+  const [searchQuery, setSearchQuery] = useState("");
 
   const formatDateToShow = (dateString) => {
     if (!dateString) return "Loading...";
@@ -298,10 +299,29 @@ const OrderView = () => {
   const filteredOrders = selectedRoute
     ? sortedOrders
         .filter(
-          (order) => order.route.toLowerCase() === selectedRoute.toLowerCase()
+          (order) =>
+            order.route.toLowerCase() === selectedRoute.toLowerCase() &&
+            (order.reference
+              .toString()
+              .toLowerCase()
+              .includes(searchQuery.toLowerCase()) ||
+              order.accountName
+                .toLowerCase()
+                .includes(searchQuery.toLowerCase()))
         )
         .sort((a, b) => b.reference - a.reference)
-    : sortedOrders.sort((a, b) => b.reference - a.reference);
+    : sortedOrders
+        .filter(
+          (order) =>
+            order.reference
+              .toString()
+              .toLowerCase()
+              .includes(searchQuery.toLowerCase()) ||
+            order.accountName.toLowerCase().includes(searchQuery.toLowerCase())
+        )
+        .sort((a, b) => b.reference - a.reference);
+
+  // console.log("filteredOrders", filteredOrders);
 
   const statusColorClass = (status) => {
     switch (status) {
@@ -339,13 +359,22 @@ const OrderView = () => {
           </Link>
         </div>
         <div className="flex ml-24 mb-3 items-center  space-x-4 mt-20 2xl:mt-0">
+          <div className="">
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Search..."
+              className="border border-gray-300 rounded-md py-3 px-2 placeholder-[#04444F]"
+            />
+          </div>
           <select
             value={filterType}
             onChange={(e) => setFilterType(e.target.value)}
             className="form-select px-4 py-3 rounded-md border border-gray-300"
           >
             <option value="range">Filter by range</option>
-            <option value="date">Filter per date</option>
+            <option value="date">Filter by date</option>
           </select>
           {filterType === "range" && (
             <>
