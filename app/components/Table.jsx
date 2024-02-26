@@ -473,6 +473,7 @@ export default function Table({
         },
       });
       const productData = response.data.data[0];
+      console.log("Product data:", productData);
       // Actualiza las filas con los datos del producto
       const updatedRows = rows.map((row, index) => {
         if (index === rowIndex) {
