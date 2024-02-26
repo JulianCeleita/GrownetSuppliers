@@ -29,7 +29,7 @@ const initialRowsState = {
   "Total Price": "",
   "Unit Cost": "",
   Profit: "",
-  "Price Band": "",
+  "Band": "",
   "Total Cost": "",
 };
 
@@ -47,7 +47,7 @@ const inputRefs = {
   "Total Price": [],
   "Unit Cost": [],
   Profit: [],
-  "Price Band": [],
+  "Band": [],
   "Total Cost": [],
 };
 
@@ -90,7 +90,6 @@ export default function Table({
   specialRequirements,
   setSpecialRequirements,
   customerDate,
-  setCustomerDate,
 }) {
   const [rows, setRows] = useState(
     Array.from({ length: 5 }, () => ({ ...initialRowsState }))
@@ -149,7 +148,7 @@ export default function Table({
     "Total Price",
     "Unit Cost",
     "Profit",
-    "Price Band",
+    "Band",
     "Total Cost",
   ];
 
@@ -167,7 +166,7 @@ export default function Table({
     "Total Price": "number",
     "Unit Cost": "number",
     Profit: "number",
-    "Price Band": "text",
+    "Band": "text",
     "Total Cost": "number",
   };
 
@@ -473,6 +472,7 @@ export default function Table({
         },
       });
       const productData = response.data.data[0];
+      console.log("Product data:", productData);
       // Actualiza las filas con los datos del producto
       const updatedRows = rows.map((row, index) => {
         if (index === rowIndex) {
@@ -736,7 +736,7 @@ export default function Table({
                               "Total Price",
                               "Unit Cost",
                               "Profit",
-                              "Price Band",
+                              "Band",
                               "Total Cost",
                             ].includes(column) ? (
                               <span onClick={() => setIsSelectDisabled(false)}>
@@ -752,7 +752,7 @@ export default function Table({
                                   calculateTotalPrice(row)}
                                 {column === "Unit Cost" && row[column]}
                                 {column === "Profit" && calculateProfit(row)}
-                                {column === "Price Band" && row[column]}
+                                {column === "Band" && row[column]}
                                 {column === "Total Cost" &&
                                   calculateTotalCost(row)}
                                 {column === "Description" && (
@@ -794,7 +794,9 @@ export default function Table({
                                         );
                                       }
                                     }}
-                                    isDisabled={isSelectDisabled}
+                                    isDisabled={
+                                      isSelectDisabled || !customerDate
+                                    }
                                     onBlur={() => setIsSelectDisabled(true)}
                                     styles={{
                                       control: (provided) => ({
@@ -875,7 +877,10 @@ export default function Table({
                                       e.preventDefault();
                                     }
                                   }}
-                                  readOnly={column === "Net" && isReadOnly}
+                                  readOnly={
+                                    (column === "Net" && isReadOnly) ||
+                                    !customerDate
+                                  }
                                   onDoubleClick={() => setIsReadOnly(false)}
                                   onBlur={() => setIsReadOnly(true)}
                                 />
