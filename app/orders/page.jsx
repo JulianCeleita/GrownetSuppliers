@@ -280,11 +280,6 @@ const OrderView = () => {
     ...new Set(sortedOrders.map((order) => order.route)),
   ];
 
-  const options = [
-    { value: "", label: "All routes" },
-    ...uniqueRoutesArray.map((route) => ({ value: route, label: route })),
-  ];
-
   const getPercentages = async (value) => {
     if (value !== "" || value !== null || value !== undefined) {
       await setFetchRoutePercentages(token, workDate);
@@ -440,16 +435,18 @@ const OrderView = () => {
               placeholderText={formatDateToShow(workDate)}
             />
           )}
-          <div className="py-[0.3em] rounded-md border border-gray-300 w-[160px]">
-            <Select
-              options={options}
-              onChange={handleRouteSelection}
-              placeholder="Select route"
-              placeholderText
-              styles={customStyles}
-              className="text-dark-blue"
-            />
-          </div>
+          <select
+            value={selectedRoute}
+            onChange={(e) => handleRouteSelection({ value: e.target.value })}
+            className="orm-select px-4 py-3 rounded-md border border-gray-300"
+          >
+            <option value="">All routes</option>
+            {uniqueRoutesArray.map((route) => (
+              <option key={route} value={route}>
+                {route}
+              </option>
+            ))}
+          </select>
           <button
             className="flex bg-primary-blue text-white py-3 px-4 rounded-full font-medium transition-all cursor-pointer hover:bg-dark-blue hover:scale-110"
             onClick={() => printOrders()}

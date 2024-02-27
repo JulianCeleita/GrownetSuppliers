@@ -19,7 +19,7 @@ export const CircleProgressBar = ({ percentage }) => {
     <div className="flex items-center justify-center w-16 h-16">
       <CircularProgressbar
         value={percentage}
-        text={`${percentage}%`}
+        text={`${Math.round(percentage)}%`}
         styles={buildStyles({
           textSize: "25px",
           pathColor: color,
