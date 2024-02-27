@@ -19,6 +19,7 @@ import { useTableStore } from "../../store/useTableStore";
 import useTokenStore from "../../store/useTokenStore";
 import useUserStore from "../../store/useUserStore";
 import { fetchCustomersDate } from "@/app/api/ordersRequest";
+import ModalOrderError from "@/app/components/ModalOrderError";
 
 const CreateOrderView = () => {
   const { token } = useTokenStore();
@@ -45,6 +46,8 @@ const CreateOrderView = () => {
   const [specialRequirements, setSpecialRequirements] = useState("");
   const { user, setUser } = useUserStore();
   const [customerDate, setCustomerDate] = useState();
+
+  const [showErrorRoutes, setShowErrorRoutes] = useState(false);
   //Fecha input
   function getCurrentDate() {
     const today = new Date();
@@ -179,7 +182,13 @@ const CreateOrderView = () => {
   };
 
   useEffect(() => {
-    fetchCustomersDate(token, orderDate, selectedAccNumber2, setCustomerDate);
+    fetchCustomersDate(
+      token,
+      orderDate,
+      selectedAccNumber2,
+      setCustomerDate,
+      setShowErrorRoutes
+    );
   }, [orderDate, selectedAccNumber2]);
   const restaurantList = Array.isArray(restaurants) ? restaurants : [];
 
@@ -421,7 +430,7 @@ const CreateOrderView = () => {
           className="border ml-2 p-1.5 rounded-md w-20"
         />
         <label className="mx-3 text-lg">Customer Ref: </label>
-        <input type="text" className="border p-2 rounded-md w-20" />
+        <input type="text" className="border p-2 rounded-md min-w-[150px]" />
 
         <button
           className="bg-dark-blue rounded-md ml-3 hover:scale-110 focus:outline-none"
@@ -504,9 +513,17 @@ const CreateOrderView = () => {
           specialRequirements={specialRequirements}
           setSpecialRequirements={setSpecialRequirements}
           customerDate={customerDate}
-          setCustomerDate={setCustomerDate}
         />
       </div>
+      <ModalOrderError
+        isvisible={showErrorRoutes}
+        onClose={() => setShowErrorRoutes(false)}
+        title={"Date without routes"}
+        message={
+          "There are no routes assigned for the selected date. Please change the date to an available day."
+        }
+        setCustomerDate={setCustomerDate}
+      />
     </Layout>
   );
 };

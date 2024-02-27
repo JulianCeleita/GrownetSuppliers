@@ -29,7 +29,7 @@ const initialRowsState = {
   "Total Price": "",
   "Unit Cost": "",
   Profit: "",
-  "Price Band": "",
+  Band: "",
   "Total Cost": "",
 };
 
@@ -47,7 +47,7 @@ const inputRefs = {
   "Total Price": [],
   "Unit Cost": [],
   Profit: [],
-  "Price Band": [],
+  Band: [],
   "Total Cost": [],
 };
 
@@ -90,7 +90,6 @@ export default function Table({
   specialRequirements,
   setSpecialRequirements,
   customerDate,
-  setCustomerDate,
 }) {
   const [rows, setRows] = useState(
     Array.from({ length: 5 }, () => ({ ...initialRowsState }))
@@ -152,7 +151,7 @@ export default function Table({
     "Total Price",
     "Unit Cost",
     "Profit",
-    "Price Band",
+    "Band",
     "Total Cost",
   ];
 
@@ -170,7 +169,7 @@ export default function Table({
     "Total Price": "number",
     "Unit Cost": "number",
     Profit: "number",
-    "Price Band": "text",
+    Band: "text",
     "Total Cost": "number",
   };
 
@@ -502,6 +501,7 @@ export default function Table({
         },
       });
       const productData = response.data.data[0];
+      console.log("Product data:", productData);
       // Actualiza las filas con los datos del producto
       const updatedRows = rows.map((row, index) => {
         if (index === rowIndex) {
@@ -687,8 +687,8 @@ export default function Table({
           onKeyUp={(event) => onEnterKey(event)}
           className="m-2 whitespace-nowrap"
         >
-          <table className="w-full text-sm bg-white rounded-2xl text-center shadow-[rgba(17,_17,_26,_0.1)_0px_0px_16px]">
-            <thead className="sticky top-0 bg-white shadow-[0px_11px_15px_-3px_#edf2f7] ">
+          <table className="w-full text-sm bg-white rounded-2xl text-left shadow-[rgba(17,_17,_26,_0.1)_0px_0px_16px]">
+            <thead className="sticky top-0 bg-white text-center shadow-[0px_11px_15px_-3px_#edf2f7] ">
               <tr>
                 {columns.map((column, index) => {
                   const isVisible = initialColumns.includes(column);
@@ -720,11 +720,13 @@ export default function Table({
                             column === "Net"
                             ? "w-20"
                             : column === "Packsize" || column === "Total Price"
-                              ? "w-40"
-                              : column === "Code"
-                                ? "w-[8em]"
-                                : ""
-                          }`}
+                            ? "w-40"
+                            : column === "Code"
+                            ? "w-[8em]"
+                            : column === "Description"
+                            ? "w-auto p-0"
+                            : ""
+                        }`}
                         onContextMenu={(e) => handleContextMenu(e)}
                       >
                         <p className="text-base text-dark-blue my-2">
@@ -760,7 +762,7 @@ export default function Table({
                               "Total Price",
                               "Unit Cost",
                               "Profit",
-                              "Price Band",
+                              "Band",
                               "Total Cost",
                             ].includes(column) ? (
                               <span onClick={() => setIsSelectDisabled(false)}>
@@ -776,7 +778,7 @@ export default function Table({
                                   calculateTotalPrice(row)}
                                 {column === "Unit Cost" && row[column]}
                                 {column === "Profit" && calculateProfit(row)}
-                                {column === "Price Band" && row[column]}
+                                {column === "Band" && row[column]}
                                 {column === "Total Cost" &&
                                   calculateTotalCost(row)}
                                 {column === "Description" && (
@@ -823,7 +825,9 @@ export default function Table({
                                         );
                                       }
                                     }}
-                                    isDisabled={isSelectDisabled}
+                                    isDisabled={
+                                      isSelectDisabled || !customerDate
+                                    }
                                     onBlur={() => setIsSelectDisabled(true)}
                                     styles={{
                                       control: (provided) => ({
@@ -905,7 +909,10 @@ export default function Table({
                                       e.preventDefault();
                                     }
                                   }}
-                                  readOnly={column === "Net" && isReadOnly}
+                                  readOnly={
+                                    (column === "Net" && isReadOnly) ||
+                                    !customerDate
+                                  }
                                   onDoubleClick={() => setIsReadOnly(false)}
                                   onBlur={() => setIsReadOnly(true)}
                                 />
@@ -953,24 +960,6 @@ export default function Table({
           )}
         </form>
       </div>
-      {/* <div className="flex justify-center mb-20 w-full mt-5">
-        <h1 className="bg-dark-blue text-white font-semibold p-3 rounded-tl-lg rounded-bl-lg w-[30%] items-center text-center flex justify-center">
-          Special requirements
-        </h1>
-        <input
-          type="text"
-          value={specialRequirements}
-          onChange={(e) => setSpecialRequirements(e.target.value)}
-          className="p-3 border border-dark-blue rounded-tr-lg rounded-br-lg w-full mr-5"
-          placeholder="Write your comments here"
-        />
-        <button
-          onClick={() => setConfirmCreateOrder(true)}
-          className="bg-primary-blue py-2 px-4 rounded-lg text-white font-medium mr-2 w-[15%]"
-        >
-          Send order
-        </button> 
-      </div>*/}
 
       <ModalSuccessfull
         isvisible={showConfirmModal}

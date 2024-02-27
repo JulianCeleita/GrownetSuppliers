@@ -62,6 +62,7 @@ const OrderView = () => {
   const [showPercentage, setShowPercentage] = useState(null);
   const [totalNet, setTotalNet] = useState("");
   const [routeId, setRouteId] = useState();
+  const [searchQuery, setSearchQuery] = useState("");
 
   const formatDateToShow = (dateString) => {
     if (!dateString) return "Loading...";
@@ -296,10 +297,31 @@ const OrderView = () => {
   };
 
   const filteredOrders = selectedRoute
-    ? sortedOrders.filter(
-      (order) => order.route.toLowerCase() === selectedRoute.toLowerCase()
-    ).sort((a, b) => b.reference - a.reference)
-    : sortedOrders.sort((a, b) => b.reference - a.reference);
+    ? sortedOrders
+        .filter(
+          (order) =>
+            order.route.toLowerCase() === selectedRoute.toLowerCase() &&
+            (order.reference
+              .toString()
+              .toLowerCase()
+              .includes(searchQuery.toLowerCase()) ||
+              order.accountName
+                .toLowerCase()
+                .includes(searchQuery.toLowerCase()))
+        )
+        .sort((a, b) => b.reference - a.reference)
+    : sortedOrders
+        .filter(
+          (order) =>
+            order.reference
+              .toString()
+              .toLowerCase()
+              .includes(searchQuery.toLowerCase()) ||
+            order.accountName.toLowerCase().includes(searchQuery.toLowerCase())
+        )
+        .sort((a, b) => b.reference - a.reference);
+
+  // console.log("filteredOrders", filteredOrders);
 
   const statusColorClass = (status) => {
     switch (status) {
@@ -337,13 +359,22 @@ const OrderView = () => {
           </Link>
         </div>
         <div className="flex ml-24 mb-3 items-center  space-x-4 mt-20 2xl:mt-0">
+          <div className="">
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Search..."
+              className="border border-gray-300 rounded-md py-3 px-2 placeholder-[#04444F] focus:border-[#04444F] focus:border-2 focus:outline-none"
+            />
+          </div>
           <select
             value={filterType}
             onChange={(e) => setFilterType(e.target.value)}
             className="form-select px-4 py-3 rounded-md border border-gray-300"
           >
             <option value="range">Filter by range</option>
-            <option value="date">Filter per date</option>
+            <option value="date">Filter by date</option>
           </select>
           {filterType === "range" && (
             <>
@@ -496,8 +527,8 @@ const OrderView = () => {
         </section>
 
         <div className="flex items-center justify-center mb-20 mt-8  p-2">
-          <table className="w-[90%] bg-white first-line:bg-white rounded-2xl text-center shadow-[rgba(17,_17,_26,_0.1)_0px_0px_16px]">
-            <thead className="relative top-0  shadow-[0px_11px_15px_-3px_#edf2f7]">
+          <table className="w-[90%] bg-white first-line:bg-white rounded-2xl text-left shadow-[rgba(17,_17,_26,_0.1)_0px_0px_16px]">
+            <thead className="relative top-0 text-center shadow-[0px_11px_15px_-3px_#edf2f7]">
               <tr className="  text-dark-blue">
                 <th className="py-4 flex items-center justify-center rounded-tl-lg">
                   <label className="inline-flex items-center">
@@ -527,7 +558,7 @@ const OrderView = () => {
                       key={index}
                       className="text-dark-blue border-b-[1.5px] cursor-pointer hover:bg-[#F6F6F6]"
                     >
-                      <td className="py-4">
+                      <td className="py-4 pl-4">
                         <label className="inline-flex items-center">
                           <input
                             type="checkbox"
@@ -542,27 +573,45 @@ const OrderView = () => {
                           />
                         </label>
                       </td>
-                      <td className="py-4" onClick={(e) => goToOrder(e, order)}>
+                      <td
+                        className="py-4 pl-4"
+                        onClick={(e) => goToOrder(e, order)}
+                      >
                         {order.reference}
                       </td>
-                      <td className="py-4" onClick={(e) => goToOrder(e, order)}>
+                      <td
+                        className="py-4 pl-4"
+                        onClick={(e) => goToOrder(e, order)}
+                      >
                         {order.accountName}
                       </td>
-                      <td className="py-4" onClick={(e) => goToOrder(e, order)}>
+                      <td
+                        className="py-4 pl-4"
+                        onClick={(e) => goToOrder(e, order)}
+                      >
                         {order.net}
                       </td>
-                      <td className="py-4" onClick={(e) => goToOrder(e, order)}>
+                      <td
+                        className="py-4 pl-4"
+                        onClick={(e) => goToOrder(e, order)}
+                      >
                         {order.profitOrder ? order.profitOrder.toFixed(2) : ""}
                       </td>
-                      <td className="py-4" onClick={(e) => goToOrder(e, order)}>
+                      <td
+                        className="py-4 pl-4"
+                        onClick={(e) => goToOrder(e, order)}
+                      >
                         {order.route}
                       </td>
-                      {/* <td className="py-4">{order.created_by}</td> */}
-                      <td className="py-4" onClick={(e) => goToOrder(e, order)}>
+                      {/* <td className="py-4 pl-4">{order.created_by}</td> */}
+                      <td
+                        className="py-4 pl-4"
+                        onClick={(e) => goToOrder(e, order)}
+                      >
                         {order.date_delivery}
                       </td>
                       <td
-                        className="py-4 flex gap-2 justify-center"
+                        className="py-4 pl-4 flex gap-2 justify-center"
                         onClick={(e) => goToOrder(e, order)}
                       >
                         <div
