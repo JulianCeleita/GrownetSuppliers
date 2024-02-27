@@ -357,8 +357,11 @@ const OrderView = () => {
           className={`flex ml-10 mb-0 items-center space-x-2 mt-${
             filterType === "range" && window.innerWidth < 1500
               ? "[45px]"
+              : filterType === "date" && window.innerWidth < 1300
+              ? "[50px]"
               : "[20px]"
-          }`}
+          }
+          `}
         >
           <div className="">
             <input
