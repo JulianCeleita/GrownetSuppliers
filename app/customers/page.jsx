@@ -131,14 +131,14 @@ const CustomersView = () => {
             <PlusCircleIcon className="h-6 w-6 mr-1" /> New Customer
           </button>
         </div>
-        <div className="w-[98%] flex items-center justify-center mb-8 mt-2 mr-5 ml-2 ">
-          <div className="relative w-[55%] max-w-[65%] ">
+        <div className="w-[98%] flex items-center justify-center mb-5 mt-5">
+          <div className="relative w-[60%] max-w-[65%]">
             <input
               type="text"
               placeholder="Search customers by name or account number"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-12 pr-4 py-3 h-[45px] w-full rounded-lg border border-gray-200 bg-white text-gray-700 placeholder-gray-400 focus:outline-none shadow-md hover:shadow-lg transition-shadow duration-150 ease-in-out"
+              className="pl-12 pr-4 py-3 h-[50px] w-full rounded-lg border border-gray-200 bg-white text-dark-blue placeholder-gray-400"
             />
             <div className="absolute left-3 top-1/2 transform -translate-y-1/2">
               <MagnifyingGlassIcon className="h-5 w-5 text-gray-400 mr-5" />
@@ -148,9 +148,7 @@ const CustomersView = () => {
           <select
             value={status}
             onChange={handleStatusChange}
-            className="ml-2 border p-2 rounded-md bg-white bg-clip-padding bg-no-repeat
-            w-auto border-gray-200 px-4 py-2 pr-8 leading-tight
-            focus:outline-none focus:shadow-outline text-gray-400 hover:border-gray-300 shadow-md hover:shadow-lg transition-shadow duration-150 ease-in-out"
+            className="ml-2 border p-2 rounded-md bg-white bg-clip-padding bg-no-repeat w-auto border-gray-200 px-4 py-2 pr-8 leading-tight h-[50px] text-dark-blue"
           >
             <option value="all" key={1}>
               All status
@@ -165,9 +163,7 @@ const CustomersView = () => {
           <select
             value={selectedRoute}
             onChange={handleRouteChange}
-            className="ml-2 border p-2 rounded-md bg-white bg-clip-padding bg-no-repeat
-            w-auto border-gray-200 px-4 py-2 pr-8 leading-tight
-            focus:outline-none focus:shadow-outline text-gray-400 hover:border-gray-300 shadow-md hover:shadow-lg transition-shadow duration-150 ease-in-out"
+            className="ml-2 border p-2 rounded-md bg-white bg-clip-padding bg-no-repeat w-auto border-gray-200 px-4 py-2 pr-8 leading-tight h-[50px] text-dark-blue"
           >
             <option value="">All routes</option>
             {routes &&
@@ -184,9 +180,7 @@ const CustomersView = () => {
           <select
             value={selectedGroup}
             onChange={handleGroupChange}
-            className="ml-2 border p-2 rounded-md bg-white bg-clip-padding bg-no-repeat
-            w-auto border-gray-200 px-4 py-2 pr-8 leading-tight
-            focus:outline-none focus:shadow-outline text-gray-400 hover:border-gray-300 shadow-md hover:shadow-lg transition-shadow duration-150 ease-in-out"
+            className="ml-2 border p-2 rounded-md bg-white bg-clip-padding bg-no-repeat w-auto border-gray-200 px-4 py-2 pr-8 leading-tight h-[50px] text-dark-blue placeholder-gray-input"
           >
             <option value="">All groups</option>
             {[
@@ -206,12 +200,12 @@ const CustomersView = () => {
           <table className="w-[90%] bg-white rounded-2xl  shadow-[rgba(17,_17,_26,_0.1)_0px_0px_16px]">
             <thead className="sticky top-0 bg-white text-center shadow-[0px_11px_15px_-3px_#edf2f7]">
               <tr className="border-stone-100 border-b-0 text-dark-blue rounded-t-3xl">
-                <th className="py-4 rounded-tl-lg">Acc Number</th>
-                <th className="py-4 rounded-tl-lg">Name</th>
+                <th className="py-4 rounded-tl-xl">Acc Number</th>
+                <th className="py-4 ">Name</th>
                 <th className="py-4 ">Telephone</th>
                 <th className="py-4">Group</th>
                 <th className="py-4">Routes</th>
-                <th className="py-4">Post Code</th>
+                <th className="py-4 rounded-tr-xl">Post Code</th>
                 {/* <th className="py-4">Status</th> */}
               </tr>
             </thead>
