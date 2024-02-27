@@ -697,6 +697,8 @@ export default function Table({
                             ? "w-40"
                             : column === "Code"
                             ? "w-[8em]"
+                            : column === "Description"
+                            ? "w-auto p-0"
                             : ""
                         }`}
                         onContextMenu={(e) => handleContextMenu(e)}
@@ -926,24 +928,6 @@ export default function Table({
           )}
         </form>
       </div>
-      {/* <div className="flex justify-center mb-20 w-full mt-5">
-        <h1 className="bg-dark-blue text-white font-semibold p-3 rounded-tl-lg rounded-bl-lg w-[30%] items-center text-center flex justify-center">
-          Special requirements
-        </h1>
-        <input
-          type="text"
-          value={specialRequirements}
-          onChange={(e) => setSpecialRequirements(e.target.value)}
-          className="p-3 border border-dark-blue rounded-tr-lg rounded-br-lg w-full mr-5"
-          placeholder="Write your comments here"
-        />
-        <button
-          onClick={() => setConfirmCreateOrder(true)}
-          className="bg-primary-blue py-2 px-4 rounded-lg text-white font-medium mr-2 w-[15%]"
-        >
-          Send order
-        </button> 
-      </div>*/}
 
       <ModalSuccessfull
         isvisible={showConfirmModal}

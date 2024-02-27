@@ -864,6 +864,8 @@ export default function EditTable({
                                 ? "w-40"
                                 : column === "Code"
                                 ? "w-[8em]"
+                                : column === "Description"
+                                ? "w-auto"
                                 : ""
                             }`}
                             onContextMenu={(e) => handleContextMenu(e)}
@@ -891,7 +893,7 @@ export default function EditTable({
                           initialColumns.includes(column) && (
                             <React.Fragment key={columnIndex}>
                               <td
-                                className={`pl-4 py-[0.2em]  `}
+                                className={`pl-4 py-[0.2em] w-auto `}
                                 tabIndex={0}
                                 style={{ overflow: "visible" }}
                               >
