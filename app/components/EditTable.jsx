@@ -269,10 +269,10 @@ export default function EditTable({
         const quantity = !product.state_definitive
           ? product.quantity
           : product.state_definitive
-            ? product.quantity_definitive
-            : product.state_definitive === "N/A"
-              ? product.quantity_definitive
-              : "";
+          ? product.quantity_definitive
+          : product.state_definitive === "N/A"
+          ? product.quantity_definitive
+          : "";
 
         return {
           state: product.state_definitive,
@@ -604,11 +604,19 @@ export default function EditTable({
   const handleCloseModal = (event) => {
     event.stopPropagation();
     setShowErrorDuplicate(false);
-    console.log("🚀 ~ setTimeout ~ activeColumnIndex index column que llega :", activeColumnIndex)
-    console.log("🚀 ~ setTimeout ~ activeInputIndex index row que llega:", activeInputIndex)
+    console.log(
+      "🚀 ~ setTimeout ~ activeColumnIndex index column que llega :",
+      activeColumnIndex
+    );
+    console.log(
+      "🚀 ~ setTimeout ~ activeInputIndex index row que llega:",
+      activeInputIndex
+    );
     setTimeout(() => {
-      const inputToFocus = document.querySelector(`input[data-row-index="${activeInputIndex}"][data-column-index="${activeColumnIndex}"]`);
-      console.log("🚀 ~ setTimeout ~ inputToFocus:", inputToFocus)
+      const inputToFocus = document.querySelector(
+        `input[data-row-index="${activeInputIndex}"][data-column-index="${activeColumnIndex}"]`
+      );
+      console.log("🚀 ~ setTimeout ~ inputToFocus:", inputToFocus);
       if (inputToFocus) {
         inputToFocus.focus();
       }
@@ -630,8 +638,8 @@ export default function EditTable({
       const condition = codeToUse
         ? existingCodes.has(lowerCodeToUse)
         : existingCodes.has(rows[rowIndex].Code.toLowerCase()) ||
-        existingCodes.has(lowerCaseCode) ||
-        existingCodes.has(lowerCodeToUse);
+          existingCodes.has(lowerCaseCode) ||
+          existingCodes.has(lowerCodeToUse);
 
       if (condition) {
         setActiveInputIndex(rowIndex);
@@ -871,10 +879,11 @@ export default function EditTable({
                               index === lastVisibleColumnIndex
                                 ? "rounded-tr-lg"
                                 : ""
-                              } ${column === "quantity" ||
-                                column === "VAT %" ||
-                                column === "UOM" ||
-                                column === "Net"
+                            } ${
+                              column === "quantity" ||
+                              column === "VAT %" ||
+                              column === "UOM" ||
+                              column === "Net"
                                 ? "w-20"
                                 : column === "Packsize" ||
                                   column === "Total Price"
@@ -910,7 +919,7 @@ export default function EditTable({
                           initialColumns.includes(column) && (
                             <React.Fragment key={columnIndex}>
                               <td
-                                className={`pl-4 py-[0.2em] w-auto `}
+                                className={`pl-4 py-[0.2em] w-auto`}
                                 tabIndex={0}
                                 style={{ overflow: "visible" }}
                               >
@@ -927,10 +936,29 @@ export default function EditTable({
                                   "Profit",
                                   "Band",
                                   "Total Cost",
+                                  "Code",
                                 ].includes(column) ? (
                                   <span
                                     onClick={() => setIsSelectDisabled(false)}
                                   >
+                                    {column === "Code" && (
+                                      <div className="flex flex-row items-center">
+                                        <div
+                                          className={`w-2 h-2 rounded-full ${
+                                            row.state === "SHORT" ||
+                                            row.state === "ND"
+                                              ? "bg-danger"
+                                              : row.state === "PD" ||
+                                                row.state === "FULL"
+                                              ? "bg-green"
+                                              : row.state === "N/A"
+                                              ? "bg-primary-blue"
+                                              : "bg-gray-input"
+                                          } mr-2`}
+                                        />
+                                        <p>{row[column]}</p>
+                                      </div>
+                                    )}
                                     {column === "Packsize" && row[column]}
                                     {column === "UOM" && row[column]}
                                     {column === "price" && calculatePrice(row)}
@@ -965,10 +993,10 @@ export default function EditTable({
                                         options={
                                           DescriptionData
                                             ? DescriptionData.map((item) => ({
-                                              value: item.productName,
-                                              label: `${item.code} - ${item.product_name} - ${item.name}`,
-                                              code: item.code,
-                                            }))
+                                                value: item.productName,
+                                                label: `${item.code} - ${item.product_name} - ${item.name}`,
+                                                code: item.code,
+                                              }))
                                             : []
                                         }
                                         value={{
@@ -985,7 +1013,10 @@ export default function EditTable({
                                           updatedRows[rowIndex][column] =
                                             selectedDescription.code;
                                           if (selectedDescription.code) {
-                                            fetchProductCode(columnIndex, rowIndex);
+                                            fetchProductCode(
+                                              columnIndex,
+                                              rowIndex
+                                            );
                                           }
                                           // setRows(updatedRows);
                                         }}
@@ -1037,13 +1068,15 @@ export default function EditTable({
                                     disabled={
                                       row.isExistingProduct && isEditable
                                     }
-                                    className={`pl-2 h-[30px] outline-none w-full ${inputTypes[column] === "number"
-                                      ? "hide-number-arrows"
-                                      : ""
-                                      } ${row.state === "N/A"
+                                    className={`pl-2 h-[30px] outline-none w-full ${
+                                      inputTypes[column] === "number"
+                                        ? "hide-number-arrows"
+                                        : ""
+                                    } ${
+                                      row.state === "N/A"
                                         ? " line-through text-primary-blue decoration-black"
                                         : ""
-                                      }`}
+                                    }`}
                                     value={row[column] || ""}
                                     onFocus={(e) => {
                                       if (column === "quantity") {
@@ -1070,7 +1103,12 @@ export default function EditTable({
                                     }}
                                     step={0.1}
                                     onKeyDown={(e) =>
-                                      handleKeyDown(e, columnIndex, rowIndex, column)
+                                      handleKeyDown(
+                                        e,
+                                        columnIndex,
+                                        rowIndex,
+                                        column
+                                      )
                                     }
                                     onKeyPress={(e) => {
                                       if (

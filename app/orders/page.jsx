@@ -76,6 +76,14 @@ const OrderView = () => {
     return `${day}/${month}/${year}`;
   };
 
+  const formattedDate = selectedDate
+    ? new Date(selectedDate).toLocaleDateString("es-CO", {
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric",
+      })
+    : formatDateToShow(workDate);
+
   const formatDateToTransform = (dateString) => {
     const date = new Date(dateString);
     const day = String(date.getDate()).padStart(2, "0");
@@ -83,7 +91,6 @@ const OrderView = () => {
     const year = date.getFullYear();
     return `${year}-${month}-${day}`;
   };
-
   useEffect(() => {
     // if (user && user.rol_name === "AdminGrownet") {
     //   fetchOrders(token, setOrders, setIsLoading);
@@ -357,8 +364,11 @@ const OrderView = () => {
           className={`flex ml-10 mb-0 items-center space-x-2 mt-${
             filterType === "range" && window.innerWidth < 1500
               ? "[45px]"
+              : filterType === "date" && window.innerWidth < 1300
+              ? "[50px]"
               : "[20px]"
-          }`}
+          }
+          `}
         >
           <div className="">
             <input
@@ -456,45 +466,49 @@ const OrderView = () => {
         </div>
         <section className="absolute top-0 right-5 mt-5 ">
           <div className="flex gap-2">
-            <div className="px-4 py-4 rounded-3xl flex items-center justify-center bg-white shadow-[0_8px_30px_rgb(0,0,0,0.12)]">
-              <div>
-                <h1 className="text-xl font-bold text-dark-blue">Today</h1>
-                <div className="flex items-center justify-center text-center">
-                  <div className="pr-1">
-                    <p className="text-5xl font-bold text-primary-blue">
-                      {ordersWorkDate}
-                    </p>
-                  </div>
-                  <div className="grid grid-cols-1 text-left">
-                    <h2 className="text-sm text-dark-blue px-1 font-medium ">
-                      Orders
-                    </h2>
-                    <div className="flex items-center  text-center justify-center py-1 px-2 w-[95px] rounded-lg  text-sm bg-background-green">
-                      <CalendarIcon className="h-4 w-4 text-green" />
-
-                      <h2 className="ml-1 text-green">
-                        {formatDateToShow(workDate)}
+            {filterType !== "range" && (
+              <div className="px-4 py-4 rounded-3xl flex items-center justify-center bg-white shadow-[0_8px_30px_rgb(0,0,0,0.12)]">
+                <div>
+                  <h1 className="text-xl font-bold text-dark-blue">
+                    {formattedDate === formatDateToShow(workDate)
+                      ? "Today"
+                      : "Date"}
+                  </h1>
+                  <div className="flex items-center justify-center text-center">
+                    <div className="pr-1">
+                      <p className="text-5xl font-bold text-primary-blue">
+                        {ordersWorkDate}
+                      </p>
+                    </div>
+                    <div className="grid grid-cols-1 text-left">
+                      <h2 className="text-sm text-dark-blue px-1 font-medium">
+                        Orders
                       </h2>
+                      <div className="flex items-center text-center justify-center py-1 px-2 w-[95px] rounded-lg text-sm bg-background-green">
+                        <CalendarIcon className="h-4 w-4 text-green" />
+                        <h2 className="ml-1 text-green">{formattedDate}</h2>
+                      </div>
                     </div>
                   </div>
                 </div>
+                {/* TODO AGREGAR EN ESTE DIV EL PORCENTAJE DE LOADING PARA RUTA SELECCIONADA */}
+                <div className="flex col-span-1 items-center justify-center">
+                  {showPercentage === null ? (
+                    <div className="flex items-center justify-center bg-primary-blue rounded-full w-16 h-16">
+                      <img
+                        src="./loadingBlanco.png"
+                        alt="Percent"
+                        className="w-10 h-7"
+                      />
+                    </div>
+                  ) : (
+                    <CircleProgressBar percentage={showPercentage} />
+                  )}
+                </div>
               </div>
-              {/* TODO AGREGAR EN ESTE DIV EL PORCENTAJE DE LOADING PARA RUTA SELECCIONADA */}
-              <div className="flex col-span-1 items-center justify-center">
-                {showPercentage === null ? (
-                  <div className="flex items-center justify-center bg-primary-blue rounded-full w-16 h-16">
-                    <img
-                      src="./loadingBlanco.png"
-                      alt="Percent"
-                      className="w-10 h-7"
-                    />
-                  </div>
-                ) : (
-                  <CircleProgressBar percentage={showPercentage} />
-                )}
-              </div>
-            </div>
-            <div className="flex gap-3 px-3 py-3 items-center justify-center rounded-3xl bg-white shadow-[0_8px_30px_rgb(0,0,0,0.12)]">
+            )}
+
+            <div className="flex gap-3 px-4 py-4 items-center justify-center rounded-3xl bg-white shadow-[0_8px_30px_rgb(0,0,0,0.12)]">
               <div>
                 <h1 className="flex text-xl font-bold items-center justify-center">
                   Total net
