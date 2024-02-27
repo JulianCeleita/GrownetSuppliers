@@ -27,6 +27,7 @@ function CreateProduct({ isvisible, onClose, setProducts, setIsLoading }) {
   const [selecteUomsStatus2, setSelectedUomsStatus2] = useState("");
   const [selecteProductsStatus, setSelectedProductsStatus] =
     useState("Red pepper");
+    const [repeatedCode, setRepeatedCode] = useState(false);
   const [codePresentation, setCodePresentation] = useState("");
   const [tax, setTax] = useState([]);
   const [selectedTax, setSelectedTax] = useState("");
@@ -153,13 +154,20 @@ function CreateProduct({ isvisible, onClose, setProducts, setIsLoading }) {
         } else {
           fetchPresentations(token, setProducts, setIsLoading);
         }
+        
         setSelectedUomsStatus("");
         setSelectedProductsStatus("");
         setSelectedType("");
         setCodePresentation("");
         onClose();
       })
-      .catch((error) => {
+      .catch((response, error) => {
+        if (response.response.data.status === 400) {
+          if (response.response.data.message.includes("Already existing code")) {
+            setRepeatedCode(true);
+            console.log("Already existing code");
+          }
+        }
         console.error("Error al agregar la nueva presentación: ", error);
       });
   };
