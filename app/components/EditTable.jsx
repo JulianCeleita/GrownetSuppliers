@@ -33,6 +33,7 @@ export const fetchOrderDetail = async (
       ? response.data.order
       : [];
     setOrderDetail(response.data.order);
+    console.log("Detalles de la orden: ", response.data.order);
     setIsLoading(false);
   } catch (error) {
     console.error("Error al obtener el detalle:", error);
