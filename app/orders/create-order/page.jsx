@@ -430,7 +430,7 @@ const CreateOrderView = () => {
           className="border ml-2 p-1.5 rounded-md w-20"
         />
         <label className="mx-3 text-lg">Customer Ref: </label>
-        <input type="text" className="border p-2 rounded-md w-20" />
+        <input type="text" className="border p-2 rounded-md min-w-[150px]" />
 
         <button
           className="bg-dark-blue rounded-md ml-3 hover:scale-110 focus:outline-none"
