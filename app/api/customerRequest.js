@@ -83,7 +83,6 @@ export const fetchCustomers = async (
       a.accountName?.localeCompare(b.accountName)
     );
     setCustomers(sortedCustomers);
-    console.log("CUSTOMERS ALL", sortedCustomers);
     setIsLoading(false);
   } catch (error) {
     console.error("Error al obtener los customers:", error);
@@ -113,7 +112,6 @@ export const fetchCustomersSupplier = async (
       a.accountName?.localeCompare(b.accountName)
     );
     setCustomers(sortedCustomers);
-    console.log("CUSTOMERS SUPPLIER", sortedCustomers);
     setIsLoading(false);
   } catch (error) {
     console.error("Error al obtener los customers:", error);

@@ -137,9 +137,20 @@ export const groupsUrl = "https://api.grownetapp.com/grownet/api/group/all";
 
 export const printOrdersUrl = "https://api.grownetapp.com/grownet/api/";
 
+// peticion post
+// data
+// const postData = {
+//   days: 2, opcional
+//   supplier: idSupplier,
+// }
 export const dateAvailable =
   "https://api.grownetapp.com/grownet/api/suppliers/operationHistory";
 
+// peticion post
+// data
+// const dateData = {
+//   date: date,
+// }
 export const routesByDate =
   "https://api.grownetapp.com/grownet/api/deliveryRoutes/show";
 
