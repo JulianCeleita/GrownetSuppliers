@@ -133,6 +133,9 @@ export default function Table({
   const [showErrorDuplicate, setShowErrorDuplicate] = useState(false);
   const [showErrorRoutes, setShowErrorRoutes] = useState(false);
   const [sendingOrder, setSendingOrder] = useState(false);
+  const [activeInputIndex, setActiveInputIndex] = useState(null);
+  const [activeColumnIndex, setActiveColumnIndex] = useState(null);
+  const selectRef = useRef();
 
   const columns = [
     "Code",
@@ -398,7 +401,8 @@ export default function Table({
   };
 
   // FUNCIONALIDAD TECLA ENTER
-  const handleKeyDown = async (e, rowIndex, fieldName) => {
+  const handleKeyDown = async (e, columnIndex, rowIndex, fieldName) => {
+    console.log("🚀 ~ handleKeyDown ~ columnIndex:", columnIndex)
     if (e.key === "Enter" && e.target.tagName.toLowerCase() !== "textarea") {
       e.preventDefault();
 
@@ -408,7 +412,7 @@ export default function Table({
         productCode = currentValues["Code"];
       }
       if (productCode) {
-        await fetchProductCode(rowIndex, productCode);
+        await fetchProductCode(columnIndex, rowIndex, productCode);
         synchronizeExistingCodes();
       }
 
@@ -443,16 +447,41 @@ export default function Table({
     }
   };
 
-  const fetchProductCode = async (rowIndex, code) => {
+  useEffect(() => {
+    console.log(activeInputIndex)
+  }, [activeInputIndex])
+
+
+  const handleCloseModal = (event) => {
+    event.stopPropagation();
+    setShowErrorDuplicate(false);
+    console.log("🚀 ~ setTimeout ~ activeColumnIndex index column que llega :", activeColumnIndex)
+    console.log("🚀 ~ setTimeout ~ activeInputIndex index row que llega:", activeInputIndex)
+    setTimeout(() => {
+      const inputToFocus = document.querySelector(`input[data-row-index="${activeInputIndex}"][data-column-index="${activeColumnIndex}"]`);
+      if (inputToFocus != null) {
+        console.log("🚀 ~ setTimeout ~ inputToFocus:", inputToFocus)
+        inputToFocus.focus();
+      } else {
+        selectRef.current.focus();
+        console.log("🚀 ~ setTimeout ~ selectRef:", selectRef.current)
+      }
+    }, 50);
+  };
+
+  const fetchProductCode = async (columnIndex, rowIndex, code) => {
+    console.log(rowIndex)
     const currentDescription = rows[rowIndex]["Description"];
     try {
       const lowerCaseCode = code.toLowerCase();
       const condition = currentDescription
         ? existingCodes.has(lowerCaseCode)
         : existingCodes.has(lowerCaseCode) ||
-          existingCodes.has(rows[rowIndex].Code.toLowerCase());
+        existingCodes.has(rows[rowIndex].Code.toLowerCase());
 
       if (condition) {
+        setActiveInputIndex(rowIndex);
+        setActiveColumnIndex(columnIndex);
         setShowErrorDuplicate(true);
         const updatedRows = rows.map((row, index) => {
           if (index === rowIndex) {
@@ -681,24 +710,23 @@ export default function Table({
                       <th
                         key={index}
                         scope="col"
-                        className={`py-2 px-2 capitalize ${
-                          index === firstVisibleColumnIndex
-                            ? "rounded-tl-lg"
-                            : ""
-                        } ${
-                          index === lastVisibleColumnIndex
+                        className={`py-2 px-2 capitalize ${index === firstVisibleColumnIndex
+                          ? "rounded-tl-lg"
+                          : ""
+                          } ${index === lastVisibleColumnIndex
                             ? "rounded-tr-lg"
                             : ""
-                        } ${
-                          column === "quantity" ||
-                          column === "VAT %" ||
-                          column === "UOM" ||
-                          column === "Net"
+                          } ${column === "quantity" ||
+                            column === "VAT %" ||
+                            column === "UOM" ||
+                            column === "Net"
                             ? "w-20"
                             : column === "Packsize" || column === "Total Price"
                             ? "w-40"
                             : column === "Code"
                             ? "w-[8em]"
+                            : column === "Description"
+                            ? "w-auto p-0"
                             : ""
                         }`}
                         onContextMenu={(e) => handleContextMenu(e)}
@@ -757,6 +785,9 @@ export default function Table({
                                   calculateTotalCost(row)}
                                 {column === "Description" && (
                                   <Select
+                                    data-column-index={columnIndex}
+                                    data-row-index={rowIndex}
+                                    ref={inputRefs[column][rowIndex]}
                                     className="w-full"
                                     menuPlacement="auto"
                                     menuPortalTarget={document.body}
@@ -770,10 +801,10 @@ export default function Table({
                                     options={
                                       DescriptionData
                                         ? DescriptionData.map((item) => ({
-                                            value: item.product_name,
-                                            label: `${item.code} - ${item.product_name} - ${item.name}`,
-                                            code: item.code,
-                                          }))
+                                          value: item.product_name,
+                                          label: `${item.code} - ${item.product_name} - ${item.name}`,
+                                          code: item.code,
+                                        }))
                                         : []
                                     }
                                     value={{
@@ -788,7 +819,9 @@ export default function Table({
                                         );
 
                                       if (selectedProduct) {
+                                        console.log("rowIndex: ", rowIndex)
                                         fetchProductCode(
+                                          columnIndex,
                                           rowIndex,
                                           selectedProduct.code
                                         );
@@ -829,14 +862,15 @@ export default function Table({
                             ) : (
                               <>
                                 <input
+                                  data-column-index={columnIndex}
+                                  data-row-index={rowIndex}
                                   type={inputTypes[column]}
-                                  ref={inputRefs[column][rowIndex]}
+                                  ref={selectRef}
                                   data-field-name={column}
-                                  className={`pl-2 h-[30px] outline-none w-full ${
-                                    inputTypes[column] === "number"
-                                      ? "hide-number-arrows"
-                                      : ""
-                                  } `}
+                                  className={`pl-2 h-[30px] outline-none w-full ${inputTypes[column] === "number"
+                                    ? "hide-number-arrows"
+                                    : ""
+                                    } `}
                                   value={row[column] || ""}
                                   onFocus={(e) => {
                                     if (column === "quantity") {
@@ -861,7 +895,7 @@ export default function Table({
                                   }}
                                   step={0.1}
                                   onKeyDown={(e) => {
-                                    handleKeyDown(e, rowIndex, column);
+                                    handleKeyDown(e, columnIndex, rowIndex, column);
                                   }}
                                   onKeyPress={(e) => {
                                     if (column === "Net" && e.charCode === 46) {
@@ -928,24 +962,6 @@ export default function Table({
           )}
         </form>
       </div>
-      {/* <div className="flex justify-center mb-20 w-full mt-5">
-        <h1 className="bg-dark-blue text-white font-semibold p-3 rounded-tl-lg rounded-bl-lg w-[30%] items-center text-center flex justify-center">
-          Special requirements
-        </h1>
-        <input
-          type="text"
-          value={specialRequirements}
-          onChange={(e) => setSpecialRequirements(e.target.value)}
-          className="p-3 border border-dark-blue rounded-tr-lg rounded-br-lg w-full mr-5"
-          placeholder="Write your comments here"
-        />
-        <button
-          onClick={() => setConfirmCreateOrder(true)}
-          className="bg-primary-blue py-2 px-4 rounded-lg text-white font-medium mr-2 w-[15%]"
-        >
-          Send order
-        </button> 
-      </div>*/}
 
       <ModalSuccessfull
         isvisible={showConfirmModal}
@@ -986,7 +1002,7 @@ export default function Table({
       />
       <ModalOrderError
         isvisible={showErrorDuplicate}
-        onClose={() => setShowErrorDuplicate(false)}
+        onClose={() => handleCloseModal(event)}
         error={orderError}
         title={"Duplicate code"}
         message={"The product you are entering is duplicate."}
