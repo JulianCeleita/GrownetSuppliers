@@ -573,7 +573,7 @@ export default function Table({
         observation: specialRequirements,
         total: parseFloat(totalPriceSum),
         total_tax: parseFloat(totalTaxSum),
-        customer_ref: customerRef,
+        customers_ref: customerRef,
         products: filteredProducts,
       };
 

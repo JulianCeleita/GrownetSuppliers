@@ -68,7 +68,7 @@ const OrderDetailPage = () => {
   if (params) {
     ({ orderId } = params);
   }
-
+  console.log("order detail", orderDetail);
   //Fecha input
   function getCurrentDate() {
     const today = new Date();
