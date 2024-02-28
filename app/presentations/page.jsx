@@ -30,10 +30,10 @@ function Presentations() {
   //Api
   const [products, setProducts] = useState([]);
 
-  useEffect(() => {
-    var localStorageUser = JSON.parse(localStorage.getItem("user"));
-    setUser(localStorageUser);
-  }, [setUser]);
+  // useEffect(() => {
+  //   var localStorageUser = JSON.parse(localStorage.getItem("user"));
+  //   setUser(localStorageUser);
+  // }, [setUser]);
 
   useEffect(() => {
     if (user && user.rol_name === "AdminGrownet") {
@@ -76,9 +76,9 @@ function Presentations() {
   return (
     <Layout>
       <div>
-        <div className="flex justify-between p-8 bg-primary-blue">
-          <h1 className="text-2xl text-white font-semibold">
-            Presentations list
+        <div className="flex justify-between p-8 -mt-24">
+          <h1 className="text-2xl text-white font-semibold ml-20 mt-2">
+            Catalogue list
           </h1>
           <button
             className="flex bg-green py-3 px-4 rounded-lg text-white font-medium hover:bg-dark-blue hover:scale-110 "
@@ -90,7 +90,7 @@ function Presentations() {
           </button>
         </div>
         <div className="flex items-center justify-center mb-20">
-          <table className="w-[90%] bg-white rounded-2xl text-center shadow-[0_8px_30px_rgb(0,0,0,0.12)]">
+          <table className="w-[95%] bg-white rounded-2xl text-center shadow-[0_8px_30px_rgb(0,0,0,0.12)]">
             <thead className="sticky top-0 bg-white shadow-[0px_11px_15px_-3px_#edf2f7] ">
               <tr className="border-b-2 border-stone-100 text-dark-blue">
                 <th className="py-4 rounded-tl-lg">Code</th>

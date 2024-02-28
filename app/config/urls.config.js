@@ -1,3 +1,9 @@
+// QA
+// http://3.139.16.141/api/
+
+// PRODUCCIÓN
+// https://api.grownetapp.com/grownet/api/
+
 // login
 export const loginUrl = "http://3.139.16.141/api/login/login";
 
@@ -137,20 +143,9 @@ export const groupsUrl = "http://3.139.16.141/api/group/all";
 
 export const printOrdersUrl = "http://3.139.16.141/api/";
 
-// peticion post
-// data
-// const postData = {
-//   days: 2, opcional
-//   supplier: idSupplier,
-// }
 export const dateAvailable =
   "http://3.139.16.141/api/suppliers/operationHistory";
 
-// peticion post
-// data
-// const dateData = {
-//   date: date,
-// }
 export const routesByDate =
   "http://3.139.16.141/api/deliveryRoutes/show";
 

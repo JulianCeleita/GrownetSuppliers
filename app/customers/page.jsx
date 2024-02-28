@@ -21,6 +21,7 @@ import NewCustomer from "../components/NewCustomer";
 import CustomerDetailPage from "../customer/[customerId]/page";
 import Editcustomer from "../components/EditCustomer";
 import Select from "react-select";
+import { useRef } from "react";
 
 const CustomersView = () => {
   const router = useRouter();
@@ -39,6 +40,7 @@ const CustomersView = () => {
   const [showEditCustomer, setShowEditCustomer] = useState(false);
   const [updateCustomers, setUpdateCustomers] = useState(false);
   const [displayedCustomers, setDisplayedCustomers] = useState([]);
+  const [selectedDay, setSelectedDay] = useState('');
 
   useEffect(() => {
     if (user && user?.rol_name === "AdminGrownet") {
@@ -68,13 +70,18 @@ const CustomersView = () => {
           .includes(searchTerm.toLowerCase()) ||
         customer?.accountNumber
           ?.toLowerCase()
-          .includes(searchTerm.toLowerCase())
-    );
+          .includes(searchTerm.toLowerCase() ||
+            customer.routes.some(route => route.days_id.includes(selectedDay))))
 
     setDisplayedCustomers(filteredCustomers);
   }, [searchTerm, customers]);
 
+
   const [showDeleteModal, setShowDeleteModal] = useState(false);
+
+  const handleDayChange = (e) => {
+    setSelectedDay(e.target.value);
+  };
 
   const handleDeleteCustomer = (customer) => {
     const { accountNumber } = customer;
@@ -117,6 +124,15 @@ const CustomersView = () => {
     }
   };
 
+  const daysMapping = [
+    { id: 1, name: 'Monday' },
+    { id: 2, name: 'Tuesday' },
+    { id: 3, name: 'Wednesday' },
+    { id: 4, name: 'Thursday' },
+    { id: 5, name: 'Friday' },
+    { id: 6, name: 'Saturday' }
+  ];
+
   return (
     <Layout>
       <div className="-mt-16">
@@ -131,26 +147,25 @@ const CustomersView = () => {
             <PlusCircleIcon className="h-6 w-6 mr-1" /> New Customer
           </button>
         </div>
-        <div className="w-[98%] flex items-center justify-center mb-8 mt-2 mr-5 ml-2 ">
-          <div className="relative w-[55%] max-w-[65%] ">
+        <div className="w-[98%] flex items-center justify-center mb-5 mt-5">
+          <div className="relative w-[60%] max-w-[65%]">
             <input
               type="text"
               placeholder="Search customers by name or account number"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-12 pr-4 py-3 h-[45px] w-full rounded-lg border border-gray-200 bg-white text-gray-700 placeholder-gray-400 focus:outline-none shadow-md hover:shadow-lg transition-shadow duration-150 ease-in-out"
+              className="pl-12 pr-4 py-3 h-[50px] w-full rounded-lg border border-gray-200 bg-white text-dark-blue placeholder-gray-400"
             />
             <div className="absolute left-3 top-1/2 transform -translate-y-1/2">
               <MagnifyingGlassIcon className="h-5 w-5 text-gray-400 mr-5" />
             </div>
           </div>
-
+          {/* 
+          TODO: si se decide implementar filtro por status, descomentar este codigo
           <select
             value={status}
             onChange={handleStatusChange}
-            className="ml-2 border p-2 rounded-md bg-white bg-clip-padding bg-no-repeat
-            w-auto border-gray-200 px-4 py-2 pr-8 leading-tight
-            focus:outline-none focus:shadow-outline text-gray-400 hover:border-gray-300 shadow-md hover:shadow-lg transition-shadow duration-150 ease-in-out"
+            className="ml-2 border p-2 rounded-md bg-white bg-clip-padding bg-no-repeat w-auto border-gray-200 px-4 py-2 pr-8 leading-tight h-[50px] text-dark-blue"
           >
             <option value="all" key={1}>
               All status
@@ -161,13 +176,28 @@ const CustomersView = () => {
             <option value="inactive" key={3} className="text-black">
               Inactive
             </option>
+          </select> */}
+          <select
+            value={selectedDay.name}
+            onChange={handleDayChange}
+            className="ml-2 border p-2 rounded-md bg-white bg-clip-padding bg-no-repeat w-auto border-gray-200 px-4 py-2 pr-8 leading-tight h-[50px] text-dark-blue"
+          >
+            <option value="">All days</option>
+            {daysMapping &&
+              daysMapping.map((day) => (
+                <option
+                  key={day.id}
+                  value={day.id}
+                  className="text-black"
+                >
+                  {day.name}
+                </option>
+              ))}
           </select>
           <select
             value={selectedRoute}
             onChange={handleRouteChange}
-            className="ml-2 border p-2 rounded-md bg-white bg-clip-padding bg-no-repeat
-            w-auto border-gray-200 px-4 py-2 pr-8 leading-tight
-            focus:outline-none focus:shadow-outline text-gray-400 hover:border-gray-300 shadow-md hover:shadow-lg transition-shadow duration-150 ease-in-out"
+            className="ml-2 border p-2 rounded-md bg-white bg-clip-padding bg-no-repeat w-auto border-gray-200 px-4 py-2 pr-8 leading-tight h-[50px] text-dark-blue"
           >
             <option value="">All routes</option>
             {routes &&
@@ -184,9 +214,7 @@ const CustomersView = () => {
           <select
             value={selectedGroup}
             onChange={handleGroupChange}
-            className="ml-2 border p-2 rounded-md bg-white bg-clip-padding bg-no-repeat
-            w-auto border-gray-200 px-4 py-2 pr-8 leading-tight
-            focus:outline-none focus:shadow-outline text-gray-400 hover:border-gray-300 shadow-md hover:shadow-lg transition-shadow duration-150 ease-in-out"
+            className="ml-2 border p-2 rounded-md bg-white bg-clip-padding bg-no-repeat w-auto border-gray-200 px-4 py-2 pr-8 leading-tight h-[50px] text-dark-blue placeholder-gray-input"
           >
             <option value="">All groups</option>
             {[
@@ -206,12 +234,13 @@ const CustomersView = () => {
           <table className="w-[90%] bg-white rounded-2xl  shadow-[rgba(17,_17,_26,_0.1)_0px_0px_16px]">
             <thead className="sticky top-0 bg-white text-center shadow-[0px_11px_15px_-3px_#edf2f7]">
               <tr className="border-stone-100 border-b-0 text-dark-blue rounded-t-3xl">
-                <th className="py-4 rounded-tl-lg">Acc Number</th>
-                <th className="py-4 rounded-tl-lg">Name</th>
+                <th className="py-4 rounded-tl-xl">Acc Number</th>
+                <th className="py-4 ">Name</th>
                 <th className="py-4 ">Telephone</th>
                 <th className="py-4">Group</th>
                 <th className="py-4">Routes</th>
-                <th className="py-4">Post Code</th>
+                <th className="py-4">Drops</th>
+                <th className="py-4 rounded-tr-xl">Post Code</th>
                 {/* <th className="py-4">Status</th> */}
               </tr>
             </thead>
@@ -242,7 +271,10 @@ const CustomersView = () => {
                       )) &&
                     (!selectedGroup ||
                       (selectedGroup === "No group" && !customer.group) ||
-                      (customer.group && customer.group === selectedGroup));
+                      (customer.group && customer.group === selectedGroup)) &&
+                    (!selectedDay ||
+                      customer.routes.some(route => route.days_id === Number(selectedDay))
+                    );
                   if (shouldShow) {
                     return (
                       <tr
@@ -264,16 +296,32 @@ const CustomersView = () => {
                             : "No group"}
                         </td>
                         <td className="py-4 pl-8">
-                          {customer.routes && customer.routes.length > 0 ? (
-                            customer.routes.map((route, index) => (
-                              <span key={route.id}>
-                                {route.name}
-                                {index < customer.routes.length - 1 && " - "}
-                              </span>
-                            ))
-                          ) : (
-                            <span>No routes</span>
-                          )}
+                          {
+                            customer.routes && customer.routes.length > 0 ? (
+                              [...new Set(customer.routes.map(route => route.name))].map((name, index, arr) => (
+                                <span key={name}>
+                                  {name}
+                                  {index < arr.length - 1 && " - "}
+                                </span>
+                              ))
+                            ) : (
+                              <span>No routes</span>
+                            )
+                          }
+                        </td>
+                        <td className="py-4 pl-8">
+                          {
+                            customer.routes && customer.routes.length > 0 ? (
+                              [...new Set(customer.routes.map(route => route.drop))].map((name, index, arr) => (
+                                <span key={name}>
+                                  {name}
+                                  {index < arr.length - 1 && " - "}
+                                </span>
+                              ))
+                            ) : (
+                              <span>No Drops</span>
+                            )
+                          }
                         </td>
                         <td className="py-4 pl-8 w-[120px]">
                           {customer.postCode}
