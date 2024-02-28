@@ -1,7 +1,14 @@
 import { ExclamationCircleIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import { useEffect, useRef } from "react";
 
-function ModalOrderError({ isvisible, onClose, error, title, message }) {
+function ModalOrderError({
+  isvisible,
+  onClose,
+  error,
+  title,
+  message,
+  setIsSelectDisabled,
+}) {
   const modalRef = useRef();
 
   useEffect(() => {
@@ -12,6 +19,10 @@ function ModalOrderError({ isvisible, onClose, error, title, message }) {
 
   if (!isvisible) {
     return null;
+  }
+
+  if (isvisible && setIsSelectDisabled) {
+    setIsSelectDisabled(false);
   }
 
   const handleKeyCloseModal = (event) => {
