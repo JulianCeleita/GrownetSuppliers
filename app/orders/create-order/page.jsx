@@ -436,7 +436,7 @@ const CreateOrderView = () => {
           className="bg-dark-blue rounded-md ml-3 hover:scale-110 focus:outline-none flex text-white px-2 py-1 items-center align-middle"
           onClick={() => setDetails(!details)}
         >
-          More details
+          Details
           <ChevronDownIcon
             className={`h-5 w-5 ml-1 text-white transform transition duration-500 ${
               details ? "rotate-180" : "rotate-0"
