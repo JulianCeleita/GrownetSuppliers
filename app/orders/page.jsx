@@ -63,6 +63,7 @@ const OrderView = () => {
   const [totalNet, setTotalNet] = useState("");
   const [routeId, setRouteId] = useState();
   const [searchQuery, setSearchQuery] = useState("");
+  const [selectedGroup, setSelectedGroup] = useState("");
 
   const formatDateToShow = (dateString) => {
     if (!dateString) return "Loading...";
@@ -78,10 +79,10 @@ const OrderView = () => {
 
   const formattedDate = selectedDate
     ? new Date(selectedDate).toLocaleDateString("es-CO", {
-        day: "2-digit",
-        month: "2-digit",
-        year: "2-digit",
-      })
+      day: "2-digit",
+      month: "2-digit",
+      year: "2-digit",
+    })
     : formatDateToShow(workDate);
   const formatDateToTransform = (dateString) => {
     const date = new Date(dateString);
@@ -223,6 +224,10 @@ const OrderView = () => {
     }));
   };
 
+  const handleGroupChange = (e) => {
+    setSelectedGroup(e.target.value);
+  };
+
   const selectAll = (checked) => {
     const newSelectedOrders = {};
     filteredOrders.forEach((order) => {
@@ -299,28 +304,28 @@ const OrderView = () => {
 
   const filteredOrders = selectedRoute
     ? sortedOrders
-        .filter(
-          (order) =>
-            order.route.toLowerCase() === selectedRoute.toLowerCase() &&
-            (order.reference
-              .toString()
+      .filter(
+        (order) =>
+          order.route.toLowerCase() === selectedRoute.toLowerCase() &&
+          (order.reference
+            .toString()
+            .toLowerCase()
+            .includes(searchQuery.toLowerCase()) ||
+            order.accountName
               .toLowerCase()
-              .includes(searchQuery.toLowerCase()) ||
-              order.accountName
-                .toLowerCase()
-                .includes(searchQuery.toLowerCase()))
-        )
-        .sort((a, b) => b.reference - a.reference)
+              .includes(searchQuery.toLowerCase()))
+      )
+      .sort((a, b) => b.reference - a.reference)
     : sortedOrders
-        .filter(
-          (order) =>
-            order.reference
-              .toString()
-              .toLowerCase()
-              .includes(searchQuery.toLowerCase()) ||
-            order.accountName.toLowerCase().includes(searchQuery.toLowerCase())
-        )
-        .sort((a, b) => b.reference - a.reference);
+      .filter(
+        (order) =>
+          order.reference
+            .toString()
+            .toLowerCase()
+            .includes(searchQuery.toLowerCase()) ||
+          order.accountName.toLowerCase().includes(searchQuery.toLowerCase())
+      )
+      .sort((a, b) => b.reference - a.reference);
 
   // console.log("filteredOrders", filteredOrders);
 
@@ -360,13 +365,12 @@ const OrderView = () => {
           </Link>
         </div>
         <div
-          className={`flex ml-10 mb-0 items-center space-x-2 mt-${
-            filterType === "range" && window.innerWidth < 1500
+          className={`flex ml-10 mb-0 items-center space-x-2 mt-${filterType === "range" && window.innerWidth < 1500
               ? "[45px]"
               : filterType === "date" && window.innerWidth < 1300
-              ? "[50px]"
-              : "[20px]"
-          }
+                ? "[50px]"
+                : "[20px]"
+            }
           `}
         >
           <div className="">
@@ -453,6 +457,24 @@ const OrderView = () => {
             {uniqueRoutesArray.map((route) => (
               <option key={route} value={route}>
                 {route}
+              </option>
+            ))}
+          </select>
+          <select
+            value={selectedGroup}
+            onChange={handleGroupChange}
+            className="orm-select px-4 py-3 rounded-md border border-gray-300"
+          >
+            <option value="">All groups</option>
+            {[
+              ...new Set(
+                orders.map((order) =>
+                  order.group !== null ? order.group : "No group"
+                )
+              ),
+            ].map((uniqueGroup) => (
+              <option key={uniqueGroup} className="text-black">
+                {uniqueGroup}
               </option>
             ))}
           </select>
@@ -553,10 +575,12 @@ const OrderView = () => {
                   </label>
                 </th>
                 <th className="py-4"># Invoice</th>
+                <th className="py-4">Acc number</th>
                 <th className="py-4">Customer</th>
                 <th className="py-4">Amount</th>
                 <th className="py-4">Profit %</th>
                 <th className="py-4">Route</th>
+                <th className="py-4">Drop</th>
                 {/* <th className="py-4">Responsable</th> */}
                 <th className="py-4">Delivery date</th>
                 <th className="py-4 rounded-tr-lg">Status</th>
@@ -596,6 +620,12 @@ const OrderView = () => {
                         className="py-4 pl-4"
                         onClick={(e) => goToOrder(e, order)}
                       >
+                        {order.accountNumber}
+                      </td>
+                      <td
+                        className="py-4 pl-4"
+                        onClick={(e) => goToOrder(e, order)}
+                      >
                         {order.accountName}
                       </td>
                       <td
@@ -617,6 +647,12 @@ const OrderView = () => {
                         {order.route}
                       </td>
                       {/* <td className="py-4 pl-4">{order.created_by}</td> */}
+                      <td
+                        className="py-4 pl-4"
+                        onClick={(e) => goToOrder(e, order)}
+                      >
+                        -
+                      </td>
                       <td
                         className="py-4 pl-4"
                         onClick={(e) => goToOrder(e, order)}
