@@ -31,7 +31,20 @@ const initialRowsState = {
   "Total Cost": "",
 };
 
-const useFocusOnEnter = (formRef) => {
+const focusSelectInRow = (rowIndex, selectRefs) => {
+  console.log("entr0 aca focusSelectInRow ");
+  if (selectRefs.current[rowIndex]) {
+    selectRefs.current[rowIndex].focus();
+  }
+};
+
+const useFocusOnEnter = (
+  formRef,
+  codeFocus,
+  activeInputIndex,
+  activeColumnIndex,
+  selectRefs
+) => {
   const onEnterKey = (event) => {
     if (
       event &&
@@ -45,6 +58,21 @@ const useFocusOnEnter = (formRef) => {
       const fieldName = event.target.getAttribute("data-field-name");
 
       if (fieldName === "quantity" && event.target.value.trim() === "") {
+        return;
+      }
+      console.log("entr0 aca ", fieldName);
+      if (codeFocus && fieldName === "Code") {
+        console.log("entr0 aca inputToFocus fieldName", fieldName);
+        const inputToFocus = document.querySelector(
+          `input[data-row-index="${activeInputIndex}"][data-column-index="${activeColumnIndex}"]`
+        );
+        if (inputToFocus != null) {
+          console.log("entr0 aca inputToFocus ", activeColumnIndex);
+          inputToFocus.focus();
+        }
+        return;
+      } else if (codeFocus) {
+        focusSelectInRow(activeInputIndex, selectRefs);
         return;
       }
 
@@ -76,8 +104,8 @@ export default function Table({
     Array.from({ length: 5 }, () => ({ ...initialRowsState }))
   );
   const form = useRef();
+  const [codeFocus, setCodeFocus] = useState(false);
 
-  const { onEnterKey } = useFocusOnEnter(form);
   const { token } = useTokenStore();
   const [products, setProducts] = useState([]);
   const {
@@ -107,7 +135,6 @@ export default function Table({
   const [isReadOnly, setIsReadOnly] = useState(true);
   const [presentations, setPresentations] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
-  const [searchTerm, setSearchTerm] = useState("");
   const [existingCodes, setExistingCodes] = useState(new Set());
   const [isSelectDisabled, setIsSelectDisabled] = useState(true);
   const [previousCode, setPreviousCode] = useState({});
@@ -116,9 +143,14 @@ export default function Table({
   const [sendingOrder, setSendingOrder] = useState(false);
   const [activeInputIndex, setActiveInputIndex] = useState(null);
   const [activeColumnIndex, setActiveColumnIndex] = useState(null);
-  const selectRefInput = useRef();
-
   const selectRefs = useRef([]);
+  const { onEnterKey } = useFocusOnEnter(
+    form,
+    codeFocus,
+    activeInputIndex,
+    activeColumnIndex,
+    selectRefs
+  );
 
   const columns = [
     "Code",
@@ -384,7 +416,11 @@ export default function Table({
   };
 
   // FUNCIONALIDAD TECLA ENTER
+
   const handleKeyDown = async (e, columnIndex, rowIndex, fieldName) => {
+    setCodeFocus(false);
+    console.log("entro aqui aca afuera del if", showErrorCode);
+
     if (e.key === "Enter" && e.target.tagName.toLowerCase() !== "textarea") {
       e.preventDefault();
 
@@ -433,12 +469,6 @@ export default function Table({
     console.log(activeInputIndex);
   }, [activeInputIndex]);
 
-  const focusSelectInRow = (rowIndex) => {
-    if (selectRefs.current[rowIndex]) {
-      selectRefs.current[rowIndex].focus();
-    }
-  };
-
   const handleCloseModal = (event) => {
     event.stopPropagation();
     setShowErrorDuplicate(false);
@@ -447,13 +477,11 @@ export default function Table({
     const inputToFocus = document.querySelector(
       `input[data-row-index="${activeInputIndex}"][data-column-index="${activeColumnIndex}"]`
     );
-    console.log("inputToFocus", inputToFocus);
+
     if (inputToFocus != null) {
       inputToFocus.focus();
-      console.log("entro aqui inputToFocus");
     } else {
-      focusSelectInRow(activeInputIndex);
-      console.log("entro aqui focusSelectInRow");
+      focusSelectInRow(activeInputIndex, selectRefs);
     }
   };
 
@@ -517,6 +545,8 @@ export default function Table({
     } catch (error) {
       console.error("Error al hacer la solicitud:", error.message);
       // const currentProductCode = rows[rowIndex]["Code"] || "0"
+      setActiveInputIndex(rowIndex);
+      setActiveColumnIndex(columnIndex);
       setShowErrorCode(true);
       const updatedRows = rows.map((row, index) => {
         if (index === rowIndex) {
@@ -989,6 +1019,7 @@ export default function Table({
         error={orderError}
         title={"Sorry"}
       />
+
       <ModalOrderError
         isvisible={showErrorCode}
         onClose={() => handleCloseModal(event)}
@@ -998,6 +1029,7 @@ export default function Table({
           "The entered code is incorrect. Please verify and try again with a valid code."
         }
         setIsSelectDisabled={setIsSelectDisabled}
+        setCodeFocus={setCodeFocus}
       />
       <ModalOrderError
         isvisible={showErrorDuplicate}
@@ -1006,6 +1038,7 @@ export default function Table({
         title={"Duplicate code"}
         message={"The product you are entering is duplicate."}
         setIsSelectDisabled={setIsSelectDisabled}
+        setCodeFocus={setCodeFocus}
       />
       <ModalOrderError
         isvisible={showErrorRoutes}
