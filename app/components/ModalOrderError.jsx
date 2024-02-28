@@ -8,12 +8,15 @@ function ModalOrderError({
   title,
   message,
   setIsSelectDisabled,
+  setCustomerDate = () => {},
 }) {
   const modalRef = useRef();
 
   useEffect(() => {
     if (isvisible) {
       modalRef.current.focus();
+
+      setCustomerDate();
     }
   }, [isvisible]);
 
