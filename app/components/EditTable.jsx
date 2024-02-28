@@ -763,7 +763,6 @@ export default function EditTable({
         products: filteredProducts,
       };
 
-      console.log("jsonOrderDataedit", jsonOrderData);
       const response = await axios.post(
         `${editStorageOrder}${orderDetail.reference}`,
         jsonOrderData,
