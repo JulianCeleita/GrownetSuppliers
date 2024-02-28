@@ -8,7 +8,6 @@ import Swal from "sweetalert2";
 import axios from "axios";
 import useTokenStore from "../store/useTokenStore";
 import useUserStore from "../store/useUserStore";
-import { encryptData, decryptData, generateKey, arrayBufferToBase64 } from "../utils/cryptoUtils";
 
 function LoginForm() {
   const [username, setUsername] = useState("");
@@ -18,10 +17,8 @@ function LoginForm() {
   const { setToken } = useTokenStore();
   const { setUser } = useUserStore();
 
-  
-
   // Función para enviar datos de inicio de sesión
-  async function enviarData(e) {
+  const enviarData = async (e) => {
     e.preventDefault();
     setLoading(true);
     setError(null);
@@ -30,41 +27,29 @@ function LoginForm() {
       email: username,
       password: password,
     };
-
-    try {
-      const response = await axios.post(loginUrl, postData);
-
-      if (response.data.status === 200) {
-        console.log("🚀 ~ enviarData ~ response:", response)
-        const key = await generateKey();
-        const { encrypted: encryptedToken, iv: ivToken } = await encryptData(response.data.token, key);
-        const { encrypted: encryptedUser, iv: ivUser } = await encryptData(JSON.stringify(response.data.user), key);
-        const base64Token = arrayBufferToBase64(encryptedToken);
-        const base64User = arrayBufferToBase64(encryptedUser);
-        localStorage.setItem('encryptedToken', base64Token);
-        localStorage.setItem('encryptedUser', base64User);
-
-        localStorage.setItem('ivToken', ivToken);
-        localStorage.setItem('ivUser', ivUser);
-
-        setToken(response.data.token);
-        setUser(response.data.user);
-        setLoading(false);
-      } else {
-        Swal.fire({
-          icon: 'error',
-          title: 'Error',
-          text: `${response.data.message}`,
-        });
-      }
-    } catch (error) {
-      console.error('Error al iniciar sesión: ', error);
-    } finally {
-      setUsername('');
-      setPassword('');
-      setLoading(false);
-    }
-  }
+    axios
+      .post(loginUrl, postData)
+      .then((response) => {
+        if (response.data.status === 200) {
+          localStorage.setItem("token", response.data.token);
+          localStorage.setItem("user", JSON.stringify(response.data.user));
+          setToken(response.data.token);
+          setUser(response.data.user);
+          setLoading(false);
+        } else {
+          Swal.fire({
+            icon: "error",
+            title: "Error",
+            text: `${response.data.message}`,
+          });
+        }
+        setUsername("");
+        setPassword("");
+      })
+      .catch((error) => {
+        console.error("Error al iniciar sesión: ", error);
+      });
+  };
   return (
     <body className="overflow-hidden">
       <div className="min-h-screen flex flex-col items-center justify-center font-poppins bg-blue-500">
