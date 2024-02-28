@@ -114,6 +114,7 @@ export default function EditTable({
   setSpecialRequirements,
   percentageDetail,
   dataLoaded,
+  customersRef,
 }) {
   // const [rows, setRows] = useState(
   //   Array.from({ length: 0 }, () => ({ ...initialRowsState }))
@@ -758,8 +759,11 @@ export default function EditTable({
         observation: specialRequirements,
         total: parseFloat(totalPriceSum),
         total_tax: parseFloat(totalTaxSum),
+        customers_ref: customersRef,
         products: filteredProducts,
       };
+
+      console.log("jsonOrderDataedit", jsonOrderData);
       const response = await axios.post(
         `${editStorageOrder}${orderDetail.reference}`,
         jsonOrderData,
@@ -770,6 +774,7 @@ export default function EditTable({
         }
       );
       setSpecialRequirements("");
+      setOrderDetail("");
       setShowConfirmModal(true);
       setTimeout(() => {
         router.push("/");
