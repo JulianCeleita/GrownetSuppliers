@@ -13,6 +13,7 @@ function ModalOrderError({
 
   useEffect(() => {
     if (isvisible) {
+      setCustomerDate();
       modalRef.current.focus();
     }
   }, [isvisible]);

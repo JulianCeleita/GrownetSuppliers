@@ -53,7 +53,7 @@ const initialRowsState = {
   "Total Price": "",
   "Unit Cost": "",
   Profit: "",
-  "Price Band": "",
+  Band: "",
   "Total Cost": "",
 };
 
@@ -71,7 +71,7 @@ const inputRefs = {
   "Total Price": [],
   "Unit Cost": [],
   Profit: [],
-  "Price Band": [],
+  Band: [],
   "Total Cost": [],
 };
 
@@ -181,7 +181,7 @@ export default function EditTable({
     "Total Price",
     "Unit Cost",
     "Profit",
-    "Price Band",
+    "Band",
     "Total Cost",
   ];
   const inputTypes = {
@@ -198,7 +198,7 @@ export default function EditTable({
     "Total Price": "number",
     "Unit Cost": "number",
     Profit: "number",
-    "Price Band": "text",
+    Band: "text",
     "Total Cost": "number",
   };
 
@@ -290,7 +290,7 @@ export default function EditTable({
           "Total Price": "",
           "Unit Cost": product.cost,
           Profit: "",
-          "Price Band": "",
+          Band: "",
           "Total Cost": "",
         };
       });
@@ -508,7 +508,7 @@ export default function EditTable({
             "Unit Cost": productByCode.cost,
             "Total Cost": "",
             Profit: "",
-            "Price Band": "",
+            Band: "",
           };
         }
         return row;
@@ -659,7 +659,10 @@ export default function EditTable({
         },
       });
       const productByCodeData = response.data.data[0];
-      console.log("🚀 ~ fetchProductCode ~ productByCodeData:", productByCodeData)
+      console.log(
+        "🚀 ~ fetchProductCode ~ productByCodeData:",
+        productByCodeData
+      );
 
       const updatedRows = rows.map((row, index) => {
         if (
@@ -838,11 +841,11 @@ export default function EditTable({
             <form
               ref={form}
               onKeyUp={(event) => onEnterKey(event)}
-              className="m-1 whitespace-nowrap"
+              className=" whitespace-nowrap mb-4 mx-4"
             >
-              <table className="w-full text-sm text-center table-auto">
-                <thead className="text-white">
-                  <tr>
+              <table className="w-[100%] text-sm text-center table-auto bg-white rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.1)]">
+                <thead className="sticky top-0 shadow-[0px_11px_15px_-3px_#edf2f7] bg-white text-center">
+                  <tr className="border-b-2 border-stone-100  text-dark-blue">
                     {columns.map((column, index) => {
                       const isColumnVisible = initialColumns.includes(column);
                       const firstVisibleColumnIndex = columns.findIndex((col) =>
@@ -860,10 +863,12 @@ export default function EditTable({
                           <th
                             key={index}
                             scope="col"
-                            className={`py-3 px-2 bg-white capitalize ${index === firstVisibleColumnIndex
-                              ? "rounded-tl-lg"
-                              : ""
-                              } ${index === lastVisibleColumnIndex
+                            className={`py-3 px-2 capitalize ${
+                              index === firstVisibleColumnIndex
+                                ? "rounded-tl-lg"
+                                : ""
+                            } ${
+                              index === lastVisibleColumnIndex
                                 ? "rounded-tr-lg"
                                 : ""
                               } ${column === "quantity" ||
@@ -873,11 +878,13 @@ export default function EditTable({
                                 ? "w-20"
                                 : column === "Packsize" ||
                                   column === "Total Price"
-                                  ? "w-40"
-                                  : column === "Code"
-                                    ? "w-[8em]"
-                                    : ""
-                              }`}
+                                ? "w-40"
+                                : column === "Code"
+                                ? "w-[8em]"
+                                : column === "Description"
+                                ? "w-auto"
+                                : ""
+                            }`}
                             onContextMenu={(e) => handleContextMenu(e)}
                           >
                             <p className="text-lg text-dark-blue">{column}</p>
@@ -887,14 +894,15 @@ export default function EditTable({
                     })}
                   </tr>
                 </thead>
-                <tbody className="border border-1 bg-white">
+                <tbody className="text-left">
                   {rows.map((row, rowIndex) => (
                     <tr
                       key={rowIndex}
-                      className={`${row.state === "N/A"
-                        ? " line-through text-primary-blue decoration-dark-blue"
-                        : ""
-                        }`}
+                      className={`${
+                        row.state === "N/A"
+                          ? " line-through text-primary-blue decoration-dark-blue"
+                          : ""
+                      } text-dark-blue border-b-2 border-stone-100`}
                     >
                       {/* CODIGO DE PRODUCTO */}
                       {columns.map(
@@ -902,7 +910,7 @@ export default function EditTable({
                           initialColumns.includes(column) && (
                             <React.Fragment key={columnIndex}>
                               <td
-                                className={`px-3 py-[0.2em] border border-1 border-x-gray-100 `}
+                                className={`pl-4 py-[0.2em] w-auto `}
                                 tabIndex={0}
                                 style={{ overflow: "visible" }}
                               >
@@ -917,7 +925,7 @@ export default function EditTable({
                                   "Total Price",
                                   "Unit Cost",
                                   "Profit",
-                                  "Price Band",
+                                  "Band",
                                   "Total Cost",
                                 ].includes(column) ? (
                                   <span
@@ -936,7 +944,7 @@ export default function EditTable({
                                     {column === "Unit Cost" && row[column]}
                                     {column === "Profit" &&
                                       calculateProfit(row)}
-                                    {column === "Price Band" && row[column]}
+                                    {column === "Band" && row[column]}
                                     {column === "Total Cost" &&
                                       calculateTotalCost(row)}
                                     {column === "Description" && (
