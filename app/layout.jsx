@@ -6,7 +6,6 @@ import "./globals.css";
 import Home from "./page";
 import useTokenStore from "./store/useTokenStore";
 import "./style.css";
-import { base64ToArrayBuffer, decryptData, getKey } from "./utils/cryptoUtils";
 
 const metadata = {
   title: "Grownet Suppliers",
@@ -21,23 +20,6 @@ export const getMetadata = () => {
 export default function RootLayout({ children }) {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const { token } = useTokenStore();
-  const updateToken = useTokenStore((state) => state.updateToken);
-
-  useEffect(() => {
-    async function loadToken() {
-      const base64Token = localStorage.getItem("encryptedToken");
-      const base64Iv = localStorage.getItem("ivToken");
-      if (base64Token && base64Iv) {
-        const encryptedToken = base64ToArrayBuffer(base64Token);
-        const iv = base64ToArrayBuffer(base64Iv);
-        const key = await getKey();
-        const token = await decryptData(encryptedToken, iv, key);
-        updateToken(token);
-      }
-    }
-
-    loadToken();
-  }, [updateToken]);
 
   useEffect(() => {
     const handleRouter = async () => {
