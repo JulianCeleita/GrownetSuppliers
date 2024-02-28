@@ -72,6 +72,7 @@ export default function Table({
   specialRequirements,
   setSpecialRequirements,
   customerDate,
+  customerRef,
 }) {
   const [rows, setRows] = useState(
     Array.from({ length: 5 }, () => ({ ...initialRowsState }))
@@ -486,7 +487,7 @@ export default function Table({
         },
       });
       const productData = response.data.data[0];
-      console.log("Product data:", productData);
+
       // Actualiza las filas con los datos del producto
       const updatedRows = rows.map((row, index) => {
         if (index === rowIndex) {
@@ -572,6 +573,7 @@ export default function Table({
         observation: specialRequirements,
         total: parseFloat(totalPriceSum),
         total_tax: parseFloat(totalTaxSum),
+        customer_ref: customerRef,
         products: filteredProducts,
       };
 
