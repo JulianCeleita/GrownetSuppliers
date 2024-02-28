@@ -63,6 +63,7 @@ const OrderView = () => {
   const [totalNet, setTotalNet] = useState("");
   const [routeId, setRouteId] = useState();
   const [searchQuery, setSearchQuery] = useState("");
+  const [selectedGroup, setSelectedGroup] = useState("");
 
   const formatDateToShow = (dateString) => {
     if (!dateString) return "Loading...";
@@ -78,12 +79,11 @@ const OrderView = () => {
 
   const formattedDate = selectedDate
     ? new Date(selectedDate).toLocaleDateString("es-CO", {
-        day: "2-digit",
-        month: "2-digit",
-        year: "numeric",
-      })
+      day: "2-digit",
+      month: "2-digit",
+      year: "2-digit",
+    })
     : formatDateToShow(workDate);
-
   const formatDateToTransform = (dateString) => {
     const date = new Date(dateString);
     const day = String(date.getDate()).padStart(2, "0");
@@ -224,6 +224,10 @@ const OrderView = () => {
     }));
   };
 
+  const handleGroupChange = (e) => {
+    setSelectedGroup(e.target.value);
+  };
+
   const selectAll = (checked) => {
     const newSelectedOrders = {};
     filteredOrders.forEach((order) => {
@@ -300,28 +304,28 @@ const OrderView = () => {
 
   const filteredOrders = selectedRoute
     ? sortedOrders
-        .filter(
-          (order) =>
-            order.route.toLowerCase() === selectedRoute.toLowerCase() &&
-            (order.reference
-              .toString()
+      .filter(
+        (order) =>
+          order.route.toLowerCase() === selectedRoute.toLowerCase() &&
+          (order.reference
+            .toString()
+            .toLowerCase()
+            .includes(searchQuery.toLowerCase()) ||
+            order.accountName
               .toLowerCase()
-              .includes(searchQuery.toLowerCase()) ||
-              order.accountName
-                .toLowerCase()
-                .includes(searchQuery.toLowerCase()))
-        )
-        .sort((a, b) => b.reference - a.reference)
+              .includes(searchQuery.toLowerCase()))
+      )
+      .sort((a, b) => b.reference - a.reference)
     : sortedOrders
-        .filter(
-          (order) =>
-            order.reference
-              .toString()
-              .toLowerCase()
-              .includes(searchQuery.toLowerCase()) ||
-            order.accountName.toLowerCase().includes(searchQuery.toLowerCase())
-        )
-        .sort((a, b) => b.reference - a.reference);
+      .filter(
+        (order) =>
+          order.reference
+            .toString()
+            .toLowerCase()
+            .includes(searchQuery.toLowerCase()) ||
+          order.accountName.toLowerCase().includes(searchQuery.toLowerCase())
+      )
+      .sort((a, b) => b.reference - a.reference);
 
   // console.log("filteredOrders", filteredOrders);
 
@@ -361,13 +365,12 @@ const OrderView = () => {
           </Link>
         </div>
         <div
-          className={`flex ml-10 mb-0 items-center space-x-2 mt-${
-            filterType === "range" && window.innerWidth < 1500
+          className={`flex ml-10 mb-0 items-center space-x-2 mt-${filterType === "range" && window.innerWidth < 1500
               ? "[45px]"
               : filterType === "date" && window.innerWidth < 1300
-              ? "[50px]"
-              : "[20px]"
-          }
+                ? "[50px]"
+                : "[20px]"
+            }
           `}
         >
           <div className="">
@@ -457,6 +460,24 @@ const OrderView = () => {
               </option>
             ))}
           </select>
+          <select
+            value={selectedGroup}
+            onChange={handleGroupChange}
+            className="orm-select px-4 py-3 rounded-md border border-gray-300"
+          >
+            <option value="">All groups</option>
+            {[
+              ...new Set(
+                orders.map((order) =>
+                  order.group !== null ? order.group : "No group"
+                )
+              ),
+            ].map((uniqueGroup) => (
+              <option key={uniqueGroup} className="text-black">
+                {uniqueGroup}
+              </option>
+            ))}
+          </select>
           <button
             className="flex bg-primary-blue text-white py-3 px-4 rounded-full font-medium transition-all cursor-pointer hover:bg-dark-blue hover:scale-110"
             onClick={() => printOrders()}
@@ -466,47 +487,46 @@ const OrderView = () => {
         </div>
         <section className="absolute top-0 right-5 mt-5 ">
           <div className="flex gap-2">
-            {filterType !== "range" && (
-              <div className="px-4 py-4 rounded-3xl flex items-center justify-center bg-white shadow-[0_8px_30px_rgb(0,0,0,0.12)]">
-                <div>
-                  <h1 className="text-xl font-bold text-dark-blue">
-                    {formattedDate === formatDateToShow(workDate)
-                      ? "Today"
-                      : "Date"}
-                  </h1>
-                  <div className="flex items-center justify-center text-center">
-                    <div className="pr-1">
-                      <p className="text-5xl font-bold text-primary-blue">
-                        {ordersWorkDate}
-                      </p>
-                    </div>
-                    <div className="grid grid-cols-1 text-left">
-                      <h2 className="text-sm text-dark-blue px-1 font-medium">
-                        Orders
-                      </h2>
-                      <div className="flex items-center text-center justify-center py-1 px-2 w-[95px] rounded-lg text-sm bg-background-green">
-                        <CalendarIcon className="h-4 w-4 text-green" />
-                        <h2 className="ml-1 text-green">{formattedDate}</h2>
+            {filterType !== "range" &&
+              formatDateToShow(workDate) === formattedDate && (
+                <div className="px-4 py-4 rounded-3xl flex items-center justify-center bg-white shadow-[0_8px_30px_rgb(0,0,0,0.12)]">
+                  <div>
+                    <h1 className="text-xl font-bold text-dark-blue">Today</h1>
+                    <div className="flex items-center justify-center text-center">
+                      <div className="pr-1">
+                        <p className="text-5xl font-bold text-primary-blue">
+                          {ordersWorkDate}
+                        </p>
+                      </div>
+                      <div className="grid grid-cols-1 text-left">
+                        <h2 className="text-sm text-dark-blue px-1 font-medium">
+                          Orders
+                        </h2>
+                        <div className="flex items-center text-center justify-center py-1 px-2 w-[95px] rounded-lg text-sm bg-background-green">
+                          <CalendarIcon className="h-4 w-4 text-green" />
+                          <h2 className="ml-1 text-green">
+                            {formatDateToShow(workDate)}
+                          </h2>
+                        </div>
                       </div>
                     </div>
                   </div>
+                  {/* TODO AGREGAR EN ESTE DIV EL PORCENTAJE DE LOADING PARA RUTA SELECCIONADA */}
+                  <div className="flex col-span-1 items-center justify-center">
+                    {showPercentage === null ? (
+                      <div className="flex items-center justify-center bg-primary-blue rounded-full w-16 h-16">
+                        <img
+                          src="./loadingBlanco.png"
+                          alt="Percent"
+                          className="w-10 h-7"
+                        />
+                      </div>
+                    ) : (
+                      <CircleProgressBar percentage={showPercentage} />
+                    )}
+                  </div>
                 </div>
-                {/* TODO AGREGAR EN ESTE DIV EL PORCENTAJE DE LOADING PARA RUTA SELECCIONADA */}
-                <div className="flex col-span-1 items-center justify-center">
-                  {showPercentage === null ? (
-                    <div className="flex items-center justify-center bg-primary-blue rounded-full w-16 h-16">
-                      <img
-                        src="./loadingBlanco.png"
-                        alt="Percent"
-                        className="w-10 h-7"
-                      />
-                    </div>
-                  ) : (
-                    <CircleProgressBar percentage={showPercentage} />
-                  )}
-                </div>
-              </div>
-            )}
+              )}
 
             <div className="flex gap-3 px-4 py-4 items-center justify-center rounded-3xl bg-white shadow-[0_8px_30px_rgb(0,0,0,0.12)]">
               <div>
@@ -555,10 +575,12 @@ const OrderView = () => {
                   </label>
                 </th>
                 <th className="py-4"># Invoice</th>
+                <th className="py-4">Acc number</th>
                 <th className="py-4">Customer</th>
                 <th className="py-4">Amount</th>
                 <th className="py-4">Profit %</th>
                 <th className="py-4">Route</th>
+                <th className="py-4">Drop</th>
                 {/* <th className="py-4">Responsable</th> */}
                 <th className="py-4">Delivery date</th>
                 <th className="py-4 rounded-tr-lg">Status</th>
@@ -598,6 +620,12 @@ const OrderView = () => {
                         className="py-4 pl-4"
                         onClick={(e) => goToOrder(e, order)}
                       >
+                        {order.accountNumber}
+                      </td>
+                      <td
+                        className="py-4 pl-4"
+                        onClick={(e) => goToOrder(e, order)}
+                      >
                         {order.accountName}
                       </td>
                       <td
@@ -619,6 +647,12 @@ const OrderView = () => {
                         {order.route}
                       </td>
                       {/* <td className="py-4 pl-4">{order.created_by}</td> */}
+                      <td
+                        className="py-4 pl-4"
+                        onClick={(e) => goToOrder(e, order)}
+                      >
+                        -
+                      </td>
                       <td
                         className="py-4 pl-4"
                         onClick={(e) => goToOrder(e, order)}

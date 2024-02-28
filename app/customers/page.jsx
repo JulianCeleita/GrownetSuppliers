@@ -21,6 +21,7 @@ import NewCustomer from "../components/NewCustomer";
 import CustomerDetailPage from "../customer/[customerId]/page";
 import Editcustomer from "../components/EditCustomer";
 import Select from "react-select";
+import { useRef } from "react";
 
 const CustomersView = () => {
   const router = useRouter();
@@ -39,6 +40,7 @@ const CustomersView = () => {
   const [showEditCustomer, setShowEditCustomer] = useState(false);
   const [updateCustomers, setUpdateCustomers] = useState(false);
   const [displayedCustomers, setDisplayedCustomers] = useState([]);
+  const [selectedDay, setSelectedDay] = useState('');
 
   useEffect(() => {
     if (user && user?.rol_name === "AdminGrownet") {
@@ -68,13 +70,18 @@ const CustomersView = () => {
           .includes(searchTerm.toLowerCase()) ||
         customer?.accountNumber
           ?.toLowerCase()
-          .includes(searchTerm.toLowerCase())
-    );
+          .includes(searchTerm.toLowerCase() ||
+            customer.routes.some(route => route.days_id.includes(selectedDay))))
 
     setDisplayedCustomers(filteredCustomers);
   }, [searchTerm, customers]);
 
+
   const [showDeleteModal, setShowDeleteModal] = useState(false);
+
+  const handleDayChange = (e) => {
+    setSelectedDay(e.target.value);
+  };
 
   const handleDeleteCustomer = (customer) => {
     const { accountNumber } = customer;
@@ -117,6 +124,15 @@ const CustomersView = () => {
     }
   };
 
+  const daysMapping = [
+    { id: 1, name: 'Monday' },
+    { id: 2, name: 'Tuesday' },
+    { id: 3, name: 'Wednesday' },
+    { id: 4, name: 'Thursday' },
+    { id: 5, name: 'Friday' },
+    { id: 6, name: 'Saturday' }
+  ];
+
   return (
     <Layout>
       <div className="-mt-16">
@@ -144,7 +160,8 @@ const CustomersView = () => {
               <MagnifyingGlassIcon className="h-5 w-5 text-gray-400 mr-5" />
             </div>
           </div>
-
+          {/* 
+          TODO: si se decide implementar filtro por status, descomentar este codigo
           <select
             value={status}
             onChange={handleStatusChange}
@@ -159,6 +176,23 @@ const CustomersView = () => {
             <option value="inactive" key={3} className="text-black">
               Inactive
             </option>
+          </select> */}
+          <select
+            value={selectedDay.name}
+            onChange={handleDayChange}
+            className="ml-2 border p-2 rounded-md bg-white bg-clip-padding bg-no-repeat w-auto border-gray-200 px-4 py-2 pr-8 leading-tight h-[50px] text-dark-blue"
+          >
+            <option value="">All days</option>
+            {daysMapping &&
+              daysMapping.map((day) => (
+                <option
+                  key={day.id}
+                  value={day.id}
+                  className="text-black"
+                >
+                  {day.name}
+                </option>
+              ))}
           </select>
           <select
             value={selectedRoute}
@@ -205,6 +239,7 @@ const CustomersView = () => {
                 <th className="py-4 ">Telephone</th>
                 <th className="py-4">Group</th>
                 <th className="py-4">Routes</th>
+                <th className="py-4">Drops</th>
                 <th className="py-4 rounded-tr-xl">Post Code</th>
                 {/* <th className="py-4">Status</th> */}
               </tr>
@@ -236,7 +271,10 @@ const CustomersView = () => {
                       )) &&
                     (!selectedGroup ||
                       (selectedGroup === "No group" && !customer.group) ||
-                      (customer.group && customer.group === selectedGroup));
+                      (customer.group && customer.group === selectedGroup)) &&
+                    (!selectedDay ||
+                      customer.routes.some(route => route.days_id === Number(selectedDay))
+                    );
                   if (shouldShow) {
                     return (
                       <tr
@@ -258,16 +296,32 @@ const CustomersView = () => {
                             : "No group"}
                         </td>
                         <td className="py-4 pl-8">
-                          {customer.routes && customer.routes.length > 0 ? (
-                            customer.routes.map((route, index) => (
-                              <span key={route.id}>
-                                {route.name}
-                                {index < customer.routes.length - 1 && " - "}
-                              </span>
-                            ))
-                          ) : (
-                            <span>No routes</span>
-                          )}
+                          {
+                            customer.routes && customer.routes.length > 0 ? (
+                              [...new Set(customer.routes.map(route => route.name))].map((name, index, arr) => (
+                                <span key={name}>
+                                  {name}
+                                  {index < arr.length - 1 && " - "}
+                                </span>
+                              ))
+                            ) : (
+                              <span>No routes</span>
+                            )
+                          }
+                        </td>
+                        <td className="py-4 pl-8">
+                          {
+                            customer.routes && customer.routes.length > 0 ? (
+                              [...new Set(customer.routes.map(route => route.drop))].map((name, index, arr) => (
+                                <span key={name}>
+                                  {name}
+                                  {index < arr.length - 1 && " - "}
+                                </span>
+                              ))
+                            ) : (
+                              <span>No Drops</span>
+                            )
+                          }
                         </td>
                         <td className="py-4 pl-8 w-[120px]">
                           {customer.postCode}

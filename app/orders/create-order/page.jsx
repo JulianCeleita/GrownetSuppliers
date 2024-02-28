@@ -46,6 +46,7 @@ const CreateOrderView = () => {
   const [specialRequirements, setSpecialRequirements] = useState("");
   const { user, setUser } = useUserStore();
   const [customerDate, setCustomerDate] = useState();
+  const [customerRef, setCustomerRef] = useState("");
 
   const [showErrorRoutes, setShowErrorRoutes] = useState(false);
   //Fecha input
@@ -356,63 +357,6 @@ const CreateOrderView = () => {
         </div>
       </section>
 
-      {/* <div className="grid grid-cols-3 gap-4 p-5 shadow-lg bg-primary-blue pb-20">
-        <div
-          className="bg-white p-2 pr-9 pl-9 rounded-lg flex flex-col justify-center"
-          onContextMenu={(e) => handleContextMenuTotal(e)}
-        >
-          <h1 className="text-lg text-primary-blue font-semibold ml-5">
-            Payment details
-          </h1>
-          {columnsTotal.map(
-            (column, index) =>
-              initialTotalRows.includes(column.name) && (
-                <div className=" flex items-center" key={column.name}>
-                  <h1 className="text-lg text-dark-blue font-semibold w-[60%] ml-5">
-                    {column.name}
-                  </h1>
-                  <p className="text-dark-blue text-lg w-[40%]">
-                    {column.price}
-                  </p>
-                </div>
-              )
-          )}
-        </div> 
-        {showCheckboxColumnTotal === true && (
-          <div
-            ref={menuRefTotal}
-            className="absolute w-[40%] bg-white p-3 border rounded-xl"
-            style={{
-              top: `${mouseCoords.y}px`,
-              left: `${mouseCoords.x}px`,
-            }}
-          >
-            <h4 className="font-bold mb-2 text-dark-blue">Show/Hide Columns</h4>
-            {columnsTotal.map((column) => (
-              <div
-                key={column.name}
-                className="flex items-center text-dark-blue"
-              >
-                <input
-                  type="checkbox"
-                  id={column.name}
-                  checked={initialTotalRows.includes(column.name)}
-                  onChange={() => handleCheckboxChangeTotal(column.name)}
-                />
-                <label htmlFor={column.name} className="ml-2">
-                  {column.name}
-                </label>
-              </div>
-            ))}
-            <button
-              className="mt-2 text-danger"
-              onClick={() => setShowCheckboxColumnTotal(false)}
-            >
-              Close
-            </button>
-          </div>
-        )}
-      </div>*/}
       <div className="flex items-center ml-10 mt-10 w-[70%] px-2 py-1 rounded-md">
         <label className="text-dark-blue">Date: </label>
         <input
@@ -430,14 +374,20 @@ const CreateOrderView = () => {
           className="border ml-2 p-1.5 rounded-md w-20"
         />
         <label className="mx-3 text-lg">Customer Ref: </label>
-        <input type="text" className="border p-2 rounded-md min-w-[150px]" />
+        <input
+          type="text"
+          value={customerRef}
+          onChange={(e) => setCustomerRef(e.target.value)}
+          className="border p-2 rounded-md min-w-[150px]"
+        />
 
         <button
-          className="bg-dark-blue rounded-md ml-3 hover:scale-110 focus:outline-none"
+          className="bg-dark-blue rounded-md ml-3 hover:scale-110 focus:outline-none flex text-white px-2 py-1 items-center align-middle"
           onClick={() => setDetails(!details)}
         >
+          Details
           <ChevronDownIcon
-            className={`h-7 w-7 text-white p-1 transform transition duration-500 ${
+            className={`h-5 w-5 ml-1 text-white transform transition duration-500 ${
               details ? "rotate-180" : "rotate-0"
             }`}
           />
@@ -513,6 +463,7 @@ const CreateOrderView = () => {
           specialRequirements={specialRequirements}
           setSpecialRequirements={setSpecialRequirements}
           customerDate={customerDate}
+          customerRef={customerRef}
         />
       </div>
       <ModalOrderError

@@ -7,19 +7,25 @@ function ModalOrderError({
   error,
   title,
   message,
+  setIsSelectDisabled,
   setCustomerDate = () => {},
 }) {
   const modalRef = useRef();
 
   useEffect(() => {
     if (isvisible) {
-      setCustomerDate();
       modalRef.current.focus();
+
+      setCustomerDate();
     }
   }, [isvisible]);
 
   if (!isvisible) {
     return null;
+  }
+
+  if (isvisible && setIsSelectDisabled) {
+    setIsSelectDisabled(false);
   }
 
   const handleKeyCloseModal = (event) => {
