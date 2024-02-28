@@ -1,5 +1,5 @@
 const encoder = new TextEncoder();
-const decoder = new TextDecoder();
+const decoder = new TextDecoder('utf-8');
 
 export async function encryptData(plainText, key) {
   const iv = window.crypto.getRandomValues(new Uint8Array(12));

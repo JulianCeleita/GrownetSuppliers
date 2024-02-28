@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import "./globals.css";
 import Home from "./page";
 import useTokenStore from "./store/useTokenStore";
+import useUserStore from "./store/useUserStore";
 import "./style.css";
 import { base64ToArrayBuffer, decryptData, getKey } from "./utils/cryptoUtils";
 
@@ -22,6 +23,7 @@ export default function RootLayout({ children }) {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const { token } = useTokenStore();
   const updateToken = useTokenStore((state) => state.updateToken);
+  const updateUser = useUserStore((state) => state.updateUser);
 
   useEffect(() => {
     async function loadToken() {
@@ -32,6 +34,7 @@ export default function RootLayout({ children }) {
         const iv = base64ToArrayBuffer(base64Iv);
         const key = await getKey();
         const token = await decryptData(encryptedToken, iv, key);
+        console.log("🚀 ~ loadToken ~ token:", token)
         updateToken(token);
       }
     }
@@ -39,6 +42,26 @@ export default function RootLayout({ children }) {
     loadToken();
   }, [updateToken]);
 
+  useEffect(() => {
+    
+    async function loadUser() {
+      const base64User = localStorage.getItem("encryptedUser");
+      const base64Iv = localStorage.getItem("ivUser");
+      if (base64User && base64Iv) {
+        const encryptedUser = base64ToArrayBuffer(base64User);
+        console.log("🚀 ~ loadUser ~ encryptedUser:", encryptedUser);
+        const iv = base64ToArrayBuffer(base64Iv);
+        const key = await getKey();
+        const user = await decryptData(encryptedUser, iv, key);
+        console.log("🚀 ~ loadUser ~ user:", user);
+        updateUser(user);
+      }
+    }
+  
+    loadUser();
+  }, [updateUser]);
+
+  
   useEffect(() => {
     const handleRouter = async () => {
       if (token) {
