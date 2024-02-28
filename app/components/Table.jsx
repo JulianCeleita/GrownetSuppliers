@@ -33,24 +33,6 @@ const initialRowsState = {
   "Total Cost": "",
 };
 
-const inputRefs = {
-  Code: [],
-  Description: [],
-  Packsize: [],
-  UOM: [],
-  quantity: [],
-  price: [],
-  Net: [],
-  "Total Net": [],
-  "VAT %": [],
-  "VAT £": [],
-  "Total Price": [],
-  "Unit Cost": [],
-  Profit: [],
-  Band: [],
-  "Total Cost": [],
-};
-
 const useFocusOnEnter = (formRef) => {
   const onEnterKey = (event) => {
     if (
@@ -136,6 +118,8 @@ export default function Table({
   const [activeInputIndex, setActiveInputIndex] = useState(null);
   const [activeColumnIndex, setActiveColumnIndex] = useState(null);
   const selectRef = useRef();
+  const selectRef2 = useRef(null);
+  const selectRefs = useRef([]);
 
   const columns = [
     "Code",
@@ -402,7 +386,6 @@ export default function Table({
 
   // FUNCIONALIDAD TECLA ENTER
   const handleKeyDown = async (e, columnIndex, rowIndex, fieldName) => {
-    console.log("🚀 ~ handleKeyDown ~ columnIndex:", columnIndex)
     if (e.key === "Enter" && e.target.tagName.toLowerCase() !== "textarea") {
       e.preventDefault();
 
@@ -448,36 +431,38 @@ export default function Table({
   };
 
   useEffect(() => {
-    console.log(activeInputIndex)
-  }, [activeInputIndex])
+    console.log(activeInputIndex);
+  }, [activeInputIndex]);
 
+  const focusSelectInRow = (rowIndex) => {
+    if (selectRefs.current[rowIndex]) {
+      selectRefs.current[rowIndex].focus();
+    }
+  };
 
   const handleCloseModal = (event) => {
     event.stopPropagation();
     setShowErrorDuplicate(false);
-    console.log("🚀 ~ setTimeout ~ activeColumnIndex index column que llega :", activeColumnIndex)
-    console.log("🚀 ~ setTimeout ~ activeInputIndex index row que llega:", activeInputIndex)
-    setTimeout(() => {
-      const inputToFocus = document.querySelector(`input[data-row-index="${activeInputIndex}"][data-column-index="${activeColumnIndex}"]`);
-      if (inputToFocus != null) {
-        console.log("🚀 ~ setTimeout ~ inputToFocus:", inputToFocus)
-        inputToFocus.focus();
-      } else {
-        selectRef.current.focus();
-        console.log("🚀 ~ setTimeout ~ selectRef:", selectRef.current)
-      }
-    }, 50);
+
+    const inputToFocus = document.querySelector(
+      `input[data-row-index="${activeInputIndex}"][data-column-index="${activeColumnIndex}"]`
+    );
+
+    if (inputToFocus != null) {
+      inputToFocus.focus();
+    } else {
+      focusSelectInRow(activeInputIndex);
+    }
   };
 
   const fetchProductCode = async (columnIndex, rowIndex, code) => {
-    console.log(rowIndex)
     const currentDescription = rows[rowIndex]["Description"];
     try {
       const lowerCaseCode = code.toLowerCase();
       const condition = currentDescription
         ? existingCodes.has(lowerCaseCode)
         : existingCodes.has(lowerCaseCode) ||
-        existingCodes.has(rows[rowIndex].Code.toLowerCase());
+          existingCodes.has(rows[rowIndex].Code.toLowerCase());
 
       if (condition) {
         setActiveInputIndex(rowIndex);
@@ -545,14 +530,12 @@ export default function Table({
   };
 
   const createOrder = async () => {
-    console.log("Checking if I can send order...");
     if (sendingOrder) {
-      console.log("I am already sending the past order...");
       return;
     }
     setConfirmCreateOrder(false);
     setSendingOrder(true);
-    console.log("I am sending order...");
+
     try {
       if (!customers) {
         setShowErrorOrderModal(true);
@@ -605,7 +588,7 @@ export default function Table({
         return;
       }
       setSendingOrder(false);
-      console.log("Order ended", response.data);
+
       setShowConfirmModal(true);
       setRows(Array.from({ length: 5 }, () => ({ ...initialRowsState })));
       setSpecialRequirements("");
@@ -708,16 +691,19 @@ export default function Table({
                       <th
                         key={index}
                         scope="col"
-                        className={`py-2 px-2 capitalize ${index === firstVisibleColumnIndex
-                          ? "rounded-tl-lg"
-                          : ""
-                          } ${index === lastVisibleColumnIndex
+                        className={`py-2 px-2 capitalize ${
+                          index === firstVisibleColumnIndex
+                            ? "rounded-tl-lg"
+                            : ""
+                        } ${
+                          index === lastVisibleColumnIndex
                             ? "rounded-tr-lg"
                             : ""
-                          } ${column === "quantity" ||
-                            column === "VAT %" ||
-                            column === "UOM" ||
-                            column === "Net"
+                        } ${
+                          column === "quantity" ||
+                          column === "VAT %" ||
+                          column === "UOM" ||
+                          column === "Net"
                             ? "w-20"
                             : column === "Packsize" || column === "Total Price"
                             ? "w-40"
@@ -742,6 +728,7 @@ export default function Table({
               {rows.map((row, rowIndex) => (
                 <tr key={rowIndex}>
                   {/* CODIGO DE PRODUCTO */}
+
                   {columns.map(
                     (column, columnIndex) =>
                       initialColumns.includes(column) && (
@@ -765,7 +752,7 @@ export default function Table({
                               "Band",
                               "Total Cost",
                             ].includes(column) ? (
-                              <span onClick={() => setIsSelectDisabled(false)}>
+                              <div>
                                 {column === "Packsize" && row[column]}
                                 {column === "UOM" && row[column]}
                                 {column === "price" && calculatePrice(row)}
@@ -782,81 +769,86 @@ export default function Table({
                                 {column === "Total Cost" &&
                                   calculateTotalCost(row)}
                                 {column === "Description" && (
-                                  <Select
-                                    data-column-index={columnIndex}
-                                    data-row-index={rowIndex}
-                                    ref={inputRefs[column][rowIndex]}
-                                    className="w-full"
-                                    menuPlacement="auto"
-                                    menuPortalTarget={document.body}
-                                    onInputChange={(newValue) => {
-                                      const sortedAndFilteredData = sortData(
-                                        presentations,
-                                        newValue
-                                      );
-                                      setDescriptionData(sortedAndFilteredData);
-                                    }}
-                                    options={
-                                      DescriptionData
-                                        ? DescriptionData.map((item) => ({
-                                          value: item.product_name,
-                                          label: `${item.code} - ${item.product_name} - ${item.name}`,
-                                          code: item.code,
-                                        }))
-                                        : []
-                                    }
-                                    value={{
-                                      label: row[column] || "",
-                                      value: row[column] || "",
-                                    }}
-                                    onChange={(selectedOption) => {
-                                      const selectedProduct =
-                                        DescriptionData.find(
-                                          (item) =>
-                                            item.code === selectedOption.code
-                                        );
-
-                                      if (selectedProduct) {
-                                        console.log("rowIndex: ", rowIndex)
-                                        fetchProductCode(
-                                          columnIndex,
-                                          rowIndex,
-                                          selectedProduct.code
-                                        );
+                                  <span
+                                    onClick={() => setIsSelectDisabled(false)}
+                                  >
+                                    <Select
+                                      ref={(el) =>
+                                        (selectRefs.current[rowIndex] = el)
                                       }
-                                    }}
-                                    isDisabled={
-                                      isSelectDisabled || !customerDate
-                                    }
-                                    onBlur={() => setIsSelectDisabled(true)}
-                                    styles={{
-                                      control: (provided) => ({
-                                        ...provided,
-                                        border: "none",
-                                        boxShadow: "none",
-                                        backgroundColor: "transparent",
-                                      }),
-                                      menu: (provided) => ({
-                                        ...provided,
-                                        width: "33em",
-                                      }),
+                                      className="w-full"
+                                      menuPlacement="auto"
+                                      menuPortalTarget={document.body}
+                                      onInputChange={(newValue) => {
+                                        const sortedAndFilteredData = sortData(
+                                          presentations,
+                                          newValue
+                                        );
+                                        setDescriptionData(
+                                          sortedAndFilteredData
+                                        );
+                                      }}
+                                      options={
+                                        DescriptionData
+                                          ? DescriptionData.map((item) => ({
+                                              value: item.product_name,
+                                              label: `${item.code} - ${item.product_name} - ${item.name}`,
+                                              code: item.code,
+                                            }))
+                                          : []
+                                      }
+                                      value={{
+                                        label: row[column] || "",
+                                        value: row[column] || "",
+                                      }}
+                                      onChange={(selectedOption) => {
+                                        const selectedProduct =
+                                          DescriptionData.find(
+                                            (item) =>
+                                              item.code === selectedOption.code
+                                          );
 
-                                      singleValue: (provided, state) => ({
-                                        ...provided,
-                                        color: "#04444F",
-                                      }),
-                                      dropdownIndicator: (provided) => ({
-                                        ...provided,
-                                        display: "none",
-                                      }),
-                                      indicatorSeparator: (provided) => ({
-                                        ...provided,
-                                        display: "none",
-                                      }),
-                                    }}
-                                  />
+                                        if (selectedProduct) {
+                                          fetchProductCode(
+                                            columnIndex,
+                                            rowIndex,
+                                            selectedProduct.code
+                                          );
+                                        }
+                                      }}
+                                      isDisabled={
+                                        isSelectDisabled || !customerDate
+                                      }
+                                      onBlur={() => setIsSelectDisabled(true)}
+                                      styles={{
+                                        control: (provided) => ({
+                                          ...provided,
+                                          border: "none",
+                                          boxShadow: "none",
+                                          backgroundColor: "transparent",
+                                        }),
+                                        menu: (provided) => ({
+                                          ...provided,
+                                          width: "33em",
+                                        }),
+
+                                        singleValue: (provided, state) => ({
+                                          ...provided,
+                                          color: "#04444F",
+                                        }),
+                                        dropdownIndicator: (provided) => ({
+                                          ...provided,
+                                          display: "none",
+                                        }),
+                                        indicatorSeparator: (provided) => ({
+                                          ...provided,
+                                          display: "none",
+                                        }),
+                                      }}
+                                    />
+                                  </span>
                                 )}
-                              </span>
+                              </div>
                             ) : (
                               <>
                                 <input
@@ -865,10 +857,11 @@ export default function Table({
                                   type={inputTypes[column]}
                                   ref={selectRef}
                                   data-field-name={column}
-                                  className={`pl-2 h-[30px] outline-none w-full ${inputTypes[column] === "number"
-                                    ? "hide-number-arrows"
-                                    : ""
-                                    } `}
+                                  className={`pl-2 h-[30px] outline-none w-full ${
+                                    inputTypes[column] === "number"
+                                      ? "hide-number-arrows"
+                                      : ""
+                                  } `}
                                   value={row[column] || ""}
                                   onFocus={(e) => {
                                     if (column === "quantity") {
@@ -893,7 +886,12 @@ export default function Table({
                                   }}
                                   step={0.1}
                                   onKeyDown={(e) => {
-                                    handleKeyDown(e, columnIndex, rowIndex, column);
+                                    handleKeyDown(
+                                      e,
+                                      columnIndex,
+                                      rowIndex,
+                                      column
+                                    );
                                   }}
                                   onKeyPress={(e) => {
                                     if (column === "Net" && e.charCode === 46) {
@@ -1004,6 +1002,7 @@ export default function Table({
         error={orderError}
         title={"Duplicate code"}
         message={"The product you are entering is duplicate."}
+        setIsSelectDisabled={setIsSelectDisabled}
       />
       <ModalOrderError
         isvisible={showErrorRoutes}

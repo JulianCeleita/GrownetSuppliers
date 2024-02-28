@@ -7,7 +7,7 @@ function ModalOrderError({
   error,
   title,
   message,
-  setCustomerDate = () => {},
+  setIsSelectDisabled,
 }) {
   const modalRef = useRef();
 
@@ -20,6 +20,10 @@ function ModalOrderError({
 
   if (!isvisible) {
     return null;
+  }
+
+  if (isvisible && setIsSelectDisabled) {
+    setIsSelectDisabled(false);
   }
 
   const handleKeyCloseModal = (event) => {

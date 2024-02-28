@@ -30,10 +30,10 @@ function Presentations() {
   //Api
   const [products, setProducts] = useState([]);
 
-  useEffect(() => {
-    var localStorageUser = JSON.parse(localStorage.getItem("user"));
-    setUser(localStorageUser);
-  }, [setUser]);
+  // useEffect(() => {
+  //   var localStorageUser = JSON.parse(localStorage.getItem("user"));
+  //   setUser(localStorageUser);
+  // }, [setUser]);
 
   useEffect(() => {
     if (user && user.rol_name === "AdminGrownet") {

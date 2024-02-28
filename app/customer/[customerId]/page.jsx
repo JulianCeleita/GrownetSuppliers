@@ -59,13 +59,6 @@ const CustomerDetailPage = () => {
   }
 
   useEffect(() => {
-    const storedToken = localStorage.getItem("token");
-    if (!storedToken) {
-      router.push("/");
-    } else {
-      if (storedToken != null) {
-        setToken(storedToken);
-        if (token !== null && customerId !== undefined) {
           fetchCustomerDetail(
             token,
             setDetailCustomer,
@@ -74,10 +67,7 @@ const CustomerDetailPage = () => {
           );
           fetchRoutes(token, user, setRoutes, setIsLoading);
           fetchGroups(token, user, setGroups, setIsLoading);
-        }
-      }
-    }
-  }, [customerId, setDetailCustomer, token, setToken]);
+  }, [customerId, setDetailCustomer]);
 
   useEffect(() => {
     if (detailCustomer && detailCustomer.length > 0) {
