@@ -1,7 +1,6 @@
 "use client";
 import {
   createStorageOrder,
-  presentationData,
   presentationsCode,
 } from "@/app/config/urls.config";
 import { useTableStore } from "@/app/store/useTableStore";
@@ -13,7 +12,6 @@ import { fetchPresentationsSupplier } from "../api/presentationsRequest";
 import useUserStore from "../store/useUserStore";
 import ModalOrderError from "./ModalOrderError";
 import ModalSuccessfull from "./ModalSuccessfull";
-import ModalRoutes from "./ModalRoutes";
 
 const initialRowsState = {
   Code: "",
@@ -118,8 +116,8 @@ export default function Table({
   const [sendingOrder, setSendingOrder] = useState(false);
   const [activeInputIndex, setActiveInputIndex] = useState(null);
   const [activeColumnIndex, setActiveColumnIndex] = useState(null);
-  const selectRef = useRef();
-  const selectRef2 = useRef(null);
+  const selectRefInput = useRef();
+
   const selectRefs = useRef([]);
 
   const columns = [
@@ -444,15 +442,18 @@ export default function Table({
   const handleCloseModal = (event) => {
     event.stopPropagation();
     setShowErrorDuplicate(false);
+    setShowErrorCode(false);
 
     const inputToFocus = document.querySelector(
       `input[data-row-index="${activeInputIndex}"][data-column-index="${activeColumnIndex}"]`
     );
-
+    console.log("inputToFocus", inputToFocus);
     if (inputToFocus != null) {
       inputToFocus.focus();
+      console.log("entro aqui inputToFocus");
     } else {
       focusSelectInRow(activeInputIndex);
+      console.log("entro aqui focusSelectInRow");
     }
   };
 
@@ -857,7 +858,6 @@ export default function Table({
                                   data-column-index={columnIndex}
                                   data-row-index={rowIndex}
                                   type={inputTypes[column]}
-                                  ref={selectRef}
                                   data-field-name={column}
                                   className={`pl-2 h-[30px] outline-none w-full ${
                                     inputTypes[column] === "number"
@@ -991,12 +991,13 @@ export default function Table({
       />
       <ModalOrderError
         isvisible={showErrorCode}
-        onClose={() => setShowErrorCode(false)}
+        onClose={() => handleCloseModal(event)}
         error={orderError}
         title={"Incorrect code"}
         message={
           "The entered code is incorrect. Please verify and try again with a valid code."
         }
+        setIsSelectDisabled={setIsSelectDisabled}
       />
       <ModalOrderError
         isvisible={showErrorDuplicate}
