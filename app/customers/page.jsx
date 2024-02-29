@@ -146,8 +146,6 @@ const CustomersView = () => {
     );
   }, [displayedCustomers]);
 
-  console.log("displayedCustomers", displayedCustomers);
-
   return (
     <Layout>
       <div className="-mt-16">
