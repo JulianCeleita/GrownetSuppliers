@@ -99,6 +99,7 @@ export default function Table({
   setSpecialRequirements,
   customerDate,
   customerRef,
+  setFilledRowCount,
 }) {
   const [rows, setRows] = useState(
     Array.from({ length: 5 }, () => ({ ...initialRowsState }))
@@ -151,6 +152,22 @@ export default function Table({
     activeColumnIndex,
     selectRefs
   );
+  const countFilledRows = () => {
+    let count = 0;
+    rows.forEach((row) => {
+      let isEmpty = true;
+      columns.forEach((column) => {
+        if (initialColumns.includes(column) && row[column] !== "") {
+          isEmpty = false;
+        }
+      });
+      if (!isEmpty) {
+        count++;
+      }
+    });
+    return count;
+  };
+  setFilledRowCount(countFilledRows);
 
   const columns = [
     "Code",

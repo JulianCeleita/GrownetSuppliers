@@ -47,6 +47,7 @@ const CreateOrderView = () => {
   const { user, setUser } = useUserStore();
   const [customerDate, setCustomerDate] = useState();
   const [customerRef, setCustomerRef] = useState("");
+  const [filledRowCount, setFilledRowCount] = useState(0);
 
   const [showErrorRoutes, setShowErrorRoutes] = useState(false);
   //Fecha input
@@ -334,9 +335,12 @@ const CreateOrderView = () => {
                 <div key={column.name}>
                   {column.name === "Net Invoice" && (
                     <div className="pr-2">
-                      <h1 className="flex text-xl font-bold">Net invoice</h1>
-                      <p className="text-[28px] font-bold text-primary-blue">
+                      <h1 className="text-xl font-bold">Net invoice</h1>
+                      <p className="text-[25px] font-bold text-primary-blue -mt-2">
                         {column.price}
+                      </p>
+                      <p className="ml-1 text-green font-semibold py-1 px-2 rounded-lg text-[15px] bg-background-green text-center -mt-1">
+                        Items: {filledRowCount}
                       </p>
                     </div>
                   )}
@@ -464,6 +468,7 @@ const CreateOrderView = () => {
           setSpecialRequirements={setSpecialRequirements}
           customerDate={customerDate}
           customerRef={customerRef}
+          setFilledRowCount={setFilledRowCount}
         />
       </div>
       <ModalOrderError
