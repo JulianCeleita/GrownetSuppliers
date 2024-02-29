@@ -135,8 +135,7 @@ const CreateOrderView = () => {
     if (accountInputRef.current) {
       accountInputRef.current.focus();
     }
-  }, [])
-
+  }, []);
 
   // Click en la pantalla
   useEffect(() => {
@@ -254,8 +253,10 @@ const CreateOrderView = () => {
   };
 
   const handleKeyPress = (e) => {
+
     setSendData(true);
     if (e.key === 'Enter') {
+
       if (customerInputRef.current) {
         customerInputRef.current.focus();
       }
@@ -282,8 +283,8 @@ const CreateOrderView = () => {
   };
 
   const handleCustomerRefKeyDown = (event) => {
-    if (event.key === 'Enter') {
-      setShouldFocusCode(true)
+    if (event.key === "Enter") {
+      setShouldFocusCode(true);
     }
   };
 
@@ -302,7 +303,6 @@ const CreateOrderView = () => {
           <h3 className="w-[42%] text-white">Account name:</h3>
           <div className="relative mb-2 w-[100%]">
             <Select
-              instanceId
               ref={accountInputRef}
               options={restaurantList.map((restaurant) => ({
                 value: restaurant.accountName,
@@ -326,7 +326,6 @@ const CreateOrderView = () => {
           <h3 className="w-[42%] text-white">Account number:</h3>
           <div className="relative mb-2 w-[100%]">
             <Select
-              instanceId
               options={restaurantList.map((restaurant) => ({
                 value: restaurant.accountNumber,
                 label: restaurant.accountNumber,
@@ -430,14 +429,16 @@ const CreateOrderView = () => {
         >
           Details
           <ChevronDownIcon
-            className={`h-5 w-5 ml-1 text-white transform transition duration-500 ${details ? "rotate-180" : "rotate-0"
-              }`}
+            className={`h-5 w-5 ml-1 text-white transform transition duration-500 ${
+              details ? "rotate-180" : "rotate-0"
+            }`}
           />
         </button>
       </div>
       <div
-        className={`transition-opacity duration-500 ease-out ${details ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-10"
-          } transform`}
+        className={`transition-opacity duration-500 ease-out ${
+          details ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-10"
+        } transform`}
         style={{ transitionProperty: "opacity, transform" }}
       >
         {details && (
