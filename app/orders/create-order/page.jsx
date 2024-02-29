@@ -52,8 +52,9 @@ const CreateOrderView = () => {
   const accountInputRef = useRef(null);
   const customerInputRef = useRef(null);
   const [shouldFocusCode, setShouldFocusCode] = useState(false);
-
   const [showErrorRoutes, setShowErrorRoutes] = useState(false);
+  const [arrows, setArrows] = useState(false);
+
   //Fecha input
   function getCurrentDate() {
     const today = new Date();
@@ -194,14 +195,17 @@ const CreateOrderView = () => {
   };
 
   useEffect(() => {
-    fetchCustomersDate(
-      token,
-      orderDate,
-      selectedAccNumber2,
-      setCustomerDate,
-      setShowErrorRoutes
-    );
-  }, [orderDate, selectedAccNumber2]);
+    if (arrows) {
+      fetchCustomersDate(
+        token,
+        orderDate,
+        selectedAccNumber2,
+        setCustomerDate,
+        setShowErrorRoutes
+      );
+    }
+  }, [orderDate, selectedAccNumber2, arrows]);
+
   const restaurantList = Array.isArray(restaurants) ? restaurants : [];
 
   //VENTANA TOTAL
@@ -249,10 +253,8 @@ const CreateOrderView = () => {
   };
 
   const handleKeyPress = (e) => {
-    if (e.key === "Enter") {
-      if (customerInputRef.current) {
-        customerInputRef.current.focus();
-      }
+    if (customerInputRef.current) {
+      customerInputRef.current.focus();
     }
   };
 
@@ -413,6 +415,8 @@ const CreateOrderView = () => {
           onChange={(e) => setCustomerRef(e.target.value)}
           onKeyDown={handleCustomerRefKeyDown}
           className="border p-2 rounded-md min-w-[150px]"
+          onFocus={() => setArrows(true)}
+          onBlur={() => setArrows(false)}
         />
 
         <button
