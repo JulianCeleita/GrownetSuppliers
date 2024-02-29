@@ -585,6 +585,7 @@ const OrderView = () => {
                 <th className="py-4">Profit %</th>
                 <th className="py-4">Route</th>
                 <th className="py-4">Drop</th>
+                <th className="py-4"># Products</th>
                 {/* <th className="py-4">Responsable</th> */}
                 <th className="py-4">Delivery date</th>
                 <th className="py-4 rounded-tr-lg">Status</th>
@@ -655,7 +656,13 @@ const OrderView = () => {
                         className="py-4 pl-4"
                         onClick={(e) => goToOrder(e, order)}
                       >
-                        -
+                        {order.drop}
+                      </td>
+                      <td
+                        className="py-4 pl-4"
+                        onClick={(e) => goToOrder(e, order)}
+                      >
+                        {order.quantity}
                       </td>
                       <td
                         className="py-4 pl-4"
