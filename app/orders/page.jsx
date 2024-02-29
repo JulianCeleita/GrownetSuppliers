@@ -23,6 +23,7 @@ import usePercentageStore from "../store/usePercentageStore";
 import useTokenStore from "../store/useTokenStore";
 import useUserStore from "../store/useUserStore";
 import useWorkDateStore from "../store/useWorkDateStore";
+import Image from "next/image";
 
 export const customStyles = {
   placeholder: (provided) => ({
@@ -48,7 +49,7 @@ const OrderView = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [orders, setOrders] = useState([]);
   const { user } = useUserStore();
-  console.log("🚀 ~ OrderView ~ user:", user)
+  console.log("🚀 ~ OrderView ~ user:", user);
   const [dateFilter, setDateFilter] = useState("today");
   const [showAllOrders, setShowAllOrders] = useState(false);
   const [showDatePicker, setShowDatePicker] = useState(false);
@@ -268,7 +269,10 @@ const OrderView = () => {
         link.style.display = "none";
         document.body.appendChild(link);
         link.click();
-        document.body.removeChild(link);
+        if (document.body.contains(link)) {
+          console.log("entra aca removeChild");
+          document.body.removeChild(link);
+        }
         URL.revokeObjectURL(downloadUrl);
 
         // Para abrir automaticamente el archivo
@@ -519,9 +523,11 @@ const OrderView = () => {
                   <div className="flex col-span-1 items-center justify-center">
                     {showPercentage === null ? (
                       <div className="flex items-center justify-center bg-primary-blue rounded-full w-11 h-11 2xl:w-16 2xl:h-16">
-                        <img
-                          src="./loadingBlanco.png"
+                        <Image
+                          src="/loadingBlanco.png"
                           alt="Percent"
+                          width={50}
+                          height={20}
                           className="w-8 h-5 2xl:w-10 2xl:h-7"
                         />
                       </div>
@@ -680,7 +686,7 @@ const OrderView = () => {
                   <tr>
                     <td colSpan="9" className="py-4 text-center text-dark-blue">
                       <p className="flex items-center justify-center text-gray my-10">
-                        <ExclamationCircleIcon class="h-12 w-12 mr-10 text-gray" />
+                        <ExclamationCircleIcon className="h-12 w-12 mr-10 text-gray" />
                         Results not found. Try a different search!
                       </p>
                     </td>
