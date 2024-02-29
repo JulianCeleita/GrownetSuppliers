@@ -6,7 +6,7 @@ import {
 } from "@heroicons/react/24/outline";
 import axios from "axios";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import ModalDelete from "../components/ModalDelete";
 import { deleteCustomer } from "../config/urls.config";
 import Layout from "../layoutS";
@@ -40,7 +40,7 @@ const CustomersView = () => {
   const [showEditCustomer, setShowEditCustomer] = useState(false);
   const [updateCustomers, setUpdateCustomers] = useState(false);
   const [displayedCustomers, setDisplayedCustomers] = useState([]);
-  const [selectedDay, setSelectedDay] = useState('');
+  const [selectedDay, setSelectedDay] = useState("");
 
   useEffect(() => {
     if (user && user?.rol_name === "AdminGrownet") {
@@ -70,12 +70,16 @@ const CustomersView = () => {
           .includes(searchTerm.toLowerCase()) ||
         customer?.accountNumber
           ?.toLowerCase()
-          .includes(searchTerm.toLowerCase() ||
-            customer.routes.some(route => route.days_id.includes(selectedDay))))
+          .includes(
+            searchTerm.toLowerCase() ||
+              customer.routes.some((route) =>
+                route.days_id.includes(selectedDay)
+              )
+          )
+    );
 
     setDisplayedCustomers(filteredCustomers);
   }, [searchTerm, customers]);
-
 
   const [showDeleteModal, setShowDeleteModal] = useState(false);
 
@@ -125,13 +129,22 @@ const CustomersView = () => {
   };
 
   const daysMapping = [
-    { id: 1, name: 'Monday' },
-    { id: 2, name: 'Tuesday' },
-    { id: 3, name: 'Wednesday' },
-    { id: 4, name: 'Thursday' },
-    { id: 5, name: 'Friday' },
-    { id: 6, name: 'Saturday' }
+    { id: 1, name: "Monday" },
+    { id: 2, name: "Tuesday" },
+    { id: 3, name: "Wednesday" },
+    { id: 4, name: "Thursday" },
+    { id: 5, name: "Friday" },
+    { id: 6, name: "Saturday" },
   ];
+
+  const getUniqueDrops = (routes) => {
+    return [...new Set(routes.map((route) => route.drop))];
+  };
+  const uniqueDrops = useMemo(() => {
+    return displayedCustomers.map((customer) =>
+      getUniqueDrops(customer.routes)
+    );
+  }, [displayedCustomers]);
 
   return (
     <Layout>
@@ -185,11 +198,7 @@ const CustomersView = () => {
             <option value="">All days</option>
             {daysMapping &&
               daysMapping.map((day) => (
-                <option
-                  key={day.id}
-                  value={day.id}
-                  className="text-black"
-                >
+                <option key={day.id} value={day.id} className="text-black">
                   {day.name}
                 </option>
               ))}
@@ -258,7 +267,7 @@ const CustomersView = () => {
                   </td>
                 </tr>
               ) : (
-                displayedCustomers.map((customer) => {
+                displayedCustomers.map((customer, index) => {
                   const shouldShow =
                     (status === "all" ||
                       (status === "active" &&
@@ -273,8 +282,9 @@ const CustomersView = () => {
                       (selectedGroup === "No group" && !customer.group) ||
                       (customer.group && customer.group === selectedGroup)) &&
                     (!selectedDay ||
-                      customer.routes.some(route => route.days_id === Number(selectedDay))
-                    );
+                      customer.routes.some(
+                        (route) => route.days_id === Number(selectedDay)
+                      ));
                   if (shouldShow) {
                     return (
                       <tr
@@ -296,32 +306,46 @@ const CustomersView = () => {
                             : "No group"}
                         </td>
                         <td className="py-4 pl-8">
-                          {
-                            customer.routes && customer.routes.length > 0 ? (
-                              [...new Set(customer.routes.map(route => route.name))].map((name, index, arr) => (
-                                <span key={name}>
-                                  {name}
-                                  {index < arr.length - 1 && " - "}
-                                </span>
-                              ))
-                            ) : (
-                              <span>No routes</span>
-                            )
-                          }
+                          {customer.routes && customer.routes.length > 0 ? (
+                            [
+                              ...new Set(
+                                customer.routes.map((route) => route.name)
+                              ),
+                            ].map((name, index, arr) => (
+                              <span key={name}>
+                                {name}
+                                {index < arr.length - 1 && " - "}
+                              </span>
+                            ))
+                          ) : (
+                            <span>No routes</span>
+                          )}
                         </td>
                         <td className="py-4 pl-8">
-                          {
-                            customer.routes && customer.routes.length > 0 ? (
-                              [...new Set(customer.routes.map(route => route.drop))].map((name, index, arr) => (
-                                <span key={name}>
-                                  {name}
-                                  {index < arr.length - 1 && " - "}
-                                </span>
-                              ))
-                            ) : (
-                              <span>No Drops</span>
-                            )
-                          }
+                          {customer.routes && customer.routes.length > 0 ? (
+                            uniqueDrops[index].map((name, index, arr) => (
+                              <span key={name}>
+                                {name}
+                                {index < arr.length - 1 && " - "}
+                              </span>
+                            ))
+                          ) : (
+                            <span>No Drops</span>
+                          )}
+                          {/* {customer.routes && customer.routes.length > 0 ? (
+                            [
+                              ...new Set(
+                                customer.routes.map((route) => route.drop)
+                              ),
+                            ].map((name, index, arr) => (
+                              <span key={name}>
+                                {name}
+                                {index < arr.length - 1 && " - "}
+                              </span>
+                            ))
+                          ) : (
+                            <span>No Drops</span>
+                          )} */}
                         </td>
                         <td className="py-4 pl-8 w-[120px]">
                           {customer.postCode}

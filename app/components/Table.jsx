@@ -99,6 +99,8 @@ export default function Table({
   setSpecialRequirements,
   customerDate,
   customerRef,
+  shouldFocusCode,
+  setShouldFocusCode,
   setFilledRowCount,
 }) {
   const [rows, setRows] = useState(
@@ -255,6 +257,21 @@ export default function Table({
       setShowErrorRoutes(true);
     }
   }, [confirmCreateOrder, customerDate, setShowErrorRoutes]);
+
+  useEffect(() => {
+    if (shouldFocusCode) {
+      const inputToFocus = document.querySelector(
+        `input[data-field-name="Code"]`
+      );
+      if (inputToFocus != null) {
+        setTimeout(() => {
+          inputToFocus.focus();
+        }, 300);
+      }
+      setShouldFocusCode(false);
+      return;
+    }
+  }, [shouldFocusCode]);
 
   useEffect(() => {
     fetchPresentationsSupplier(
@@ -440,7 +457,6 @@ export default function Table({
 
     if (e.key === "Enter" && e.target.tagName.toLowerCase() !== "textarea") {
       e.preventDefault();
-
       let productCode = "";
 
       if (fieldName === "Code" && currentValues["Code"]?.trim() !== "") {

@@ -122,6 +122,7 @@ export const fetchOrdersDate = async (
     },
     route_id: routeId,
   };
+  console.log("🚀 ~ postData:", postData)
   try {
     const response = await axios.post(ordersDate, postData, {
       headers: {
@@ -129,6 +130,7 @@ export const fetchOrdersDate = async (
         "Content-Type": "application/json",
       },
     });
+    console.log("🚀 ~ response:", response)
     setTotalNet(response.data);
     setOrders(response.data.orders);
     setIsLoading(false);

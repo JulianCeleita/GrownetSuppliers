@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import "./globals.css";
 import Home from "./page";
 import useTokenStore from "./store/useTokenStore";
+import useUserStore from "./store/useUserStore";
 import "./style.css";
 
 const metadata = {
