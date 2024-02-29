@@ -52,6 +52,7 @@ const CreateOrderView = () => {
   const accountInputRef = useRef(null);
   const customerInputRef = useRef(null);
   const [shouldFocusCode, setShouldFocusCode] = useState(false);
+  const [sendData, setSendData] = useState(false)
 
   const [showErrorRoutes, setShowErrorRoutes] = useState(false);
   //Fecha input
@@ -194,14 +195,17 @@ const CreateOrderView = () => {
   };
 
   useEffect(() => {
-    fetchCustomersDate(
-      token,
-      orderDate,
-      selectedAccNumber2,
-      setCustomerDate,
-      setShowErrorRoutes
-    );
-  }, [orderDate, selectedAccNumber2]);
+    if(sendData) {
+      fetchCustomersDate(
+        token,
+        orderDate,
+        selectedAccNumber2,
+        setCustomerDate,
+        setShowErrorRoutes
+      );
+      setSendData(false);
+    }
+  }, [sendData, selectedAccNumber2]);
   const restaurantList = Array.isArray(restaurants) ? restaurants : [];
 
   //VENTANA TOTAL
@@ -249,7 +253,10 @@ const CreateOrderView = () => {
   };
 
   const handleKeyPress = (e) => {
-    if (e.key === "Enter") {
+
+    setSendData(true);
+    if (e.key === 'Enter') {
+
       if (customerInputRef.current) {
         customerInputRef.current.focus();
       }
@@ -395,6 +402,7 @@ const CreateOrderView = () => {
           className="border ml-2 p-1.5 rounded-md text-dark-blue"
           min={getCurrentDateMin()}
           onChange={handleDateChange}
+          // onClick={() => setSendData(true)}
           onKeyDown={handleKeyPress}
           value={orderDate}
         />
