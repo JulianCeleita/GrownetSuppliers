@@ -679,7 +679,7 @@ const OrderView = () => {
                   <tr>
                     <td colSpan="9" className="py-4 text-center text-dark-blue">
                       <p className="flex items-center justify-center text-gray my-10">
-                        <ExclamationCircleIcon class="h-12 w-12 mr-10 text-gray" />
+                        <ExclamationCircleIcon className="h-12 w-12 mr-10 text-gray" />
                         Results not found. Try a different search!
                       </p>
                     </td>

@@ -261,7 +261,6 @@ const CreateOrderView = () => {
           <h3 className="w-[42%] text-white">Account name:</h3>
           <div className="relative mb-2 w-[100%]">
             <Select
-              instanceId
               options={restaurantList.map((restaurant) => ({
                 value: restaurant.accountName,
                 label: restaurant.accountName,
@@ -288,7 +287,6 @@ const CreateOrderView = () => {
           <h3 className="w-[42%] text-white">Account number:</h3>
           <div className="relative mb-2 w-[100%]">
             <Select
-              instanceId
               options={restaurantList.map((restaurant) => ({
                 value: restaurant.accountNumber,
                 label: restaurant.accountNumber,
