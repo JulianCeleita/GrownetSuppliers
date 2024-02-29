@@ -269,7 +269,10 @@ const OrderView = () => {
         link.style.display = "none";
         document.body.appendChild(link);
         link.click();
-        document.body.removeChild(link);
+        if (document.body.contains(link)) {
+          console.log("entra aca removeChild");
+          document.body.removeChild(link);
+        }
         URL.revokeObjectURL(downloadUrl);
 
         // Para abrir automaticamente el archivo
