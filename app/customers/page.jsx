@@ -41,6 +41,7 @@ const CustomersView = () => {
   const [updateCustomers, setUpdateCustomers] = useState(false);
   const [displayedCustomers, setDisplayedCustomers] = useState([]);
   const [selectedDay, setSelectedDay] = useState("");
+  const [sortConfig, setSortConfig] = useState({ key: null, direction: 'ascending' });
 
   useEffect(() => {
     if (user && user?.rol_name === "AdminGrownet") {
@@ -60,26 +61,26 @@ const CustomersView = () => {
   }, [searchTerm, routes, updateCustomers]);
 
   useEffect(() => {
-    const sortedCustomers = customers.sort((a, b) =>
-      a.accountName?.localeCompare(b.accountName)
-    );
-    const filteredCustomers = sortedCustomers.filter(
-      (customer) =>
-        customer?.accountName
-          ?.toLowerCase()
-          .includes(searchTerm.toLowerCase()) ||
-        customer?.accountNumber
-          ?.toLowerCase()
-          .includes(
-            searchTerm.toLowerCase() ||
-              customer.routes.some((route) =>
-                route.days_id.includes(selectedDay)
-              )
-          )
+    const filteredCustomers = customers.filter(customer =>
+      customer.accountName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      customer.accountNumber.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
-    setDisplayedCustomers(filteredCustomers);
-  }, [searchTerm, customers]);
+    let sortableItems = [...filteredCustomers];
+    if (sortConfig.key) {
+      sortableItems.sort((a, b) => {
+        if (a[sortConfig.key] < b[sortConfig.key]) {
+          return sortConfig.direction === 'ascending' ? -1 : 1;
+        }
+        if (a[sortConfig.key] > b[sortConfig.key]) {
+          return sortConfig.direction === 'ascending' ? 1 : -1;
+        }
+        return 0;
+      });
+    }
+
+    setDisplayedCustomers(sortableItems);
+  }, [customers, sortConfig, searchTerm]);
 
   const [showDeleteModal, setShowDeleteModal] = useState(false);
 
@@ -117,6 +118,16 @@ const CustomersView = () => {
   };
   const handleGroupChange = (e) => {
     setSelectedGroup(e.target.value);
+  };
+
+  const requestSort = (key) => {
+    let direction = 'ascending';
+    if (sortConfig.key === key && sortConfig.direction === 'ascending') {
+      direction = 'descending';
+    } else {
+      direction = 'ascending';
+    }
+    setSortConfig({ key, direction });
   };
 
   const statusColorClass = (status) => {
@@ -243,13 +254,13 @@ const CustomersView = () => {
           <table className="w-[90%] bg-white rounded-2xl  shadow-[rgba(17,_17,_26,_0.1)_0px_0px_16px]">
             <thead className="sticky top-0 bg-white text-center shadow-[0px_11px_15px_-3px_#edf2f7]">
               <tr className="border-stone-100 border-b-0 text-dark-blue rounded-t-3xl">
-                <th className="py-4 rounded-tl-xl">Acc Number</th>
-                <th className="py-4 ">Name</th>
+                <th className="py-4 rounded-tl-xl cursor-pointer hover:bg-gray-100 transition-all" onClick={() => requestSort('accountNumber')}>Acc Number</th>
+                <th className="py-4 cursor-pointer hover:bg-gray-100 transition-all" onClick={() => requestSort('accountName')}>Name</th>
                 <th className="py-4 ">Telephone</th>
-                <th className="py-4">Group</th>
+                <th className="py-4 cursor-pointer hover:bg-gray-100 transition-all" onClick={() => requestSort('group')}>Group</th>
                 <th className="py-4">Routes</th>
                 <th className="py-4">Drops</th>
-                <th className="py-4 rounded-tr-xl">Post Code</th>
+                <th className="py-4 rounded-tr-xl cursor-pointer hover:bg-gray-100 transition-all" onClick={() => requestSort('postCode')}>Post Code</th>
                 {/* <th className="py-4">Status</th> */}
               </tr>
             </thead>

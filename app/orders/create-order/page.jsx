@@ -52,6 +52,12 @@ const CreateOrderView = () => {
   const accountInputRef = useRef(null);
   const customerInputRef = useRef(null);
   const [shouldFocusCode, setShouldFocusCode] = useState(false);
+
+
+  const [sendData, setSendData] = useState(false);
+  const [filledRowCount, setFilledRowCount] = useState(0);
+
+
   const [showErrorRoutes, setShowErrorRoutes] = useState(false);
   const [arrows, setArrows] = useState(false);
 
@@ -195,7 +201,9 @@ const CreateOrderView = () => {
   };
 
   useEffect(() => {
+
     if (arrows) {
+
       fetchCustomersDate(
         token,
         orderDate,
@@ -203,8 +211,10 @@ const CreateOrderView = () => {
         setCustomerDate,
         setShowErrorRoutes
       );
+
     }
   }, [orderDate, selectedAccNumber2, arrows]);
+
 
   const restaurantList = Array.isArray(restaurants) ? restaurants : [];
 
@@ -253,8 +263,10 @@ const CreateOrderView = () => {
   };
 
   const handleKeyPress = (e) => {
+
     if (customerInputRef.current) {
       customerInputRef.current.focus();
+
     }
   };
 
@@ -366,9 +378,12 @@ const CreateOrderView = () => {
                 <div key={column.name}>
                   {column.name === "Net Invoice" && (
                     <div className="pr-2">
-                      <h1 className="flex text-xl font-bold">Net invoice</h1>
-                      <p className="text-[28px] font-bold text-primary-blue">
+                      <h1 className="text-xl font-bold">Net invoice</h1>
+                      <p className="text-[25px] font-bold text-primary-blue -mt-2">
                         {column.price}
+                      </p>
+                      <p className="ml-1 text-green font-semibold py-1 px-2 rounded-lg text-[15px] bg-background-green text-center -mt-1">
+                        Items: {filledRowCount}
                       </p>
                     </div>
                   )}
@@ -397,6 +412,7 @@ const CreateOrderView = () => {
           className="border ml-2 p-1.5 rounded-md text-dark-blue"
           min={getCurrentDateMin()}
           onChange={handleDateChange}
+          // onClick={() => setSendData(true)}
           onKeyDown={handleKeyPress}
           value={orderDate}
         />
@@ -504,6 +520,7 @@ const CreateOrderView = () => {
           customerRef={customerRef}
           shouldFocusCode={shouldFocusCode}
           setShouldFocusCode={setShouldFocusCode}
+          setFilledRowCount={setFilledRowCount}
         />
       </div>
       <ModalOrderError

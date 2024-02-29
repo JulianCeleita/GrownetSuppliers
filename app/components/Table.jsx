@@ -101,6 +101,7 @@ export default function Table({
   customerRef,
   shouldFocusCode,
   setShouldFocusCode,
+  setFilledRowCount,
 }) {
   const [rows, setRows] = useState(
     Array.from({ length: 5 }, () => ({ ...initialRowsState }))
@@ -153,6 +154,22 @@ export default function Table({
     activeColumnIndex,
     selectRefs
   );
+  const countFilledRows = () => {
+    let count = 0;
+    rows.forEach((row) => {
+      let isEmpty = true;
+      columns.forEach((column) => {
+        if (initialColumns.includes(column) && row[column] !== "") {
+          isEmpty = false;
+        }
+      });
+      if (!isEmpty) {
+        count++;
+      }
+    });
+    return count;
+  };
+  setFilledRowCount(countFilledRows);
 
   const columns = [
     "Code",
@@ -251,10 +268,10 @@ export default function Table({
           inputToFocus.focus();
         }, 300);
       }
-      setShouldFocusCode(false)
+      setShouldFocusCode(false);
       return;
     }
-  }, [shouldFocusCode])
+  }, [shouldFocusCode]);
 
   useEffect(() => {
     fetchPresentationsSupplier(
@@ -578,11 +595,14 @@ export default function Table({
   };
 
   const createOrder = async () => {
+    console.log("Checking if I can send order...")
     if (sendingOrder) {
+      console.log("I am already sending the past order...")
       return;
     }
     setConfirmCreateOrder(false);
     setSendingOrder(true);
+    console.log("I am sending order...");
 
     try {
       if (!customers) {
@@ -631,13 +651,15 @@ export default function Table({
       });
       if (response.data.status !== 200) {
         setShowErrorOrderModal(true);
+        setSendingOrder(false);
+        console.log("Order error", response.data);
         setOrderError(
           "Please check that the delivery day is available for this customer and that all products are correct."
         );
         return;
       }
       setSendingOrder(false);
-
+      console.log("Order ended", response.data);
       setShowConfirmModal(true);
       setRows(Array.from({ length: 5 }, () => ({ ...initialRowsState })));
       setSpecialRequirements("");
