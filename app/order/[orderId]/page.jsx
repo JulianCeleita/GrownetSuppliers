@@ -71,7 +71,7 @@ const OrderDetailPage = () => {
   if (params) {
     ({ orderId } = params);
   }
-
+  console.log("order detail", orderDetail);
   //Fecha input
   function getCurrentDate() {
     const today = new Date();
@@ -352,19 +352,11 @@ const OrderDetailPage = () => {
         </div>
         <div className="flex gap-2">
           <div className="px-4 py-4 rounded-3xl flex items-center justify-center bg-white shadow-[0_8px_30px_rgb(0,0,0,0.12)]">
-            <div className="flex flex-col col-span-1 pr-2 items-start justify-start pl-1">
+            <div className="flex flex-col col-span-1 pr-2 items-center justify-center">
               <h1 className="text-xl font-bold text-primary-blue">Status</h1>
-              <h2 className="text-[15px] font-semibold">
+              <h2 className="text-sm px-1 font-semibold">
                 {orderDetail.state_name}
               </h2>
-              <p className="text-green font-semibold py-1 px-2 rounded-lg text-[15px] bg-background-green text-center">
-                Items:{" "}
-                <span>
-                  {orderDetail && orderDetail.products
-                    ? orderDetail.products.length
-                    : 0}
-                </span>
-              </p>
             </div>
             {/* TODO AGREGAR EN ESTE DIV EL PORCENTAJE DE LOADING PARA RUTA SELECCIONADA */}
             <div className="flex col-span-1 items-center justify-center">

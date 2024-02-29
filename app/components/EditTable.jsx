@@ -763,6 +763,7 @@ export default function EditTable({
         products: filteredProducts,
       };
 
+      console.log("jsonOrderDataedit", jsonOrderData);
       const response = await axios.post(
         `${editStorageOrder}${orderDetail.reference}`,
         jsonOrderData,
@@ -840,6 +841,7 @@ export default function EditTable({
       }));
     }
   };
+
   return (
     <div className="flex flex-col p-8">
       {isLoading ? (
@@ -946,21 +948,19 @@ export default function EditTable({
                                   >
                                     {column === "Code" && (
                                       <div className="flex flex-row items-center">
-                                        {row[column] != "" && (
-                                          <div
-                                            className={`w-2 h-2 rounded-full ${
-                                              row.state === "SHORT" ||
-                                              row.state === "ND"
-                                                ? "bg-danger"
-                                                : row.state === "PD" ||
-                                                  row.state === "FULL"
-                                                ? "bg-green"
-                                                : row.state === "N/A"
-                                                ? "bg-primary-blue"
-                                                : "bg-gray-input"
-                                            } mr-2`}
-                                          />
-                                        )}
+                                        <div
+                                          className={`w-2 h-2 rounded-full ${
+                                            row.state === "SHORT" ||
+                                            row.state === "ND"
+                                              ? "bg-danger"
+                                              : row.state === "PD" ||
+                                                row.state === "FULL"
+                                              ? "bg-green"
+                                              : row.state === "N/A"
+                                              ? "bg-primary-blue"
+                                              : "bg-gray-input"
+                                          } mr-2`}
+                                        />
                                         <p>{row[column]}</p>
                                       </div>
                                     )}
