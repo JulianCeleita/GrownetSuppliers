@@ -47,6 +47,11 @@ const CreateOrderView = () => {
   const { user, setUser } = useUserStore();
   const [customerDate, setCustomerDate] = useState();
   const [customerRef, setCustomerRef] = useState("");
+  const [isDateInputActive, setIsDateInputActive] = useState(false);
+  const dateInputRef = useRef(null);
+  const accountInputRef = useRef(null);
+  const customerInputRef = useRef(null);
+  const [shouldFocusCode, setShouldFocusCode] = useState(false);
 
   const [showErrorRoutes, setShowErrorRoutes] = useState(false);
   //Fecha input
@@ -124,6 +129,12 @@ const CreateOrderView = () => {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [token, selectedAccNumber, selectedAccName]);
+
+  useEffect(() => {
+    if (accountInputRef.current) {
+      accountInputRef.current.focus();
+    }
+  }, []);
 
   // Click en la pantalla
   useEffect(() => {
@@ -223,8 +234,26 @@ const CreateOrderView = () => {
     }
   };
 
+  const handleSelectChange = (selectedOption) => {
+    setSelectedAccName(selectedOption.value);
+    setIsDropdownVisible(false);
+    setSelectedAccNumber2(selectedOption.accNumber);
+    if (dateInputRef.current) {
+      dateInputRef.current.showPicker();
+      dateInputRef.current.focus();
+    }
+  };
+
   const handleDateChange = (e) => {
     setOrderDate(e.target.value);
+  };
+
+  const handleKeyPress = (e) => {
+    if (e.key === "Enter") {
+      if (customerInputRef.current) {
+        customerInputRef.current.focus();
+      }
+    }
   };
 
   const resetStates = () => {
@@ -246,6 +275,12 @@ const CreateOrderView = () => {
     }
   };
 
+  const handleCustomerRefKeyDown = (event) => {
+    if (event.key === "Enter") {
+      setShouldFocusCode(true);
+    }
+  };
+
   useEffect(() => {
     document.addEventListener("keydown", handleKeyDown);
 
@@ -261,16 +296,13 @@ const CreateOrderView = () => {
           <h3 className="w-[42%] text-white">Account name:</h3>
           <div className="relative mb-2 w-[100%]">
             <Select
+              ref={accountInputRef}
               options={restaurantList.map((restaurant) => ({
                 value: restaurant.accountName,
                 label: restaurant.accountName,
                 accNumber: restaurant.accountNumber,
               }))}
-              onChange={(selectedOption) => {
-                setSelectedAccName(selectedOption.value);
-                setIsDropdownVisible(false);
-                setSelectedAccNumber2(selectedOption.accNumber);
-              }}
+              onChange={handleSelectChange}
               value={{
                 value: selectedAccNumber,
                 label:
@@ -358,10 +390,12 @@ const CreateOrderView = () => {
       <div className="flex items-center ml-10 mt-10 w-[70%] px-2 py-1 rounded-md">
         <label className="text-dark-blue">Date: </label>
         <input
+          ref={dateInputRef}
           type="date"
           className="border ml-2 p-1.5 rounded-md text-dark-blue"
           min={getCurrentDateMin()}
           onChange={handleDateChange}
+          onKeyDown={handleKeyPress}
           value={orderDate}
         />
         <label className="ml-3">Inv. number: </label>
@@ -373,9 +407,11 @@ const CreateOrderView = () => {
         />
         <label className="mx-3 text-lg">Customer Ref: </label>
         <input
+          ref={customerInputRef}
           type="text"
           value={customerRef}
           onChange={(e) => setCustomerRef(e.target.value)}
+          onKeyDown={handleCustomerRefKeyDown}
           className="border p-2 rounded-md min-w-[150px]"
         />
 
@@ -462,6 +498,8 @@ const CreateOrderView = () => {
           setSpecialRequirements={setSpecialRequirements}
           customerDate={customerDate}
           customerRef={customerRef}
+          shouldFocusCode={shouldFocusCode}
+          setShouldFocusCode={setShouldFocusCode}
         />
       </div>
       <ModalOrderError
