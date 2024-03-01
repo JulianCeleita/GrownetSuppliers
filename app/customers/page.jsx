@@ -292,10 +292,10 @@ const CustomersView = () => {
                     (!selectedGroup ||
                       (selectedGroup === "No group" && !customer.group) ||
                       (customer.group && customer.group === selectedGroup)) &&
-                    (!selectedDay ||
-                      customer.routes.some(
-                        (route) => route.days_id === Number(selectedDay)
-                      ));
+                    (!selectedDay && !selectedRoute ||
+                      customer.routes.some((route) => route.days_id === Number(selectedDay) || route.name === selectedRoute)) &&
+                    (!selectedDay || 
+                      customer.routes.some((route) => route.days_id === Number(selectedDay)));
                   if (shouldShow) {
                     return (
                       <tr
