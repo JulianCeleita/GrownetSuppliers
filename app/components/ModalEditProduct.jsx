@@ -113,7 +113,7 @@ function ModalEditProduct({ isvisible, onClose, setProducts, setIsLoading }) {
   }
 
   //Add presentation api
-  const SendData = (e) => {
+  const sendData = (e) => {
     e.preventDefault();
     const postData = bulk
       ? {
@@ -192,7 +192,7 @@ function ModalEditProduct({ isvisible, onClose, setProducts, setIsLoading }) {
         </div>
 
         {bulk ? (
-          <form className="text-left  flex flex-col" onSubmit={SendData}>
+          <form className="text-left  flex flex-col" onSubmit={sendData}>
             <label htmlFor="produvt" className="mt-2">
               Product:
             </label>
@@ -320,7 +320,7 @@ function ModalEditProduct({ isvisible, onClose, setProducts, setIsLoading }) {
             </div>
           </form>
         ) : (
-          <form className="text-left  flex flex-col" onSubmit={SendData}>
+          <form className="text-left  flex flex-col" onSubmit={sendData}>
             <label htmlFor="produvt" className="mt-2">
               Sub product:
             </label>

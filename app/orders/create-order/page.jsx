@@ -47,8 +47,18 @@ const CreateOrderView = () => {
   const { user, setUser } = useUserStore();
   const [customerDate, setCustomerDate] = useState();
   const [customerRef, setCustomerRef] = useState("");
+  const [isDateInputActive, setIsDateInputActive] = useState(false);
+  const dateInputRef = useRef(null);
+  const accountInputRef = useRef(null);
+  const customerInputRef = useRef(null);
+  const [shouldFocusCode, setShouldFocusCode] = useState(false);
+
+  const [sendData, setSendData] = useState(false);
+  const [filledRowCount, setFilledRowCount] = useState(0);
 
   const [showErrorRoutes, setShowErrorRoutes] = useState(false);
+  const [arrows, setArrows] = useState(false);
+
   //Fecha input
   function getCurrentDate() {
     const today = new Date();
@@ -183,14 +193,17 @@ const CreateOrderView = () => {
   };
 
   useEffect(() => {
-    fetchCustomersDate(
-      token,
-      orderDate,
-      selectedAccNumber2,
-      setCustomerDate,
-      setShowErrorRoutes
-    );
-  }, [orderDate, selectedAccNumber2]);
+    if (arrows) {
+      fetchCustomersDate(
+        token,
+        orderDate,
+        selectedAccNumber2,
+        setCustomerDate,
+        setShowErrorRoutes
+      );
+    }
+  }, [orderDate, selectedAccNumber2, arrows]);
+
   const restaurantList = Array.isArray(restaurants) ? restaurants : [];
 
   //VENTANA TOTAL
@@ -225,6 +238,12 @@ const CreateOrderView = () => {
 
   const handleDateChange = (e) => {
     setOrderDate(e.target.value);
+  };
+
+  const handleKeyPress = (e) => {
+    if (customerInputRef.current) {
+      customerInputRef.current.focus();
+    }
   };
 
   const resetStates = () => {
@@ -364,7 +383,9 @@ const CreateOrderView = () => {
           className="border ml-2 p-1.5 rounded-md text-dark-blue"
           min={getCurrentDateMin()}
           onChange={handleDateChange}
+          onKeyDown={handleKeyPress}
           value={orderDate}
+          onBlur={() => setArrows(true)}
         />
         <label className="ml-3">Inv. number: </label>
         <input
@@ -379,6 +400,7 @@ const CreateOrderView = () => {
           value={customerRef}
           onChange={(e) => setCustomerRef(e.target.value)}
           className="border p-2 rounded-md min-w-[150px]"
+          onBlur={() => setArrows(false)}
         />
 
         <button

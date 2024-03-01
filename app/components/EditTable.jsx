@@ -317,10 +317,6 @@ export default function EditTable({
     }
   }, [orderDetail, percentageDetail, dataLoaded]);
 
-  // useEffect(() => {
-  //   console.log("existing codes", existingCodes);
-  // }, [existingCodes]);
-
   const handleContextMenu = (e) => {
     e.preventDefault();
     setShowCheckboxColumn(!showCheckboxColumn);
@@ -595,32 +591,16 @@ export default function EditTable({
     if (shouldSynchronize) {
       synchronizeExistingCodes();
       setShouldSynchronize(false);
-
-      // setTimeout(() => {
-      console.log("exist", existingCodes);
-      // }, 300);
     }
   }, [shouldSynchronize, rows]);
 
   const handleCloseModal = (event) => {
     event.stopPropagation();
     setShowErrorDuplicate(false);
-    console.log(
-      "🚀 ~ setTimeout ~ activeColumnIndex index column que llega :",
-      activeColumnIndex
-    );
-    console.log(
-      "🚀 ~ setTimeout ~ activeInputIndex index row que llega:",
-      activeInputIndex
-    );
     setTimeout(() => {
       const inputToFocus = document.querySelector(
         `input[data-row-index="${activeInputIndex}"][data-column-index="${activeColumnIndex}"]`
       );
-      console.log("🚀 ~ setTimeout ~ inputToFocus:", inputToFocus);
-      if (inputToFocus) {
-        inputToFocus.focus();
-      }
     }, 50);
   };
 
@@ -668,10 +648,6 @@ export default function EditTable({
         },
       });
       const productByCodeData = response.data.data[0];
-      console.log(
-        "🚀 ~ fetchProductCode ~ productByCodeData:",
-        productByCodeData
-      );
 
       const updatedRows = rows.map((row, index) => {
         if (

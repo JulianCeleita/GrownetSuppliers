@@ -385,6 +385,8 @@ export default function Table({
 
   // FUNCIONALIDAD TECLA ENTER
   const handleKeyDown = async (e, columnIndex, rowIndex, fieldName) => {
+    setCodeFocus(false);
+
     if (e.key === "Enter" && e.target.tagName.toLowerCase() !== "textarea") {
       e.preventDefault();
 
@@ -514,6 +516,13 @@ export default function Table({
         )
       );
       setRows(updatedRows);
+      const inputToFocus = document.querySelector(
+        `input[data-row-index="${rowIndex}"][data-field-name="quantity"]`
+      );
+
+      if (inputToFocus != null) {
+        inputToFocus.focus();
+      }
     } catch (error) {
       console.error("Error al hacer la solicitud:", error.message);
       // const currentProductCode = rows[rowIndex]["Code"] || "0"
@@ -532,9 +541,9 @@ export default function Table({
   };
 
   const createOrder = async () => {
-    console.log("Checking if I can send order...")
+    console.log("Checking if I can send order...");
     if (sendingOrder) {
-      console.log("I am already sending the past order...")
+      console.log("I am already sending the past order...");
       return;
     }
     setConfirmCreateOrder(false);

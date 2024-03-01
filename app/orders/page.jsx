@@ -23,6 +23,7 @@ import usePercentageStore from "../store/usePercentageStore";
 import useTokenStore from "../store/useTokenStore";
 import useUserStore from "../store/useUserStore";
 import useWorkDateStore from "../store/useWorkDateStore";
+import Image from "next/image";
 
 export const customStyles = {
   placeholder: (provided) => ({
@@ -516,11 +517,13 @@ const OrderView = () => {
                   {/* TODO AGREGAR EN ESTE DIV EL PORCENTAJE DE LOADING PARA RUTA SELECCIONADA */}
                   <div className="flex col-span-1 items-center justify-center">
                     {showPercentage === null ? (
-                      <div className="flex items-center justify-center bg-primary-blue rounded-full w-16 h-16">
-                        <img
-                          src="./loadingBlanco.png"
+                      <div className="flex items-center justify-center bg-primary-blue rounded-full w-11 h-11 2xl:w-16 2xl:h-16">
+                        <Image
+                          src="/loadingBlanco.png"
                           alt="Percent"
-                          className="w-10 h-7"
+                          width={200}
+                          height={200}
+                          className="w-8 h-5 2xl:w-10 2xl:h-7"
                         />
                       </div>
                     ) : (

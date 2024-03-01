@@ -21,7 +21,7 @@ import NewCustomer from "../components/NewCustomer";
 import CustomerDetailPage from "../customer/[customerId]/page";
 import Editcustomer from "../components/EditCustomer";
 import Select from "react-select";
-import { useRef } from "react";
+import React, { useRef } from "react";
 
 const CustomersView = () => {
   const router = useRouter();
@@ -60,8 +60,9 @@ const CustomersView = () => {
   }, [searchTerm, routes, updateCustomers]);
 
   useEffect(() => {
-    const sortedCustomers = customers.sort((a, b) =>
-      a.accountName?.localeCompare(b.accountName)
+    let filteredBySearchTerm = customers.filter(customer =>
+      customer.accountName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      customer.accountNumber.toLowerCase().includes(searchTerm.toLowerCase())
     );
     const filteredCustomers = sortedCustomers.filter(
       (customer) =>
@@ -73,9 +74,36 @@ const CustomersView = () => {
           .includes(searchTerm.toLowerCase() ||
             customer.routes.some(route => route.days_id.includes(selectedDay))))
 
-    setDisplayedCustomers(filteredCustomers);
-  }, [searchTerm, customers]);
+    let filteredByGroup = filteredBySearchTerm.filter(customer =>
+      !selectedGroup ||
+      (selectedGroup === "No group" && !customer.group) ||
+      (customer.group === selectedGroup)
+    );
 
+    let filteredByRoute = filteredByGroup.filter(customer =>
+      !selectedRoute ||
+      customer.routes.some(route => route.name === selectedRoute)
+    );
+
+    let filteredByDay = filteredByRoute.filter(customer =>
+      !selectedDay ||
+      customer.routes.some(route => route.days_id === Number(selectedDay))
+    );
+
+    if (sortConfig.key) {
+      filteredByDay.sort((a, b) => {
+        if (a[sortConfig.key] < b[sortConfig.key]) {
+          return sortConfig.direction === 'ascending' ? -1 : 1;
+        }
+        if (a[sortConfig.key] > b[sortConfig.key]) {
+          return sortConfig.direction === 'ascending' ? 1 : -1;
+        }
+        return 0;
+      });
+    }
+
+    setDisplayedCustomers(filteredByDay);
+  }, [customers, sortConfig, searchTerm, selectedGroup, selectedRoute, selectedDay]);
 
   const [showDeleteModal, setShowDeleteModal] = useState(false);
 
@@ -258,24 +286,36 @@ const CustomersView = () => {
                   </td>
                 </tr>
               ) : (
-                displayedCustomers.map((customer) => {
-                  const shouldShow =
-                    (status === "all" ||
-                      (status === "active" &&
-                        customer.stateCustomer_id === 1) ||
-                      (status === "inactive" &&
-                        customer.stateCustomer_id === 2)) &&
-                    (!selectedRoute ||
-                      customer.routes.some(
-                        (route) => route.name === selectedRoute
-                      )) &&
-                    (!selectedGroup ||
-                      (selectedGroup === "No group" && !customer.group) ||
-                      (customer.group && customer.group === selectedGroup)) &&
-                    (!selectedDay ||
-                      customer.routes.some(route => route.days_id === Number(selectedDay))
+                displayedCustomers.map((customer, index) => {
+                  let matchingRoutes = customer.routes;
+
+                  // Filtro de grupo, si selectedGroup está definido.
+                  if (selectedGroup) {
+                    matchingRoutes = matchingRoutes.filter(route =>
+                      selectedGroup === "No group" ? !customer.group : customer.group === selectedGroup
                     );
-                  if (shouldShow) {
+                  }
+
+                  // Filtrar por día y ruta si están seleccionados.
+                  if (selectedRoute) {
+                    matchingRoutes = matchingRoutes.filter(route =>
+                      route.name === selectedRoute
+                    );
+                  }
+
+                  if (selectedDay) {
+                    matchingRoutes = matchingRoutes.filter(route =>
+                      route.days_id === Number(selectedDay)
+                    );
+                  }
+
+                  // Eliminar rutas duplicadas y unirlas con una coma y un espacio.
+                  const uniqueRouteNames = [...new Set(matchingRoutes.map(route => route.name))].join(", ");
+                  const uniqueDrop = matchingRoutes.length > 0
+                    ? [...new Set(matchingRoutes.map(route => route.drop))]
+                    : [];
+
+                  if (matchingRoutes.length > 0 || (!selectedRoute && !selectedDay)) {
                     return (
                       <tr
                         key={customer.id}
@@ -297,29 +337,42 @@ const CustomersView = () => {
                         </td>
                         <td className="py-4 pl-8">
                           {
-                            customer.routes && customer.routes.length > 0 ? (
-                              [...new Set(customer.routes.map(route => route.name))].map((name, index, arr) => (
+                            selectedRoute && selectedDay ? (
+                              <>
+                                {uniqueRouteNames}
+                              </>
+                            ) : (
+                              [
+                                ...new Set(
+                                  customer.routes.map((route) => route.name)
+                                ),
+                              ].map((name, index, arr) => (
                                 <span key={name}>
                                   {name}
                                   {index < arr.length - 1 && " - "}
                                 </span>
                               ))
-                            ) : (
-                              <span>No routes</span>
                             )
                           }
                         </td>
                         <td className="py-4 pl-8">
                           {
-                            customer.routes && customer.routes.length > 0 ? (
-                              [...new Set(customer.routes.map(route => route.drop))].map((name, index, arr) => (
+                            selectedRoute && selectedDay ? (
+                              <>
+                                {uniqueDrop}
+                              </>
+
+                            ) : (
+                              [
+                                ...new Set(
+                                  customer.routes.map((route) => route.drop)
+                                ),
+                              ].map((name, index, arr) => (
                                 <span key={name}>
                                   {name}
                                   {index < arr.length - 1 && " - "}
                                 </span>
                               ))
-                            ) : (
-                              <span>No Drops</span>
                             )
                           }
                         </td>
