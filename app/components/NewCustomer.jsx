@@ -140,7 +140,7 @@ function NewCustomer({ isvisible, onClose, setUpdateCustomers }) {
     setSelectedGroup(1);
     setSelectedRoutes({});
     setStartHour({ hour: "12", minute: "00" });
-    setEndHour({ hour: "12", minute: "00" });
+    setEndHour({ hour: "12", minute: "30" });
   };
 
   const enviarData = (e) => {
