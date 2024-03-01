@@ -137,10 +137,10 @@ function NewCustomer({ isvisible, onClose, setUpdateCustomers }) {
     setDrop("");
     setCrates("");
     setVip("");
-    setSelectedGroup("");
+    setSelectedGroup(1);
     setSelectedRoutes({});
-    setStartHour("");
-    setEndHour("");
+    setStartHour({ hour: "12", minute: "00" });
+    setEndHour({ hour: "12", minute: "00" });
   };
 
   const enviarData = (e) => {
@@ -338,7 +338,6 @@ function NewCustomer({ isvisible, onClose, setUpdateCustomers }) {
                     onChange={(e) => setSelectedGroup(e.target.value)}
                     className="ml-2 border p-2 rounded-md w-full"
                   >
-                    <option value="">Select group</option>
                     {groups &&
                       groups.map((group) => (
                         <option key={group.id} value={group.id}>
