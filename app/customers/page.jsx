@@ -41,6 +41,7 @@ const CustomersView = () => {
   const [updateCustomers, setUpdateCustomers] = useState(false);
   const [displayedCustomers, setDisplayedCustomers] = useState([]);
   const [selectedDay, setSelectedDay] = useState('');
+  const [sortConfig, setSortConfig] = useState({ key: null, direction: 'ascending' });
 
   useEffect(() => {
     if (user && user?.rol_name === "AdminGrownet") {
@@ -64,15 +65,6 @@ const CustomersView = () => {
       customer.accountName.toLowerCase().includes(searchTerm.toLowerCase()) ||
       customer.accountNumber.toLowerCase().includes(searchTerm.toLowerCase())
     );
-    const filteredCustomers = sortedCustomers.filter(
-      (customer) =>
-        customer?.accountName
-          ?.toLowerCase()
-          .includes(searchTerm.toLowerCase()) ||
-        customer?.accountNumber
-          ?.toLowerCase()
-          .includes(searchTerm.toLowerCase() ||
-            customer.routes.some(route => route.days_id.includes(selectedDay))))
 
     let filteredByGroup = filteredBySearchTerm.filter(customer =>
       !selectedGroup ||
