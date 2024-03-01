@@ -53,10 +53,8 @@ const CreateOrderView = () => {
   const customerInputRef = useRef(null);
   const [shouldFocusCode, setShouldFocusCode] = useState(false);
 
-
   const [sendData, setSendData] = useState(false);
   const [filledRowCount, setFilledRowCount] = useState(0);
-
 
   const [showErrorRoutes, setShowErrorRoutes] = useState(false);
   const [arrows, setArrows] = useState(false);
@@ -201,9 +199,7 @@ const CreateOrderView = () => {
   };
 
   useEffect(() => {
-
     if (arrows) {
-
       fetchCustomersDate(
         token,
         orderDate,
@@ -211,10 +207,8 @@ const CreateOrderView = () => {
         setCustomerDate,
         setShowErrorRoutes
       );
-
     }
   }, [orderDate, selectedAccNumber2, arrows]);
-
 
   const restaurantList = Array.isArray(restaurants) ? restaurants : [];
 
@@ -263,10 +257,8 @@ const CreateOrderView = () => {
   };
 
   const handleKeyPress = (e) => {
-
     if (customerInputRef.current) {
       customerInputRef.current.focus();
-
     }
   };
 
@@ -412,9 +404,9 @@ const CreateOrderView = () => {
           className="border ml-2 p-1.5 rounded-md text-dark-blue"
           min={getCurrentDateMin()}
           onChange={handleDateChange}
-          // onClick={() => setSendData(true)}
           onKeyDown={handleKeyPress}
           value={orderDate}
+          onBlur={() => setArrows(true)}
         />
         <label className="ml-3">Inv. number: </label>
         <input
@@ -431,7 +423,6 @@ const CreateOrderView = () => {
           onChange={(e) => setCustomerRef(e.target.value)}
           onKeyDown={handleCustomerRefKeyDown}
           className="border p-2 rounded-md min-w-[150px]"
-          onFocus={() => setArrows(true)}
           onBlur={() => setArrows(false)}
         />
 
