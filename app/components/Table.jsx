@@ -453,7 +453,6 @@ export default function Table({
 
   const handleKeyDown = async (e, columnIndex, rowIndex, fieldName) => {
     setCodeFocus(false);
-    console.log("entro aqui aca afuera del if", showErrorCode);
 
     if (e.key === "Enter" && e.target.tagName.toLowerCase() !== "textarea") {
       e.preventDefault();
