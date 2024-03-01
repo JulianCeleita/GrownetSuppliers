@@ -258,7 +258,6 @@ const OrderView = () => {
         responseType: "blob",
       })
       .then((response) => {
-        // para guardar el pdf
         const blob = new Blob([response.data], { type: "application/pdf" });
         const downloadUrl = URL.createObjectURL(blob);
         const link = document.createElement("a");
@@ -267,10 +266,12 @@ const OrderView = () => {
         link.style.display = "none";
         document.body.appendChild(link);
         link.click();
-        document.body.removeChild(link);
-        URL.revokeObjectURL(downloadUrl);
+        setTimeout(() => {
+          document.body.removeChild(link);
+          URL.revokeObjectURL(downloadUrl);
+        }, 0);
 
-        // Para abrir automaticamente el archivo
+        // Para abrir automáticamente el archivo
         const fileURL = URL.createObjectURL(blob);
         window.open(fileURL);
       })
@@ -366,10 +367,10 @@ const OrderView = () => {
         </div>
         <div
           className={`flex ml-10 mb-0 items-center space-x-2 mt-${filterType === "range" && window.innerWidth < 1500
-              ? "[45px]"
-              : filterType === "date" && window.innerWidth < 1300
-                ? "[50px]"
-                : "[20px]"
+            ? "[45px]"
+            : filterType === "date" && window.innerWidth < 1300
+              ? "[50px]"
+              : "[20px]"
             }
           `}
         >
