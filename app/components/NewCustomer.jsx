@@ -168,11 +168,13 @@ function NewCustomer({ isvisible, onClose, setUpdateCustomers }) {
       vip: safeVipValue,
       delivery_window: `${startHour.hour + ':' + startHour.minute} - ${endHour.hour + ':' + endHour.minute}`,
       group_id: selectedGroup,
-      countries_indicative: user?.countries_indicactive,
+      countries_indicative: user?.country_indicative,
     };
+    console.log("🚀 ~ enviarData ~ postData:", postData)
     const postDataAssign = {
       ...prepareDataForBackend(),
     };
+    console.log("🚀 ~ enviarData ~ postDataAssign:", postDataAssign)
     axios
       .post(createCustomer, postData, {
         headers: {
@@ -180,6 +182,7 @@ function NewCustomer({ isvisible, onClose, setUpdateCustomers }) {
         },
       })
       .then((response) => {
+        console.log("🚀 ~ .then ~ response:", response)
         const customerAccountNumber = response?.data?.accountNumber;
         postDataAssign.customer = customerAccountNumber;
         axios
@@ -189,6 +192,7 @@ function NewCustomer({ isvisible, onClose, setUpdateCustomers }) {
             },
           })
           .then((assignResponse) => {
+            console.log("🚀 ~ .then ~ assignResponse:", assignResponse)
             Swal.fire({
               position: "top-end",
               icon: "success",
@@ -334,6 +338,7 @@ function NewCustomer({ isvisible, onClose, setUpdateCustomers }) {
                     onChange={(e) => setSelectedGroup(e.target.value)}
                     className="ml-2 border p-2 rounded-md w-full"
                   >
+                    <option value="">Select group</option>
                     {groups &&
                       groups.map((group) => (
                         <option key={group.id} value={group.id}>
