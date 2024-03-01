@@ -59,13 +59,6 @@ const CustomerDetailPage = () => {
   }
 
   useEffect(() => {
-    const storedToken = localStorage.getItem("token");
-    if (!storedToken) {
-      router.push("/");
-    } else {
-      if (storedToken != null) {
-        setToken(storedToken);
-        if (token !== null && customerId !== undefined) {
           fetchCustomerDetail(
             token,
             setDetailCustomer,
@@ -74,10 +67,7 @@ const CustomerDetailPage = () => {
           );
           fetchRoutes(token, user, setRoutes, setIsLoading);
           fetchGroups(token, user, setGroups, setIsLoading);
-        }
-      }
-    }
-  }, [customerId, setDetailCustomer, token, setToken]);
+  }, [customerId, setDetailCustomer]);
 
   useEffect(() => {
     if (detailCustomer && detailCustomer.length > 0) {
@@ -125,8 +115,6 @@ const CustomerDetailPage = () => {
     setHasMounted(true);
   }, []);
 
-  console.log('detailcustomer:', detailCustomer)
-
   const mapDayNumberToName = (dayNumber) => {
     switch (dayNumber) {
       case 1:
@@ -160,7 +148,6 @@ const CustomerDetailPage = () => {
 
   const prepareDataForBackend = () => {
     const daysData = {};
-    console.log("selectedRoutes para el backend", selectedRoutes);
     Object.keys(selectedRoutes).forEach((day) => {
       const routesForDay = Object.values(selectedRoutes[day]);
       if (routesForDay.some((isSelected) => isSelected)) {
@@ -170,7 +157,6 @@ const CustomerDetailPage = () => {
           .join(",");
       }
     });
-    console.log("daysData para el backend", daysData);
     return { customer: customerId, days_routes: daysData };
   };
 
@@ -566,7 +552,6 @@ const CustomerDetailPage = () => {
                                     selectedRoutes[day]?.[route.id] || false
                                   }
                                   onChange={() => {
-                                    console.log("route.id", route.id);
                                     handleRouteCheckboxChange(route.id, day);
                                   }}
                                 />

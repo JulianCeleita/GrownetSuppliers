@@ -58,27 +58,29 @@ function NewCustomer({ isvisible, onClose, setUpdateCustomers }) {
   }
 
   const prepareDataForBackend = () => {
-    const daysRoutesArray = Object.entries(selectedRoutes).map(([day, { routeId, drop }]) => {
-      const numericDrop = parseInt(drop, 10);
-      const safeDrop = isNaN(numericDrop) ? 0 : numericDrop;
-      return {
-        route_id: routeId,
-        drop: safeDrop,
+    const allDays = ["Mon", "Tues", "Wed", "Thur", "Fri", "Sat"];
+
+    const daysRoutesArray = allDays.map(day => {
+      const routeInfo = selectedRoutes[day];
+
+      const routeData = {
+        route_id: routeInfo?.routeId || "12",
+        drop: routeInfo?.drop || 0,
         days_id: getDayNumber(day.toLowerCase())
       };
+
+      return routeData;
     });
 
-    const filteredDaysRoutesArray = daysRoutesArray.filter(entry => entry.route_id && entry.drop >= 0);
-
-    return { days_routes: filteredDaysRoutesArray };
+    return { days_routes: daysRoutesArray };
   };
 
   const handleRouteAndDropSelection = (day, routeId, dropValue) => {
     if (dropValue === '') {
       setSelectedRoutes(prevRoutes => ({
         ...prevRoutes,
-        [day]: { 
-          routeId: routeId || "12", 
+        [day]: {
+          routeId: routeId || "12",
           drop: ""
         }
       }));
@@ -168,11 +170,9 @@ function NewCustomer({ isvisible, onClose, setUpdateCustomers }) {
       group_id: selectedGroup,
       countries_indicative: user?.countries_indicactive,
     };
-    console.log("🚀 ~ enviarData ~ postData:", postData)
     const postDataAssign = {
       ...prepareDataForBackend(),
     };
-    console.log("🚀 ~ enviarData ~ postDataAssign:", postDataAssign)
     axios
       .post(createCustomer, postData, {
         headers: {
@@ -180,7 +180,6 @@ function NewCustomer({ isvisible, onClose, setUpdateCustomers }) {
         },
       })
       .then((response) => {
-        console.log("🚀 ~ .then ~ response:", response)
         const customerAccountNumber = response?.data?.accountNumber;
         postDataAssign.customer = customerAccountNumber;
         axios
@@ -190,7 +189,6 @@ function NewCustomer({ isvisible, onClose, setUpdateCustomers }) {
             },
           })
           .then((assignResponse) => {
-            console.log("🚀 ~ .then ~ assignResponse:", assignResponse)
             Swal.fire({
               position: "top-end",
               icon: "success",

@@ -19,6 +19,7 @@ import { useTableStore } from "../../store/useTableStore";
 import useTokenStore from "../../store/useTokenStore";
 import useUserStore from "../../store/useUserStore";
 import { fetchCustomersDate } from "@/app/api/ordersRequest";
+import ModalOrderError from "@/app/components/ModalOrderError";
 
 const CreateOrderView = () => {
   const { token } = useTokenStore();
@@ -45,10 +46,21 @@ const CreateOrderView = () => {
   const [specialRequirements, setSpecialRequirements] = useState("");
   const { user, setUser } = useUserStore();
   const [customerDate, setCustomerDate] = useState();
+  const [customerRef, setCustomerRef] = useState("");
+
+  const [showErrorRoutes, setShowErrorRoutes] = useState(false);
   //Fecha input
   function getCurrentDate() {
     const today = new Date();
     today.setDate(today.getDate() + 1);
+    const year = today.getFullYear();
+    const month = String(today.getMonth() + 1).padStart(2, "0");
+    const day = String(today.getDate()).padStart(2, "0");
+    return `${year}-${month}-${day}`;
+  }
+  function getCurrentDateMin() {
+    const today = new Date();
+    today.setDate(today.getDate());
     const year = today.getFullYear();
     const month = String(today.getMonth() + 1).padStart(2, "0");
     const day = String(today.getDate()).padStart(2, "0");
@@ -63,10 +75,6 @@ const CreateOrderView = () => {
             Authorization: `Bearer ${token}`,
           },
         });
-        console.log(
-          "🚀 ~ fetchData ~ responseRestaurants:",
-          responseRestaurants
-        );
 
         const sortedRestaurants = responseRestaurants.data.customers.sort(
           (a, b) => a.accountName.localeCompare(b.accountName)
@@ -175,7 +183,13 @@ const CreateOrderView = () => {
   };
 
   useEffect(() => {
-    fetchCustomersDate(token, orderDate, selectedAccNumber2, setCustomerDate);
+    fetchCustomersDate(
+      token,
+      orderDate,
+      selectedAccNumber2,
+      setCustomerDate,
+      setShowErrorRoutes
+    );
   }, [orderDate, selectedAccNumber2]);
   const restaurantList = Array.isArray(restaurants) ? restaurants : [];
 
@@ -343,69 +357,12 @@ const CreateOrderView = () => {
         </div>
       </section>
 
-      {/* <div className="grid grid-cols-3 gap-4 p-5 shadow-lg bg-primary-blue pb-20">
-        <div
-          className="bg-white p-2 pr-9 pl-9 rounded-lg flex flex-col justify-center"
-          onContextMenu={(e) => handleContextMenuTotal(e)}
-        >
-          <h1 className="text-lg text-primary-blue font-semibold ml-5">
-            Payment details
-          </h1>
-          {columnsTotal.map(
-            (column, index) =>
-              initialTotalRows.includes(column.name) && (
-                <div className=" flex items-center" key={column.name}>
-                  <h1 className="text-lg text-dark-blue font-semibold w-[60%] ml-5">
-                    {column.name}
-                  </h1>
-                  <p className="text-dark-blue text-lg w-[40%]">
-                    {column.price}
-                  </p>
-                </div>
-              )
-          )}
-        </div> 
-        {showCheckboxColumnTotal === true && (
-          <div
-            ref={menuRefTotal}
-            className="absolute w-[40%] bg-white p-3 border rounded-xl"
-            style={{
-              top: `${mouseCoords.y}px`,
-              left: `${mouseCoords.x}px`,
-            }}
-          >
-            <h4 className="font-bold mb-2 text-dark-blue">Show/Hide Columns</h4>
-            {columnsTotal.map((column) => (
-              <div
-                key={column.name}
-                className="flex items-center text-dark-blue"
-              >
-                <input
-                  type="checkbox"
-                  id={column.name}
-                  checked={initialTotalRows.includes(column.name)}
-                  onChange={() => handleCheckboxChangeTotal(column.name)}
-                />
-                <label htmlFor={column.name} className="ml-2">
-                  {column.name}
-                </label>
-              </div>
-            ))}
-            <button
-              className="mt-2 text-danger"
-              onClick={() => setShowCheckboxColumnTotal(false)}
-            >
-              Close
-            </button>
-          </div>
-        )}
-      </div>*/}
       <div className="flex items-center ml-10 mt-10 w-[70%] px-2 py-1 rounded-md">
         <label className="text-dark-blue">Date: </label>
         <input
           type="date"
           className="border ml-2 p-1.5 rounded-md text-dark-blue"
-          min={getCurrentDate()}
+          min={getCurrentDateMin()}
           onChange={handleDateChange}
           value={orderDate}
         />
@@ -417,14 +374,20 @@ const CreateOrderView = () => {
           className="border ml-2 p-1.5 rounded-md w-20"
         />
         <label className="mx-3 text-lg">Customer Ref: </label>
-        <input type="text" className="border p-2 rounded-md w-20" />
+        <input
+          type="text"
+          value={customerRef}
+          onChange={(e) => setCustomerRef(e.target.value)}
+          className="border p-2 rounded-md min-w-[150px]"
+        />
 
         <button
-          className="bg-dark-blue rounded-md ml-3 hover:scale-110 focus:outline-none"
+          className="bg-dark-blue rounded-md ml-3 hover:scale-110 focus:outline-none flex text-white px-2 py-1 items-center align-middle"
           onClick={() => setDetails(!details)}
         >
+          Details
           <ChevronDownIcon
-            className={`h-7 w-7 text-white p-1 transform transition duration-500 ${
+            className={`h-5 w-5 ml-1 text-white transform transition duration-500 ${
               details ? "rotate-180" : "rotate-0"
             }`}
           />
@@ -500,9 +463,18 @@ const CreateOrderView = () => {
           specialRequirements={specialRequirements}
           setSpecialRequirements={setSpecialRequirements}
           customerDate={customerDate}
-          setCustomerDate={setCustomerDate}
+          customerRef={customerRef}
         />
       </div>
+      <ModalOrderError
+        isvisible={showErrorRoutes}
+        onClose={() => setShowErrorRoutes(false)}
+        title={"Date without routes"}
+        message={
+          "There are no routes assigned for the selected date. Please change the date to an available day."
+        }
+        setCustomerDate={setCustomerDate}
+      />
     </Layout>
   );
 };

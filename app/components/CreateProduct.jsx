@@ -15,6 +15,7 @@ import {
   fetchPresentationsSupplier,
   fetchTypes,
 } from "../api/presentationsRequest";
+import ModalOrderError from "./ModalOrderError";
 
 function CreateProduct({ isvisible, onClose, setProducts, setIsLoading }) {
   const { token } = useTokenStore();
@@ -27,6 +28,7 @@ function CreateProduct({ isvisible, onClose, setProducts, setIsLoading }) {
   const [selecteUomsStatus2, setSelectedUomsStatus2] = useState("");
   const [selecteProductsStatus, setSelectedProductsStatus] =
     useState("Red pepper");
+  const [repeatedCode, setRepeatedCode] = useState(false);
   const [codePresentation, setCodePresentation] = useState("");
   const [tax, setTax] = useState([]);
   const [selectedTax, setSelectedTax] = useState("");
@@ -82,7 +84,6 @@ function CreateProduct({ isvisible, onClose, setProducts, setIsLoading }) {
 
     fetchData();
     fetchTypes(token, setTypes);
-    console.log(types);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -142,7 +143,6 @@ function CreateProduct({ isvisible, onClose, setProducts, setIsLoading }) {
           type: selectedType,
           supplier_id: user.id_supplier,
         };
-    console.log("🚀 ~ SendData ~ postData:", postData);
     axios
       .post(addPresentationUrl, postData, {
         headers: {
@@ -155,13 +155,22 @@ function CreateProduct({ isvisible, onClose, setProducts, setIsLoading }) {
         } else {
           fetchPresentations(token, setProducts, setIsLoading);
         }
+
         setSelectedUomsStatus("");
         setSelectedProductsStatus("");
         setSelectedType("");
         setCodePresentation("");
         onClose();
       })
-      .catch((error) => {
+      .catch((response, error) => {
+        if (response.response.data.status === 400) {
+          if (
+            response.response.data.message.includes("Already existing code")
+          ) {
+            setRepeatedCode(true);
+            console.log("Already existing code");
+          }
+        }
         console.error("Error al agregar la nueva presentación: ", error);
       });
   };
@@ -183,7 +192,7 @@ function CreateProduct({ isvisible, onClose, setProducts, setIsLoading }) {
             onClick={toggleBulk}
             className={`${
               bulk
-                ? "bg-blue-500 hover:bg-blue-700 text-white"
+                ? "bg-primary-blue hover:bg-dark-blue text-white"
                 : "bg-white text-dark-blue"
             }  font-bold py-2 px-4 rounded`}
           >
@@ -193,7 +202,7 @@ function CreateProduct({ isvisible, onClose, setProducts, setIsLoading }) {
             onClick={toggleBulk}
             className={`${
               !bulk
-                ? "bg-blue-500 hover:bg-blue-700 text-white"
+                ? "bg-primary-blue hover:bg-dark-blue text-white"
                 : "bg-white text-dark-blue"
             }  font-bold py-2 px-4 rounded`}
           >
@@ -459,6 +468,14 @@ function CreateProduct({ isvisible, onClose, setProducts, setIsLoading }) {
           </form>
         )}
       </div>
+      <ModalOrderError
+        isvisible={repeatedCode}
+        onClose={() => setRepeatedCode(false)}
+        title={"Existing code"}
+        message={
+          "The code you have entered already exists in the system. Please use a unique code to create a new product."
+        }
+      />
     </div>
   );
 }

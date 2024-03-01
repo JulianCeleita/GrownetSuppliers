@@ -91,7 +91,6 @@ export const fetchOrderDetail = async (
         Authorization: `Bearer ${token}`,
       },
     });
-    console.log("🚀 ~ response:", response);
 
     if (
       user?.id_suppliers == orderDetail.id_suppliers &&
@@ -123,7 +122,6 @@ export const fetchOrdersDate = async (
     },
     route_id: routeId,
   };
-  console.log("postData", postData);
   try {
     const response = await axios.post(ordersDate, postData, {
       headers: {
@@ -134,7 +132,7 @@ export const fetchOrdersDate = async (
     setTotalNet(response.data);
     setOrders(response.data.orders);
     setIsLoading(false);
-    // console.log("response data ", response.data);
+    console.log("response data ", response.data);
   } catch (error) {
     console.error("Error al obtener el orders by date:", error);
   }
@@ -151,7 +149,6 @@ export const fetchOrdersDateByWorkDate = async (
       end: workDate,
     },
   };
-  console.log("postData workdate", postData);
   try {
     const response = await axios.post(ordersDate, postData, {
       headers: {
@@ -170,22 +167,30 @@ export const fetchCustomersDate = async (
   token,
   date,
   accountNumber,
-  setCustomerDate
+  setCustomerDate,
+  setShowErrorRoutes
 ) => {
-  const postData = {
-    date: date,
-    accountNumber: accountNumber,
-  };
-  console.log("postData customer", postData);
-  try {
-    const response = await axios.post(customersDate, postData, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
-    setCustomerDate(response.data.routes);
-    console.log("response data customer date", response.data);
-  } catch (error) {
-    console.error("Error al obtener customer date:", error);
+  if (accountNumber && date) {
+    const postData = {
+      date: date,
+      accountNumber: accountNumber,
+    };
+    console.log("postData", postData);
+    try {
+      const response = await axios.post(customersDate, postData, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      if (response.data.routes) {
+        setCustomerDate(response.data.routes);
+      } else if (response.data.message) {
+        setShowErrorRoutes(true);
+      }
+
+      console.log("response.data.routes:", response.data);
+    } catch (error) {
+      console.error("Error al obtener customer date:", error);
+    }
   }
 };

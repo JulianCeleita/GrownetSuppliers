@@ -65,7 +65,6 @@ export const fetchTypes = async (token, setTypes) => {
         Authorization: `Bearer ${token}`,
       },
     });
-    console.log("🚀 ~ response:", response.data);
 
     const newType = Array.isArray(response.data.type) ? response.data.type : [];
     setTypes(newType);

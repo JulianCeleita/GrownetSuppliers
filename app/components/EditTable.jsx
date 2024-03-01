@@ -53,7 +53,7 @@ const initialRowsState = {
   "Total Price": "",
   "Unit Cost": "",
   Profit: "",
-  "Price Band": "",
+  Band: "",
   "Total Cost": "",
 };
 
@@ -71,7 +71,7 @@ const inputRefs = {
   "Total Price": [],
   "Unit Cost": [],
   Profit: [],
-  "Price Band": [],
+  Band: [],
   "Total Cost": [],
 };
 
@@ -114,6 +114,7 @@ export default function EditTable({
   setSpecialRequirements,
   percentageDetail,
   dataLoaded,
+  customersRef,
 }) {
   // const [rows, setRows] = useState(
   //   Array.from({ length: 0 }, () => ({ ...initialRowsState }))
@@ -159,9 +160,13 @@ export default function EditTable({
   const [isReadOnly, setIsReadOnly] = useState(true);
   const [orderError, setOrderError] = useState("");
   const [isSelectDisabled, setIsSelectDisabled] = useState(true);
-  const isEditable = orderDetail?.state_name === "Loaded" || orderDetail?.state_name === "Packed";
+  const isEditable =
+    orderDetail?.state_name === "Loaded" ||
+    orderDetail?.state_name === "Packed";
   const [existingCodes, setExistingCodes] = useState(new Set());
   const [previousCode, setPreviousCode] = useState({});
+  const [activeInputIndex, setActiveInputIndex] = useState(null);
+  const [activeColumnIndex, setActiveColumnIndex] = useState(null);
 
   const columns = [
     "Code",
@@ -177,7 +182,7 @@ export default function EditTable({
     "Total Price",
     "Unit Cost",
     "Profit",
-    "Price Band",
+    "Band",
     "Total Cost",
   ];
   const inputTypes = {
@@ -194,12 +199,11 @@ export default function EditTable({
     "Total Price": "number",
     "Unit Cost": "number",
     Profit: "number",
-    "Price Band": "text",
+    Band: "text",
     "Total Cost": "number",
   };
 
   const sortData = (data, searchTerm) => {
-    console.log("🚀 ~ sortData ~ data:", data);
     const lowercasedTerm = searchTerm.toLowerCase();
 
     const exactMatchesCode = data.filter(
@@ -256,8 +260,6 @@ export default function EditTable({
   }, [orderId, token, setOrderDetail]);
 
   useEffect(() => {
-    console.log(orderDetail.products);
-    console.log("🚀 ~ useEffect ~ dataLoaded:", dataLoaded);
     if (
       dataLoaded &&
       orderDetail &&
@@ -278,7 +280,7 @@ export default function EditTable({
           isExistingProduct: true,
           Code: product.presentations_code,
           Description: product.name,
-          Packsize: product.presentation_name,
+          Packsize: product.presentationName,
           UOM: product.uom,
           quantity: quantity?.toString(),
           price: product.price + product.price * product.tax,
@@ -289,7 +291,7 @@ export default function EditTable({
           "Total Price": "",
           "Unit Cost": product.cost,
           Profit: "",
-          "Price Band": "",
+          Band: "",
           "Total Cost": "",
         };
       });
@@ -315,9 +317,9 @@ export default function EditTable({
     }
   }, [orderDetail, percentageDetail, dataLoaded]);
 
-  useEffect(() => {
-    console.log("existing codes", existingCodes);
-  }, [existingCodes]);
+  // useEffect(() => {
+  //   console.log("existing codes", existingCodes);
+  // }, [existingCodes]);
 
   const handleContextMenu = (e) => {
     e.preventDefault();
@@ -507,7 +509,7 @@ export default function EditTable({
             "Unit Cost": productByCode.cost,
             "Total Cost": "",
             Profit: "",
-            "Price Band": "",
+            Band: "",
           };
         }
         return row;
@@ -543,7 +545,7 @@ export default function EditTable({
 
   // FUNCIONALIDAD TECLA ENTER
 
-  const handleKeyDown = async (e, rowIndex, fieldName) => {
+  const handleKeyDown = async (e, columnIndex, rowIndex, fieldName) => {
     if (e.key === "Enter" && e.target.tagName.toLowerCase() !== "textarea") {
       e.preventDefault();
 
@@ -551,19 +553,11 @@ export default function EditTable({
 
       if (fieldName === "Code" && currentValues["Code"]?.trim() !== "") {
         productCode = currentValues["Code"];
-      } else if (
-        fieldName === "Description" &&
-        currentValues["Description"].trim() !== ""
-      ) {
-        const selectedProduct = DescriptionData.find(
-          (item) => item.productName === currentValues["Description"]
-        );
-        productCode = selectedProduct ? selectedProduct.code : "";
       }
 
       if (productCode) {
-        await fetchProductCode(rowIndex, productCode);
-        // synchronizeExistingCodes();
+        await fetchProductCode(columnIndex, rowIndex, productCode);
+        synchronizeExistingCodes();
       }
 
       const nextRowIndex = rowIndex + 1;
@@ -602,14 +596,35 @@ export default function EditTable({
       synchronizeExistingCodes();
       setShouldSynchronize(false);
 
-      setTimeout(() => {
-        console.log("exist", existingCodes);
-      }, 300);
+      // setTimeout(() => {
+      console.log("exist", existingCodes);
+      // }, 300);
     }
-  }, [shouldSynchronize])
-  
+  }, [shouldSynchronize, rows]);
 
-  const fetchProductCode = async (rowIndex) => {
+  const handleCloseModal = (event) => {
+    event.stopPropagation();
+    setShowErrorDuplicate(false);
+    console.log(
+      "🚀 ~ setTimeout ~ activeColumnIndex index column que llega :",
+      activeColumnIndex
+    );
+    console.log(
+      "🚀 ~ setTimeout ~ activeInputIndex index row que llega:",
+      activeInputIndex
+    );
+    setTimeout(() => {
+      const inputToFocus = document.querySelector(
+        `input[data-row-index="${activeInputIndex}"][data-column-index="${activeColumnIndex}"]`
+      );
+      console.log("🚀 ~ setTimeout ~ inputToFocus:", inputToFocus);
+      if (inputToFocus) {
+        inputToFocus.focus();
+      }
+    }, 50);
+  };
+
+  const fetchProductCode = async (columnIndex, rowIndex) => {
     try {
       // Obtener el valor del input de "Code" desde la fila
       const currentProductCode = rows[rowIndex]["Code"] || "0";
@@ -621,36 +636,42 @@ export default function EditTable({
           : currentProductCode;
 
       const lowerCodeToUse = codeToUse.toLowerCase();
+      const condition = codeToUse
+        ? existingCodes.has(lowerCodeToUse)
+        : existingCodes.has(rows[rowIndex].Code.toLowerCase()) ||
+          existingCodes.has(lowerCaseCode) ||
+          existingCodes.has(lowerCodeToUse);
 
-      console.log("🚀 ~ fetchProductCode ~ lowerCaseCode:", lowerCodeToUse);
-      if (
-        existingCodes.has(lowerCaseCode) ||
-        existingCodes.has(rows[rowIndex].Code.toLowerCase()) ||
-        existingCodes.has(lowerCaseCode) ||
-        existingCodes.has(lowerCodeToUse)
-      ) {
-        console.log(existingCodes);
+      if (condition) {
+        setActiveInputIndex(rowIndex);
+        setActiveColumnIndex(columnIndex);
         setShowErrorDuplicate(true);
-        // synchronizeExistingCodes();
-        
+        synchronizeExistingCodes();
+
         const updatedRows = rows.map((row, index) => {
           if (index === rowIndex) {
             setShouldSynchronize(true);
-            return { ...initialRowsState, isExistingProduct: row.isExistingProduct };
+            return {
+              ...initialRowsState,
+              isExistingProduct: row.isExistingProduct,
+            };
           }
           return row;
         });
-        
+
         setRows(updatedRows);
         return;
       }
-      console.log("no entré al condicional, este es el codigo", codeToUse);
       const response = await axios.get(`${presentationsCode}${codeToUse}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
       const productByCodeData = response.data.data[0];
+      console.log(
+        "🚀 ~ fetchProductCode ~ productByCodeData:",
+        productByCodeData
+      );
 
       const updatedRows = rows.map((row, index) => {
         if (
@@ -660,6 +681,12 @@ export default function EditTable({
         ) {
           return {
             ...row,
+            Code: productByCodeData.presentation_code,
+            Description: productByCodeData.product_name,
+            Packsize: productByCodeData.presentation_name,
+            UOM: productByCodeData.uom,
+            Price: productByCodeData.price,
+            "Unit Cost": productByCodeData.cost,
             id_presentations: productByCodeData.id_presentations,
           };
         }
@@ -685,10 +712,6 @@ export default function EditTable({
     } catch (error) {
       console.error("Error al hacer la solicitud:", error.message);
       const currentProductCode = rows[rowIndex]["Code"] || "0";
-      console.log(
-        "🚀 ~ fetchProductCode ~ currentProductCode:",
-        currentProductCode
-      );
       if (currentProductCode != 0) {
         setShowErrorCode(true);
       }
@@ -736,8 +759,11 @@ export default function EditTable({
         observation: specialRequirements,
         total: parseFloat(totalPriceSum),
         total_tax: parseFloat(totalTaxSum),
+        customers_ref: customersRef,
         products: filteredProducts,
       };
+
+      console.log("jsonOrderDataedit", jsonOrderData);
       const response = await axios.post(
         `${editStorageOrder}${orderDetail.reference}`,
         jsonOrderData,
@@ -748,6 +774,7 @@ export default function EditTable({
         }
       );
       setSpecialRequirements("");
+      setOrderDetail("");
       setShowConfirmModal(true);
       setTimeout(() => {
         router.push("/");
@@ -759,20 +786,15 @@ export default function EditTable({
 
   // BORRAR CASILLAS SI SE BORRA EL CODE
   const handleCodeChange = (e, rowIndex, column) => {
-    console.log(
-      "🚀 ~ handleCodeChange ~ previousCode[rowIndex]:",
-      previousCode[rowIndex]
-    );
     const newCodeValue = e.target.value.toLowerCase();
     setCurrentValues((prevValues) => ({
-      ...prevValues,
       [column]: newCodeValue,
     }));
 
     if (column === "Code") {
       if (newCodeValue.trim() === "") {
         const currentCode = previousCode[rowIndex];
-        // synchronizeExistingCodes();
+        synchronizeExistingCodes();
 
         const updatedRows = rows.map((row, index) => {
           if (index === rowIndex) {
@@ -810,6 +832,16 @@ export default function EditTable({
     }
   };
 
+  const handleInputFocus = (e, fieldName) => {
+    if (fieldName === "quantity") {
+      const quantityValue =
+        e.target.value.trim() !== "" ? e.target.value.trim() : "0";
+      setCurrentValues((prevValues) => ({
+        quantity: quantityValue,
+      }));
+    }
+  };
+
   return (
     <div className="flex flex-col p-8">
       {isLoading ? (
@@ -822,11 +854,11 @@ export default function EditTable({
             <form
               ref={form}
               onKeyUp={(event) => onEnterKey(event)}
-              className="m-1 whitespace-nowrap"
+              className=" whitespace-nowrap mb-4 mx-4"
             >
-              <table className="w-full text-sm text-center table-auto">
-                <thead className="text-white">
-                  <tr>
+              <table className="w-[100%] text-sm text-center table-auto bg-white rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.1)]">
+                <thead className="sticky top-0 shadow-[0px_11px_15px_-3px_#edf2f7] bg-white text-center">
+                  <tr className="border-b-2 border-stone-100  text-dark-blue">
                     {columns.map((column, index) => {
                       const isColumnVisible = initialColumns.includes(column);
                       const firstVisibleColumnIndex = columns.findIndex((col) =>
@@ -844,7 +876,7 @@ export default function EditTable({
                           <th
                             key={index}
                             scope="col"
-                            className={`py-3 px-2 bg-white capitalize ${
+                            className={`py-3 px-2 capitalize ${
                               index === firstVisibleColumnIndex
                                 ? "rounded-tl-lg"
                                 : ""
@@ -863,6 +895,8 @@ export default function EditTable({
                                 ? "w-40"
                                 : column === "Code"
                                 ? "w-[8em]"
+                                : column === "Description"
+                                ? "w-auto"
                                 : ""
                             }`}
                             onContextMenu={(e) => handleContextMenu(e)}
@@ -874,7 +908,7 @@ export default function EditTable({
                     })}
                   </tr>
                 </thead>
-                <tbody className="border border-1 bg-white">
+                <tbody className="text-left">
                   {rows.map((row, rowIndex) => (
                     <tr
                       key={rowIndex}
@@ -882,7 +916,7 @@ export default function EditTable({
                         row.state === "N/A"
                           ? " line-through text-primary-blue decoration-dark-blue"
                           : ""
-                      }`}
+                      } text-dark-blue border-b-2 border-stone-100`}
                     >
                       {/* CODIGO DE PRODUCTO */}
                       {columns.map(
@@ -890,7 +924,7 @@ export default function EditTable({
                           initialColumns.includes(column) && (
                             <React.Fragment key={columnIndex}>
                               <td
-                                className={`px-3 py-[0.2em] border border-1 border-x-gray-100 `}
+                                className={`pl-4 py-[0.2em] w-auto`}
                                 tabIndex={0}
                                 style={{ overflow: "visible" }}
                               >
@@ -905,12 +939,31 @@ export default function EditTable({
                                   "Total Price",
                                   "Unit Cost",
                                   "Profit",
-                                  "Price Band",
+                                  "Band",
                                   "Total Cost",
+                                  "Code",
                                 ].includes(column) ? (
                                   <span
                                     onClick={() => setIsSelectDisabled(false)}
                                   >
+                                    {column === "Code" && (
+                                      <div className="flex flex-row items-center">
+                                        <div
+                                          className={`w-2 h-2 rounded-full ${
+                                            row.state === "SHORT" ||
+                                            row.state === "ND"
+                                              ? "bg-danger"
+                                              : row.state === "PD" ||
+                                                row.state === "FULL"
+                                              ? "bg-green"
+                                              : row.state === "N/A"
+                                              ? "bg-primary-blue"
+                                              : "bg-gray-input"
+                                          } mr-2`}
+                                        />
+                                        <p>{row[column]}</p>
+                                      </div>
+                                    )}
                                     {column === "Packsize" && row[column]}
                                     {column === "UOM" && row[column]}
                                     {column === "price" && calculatePrice(row)}
@@ -924,11 +977,14 @@ export default function EditTable({
                                     {column === "Unit Cost" && row[column]}
                                     {column === "Profit" &&
                                       calculateProfit(row)}
-                                    {column === "Price Band" && row[column]}
+                                    {column === "Band" && row[column]}
                                     {column === "Total Cost" &&
                                       calculateTotalCost(row)}
                                     {column === "Description" && (
                                       <Select
+                                        data-column-index={columnIndex}
+                                        data-row-index={rowIndex}
+                                        ref={inputRefs[column][rowIndex]}
                                         className="w-full"
                                         menuPortalTarget={document.body}
                                         menuPlacement="auto"
@@ -953,7 +1009,6 @@ export default function EditTable({
                                           value: row[column] || "",
                                         }}
                                         onChange={(selectedDescription, e) => {
-                                          console.log(DescriptionData);
                                           setCurrentValues((prevValues) => ({
                                             // ...prevValues,
                                             [column]: selectedDescription.code,
@@ -963,7 +1018,10 @@ export default function EditTable({
                                           updatedRows[rowIndex][column] =
                                             selectedDescription.code;
                                           if (selectedDescription.code) {
-                                            fetchProductCode(rowIndex);
+                                            fetchProductCode(
+                                              columnIndex,
+                                              rowIndex
+                                            );
                                           }
                                           // setRows(updatedRows);
                                         }}
@@ -997,7 +1055,9 @@ export default function EditTable({
                                           }),
                                         }}
                                         isDisabled={
-                                          row.isExistingProduct && isEditable
+                                          (row.isExistingProduct &&
+                                            isEditable) ||
+                                          isSelectDisabled
                                         }
                                         onBlur={() => setIsSelectDisabled(true)}
                                       />
@@ -1005,6 +1065,8 @@ export default function EditTable({
                                   </span>
                                 ) : (
                                   <input
+                                    data-column-index={columnIndex}
+                                    data-row-index={rowIndex}
                                     type={inputTypes[column]}
                                     ref={inputRefs[column][rowIndex]}
                                     data-field-name={column}
@@ -1021,6 +1083,11 @@ export default function EditTable({
                                         : ""
                                     }`}
                                     value={row[column] || ""}
+                                    onFocus={(e) => {
+                                      if (column === "quantity") {
+                                        handleInputFocus(e, "quantity");
+                                      }
+                                    }}
                                     onChange={(e) => {
                                       if (column === "Net") {
                                         let newValue = parseFloat(
@@ -1030,7 +1097,6 @@ export default function EditTable({
                                         newValue = newValue.toFixed(2);
                                       }
                                       setCurrentValues((prevValues) => ({
-                                        ...prevValues,
                                         [column]: e.target.value,
                                       }));
 
@@ -1042,7 +1108,12 @@ export default function EditTable({
                                     }}
                                     step={0.1}
                                     onKeyDown={(e) =>
-                                      handleKeyDown(e, rowIndex, column)
+                                      handleKeyDown(
+                                        e,
+                                        columnIndex,
+                                        rowIndex,
+                                        column
+                                      )
                                     }
                                     onKeyPress={(e) => {
                                       if (
@@ -1166,7 +1237,7 @@ export default function EditTable({
       />
       <ModalOrderError
         isvisible={showErrorDuplicate}
-        onClose={() => setShowErrorDuplicate(false)}
+        onClose={() => handleCloseModal(event)}
         error={orderError}
         title={"Duplicate code"}
         message={"The product you are entering is duplicate."}

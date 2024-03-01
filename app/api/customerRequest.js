@@ -104,6 +104,7 @@ export const fetchCustomersSupplier = async (
         },
       }
     );
+    console.log("🚀 ~ response:", response)
 
     const newCustomers = Array.isArray(response.data.customers)
       ? response.data.customers
