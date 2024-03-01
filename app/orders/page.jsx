@@ -257,7 +257,10 @@ const OrderView = () => {
         link.style.display = "none";
         document.body.appendChild(link);
         link.click();
-        document.body.removeChild(link);
+        if (document.body.contains(link)) {
+          console.log("entra aca removeChild");
+          document.body.removeChild(link);
+        }
         URL.revokeObjectURL(downloadUrl);
 
         // Para abrir automaticamente el archivo
@@ -298,9 +301,11 @@ const OrderView = () => {
   };
 
   const filteredOrders = selectedRoute
-    ? sortedOrders.filter(
-      (order) => order.route.toLowerCase() === selectedRoute.toLowerCase()
-    ).sort((a, b) => b.reference - a.reference)
+    ? sortedOrders
+        .filter(
+          (order) => order.route.toLowerCase() === selectedRoute.toLowerCase()
+        )
+        .sort((a, b) => b.reference - a.reference)
     : sortedOrders.sort((a, b) => b.reference - a.reference);
 
   const statusColorClass = (status) => {
