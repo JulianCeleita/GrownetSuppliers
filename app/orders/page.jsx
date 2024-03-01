@@ -23,6 +23,7 @@ import usePercentageStore from "../store/usePercentageStore";
 import useTokenStore from "../store/useTokenStore";
 import useUserStore from "../store/useUserStore";
 import useWorkDateStore from "../store/useWorkDateStore";
+import Image from "next/image";
 
 export const customStyles = {
   placeholder: (provided) => ({
@@ -48,7 +49,7 @@ const OrderView = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [orders, setOrders] = useState([]);
   const { user } = useUserStore();
-  console.log("🚀 ~ OrderView ~ user:", user)
+  console.log("🚀 ~ OrderView ~ user:", user);
   const [dateFilter, setDateFilter] = useState("today");
   const [showAllOrders, setShowAllOrders] = useState(false);
   const [showDatePicker, setShowDatePicker] = useState(false);
@@ -80,10 +81,10 @@ const OrderView = () => {
 
   const formattedDate = selectedDate
     ? new Date(selectedDate).toLocaleDateString("es-CO", {
-      day: "2-digit",
-      month: "2-digit",
-      year: "2-digit",
-    })
+        day: "2-digit",
+        month: "2-digit",
+        year: "2-digit",
+      })
     : formatDateToShow(workDate);
   const formatDateToTransform = (dateString) => {
     const date = new Date(dateString);
@@ -305,28 +306,28 @@ const OrderView = () => {
 
   const filteredOrders = selectedRoute
     ? sortedOrders
-      .filter(
-        (order) =>
-          order.route.toLowerCase() === selectedRoute.toLowerCase() &&
-          (order.reference
-            .toString()
-            .toLowerCase()
-            .includes(searchQuery.toLowerCase()) ||
-            order.accountName
+        .filter(
+          (order) =>
+            order.route.toLowerCase() === selectedRoute.toLowerCase() &&
+            (order.reference
+              .toString()
               .toLowerCase()
-              .includes(searchQuery.toLowerCase()))
-      )
-      .sort((a, b) => b.reference - a.reference)
+              .includes(searchQuery.toLowerCase()) ||
+              order.accountName
+                .toLowerCase()
+                .includes(searchQuery.toLowerCase()))
+        )
+        .sort((a, b) => b.reference - a.reference)
     : sortedOrders
-      .filter(
-        (order) =>
-          order.reference
-            .toString()
-            .toLowerCase()
-            .includes(searchQuery.toLowerCase()) ||
-          order.accountName.toLowerCase().includes(searchQuery.toLowerCase())
-      )
-      .sort((a, b) => b.reference - a.reference);
+        .filter(
+          (order) =>
+            order.reference
+              .toString()
+              .toLowerCase()
+              .includes(searchQuery.toLowerCase()) ||
+            order.accountName.toLowerCase().includes(searchQuery.toLowerCase())
+        )
+        .sort((a, b) => b.reference - a.reference);
 
   // console.log("filteredOrders", filteredOrders);
 
@@ -366,12 +367,13 @@ const OrderView = () => {
           </Link>
         </div>
         <div
-          className={`flex ml-10 mb-0 items-center space-x-2 mt-${filterType === "range" && window.innerWidth < 1500
+          className={`flex ml-10 mb-0 items-center space-x-2 mt-${
+            filterType === "range" && window.innerWidth < 1500
               ? "[45px]"
               : filterType === "date" && window.innerWidth < 1300
-                ? "[50px]"
-                : "[20px]"
-            }
+              ? "[50px]"
+              : "[20px]"
+          }
           `}
         >
           <div className="">
@@ -518,9 +520,11 @@ const OrderView = () => {
                   <div className="flex col-span-1 items-center justify-center">
                     {showPercentage === null ? (
                       <div className="flex items-center justify-center bg-primary-blue rounded-full w-11 h-11 2xl:w-16 2xl:h-16">
-                        <img
-                          src="./loadingBlanco.png"
+                        <Image
+                          src="/loadingBlanco.png"
                           alt="Percent"
+                          width={200}
+                          height={200}
                           className="w-8 h-5 2xl:w-10 2xl:h-7"
                         />
                       </div>
