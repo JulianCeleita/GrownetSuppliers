@@ -176,7 +176,6 @@ const CreateOrderView = () => {
     }
   };
   useEffect(() => {
-    if (arrows) {
       fetchCustomersDate(
         token,
         orderDate,
@@ -184,7 +183,6 @@ const CreateOrderView = () => {
         setCustomerDate,
         setShowErrorRoutes
       );
-    }
   }, [orderDate, selectedAccNumber2, arrows]);
   const restaurantList = Array.isArray(restaurants) ? restaurants : [];
   //VENTANA TOTAL
@@ -219,9 +217,8 @@ const CreateOrderView = () => {
     setSelectedAccName(selectedOption.value);
     setIsDropdownVisible(false);
     setSelectedAccNumber2(selectedOption.accNumber);
-    if (dateInputRef.current) {
-      dateInputRef.current.showPicker();
-      dateInputRef.current.focus();
+    if (customerInputRef.current) {
+      customerInputRef.current.focus();
     }
   };
   const handleDateChange = (e) => {
