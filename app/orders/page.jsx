@@ -262,15 +262,15 @@ const OrderView = () => {
       .then((response) => {
         // para guardar el pdf
         const blob = new Blob([response.data], { type: "application/pdf" });
-        const downloadUrl = URL.createObjectURL(blob);
-        const link = document.createElement("a");
-        link.href = downloadUrl;
-        link.setAttribute("download", "invoice.pdf");
-        link.style.display = "none";
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        URL.revokeObjectURL(downloadUrl);
+        // const downloadUrl = URL.createObjectURL(blob);
+        // const link = document.createElement("a");
+        // link.href = downloadUrl;
+        // link.setAttribute("download", "invoice.pdf");
+        // link.style.display = "none";
+        // document.body.appendChild(link);
+        // link.click();
+        // document.body.removeChild(link);
+        // URL.revokeObjectURL(downloadUrl);
 
         // Para abrir automaticamente el archivo
         const fileURL = URL.createObjectURL(blob);
