@@ -268,6 +268,7 @@ const OrderView = () => {
         document.body.appendChild(link);
         link.click();
         if (document.body.contains(link)) {
+          console.log("entro aqui en removeChild");
           document.body.removeChild(link);
         }
         URL.revokeObjectURL(downloadUrl);
