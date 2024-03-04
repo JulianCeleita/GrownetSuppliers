@@ -33,6 +33,7 @@ export const fetchOrderDetail = async (
       ? response.data.order
       : [];
     setOrderDetail(response.data.order);
+    console.log("Detalles de la orden: ", response.data.order);
     setIsLoading(false);
   } catch (error) {
     console.error("Error al obtener el detalle:", error);
@@ -114,7 +115,6 @@ export default function EditTable({
   setSpecialRequirements,
   percentageDetail,
   dataLoaded,
-  customersRef,
 }) {
   // const [rows, setRows] = useState(
   //   Array.from({ length: 0 }, () => ({ ...initialRowsState }))
@@ -318,6 +318,10 @@ export default function EditTable({
       setExistingCodes(newExistingCodes);
     }
   }, [orderDetail, percentageDetail, dataLoaded]);
+
+  // useEffect(() => {
+  //   console.log("existing codes", existingCodes);
+  // }, [existingCodes]);
 
   const handleContextMenu = (e) => {
     e.preventDefault();
@@ -593,16 +597,24 @@ export default function EditTable({
     if (shouldSynchronize) {
       synchronizeExistingCodes();
       setShouldSynchronize(false);
+
+      // setTimeout(() => {
+      console.log("exist", existingCodes);
+      // }, 300);
     }
   }, [shouldSynchronize, rows]);
 
   const handleCloseModal = (event) => {
     event.stopPropagation();
     setShowErrorDuplicate(false);
+    console.log("🚀 ~ setTimeout ~ activeColumnIndex index column que llega :", activeColumnIndex)
+    console.log("🚀 ~ setTimeout ~ activeInputIndex index row que llega:", activeInputIndex)
     setTimeout(() => {
-      const inputToFocus = document.querySelector(
-        `input[data-row-index="${activeInputIndex}"][data-column-index="${activeColumnIndex}"]`
-      );
+      const inputToFocus = document.querySelector(`input[data-row-index="${activeInputIndex}"][data-column-index="${activeColumnIndex}"]`);
+      console.log("🚀 ~ setTimeout ~ inputToFocus:", inputToFocus)
+      if (inputToFocus) {
+        inputToFocus.focus();
+      }
     }, 50);
   };
 
@@ -650,6 +662,10 @@ export default function EditTable({
         },
       });
       const productByCodeData = response.data.data[0];
+      console.log(
+        "🚀 ~ fetchProductCode ~ productByCodeData:",
+        productByCodeData
+      );
 
       const updatedRows = rows.map((row, index) => {
         if (
@@ -737,10 +753,8 @@ export default function EditTable({
         observation: specialRequirements,
         total: parseFloat(totalPriceSum),
         total_tax: parseFloat(totalTaxSum),
-        customers_ref: customersRef,
         products: filteredProducts,
       };
-
       const response = await axios.post(
         `${editStorageOrder}${orderDetail.reference}`,
         jsonOrderData,
@@ -751,7 +765,6 @@ export default function EditTable({
         }
       );
       setSpecialRequirements("");
-      setOrderDetail("");
       setShowConfirmModal(true);
       setTimeout(() => {
         router.push("/");
@@ -818,11 +831,10 @@ export default function EditTable({
       }));
     }
   };
-
+  
   const findProductById = (productId) => {
     return orderDetail.products.find((product) => product.presentations_code === productId);
   };
-
 
   return (
     <div className="flex flex-col p-8">

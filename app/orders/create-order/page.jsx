@@ -20,7 +20,6 @@ import useTokenStore from "../../store/useTokenStore";
 import useUserStore from "../../store/useUserStore";
 import { fetchCustomersDate } from "@/app/api/ordersRequest";
 import ModalOrderError from "@/app/components/ModalOrderError";
-
 const CreateOrderView = () => {
   const { token } = useTokenStore();
   const {
@@ -52,13 +51,10 @@ const CreateOrderView = () => {
   const accountInputRef = useRef(null);
   const customerInputRef = useRef(null);
   const [shouldFocusCode, setShouldFocusCode] = useState(false);
-
   const [sendData, setSendData] = useState(false);
   const [filledRowCount, setFilledRowCount] = useState(0);
-
   const [showErrorRoutes, setShowErrorRoutes] = useState(false);
   const [arrows, setArrows] = useState(false);
-
   //Fecha input
   function getCurrentDate() {
     const today = new Date();
@@ -76,7 +72,6 @@ const CreateOrderView = () => {
     const day = String(today.getDate()).padStart(2, "0");
     return `${year}-${month}-${day}`;
   }
-
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -85,17 +80,14 @@ const CreateOrderView = () => {
             Authorization: `Bearer ${token}`,
           },
         });
-
         const sortedRestaurants = responseRestaurants.data.customers.sort(
           (a, b) => a.accountName.localeCompare(b.accountName)
         );
-
         setRestaurants(sortedRestaurants);
       } catch (error) {
         console.error("Error fetching restaurants data", error);
       }
     };
-
     const fetchDataBySupplier = async () => {
       try {
         const responseRestaurants = await axios.get(
@@ -106,55 +98,45 @@ const CreateOrderView = () => {
             },
           }
         );
-
         const sortedRestaurants = responseRestaurants.data.customers.sort(
           (a, b) => a?.accountName?.localeCompare(b.accountName)
         );
-
         setRestaurants(sortedRestaurants);
       } catch (error) {
         console.error("Error fetching restaurants data by supplier", error);
       }
     };
-
     if (user?.ron_name !== "AdminGrownet") {
       fetchDataBySupplier();
     } else {
       fetchData();
     }
-
     if (selectedAccNumber) {
       setSelectedAccName(null);
       fetchDataAccNumber();
     }
-
     if (selectedAccName) {
       setSelectedAccNumber(null);
       fetchDataAccName();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [token, selectedAccNumber, selectedAccName]);
-
   useEffect(() => {
     if (accountInputRef.current) {
       accountInputRef.current.focus();
     }
   }, []);
-
   // Click en la pantalla
   useEffect(() => {
     const handleClickOutside = () => {
       setIsDropdownVisible(false);
       setIsNameDropdownVisible(false);
     };
-
     document.addEventListener("click", handleClickOutside);
-
     return () => {
       document.removeEventListener("click", handleClickOutside);
     };
   }, [isDropdownVisible, isNameDropdownVisible, customers]);
-
   const fetchDataAccNumber = async () => {
     try {
       const responseAccNumber = await axios.get(
@@ -165,12 +147,10 @@ const CreateOrderView = () => {
           },
         }
       );
-
       const updatedCustomers = {
         ...responseAccNumber.data.customer,
         orderDate: orderDate,
       };
-
       setCustomers(updatedCustomers);
     } catch (error) {
       console.error("Error fetching AccNumber data", error);
@@ -186,20 +166,16 @@ const CreateOrderView = () => {
           },
         }
       );
-
       const updatedCustomers = {
         ...responseAccNumber.data.customer,
         orderDate: orderDate,
       };
-
       setCustomers(updatedCustomers);
     } catch (error) {
       console.error("Error fetching AccNumber data", error);
     }
   };
-
   useEffect(() => {
-    if (arrows) {
       fetchCustomersDate(
         token,
         orderDate,
@@ -207,11 +183,8 @@ const CreateOrderView = () => {
         setCustomerDate,
         setShowErrorRoutes
       );
-    }
   }, [orderDate, selectedAccNumber2, arrows]);
-
   const restaurantList = Array.isArray(restaurants) ? restaurants : [];
-
   //VENTANA TOTAL
   const [showCheckboxColumnTotal, setShowCheckboxColumnTotal] = useState(false);
   const menuRefTotal = useRef(null);
@@ -227,7 +200,6 @@ const CreateOrderView = () => {
     },
     { name: "Profit (%)", price: totalProfitPercentage + "%" },
   ];
-
   // const handleContextMenuTotal = (e) => {
   //   e.preventDefault();
   //   setShowCheckboxColumnTotal(!showCheckboxColumnTotal);
@@ -241,31 +213,25 @@ const CreateOrderView = () => {
       setShowCheckboxColumnTotal(false);
     }
   };
-
   const handleSelectChange = (selectedOption) => {
     setSelectedAccName(selectedOption.value);
     setIsDropdownVisible(false);
     setSelectedAccNumber2(selectedOption.accNumber);
-    if (dateInputRef.current) {
-      dateInputRef.current.showPicker();
-      dateInputRef.current.focus();
+    if (customerInputRef.current) {
+      customerInputRef.current.focus();
     }
   };
-
   const handleDateChange = (e) => {
     setOrderDate(e.target.value);
   };
-
   const handleKeyPress = (e) => {
     if (customerInputRef.current) {
       customerInputRef.current.focus();
     }
   };
-
   const resetStates = () => {
     setCustomers("");
   };
-
   useEffect(() => {
     document.addEventListener("click", handleClickOutsideTotal);
     return () => {
@@ -273,28 +239,23 @@ const CreateOrderView = () => {
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
   //RUN BUTTON WITH CRT + ENTER
   const handleKeyDown = (event) => {
     if (event.ctrlKey && event.key === "Enter") {
       setConfirmCreateOrder(true);
     }
   };
-
   const handleCustomerRefKeyDown = (event) => {
     if (event.key === "Enter") {
       setShouldFocusCode(true);
     }
   };
-
   useEffect(() => {
     document.addEventListener("keydown", handleKeyDown);
-
     return () => {
       document.removeEventListener("keydown", handleKeyDown);
     };
   }, []);
-
   return (
     <Layout>
       <div className="max-w-[650px] -mt-[110px] ml-[115px]">
@@ -320,7 +281,6 @@ const CreateOrderView = () => {
             />
           </div>
         </div>
-
         <div className="flex items-center">
           <h3 className="w-[42%] text-white">Account number:</h3>
           <div className="relative mb-2 w-[100%]">
@@ -395,7 +355,6 @@ const CreateOrderView = () => {
           )}
         </div>
       </section>
-
       <div className="flex items-center ml-10 mt-10 w-[70%] px-2 py-1 rounded-md">
         <label className="text-dark-blue">Date: </label>
         <input
@@ -425,7 +384,6 @@ const CreateOrderView = () => {
           className="border p-2 rounded-md min-w-[150px]"
           onBlur={() => setArrows(false)}
         />
-
         <button
           className="bg-dark-blue rounded-md ml-3 hover:scale-110 focus:outline-none flex text-white px-2 py-1 items-center align-middle"
           onClick={() => setDetails(!details)}
@@ -486,7 +444,6 @@ const CreateOrderView = () => {
                 </div>
               </>
             )}
-
             <div className="flex flex-col items-start">
               <h3 className="font-medium">Special requirements:</h3>
               <input

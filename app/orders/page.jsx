@@ -49,7 +49,6 @@ const OrderView = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [orders, setOrders] = useState([]);
   const { user } = useUserStore();
-  console.log("🚀 ~ OrderView ~ user:", user);
   const [dateFilter, setDateFilter] = useState("today");
   const [showAllOrders, setShowAllOrders] = useState(false);
   const [showDatePicker, setShowDatePicker] = useState(false);
@@ -260,7 +259,6 @@ const OrderView = () => {
         responseType: "blob",
       })
       .then((response) => {
-        // para guardar el pdf
         const blob = new Blob([response.data], { type: "application/pdf" });
         // const downloadUrl = URL.createObjectURL(blob);
         // const link = document.createElement("a");
@@ -269,10 +267,13 @@ const OrderView = () => {
         // link.style.display = "none";
         // document.body.appendChild(link);
         // link.click();
-        // document.body.removeChild(link);
+        // if (document.body.contains(link)) {
+        //   console.log("entro aqui en removeChild");
+        //   document.body.removeChild(link);
+        // }
         // URL.revokeObjectURL(downloadUrl);
 
-        // Para abrir automaticamente el archivo
+        // Para abrir automáticamente el archivo
         const fileURL = URL.createObjectURL(blob);
         window.open(fileURL);
       })
@@ -489,25 +490,23 @@ const OrderView = () => {
           </button>
         </div>
         <section className="absolute top-0 right-5 mt-5 ">
-          <div className="flex gap-2  ">
+          <div className="flex gap-2">
             {filterType !== "range" &&
               formatDateToShow(workDate) === formattedDate && (
-                <div className="px-4 py-4  rounded-3xl flex items-center justify-center  bg-white shadow-[0_8px_30px_rgb(0,0,0,0.12)]">
+                <div className="px-4 py-4 rounded-3xl flex items-center justify-center bg-white shadow-[0_8px_30px_rgb(0,0,0,0.12)]">
                   <div>
-                    <h1 className="text-lg 2xl:text-xl font-bold text-dark-blue">
-                      Today
-                    </h1>
+                    <h1 className="text-xl font-bold text-dark-blue">Today</h1>
                     <div className="flex items-center justify-center text-center">
                       <div className="pr-1">
-                        <p className="text-4xl 2xl:text-5xl font-bold text-primary-blue">
+                        <p className="text-5xl font-bold text-primary-blue">
                           {ordersWorkDate}
                         </p>
                       </div>
                       <div className="grid grid-cols-1 text-left">
-                        <h2 className="text-xs 2xl:text-sm text-dark-blue px-1 font-medium">
+                        <h2 className="text-sm text-dark-blue px-1 font-medium">
                           Orders
                         </h2>
-                        <div className="flex items-center text-center justify-center py-1 px-2 w-[80px] 2xl:w-[95px] rounded-lg text-sm bg-background-green">
+                        <div className="flex items-center text-center justify-center py-1 px-2 w-[95px] rounded-lg text-sm bg-background-green">
                           <CalendarIcon className="h-4 w-4 text-green" />
                           <h2 className="ml-1 text-green">
                             {formatDateToShow(workDate)}
@@ -537,11 +536,11 @@ const OrderView = () => {
 
             <div className="flex gap-3 px-4 py-4 items-center justify-center rounded-3xl bg-white shadow-[0_8px_30px_rgb(0,0,0,0.12)]">
               <div>
-                <h1 className="flex text-lg 2xl:text-xl font-bold items-center justify-center">
+                <h1 className="flex text-xl font-bold items-center justify-center">
                   Total net
                 </h1>
                 <div className="flex justify-center text-center">
-                  <p className="text-[15px] 2xl:text-[25px] font-bold text-primary-blue p-0 m-0">
+                  <p className="text-[25px] font-bold text-primary-blue p-0 m-0">
                     £
                     {totalNet.total_net
                       ? parseFloat(totalNet.total_net).toFixed(2)
@@ -550,12 +549,12 @@ const OrderView = () => {
                 </div>
               </div>
               <div className="border-l border-green border-dashed">
-                <h1 className="flex text-lg 2xl:text-xl font-bold items-center justify-center">
+                <h1 className="flex text-xl font-bold items-center justify-center">
                   Profit
                 </h1>
                 <div className="flex justify-center text-center">
                   <div>
-                    <p className="text-[15px] 2xl:text-[25px] font-bold text-primary-blue pl-2 ">
+                    <p className="text-[25px] font-bold text-primary-blue pl-2">
                       {totalNet.profit
                         ? parseFloat(totalNet.profit).toFixed(2)
                         : "0"}
@@ -588,7 +587,6 @@ const OrderView = () => {
                 <th className="py-4">Profit %</th>
                 <th className="py-4">Route</th>
                 <th className="py-4">Drop</th>
-                <th className="py-4"># Products</th>
                 {/* <th className="py-4">Responsable</th> */}
                 <th className="py-4">Delivery date</th>
                 <th className="py-4 rounded-tr-lg">Status</th>
@@ -659,13 +657,7 @@ const OrderView = () => {
                         className="py-4 pl-4"
                         onClick={(e) => goToOrder(e, order)}
                       >
-                        {order.drop}
-                      </td>
-                      <td
-                        className="py-4 pl-4"
-                        onClick={(e) => goToOrder(e, order)}
-                      >
-                        {order.quantity}
+                        -
                       </td>
                       <td
                         className="py-4 pl-4"
