@@ -33,6 +33,7 @@ export const fetchOrderDetail = async (
       ? response.data.order
       : [];
     setOrderDetail(response.data.order);
+    console.log("Detalles de la orden: ", response.data.order);
     setIsLoading(false);
   } catch (error) {
     console.error("Error al obtener el detalle:", error);
@@ -114,7 +115,6 @@ export default function EditTable({
   setSpecialRequirements,
   percentageDetail,
   dataLoaded,
-  customersRef,
 }) {
   // const [rows, setRows] = useState(
   //   Array.from({ length: 0 }, () => ({ ...initialRowsState }))
@@ -270,10 +270,10 @@ export default function EditTable({
         const quantity = !product.state_definitive
           ? product.quantity
           : product.state_definitive
-          ? product.quantity_definitive
-          : product.state_definitive === "N/A"
-          ? product.quantity_definitive
-          : "";
+            ? product.quantity_definitive
+            : product.state_definitive === "N/A"
+              ? product.quantity_definitive
+              : "";
 
         return {
           state: product.state_definitive,
@@ -316,6 +316,10 @@ export default function EditTable({
       setExistingCodes(newExistingCodes);
     }
   }, [orderDetail, percentageDetail, dataLoaded]);
+
+  // useEffect(() => {
+  //   console.log("existing codes", existingCodes);
+  // }, [existingCodes]);
 
   const handleContextMenu = (e) => {
     e.preventDefault();
@@ -591,16 +595,24 @@ export default function EditTable({
     if (shouldSynchronize) {
       synchronizeExistingCodes();
       setShouldSynchronize(false);
+
+      // setTimeout(() => {
+      console.log("exist", existingCodes);
+      // }, 300);
     }
   }, [shouldSynchronize, rows]);
 
   const handleCloseModal = (event) => {
     event.stopPropagation();
     setShowErrorDuplicate(false);
+    console.log("🚀 ~ setTimeout ~ activeColumnIndex index column que llega :", activeColumnIndex)
+    console.log("🚀 ~ setTimeout ~ activeInputIndex index row que llega:", activeInputIndex)
     setTimeout(() => {
-      const inputToFocus = document.querySelector(
-        `input[data-row-index="${activeInputIndex}"][data-column-index="${activeColumnIndex}"]`
-      );
+      const inputToFocus = document.querySelector(`input[data-row-index="${activeInputIndex}"][data-column-index="${activeColumnIndex}"]`);
+      console.log("🚀 ~ setTimeout ~ inputToFocus:", inputToFocus)
+      if (inputToFocus) {
+        inputToFocus.focus();
+      }
     }, 50);
   };
 
@@ -619,8 +631,8 @@ export default function EditTable({
       const condition = codeToUse
         ? existingCodes.has(lowerCodeToUse)
         : existingCodes.has(rows[rowIndex].Code.toLowerCase()) ||
-          existingCodes.has(lowerCaseCode) ||
-          existingCodes.has(lowerCodeToUse);
+        existingCodes.has(lowerCaseCode) ||
+        existingCodes.has(lowerCodeToUse);
 
       if (condition) {
         setActiveInputIndex(rowIndex);
@@ -648,6 +660,10 @@ export default function EditTable({
         },
       });
       const productByCodeData = response.data.data[0];
+      console.log(
+        "🚀 ~ fetchProductCode ~ productByCodeData:",
+        productByCodeData
+      );
 
       const updatedRows = rows.map((row, index) => {
         if (
@@ -735,11 +751,8 @@ export default function EditTable({
         observation: specialRequirements,
         total: parseFloat(totalPriceSum),
         total_tax: parseFloat(totalTaxSum),
-        customers_ref: customersRef,
         products: filteredProducts,
       };
-
-      console.log("jsonOrderDataedit", jsonOrderData);
       const response = await axios.post(
         `${editStorageOrder}${orderDetail.reference}`,
         jsonOrderData,
@@ -750,7 +763,6 @@ export default function EditTable({
         }
       );
       setSpecialRequirements("");
-      setOrderDetail("");
       setShowConfirmModal(true);
       setTimeout(() => {
         router.push("/");
@@ -852,29 +864,26 @@ export default function EditTable({
                           <th
                             key={index}
                             scope="col"
-                            className={`py-3 px-2 capitalize ${
-                              index === firstVisibleColumnIndex
-                                ? "rounded-tl-lg"
-                                : ""
-                            } ${
-                              index === lastVisibleColumnIndex
+                            className={`py-3 px-2 capitalize ${index === firstVisibleColumnIndex
+                              ? "rounded-tl-lg"
+                              : ""
+                              } ${index === lastVisibleColumnIndex
                                 ? "rounded-tr-lg"
                                 : ""
-                            } ${
-                              column === "quantity" ||
-                              column === "VAT %" ||
-                              column === "UOM" ||
-                              column === "Net"
+                              } ${column === "quantity" ||
+                                column === "VAT %" ||
+                                column === "UOM" ||
+                                column === "Net"
                                 ? "w-20"
                                 : column === "Packsize" ||
                                   column === "Total Price"
-                                ? "w-40"
-                                : column === "Code"
-                                ? "w-[8em]"
-                                : column === "Description"
-                                ? "w-auto"
-                                : ""
-                            }`}
+                                  ? "w-40"
+                                  : column === "Code"
+                                    ? "w-[8em]"
+                                    : column === "Description"
+                                      ? "w-auto"
+                                      : ""
+                              }`}
                             onContextMenu={(e) => handleContextMenu(e)}
                           >
                             <p className="text-lg text-dark-blue">{column}</p>
@@ -888,11 +897,10 @@ export default function EditTable({
                   {rows.map((row, rowIndex) => (
                     <tr
                       key={rowIndex}
-                      className={`${
-                        row.state === "N/A"
-                          ? " line-through text-primary-blue decoration-dark-blue"
-                          : ""
-                      } text-dark-blue border-b-2 border-stone-100`}
+                      className={`${row.state === "N/A"
+                        ? " line-through text-primary-blue decoration-dark-blue"
+                        : ""
+                        } text-dark-blue border-b-2 border-stone-100`}
                     >
                       {/* CODIGO DE PRODUCTO */}
                       {columns.map(
@@ -900,7 +908,7 @@ export default function EditTable({
                           initialColumns.includes(column) && (
                             <React.Fragment key={columnIndex}>
                               <td
-                                className={`pl-4 py-[0.2em] w-auto`}
+                                className={`pl-4 py-[0.2em] w-auto `}
                                 tabIndex={0}
                                 style={{ overflow: "visible" }}
                               >
@@ -917,32 +925,10 @@ export default function EditTable({
                                   "Profit",
                                   "Band",
                                   "Total Cost",
-                                  "Code",
                                 ].includes(column) ? (
                                   <span
                                     onClick={() => setIsSelectDisabled(false)}
                                   >
-                                    {column === "Code" && (
-                                      //Codigo del estado
-                                      <div className="flex flex-row items-center">
-                                        {row[column] != "" && (
-                                          <div
-                                            className={`w-2 h-2 rounded-full ${
-                                              row.state === "SHORT" ||
-                                              row.state === "ND"
-                                                ? "bg-danger"
-                                                : row.state === "PD" ||
-                                                  row.state === "FULL"
-                                                ? "bg-green"
-                                                : row.state === "N/A"
-                                                ? "bg-primary-blue"
-                                                : "bg-gray-input"
-                                            } mr-2`}
-                                          />
-                                        )}
-                                        <p>{row[column]}</p>
-                                      </div>
-                                    )}
                                     {column === "Packsize" && row[column]}
                                     {column === "UOM" && row[column]}
                                     {column === "price" && calculatePrice(row)}
@@ -977,10 +963,10 @@ export default function EditTable({
                                         options={
                                           DescriptionData
                                             ? DescriptionData.map((item) => ({
-                                                value: item.productName,
-                                                label: `${item.code} - ${item.product_name} - ${item.name}`,
-                                                code: item.code,
-                                              }))
+                                              value: item.productName,
+                                              label: `${item.code} - ${item.product_name} - ${item.name}`,
+                                              code: item.code,
+                                            }))
                                             : []
                                         }
                                         value={{
@@ -997,10 +983,7 @@ export default function EditTable({
                                           updatedRows[rowIndex][column] =
                                             selectedDescription.code;
                                           if (selectedDescription.code) {
-                                            fetchProductCode(
-                                              columnIndex,
-                                              rowIndex
-                                            );
+                                            fetchProductCode(columnIndex, rowIndex);
                                           }
                                           // setRows(updatedRows);
                                         }}
@@ -1052,15 +1035,13 @@ export default function EditTable({
                                     disabled={
                                       row.isExistingProduct && isEditable
                                     }
-                                    className={`pl-2 h-[30px] outline-none w-full ${
-                                      inputTypes[column] === "number"
-                                        ? "hide-number-arrows"
-                                        : ""
-                                    } ${
-                                      row.state === "N/A"
+                                    className={`pl-2 h-[30px] outline-none w-full ${inputTypes[column] === "number"
+                                      ? "hide-number-arrows"
+                                      : ""
+                                      } ${row.state === "N/A"
                                         ? " line-through text-primary-blue decoration-black"
                                         : ""
-                                    }`}
+                                      }`}
                                     value={row[column] || ""}
                                     onFocus={(e) => {
                                       if (column === "quantity") {
@@ -1087,12 +1068,7 @@ export default function EditTable({
                                     }}
                                     step={0.1}
                                     onKeyDown={(e) =>
-                                      handleKeyDown(
-                                        e,
-                                        columnIndex,
-                                        rowIndex,
-                                        column
-                                      )
+                                      handleKeyDown(e, columnIndex, rowIndex, column)
                                     }
                                     onKeyPress={(e) => {
                                       if (
