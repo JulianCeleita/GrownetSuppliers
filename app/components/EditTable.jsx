@@ -167,7 +167,9 @@ export default function EditTable({
   const [previousCode, setPreviousCode] = useState({});
   const [activeInputIndex, setActiveInputIndex] = useState(null);
   const [activeColumnIndex, setActiveColumnIndex] = useState(null);
+  const [hoverValue, setHoverValue] = useState("");
 
+  console.log("🚀 ~ orderDetail:", orderDetail)
   const columns = [
     "Code",
     "Description",
@@ -270,10 +272,10 @@ export default function EditTable({
         const quantity = !product.state_definitive
           ? product.quantity
           : product.state_definitive
-          ? product.quantity_definitive
-          : product.state_definitive === "N/A"
-          ? product.quantity_definitive
-          : "";
+            ? product.quantity_definitive
+            : product.state_definitive === "N/A"
+              ? product.quantity_definitive
+              : "";
 
         return {
           state: product.state_definitive,
@@ -619,8 +621,8 @@ export default function EditTable({
       const condition = codeToUse
         ? existingCodes.has(lowerCodeToUse)
         : existingCodes.has(rows[rowIndex].Code.toLowerCase()) ||
-          existingCodes.has(lowerCaseCode) ||
-          existingCodes.has(lowerCodeToUse);
+        existingCodes.has(lowerCaseCode) ||
+        existingCodes.has(lowerCodeToUse);
 
       if (condition) {
         setActiveInputIndex(rowIndex);
@@ -816,6 +818,12 @@ export default function EditTable({
       }));
     }
   };
+
+  const findProductById = (productId) => {
+    return orderDetail.products.find((product) => product.presentations_code === productId);
+  };
+  
+  
   return (
     <div className="flex flex-col p-8">
       {isLoading ? (
@@ -850,29 +858,26 @@ export default function EditTable({
                           <th
                             key={index}
                             scope="col"
-                            className={`py-3 px-2 capitalize ${
-                              index === firstVisibleColumnIndex
-                                ? "rounded-tl-lg"
-                                : ""
-                            } ${
-                              index === lastVisibleColumnIndex
+                            className={`py-3 px-2 capitalize ${index === firstVisibleColumnIndex
+                              ? "rounded-tl-lg"
+                              : ""
+                              } ${index === lastVisibleColumnIndex
                                 ? "rounded-tr-lg"
                                 : ""
-                            } ${
-                              column === "quantity" ||
-                              column === "VAT %" ||
-                              column === "UOM" ||
-                              column === "Net"
+                              } ${column === "quantity" ||
+                                column === "VAT %" ||
+                                column === "UOM" ||
+                                column === "Net"
                                 ? "w-20"
                                 : column === "Packsize" ||
                                   column === "Total Price"
-                                ? "w-40"
-                                : column === "Code"
-                                ? "w-[8em]"
-                                : column === "Description"
-                                ? "w-auto"
-                                : ""
-                            }`}
+                                  ? "w-40"
+                                  : column === "Code"
+                                    ? "w-[8em]"
+                                    : column === "Description"
+                                      ? "w-auto"
+                                      : ""
+                              }`}
                             onContextMenu={(e) => handleContextMenu(e)}
                           >
                             <p className="text-lg text-dark-blue">{column}</p>
@@ -883,14 +888,16 @@ export default function EditTable({
                   </tr>
                 </thead>
                 <tbody className="text-left">
-                  {rows.map((row, rowIndex) => (
+                  {rows.map((row, rowIndex) => {
+                    const product = findProductById(row.Code);
+                    console.log(product)
+                    return (
                     <tr
                       key={rowIndex}
-                      className={`${
-                        row.state === "N/A"
-                          ? " line-through text-primary-blue decoration-dark-blue"
-                          : ""
-                      } text-dark-blue border-b-2 border-stone-100`}
+                      className={`${row.state === "N/A"
+                        ? " line-through text-primary-blue decoration-dark-blue"
+                        : ""
+                        } text-dark-blue border-b-2 border-stone-100`}
                     >
                       {/* CODIGO DE PRODUCTO */}
                       {columns.map(
@@ -925,17 +932,16 @@ export default function EditTable({
                                       <div className="flex flex-row items-center">
                                         {row[column] != "" && (
                                           <div
-                                            className={`w-2 h-2 rounded-full ${
-                                              row.state === "SHORT" ||
+                                            className={`w-2 h-2 rounded-full ${row.state === "SHORT" ||
                                               row.state === "ND"
-                                                ? "bg-danger"
-                                                : row.state === "PD" ||
-                                                  row.state === "FULL"
+                                              ? "bg-danger"
+                                              : row.state === "PD" ||
+                                                row.state === "FULL"
                                                 ? "bg-green"
                                                 : row.state === "N/A"
-                                                ? "bg-primary-blue"
-                                                : "bg-gray-input"
-                                            } mr-2`}
+                                                  ? "bg-primary-blue"
+                                                  : "bg-gray-input"
+                                              } mr-2`}
                                           />
                                         )}
                                         <p>{row[column]}</p>
@@ -975,10 +981,10 @@ export default function EditTable({
                                         options={
                                           DescriptionData
                                             ? DescriptionData.map((item) => ({
-                                                value: item.productName,
-                                                label: `${item.code} - ${item.product_name} - ${item.name}`,
-                                                code: item.code,
-                                              }))
+                                              value: item.productName,
+                                              label: `${item.code} - ${item.product_name} - ${item.name}`,
+                                              code: item.code,
+                                            }))
                                             : []
                                         }
                                         value={{
@@ -1041,85 +1047,104 @@ export default function EditTable({
                                     )}
                                   </span>
                                 ) : (
-                                  <input
-                                    data-column-index={columnIndex}
-                                    data-row-index={rowIndex}
-                                    type={inputTypes[column]}
-                                    ref={inputRefs[column][rowIndex]}
-                                    data-field-name={column}
-                                    disabled={
-                                      row.isExistingProduct && isEditable
-                                    }
-                                    className={`pl-2 h-[30px] outline-none w-full ${
-                                      inputTypes[column] === "number"
+                                  <div
+                                   className="inline-block"
+                                    onMouseEnter={(e) => {
+                                      console.log(row)
+                                      if (column === "quantity") {
+                                        if(product?.quantity === undefined) {
+                                          e.target.value = `${row?.quantity}`;
+                                        } else {
+                                          e.target.value = `${product?.quantity}`;
+                                        }
+                                      }
+                                    }}
+                                    onMouseLeave={(e) => {
+                                      if (column === "quantity") {
+                                        console.log("salí")
+                                        console.log(row)
+                                        e.target.value = `${row.quantity}`;
+                                      }
+                                    }}
+                                  >
+                                    <input
+                                      data-column-index={columnIndex}
+                                      data-row-index={rowIndex}
+                                      type={inputTypes[column]}
+                                      ref={inputRefs[column][rowIndex]}
+                                      data-field-name={column}
+                                      disabled={
+                                        row.isExistingProduct && isEditable
+                                      }
+                                      className={`pl-2 h-[30px] outline-none w-full ${inputTypes[column] === "number"
                                         ? "hide-number-arrows"
                                         : ""
-                                    } ${
-                                      row.state === "N/A"
-                                        ? " line-through text-primary-blue decoration-black"
-                                        : ""
-                                    }`}
-                                    value={row[column] || ""}
-                                    onFocus={(e) => {
-                                      if (column === "quantity") {
-                                        handleInputFocus(e, "quantity");
-                                      }
-                                    }}
-                                    onChange={(e) => {
-                                      if (column === "Net") {
-                                        let newValue = parseFloat(
-                                          e.target.value
-                                        );
+                                        } ${row.state === "N/A"
+                                          ? " line-through text-primary-blue decoration-black"
+                                          : ""
+                                        }`}
+                                      value={row[column] || ""}
+                                      onFocus={(e) => {
+                                        if (column === "quantity") {
+                                          handleInputFocus(e, "quantity");
+                                        }
+                                      }}
+                                      onChange={(e) => {
+                                        if (column === "Net") {
+                                          let newValue = parseFloat(
+                                            e.target.value
+                                          );
 
-                                        newValue = newValue.toFixed(2);
-                                      }
-                                      setCurrentValues((prevValues) => ({
-                                        [column]: e.target.value,
-                                      }));
+                                          newValue = newValue.toFixed(2);
+                                        }
+                                        setCurrentValues((prevValues) => ({
+                                          [column]: e.target.value,
+                                        }));
 
-                                      const updatedRows = [...rows];
-                                      updatedRows[rowIndex][column] =
-                                        e.target.value;
-                                      setRows(updatedRows);
-                                      handleCodeChange(e, rowIndex, column);
-                                    }}
-                                    step={0.1}
-                                    onKeyDown={(e) =>
-                                      handleKeyDown(
-                                        e,
-                                        columnIndex,
-                                        rowIndex,
-                                        column
-                                      )
-                                    }
-                                    onKeyPress={(e) => {
-                                      if (
-                                        column === "Net" &&
-                                        e.charCode === 46
-                                      ) {
-                                        return;
+                                        const updatedRows = [...rows];
+                                        updatedRows[rowIndex][column] =
+                                          e.target.value;
+                                        setRows(updatedRows);
+                                        handleCodeChange(e, rowIndex, column);
+                                      }}
+                                      step={0.1}
+                                      onKeyDown={(e) =>
+                                        handleKeyDown(
+                                          e,
+                                          columnIndex,
+                                          rowIndex,
+                                          column
+                                        )
                                       }
-                                      if (column === "quantity") {
-                                        handleKeyPress(e, column);
-                                      }
-                                      if (
-                                        inputTypes[column] === "number" &&
-                                        (e.charCode < 48 || e.charCode > 57)
-                                      ) {
-                                        e.preventDefault();
-                                      }
-                                    }}
-                                    readOnly={column === "Net" && isReadOnly}
-                                    onDoubleClick={() => setIsReadOnly(false)}
-                                    onBlur={() => setIsReadOnly(true)}
-                                  />
+                                      onKeyPress={(e) => {
+                                        if (
+                                          column === "Net" &&
+                                          e.charCode === 46
+                                        ) {
+                                          return;
+                                        }
+                                        if (column === "quantity") {
+                                          handleKeyPress(e, column);
+                                        }
+                                        if (
+                                          inputTypes[column] === "number" &&
+                                          (e.charCode < 48 || e.charCode > 57)
+                                        ) {
+                                          e.preventDefault();
+                                        }
+                                      }}
+                                      readOnly={column === "Net" && isReadOnly}
+                                      onDoubleClick={() => setIsReadOnly(false)}
+                                      onBlur={() => setIsReadOnly(true)}
+                                    />
+                                  </div>
                                 )}
                               </td>
                             </React.Fragment>
                           )
                       )}
                     </tr>
-                  ))}
+                  )})}
                 </tbody>
               </table>
 
