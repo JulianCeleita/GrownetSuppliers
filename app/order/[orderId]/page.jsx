@@ -357,6 +357,14 @@ const OrderDetailPage = () => {
               <h2 className="text-sm px-1 font-semibold">
                 {orderDetail.state_name}
               </h2>
+              <p className="text-green font-semibold py-1 px-2 rounded-lg text-[15px] bg-background-green text-center">
+                Items:{" "}
+                <span>
+                  {orderDetail && orderDetail.products
+                    ? orderDetail.products.length
+                    : 0}
+                </span>
+              </p>
             </div>
             {/* TODO AGREGAR EN ESTE DIV EL PORCENTAJE DE LOADING PARA RUTA SELECCIONADA */}
             <div className="flex col-span-1 items-center justify-center">
