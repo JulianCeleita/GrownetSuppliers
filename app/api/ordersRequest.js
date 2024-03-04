@@ -122,14 +122,14 @@ export const fetchOrdersDate = async (
     },
     route_id: routeId,
   };
-  console.log("🚀 ~ postData:", postData)
   try {
     const response = await axios.post(ordersDate, postData, {
       headers: {
         Authorization: `Bearer ${token}`,
         "Content-Type": "application/json",
       },
-    });    setTotalNet(response.data);
+    });
+    setTotalNet(response.data);
     setOrders(response.data.orders);
     setIsLoading(false);
     console.log("response data ", response.data);
