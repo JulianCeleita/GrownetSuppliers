@@ -923,20 +923,23 @@ export default function EditTable({
                                     onClick={() => setIsSelectDisabled(false)}
                                   >
                                     {column === "Code" && (
+                                      //Codigo del estado
                                       <div className="flex flex-row items-center">
-                                        <div
-                                          className={`w-2 h-2 rounded-full ${
-                                            row.state === "SHORT" ||
-                                            row.state === "ND"
-                                              ? "bg-danger"
-                                              : row.state === "PD" ||
-                                                row.state === "FULL"
-                                              ? "bg-green"
-                                              : row.state === "N/A"
-                                              ? "bg-primary-blue"
-                                              : "bg-gray-input"
-                                          } mr-2`}
-                                        />
+                                        {row[column] != "" && (
+                                          <div
+                                            className={`w-2 h-2 rounded-full ${
+                                              row.state === "SHORT" ||
+                                              row.state === "ND"
+                                                ? "bg-danger"
+                                                : row.state === "PD" ||
+                                                  row.state === "FULL"
+                                                ? "bg-green"
+                                                : row.state === "N/A"
+                                                ? "bg-primary-blue"
+                                                : "bg-gray-input"
+                                            } mr-2`}
+                                          />
+                                        )}
                                         <p>{row[column]}</p>
                                       </div>
                                     )}
