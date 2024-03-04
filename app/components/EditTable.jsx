@@ -167,7 +167,9 @@ export default function EditTable({
   const [previousCode, setPreviousCode] = useState({});
   const [activeInputIndex, setActiveInputIndex] = useState(null);
   const [activeColumnIndex, setActiveColumnIndex] = useState(null);
+  const [hoverValue, setHoverValue] = useState("");
 
+  console.log("🚀 ~ orderDetail:", orderDetail)
   const columns = [
     "Code",
     "Description",
@@ -829,6 +831,10 @@ export default function EditTable({
       }));
     }
   };
+  
+  const findProductById = (productId) => {
+    return orderDetail.products.find((product) => product.presentations_code === productId);
+  };
 
   return (
     <div className="flex flex-col p-8">
@@ -894,210 +900,302 @@ export default function EditTable({
                   </tr>
                 </thead>
                 <tbody className="text-left">
-                  {rows.map((row, rowIndex) => (
-                    <tr
-                      key={rowIndex}
-                      className={`${row.state === "N/A"
-                        ? " line-through text-primary-blue decoration-dark-blue"
-                        : ""
-                        } text-dark-blue border-b-2 border-stone-100`}
-                    >
-                      {/* CODIGO DE PRODUCTO */}
-                      {columns.map(
-                        (column, columnIndex) =>
-                          initialColumns.includes(column) && (
-                            <React.Fragment key={columnIndex}>
-                              <td
-                                className={`pl-4 py-[0.2em] w-auto `}
-                                tabIndex={0}
-                                style={{ overflow: "visible" }}
-                              >
-                                {[
-                                  "Description",
-                                  "Packsize",
-                                  "UOM",
-                                  "price",
-                                  "Total Net",
-                                  "VAT %",
-                                  "VAT £",
-                                  "Total Price",
-                                  "Unit Cost",
-                                  "Profit",
-                                  "Band",
-                                  "Total Cost",
-                                ].includes(column) ? (
-                                  <span
-                                    onClick={() => setIsSelectDisabled(false)}
-                                  >
-                                    {column === "Packsize" && row[column]}
-                                    {column === "UOM" && row[column]}
-                                    {column === "price" && calculatePrice(row)}
-                                    {column === "Total Net" &&
-                                      calculateTotalNet(row)}
-                                    {column === "VAT %" && row[column]}
-                                    {column === "VAT £" &&
-                                      calculateTaxCalculation(row)}
-                                    {column === "Total Price" &&
-                                      calculateTotalPrice(row)}
-                                    {column === "Unit Cost" && row[column]}
-                                    {column === "Profit" &&
-                                      calculateProfit(row)}
-                                    {column === "Band" && row[column]}
-                                    {column === "Total Cost" &&
-                                      calculateTotalCost(row)}
-                                    {column === "Description" && (
-                                      <Select
+                  {rows.map((row, rowIndex) => {
+                    const product = findProductById(row.Code);
+                    console.log(product)
+                    return (
+                      <tr
+                        key={rowIndex}
+                        className={`${row.state === "N/A"
+                          ? " line-through text-primary-blue decoration-dark-blue"
+                          : ""
+                          } text-dark-blue border-b-2 border-stone-100`}
+                      >
+                        {/* CODIGO DE PRODUCTO */}
+                        {columns.map(
+                          (column, columnIndex) =>
+                            initialColumns.includes(column) && (
+                              <React.Fragment key={columnIndex}>
+                                <td
+                                  className={`pl-4 py-[0.2em] w-auto`}
+                                  tabIndex={0}
+                                  style={{ overflow: "visible" }}
+                                >
+                                  {[
+                                    "Description",
+                                    "Packsize",
+                                    "UOM",
+                                    "price",
+                                    "Total Net",
+                                    "VAT %",
+                                    "VAT £",
+                                    "Total Price",
+                                    "Unit Cost",
+                                    "Profit",
+                                    "Band",
+                                    "Total Cost",
+                                    "Code",
+                                  ].includes(column) ? (
+                                    <span
+                                      onClick={() => setIsSelectDisabled(false)}
+                                    >
+                                      {column === "Code" && (
+                                        //Codigo del estado
+                                        <div className="flex flex-row items-center">
+                                          {row[column] != "" && (
+                                            <div
+                                              className={`w-2 h-2 rounded-full ${row.state === "SHORT" ||
+                                                row.state === "ND"
+                                                ? "bg-danger"
+                                                : row.state === "PD" ||
+                                                  row.state === "FULL"
+                                                  ? "bg-green"
+                                                  : row.state === "N/A"
+                                                    ? "bg-primary-blue"
+                                                    : "bg-gray-input"
+                                                } mr-2`}
+                                            />
+                                          )}
+                                          <input
+                                            data-column-index={columnIndex}
+                                            data-row-index={rowIndex}
+                                            type={inputTypes[column]}
+                                            ref={inputRefs[column][rowIndex]}
+                                            data-field-name={column}
+                                            disabled={
+                                              row.isExistingProduct && isEditable
+                                            }
+                                            className={`pl-2 h-[30px] outline-none w-full ${inputTypes[column] === "number"
+                                              ? "hide-number-arrows"
+                                              : ""
+                                              } ${row.state === "N/A"
+                                                ? " line-through text-primary-blue decoration-black"
+                                                : ""
+                                              }`}
+                                            value={row[column] || ""}
+                                            onChange={(e) => {
+                                              setCurrentValues((prevValues) => ({
+                                                [column]: e.target.value,
+                                              }));
+
+                                              const updatedRows = [...rows];
+                                              updatedRows[rowIndex][column] =
+                                                e.target.value;
+                                              setRows(updatedRows);
+                                              handleCodeChange(e, rowIndex, column);
+                                            }}
+                                            step={0.1}
+                                            onKeyDown={(e) =>
+                                              handleKeyDown(
+                                                e,
+                                                columnIndex,
+                                                rowIndex,
+                                                column
+                                              )
+                                            }
+                                            onBlur={() => setIsReadOnly(true)}
+                                          />
+                                        </div>
+                                      )}
+                                      {column === "Packsize" && row[column]}
+                                      {column === "UOM" && row[column]}
+                                      {column === "price" && calculatePrice(row)}
+                                      {column === "Total Net" &&
+                                        calculateTotalNet(row)}
+                                      {column === "VAT %" && row[column]}
+                                      {column === "VAT £" &&
+                                        calculateTaxCalculation(row)}
+                                      {column === "Total Price" &&
+                                        calculateTotalPrice(row)}
+                                      {column === "Unit Cost" && row[column]}
+                                      {column === "Profit" &&
+                                        calculateProfit(row)}
+                                      {column === "Band" && row[column]}
+                                      {column === "Total Cost" &&
+                                        calculateTotalCost(row)}
+                                      {column === "Description" && (
+                                        <Select
+                                          data-column-index={columnIndex}
+                                          data-row-index={rowIndex}
+                                          ref={inputRefs[column][rowIndex]}
+                                          className="w-full"
+                                          menuPortalTarget={document.body}
+                                          menuPlacement="auto"
+                                          onInputChange={(newValue) => {
+                                            const sortedAndFilteredData =
+                                              sortData(presentations, newValue);
+                                            setDescriptionData(
+                                              sortedAndFilteredData
+                                            );
+                                          }}
+                                          options={
+                                            DescriptionData
+                                              ? DescriptionData.map((item) => ({
+                                                value: item.productName,
+                                                label: `${item.code} - ${item.product_name} - ${item.name}`,
+                                                code: item.code,
+                                              }))
+                                              : []
+                                          }
+                                          value={{
+                                            label: row[column] || "",
+                                            value: row[column] || "",
+                                          }}
+                                          onChange={(selectedDescription, e) => {
+                                            setCurrentValues((prevValues) => ({
+                                              // ...prevValues,
+                                              [column]: selectedDescription.code,
+                                            }));
+
+                                            const updatedRows = [...rows];
+                                            updatedRows[rowIndex][column] =
+                                              selectedDescription.code;
+                                            if (selectedDescription.code) {
+                                              fetchProductCode(
+                                                columnIndex,
+                                                rowIndex
+                                              );
+                                            }
+                                            // setRows(updatedRows);
+                                          }}
+                                          styles={{
+                                            control: (provided) => ({
+                                              ...provided,
+                                              border: "none",
+                                              boxShadow: "none",
+                                              backgroundColor: isEditable
+                                                ? "white"
+                                                : "",
+                                            }),
+                                            menu: (provided) => ({
+                                              ...provided,
+                                              width: "33em",
+                                            }),
+                                            singleValue: (provided, state) => ({
+                                              ...provided,
+                                              color:
+                                                row.state === "N/A"
+                                                  ? "#026CD2"
+                                                  : "#04444F",
+                                            }),
+                                            dropdownIndicator: (provided) => ({
+                                              ...provided,
+                                              display: "none",
+                                            }),
+                                            indicatorSeparator: (provided) => ({
+                                              ...provided,
+                                              display: "none",
+                                            }),
+                                          }}
+                                          isDisabled={
+                                            (row.isExistingProduct &&
+                                              isEditable) ||
+                                            isSelectDisabled
+                                          }
+                                          onBlur={() => setIsSelectDisabled(true)}
+                                        />
+                                      )}
+                                    </span>
+                                  ) : (
+                                    <div
+                                      className="inline-block"
+                                      onMouseEnter={(e) => {
+                                        console.log(row)
+                                        if (column === "quantity") {
+                                          if (product?.quantity === undefined) {
+                                            e.target.value = `${row?.quantity}`;
+                                          } else {
+                                            e.target.value = `${product?.quantity}`;
+                                          }
+                                        }
+                                      }}
+                                      onMouseLeave={(e) => {
+                                        if (column === "quantity") {
+                                          console.log("salí")
+                                          console.log(row)
+                                          e.target.value = `${row.quantity}`;
+                                        }
+                                      }}
+                                    >
+                                      <input
                                         data-column-index={columnIndex}
                                         data-row-index={rowIndex}
+                                        type={inputTypes[column]}
                                         ref={inputRefs[column][rowIndex]}
-                                        className="w-full"
-                                        menuPortalTarget={document.body}
-                                        menuPlacement="auto"
-                                        onInputChange={(newValue) => {
-                                          const sortedAndFilteredData =
-                                            sortData(presentations, newValue);
-                                          setDescriptionData(
-                                            sortedAndFilteredData
-                                          );
-                                        }}
-                                        options={
-                                          DescriptionData
-                                            ? DescriptionData.map((item) => ({
-                                              value: item.productName,
-                                              label: `${item.code} - ${item.product_name} - ${item.name}`,
-                                              code: item.code,
-                                            }))
-                                            : []
+                                        data-field-name={column}
+                                        disabled={
+                                          row.isExistingProduct && isEditable
                                         }
-                                        value={{
-                                          label: row[column] || "",
-                                          value: row[column] || "",
+                                        className={`pl-2 h-[30px] outline-none w-full ${inputTypes[column] === "number"
+                                          ? "hide-number-arrows"
+                                          : ""
+                                          } ${row.state === "N/A"
+                                            ? " line-through text-primary-blue decoration-black"
+                                            : ""
+                                          }`}
+                                        value={row[column] || ""}
+                                        onFocus={(e) => {
+                                          if (column === "quantity") {
+                                            handleInputFocus(e, "quantity");
+                                          }
                                         }}
-                                        onChange={(selectedDescription, e) => {
+                                        onChange={(e) => {
+                                          if (column === "Net") {
+                                            let newValue = parseFloat(
+                                              e.target.value
+                                            );
+
+                                            newValue = newValue.toFixed(2);
+                                          }
                                           setCurrentValues((prevValues) => ({
-                                            // ...prevValues,
-                                            [column]: selectedDescription.code,
+                                            [column]: e.target.value,
                                           }));
 
                                           const updatedRows = [...rows];
                                           updatedRows[rowIndex][column] =
-                                            selectedDescription.code;
-                                          if (selectedDescription.code) {
-                                            fetchProductCode(columnIndex, rowIndex);
-                                          }
-                                          // setRows(updatedRows);
+                                            e.target.value;
+                                          setRows(updatedRows);
+                                          handleCodeChange(e, rowIndex, column);
                                         }}
-                                        styles={{
-                                          control: (provided) => ({
-                                            ...provided,
-                                            border: "none",
-                                            boxShadow: "none",
-                                            backgroundColor: isEditable
-                                              ? "white"
-                                              : "",
-                                          }),
-                                          menu: (provided) => ({
-                                            ...provided,
-                                            width: "33em",
-                                          }),
-                                          singleValue: (provided, state) => ({
-                                            ...provided,
-                                            color:
-                                              row.state === "N/A"
-                                                ? "#026CD2"
-                                                : "#04444F",
-                                          }),
-                                          dropdownIndicator: (provided) => ({
-                                            ...provided,
-                                            display: "none",
-                                          }),
-                                          indicatorSeparator: (provided) => ({
-                                            ...provided,
-                                            display: "none",
-                                          }),
-                                        }}
-                                        isDisabled={
-                                          (row.isExistingProduct &&
-                                            isEditable) ||
-                                          isSelectDisabled
+                                        step={0.1}
+                                        onKeyDown={(e) =>
+                                          handleKeyDown(
+                                            e,
+                                            columnIndex,
+                                            rowIndex,
+                                            column
+                                          )
                                         }
-                                        onBlur={() => setIsSelectDisabled(true)}
+                                        onKeyPress={(e) => {
+                                          if (
+                                            column === "Net" &&
+                                            e.charCode === 46
+                                          ) {
+                                            return;
+                                          }
+                                          if (column === "quantity") {
+                                            handleKeyPress(e, column);
+                                          }
+                                          if (
+                                            inputTypes[column] === "number" &&
+                                            (e.charCode < 48 || e.charCode > 57)
+                                          ) {
+                                            e.preventDefault();
+                                          }
+                                        }}
+                                        readOnly={column === "Net" && isReadOnly}
+                                        onDoubleClick={() => setIsReadOnly(false)}
+                                        onBlur={() => setIsReadOnly(true)}
                                       />
-                                    )}
-                                  </span>
-                                ) : (
-                                  <input
-                                    data-column-index={columnIndex}
-                                    data-row-index={rowIndex}
-                                    type={inputTypes[column]}
-                                    ref={inputRefs[column][rowIndex]}
-                                    data-field-name={column}
-                                    disabled={
-                                      row.isExistingProduct && isEditable
-                                    }
-                                    className={`pl-2 h-[30px] outline-none w-full ${inputTypes[column] === "number"
-                                      ? "hide-number-arrows"
-                                      : ""
-                                      } ${row.state === "N/A"
-                                        ? " line-through text-primary-blue decoration-black"
-                                        : ""
-                                      }`}
-                                    value={row[column] || ""}
-                                    onFocus={(e) => {
-                                      if (column === "quantity") {
-                                        handleInputFocus(e, "quantity");
-                                      }
-                                    }}
-                                    onChange={(e) => {
-                                      if (column === "Net") {
-                                        let newValue = parseFloat(
-                                          e.target.value
-                                        );
-
-                                        newValue = newValue.toFixed(2);
-                                      }
-                                      setCurrentValues((prevValues) => ({
-                                        [column]: e.target.value,
-                                      }));
-
-                                      const updatedRows = [...rows];
-                                      updatedRows[rowIndex][column] =
-                                        e.target.value;
-                                      setRows(updatedRows);
-                                      handleCodeChange(e, rowIndex, column);
-                                    }}
-                                    step={0.1}
-                                    onKeyDown={(e) =>
-                                      handleKeyDown(e, columnIndex, rowIndex, column)
-                                    }
-                                    onKeyPress={(e) => {
-                                      if (
-                                        column === "Net" &&
-                                        e.charCode === 46
-                                      ) {
-                                        return;
-                                      }
-                                      if (column === "quantity") {
-                                        handleKeyPress(e, column);
-                                      }
-                                      if (
-                                        inputTypes[column] === "number" &&
-                                        (e.charCode < 48 || e.charCode > 57)
-                                      ) {
-                                        e.preventDefault();
-                                      }
-                                    }}
-                                    readOnly={column === "Net" && isReadOnly}
-                                    onDoubleClick={() => setIsReadOnly(false)}
-                                    onBlur={() => setIsReadOnly(true)}
-                                  />
-                                )}
-                              </td>
-                            </React.Fragment>
-                          )
-                      )}
-                    </tr>
-                  ))}
+                                    </div>
+                                  )}
+                                </td>
+                              </React.Fragment>
+                            )
+                        )}
+                      </tr>
+                    )
+                  })}
                 </tbody>
               </table>
 
