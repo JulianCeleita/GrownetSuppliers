@@ -921,6 +921,7 @@ export default function EditTable({
                                     onClick={() => setIsSelectDisabled(false)}
                                   >
                                     {column === "Code" && (
+                                      //Codigo del estado
                                       <div className="flex flex-row items-center">
                                         {row[column] != "" && (
                                           <div
