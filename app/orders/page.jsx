@@ -67,6 +67,7 @@ const OrderView = () => {
   const [routeId, setRouteId] = useState();
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedGroup, setSelectedGroup] = useState("");
+  const [selectedStatus, setSelectedStatus] = useState("");
 
   const formatDateToShow = (dateString) => {
     if (!dateString) return "Loading...";
@@ -321,7 +322,6 @@ const OrderView = () => {
       const dateB = new Date(b.date_delivery);
       return dateA - dateB;
     });
-  console.log("🚀 ~ OrderView ~ sortedOrders:", sortedOrders)
 
   const uniqueRoutesSet = new Set(sortedOrders.map(order => order.route_id + '_' + order.route));
 
@@ -366,7 +366,13 @@ const OrderView = () => {
           .includes(searchQuery.toLowerCase()) ||
         order.accountName.toLowerCase().includes(searchQuery.toLowerCase());
 
-      return isRouteMatch && isGroupMatch && isSearchQueryMatch;
+      const isStatusMatch = selectedStatus
+        ? order.status_order.toLowerCase() === selectedStatus.toLowerCase()
+        : true;
+
+      return (
+        isRouteMatch && isGroupMatch && isSearchQueryMatch && isStatusMatch
+      );
     })
     .sort((a, b) => b.reference - a.reference);
 
@@ -391,6 +397,13 @@ const OrderView = () => {
       default:
         return "bg-primary-blue";
     }
+  };
+  const uniqueStatuses = [
+    ...new Set(sortedOrders.map((order) => order.status_order)),
+  ];
+  const handleStatusChange = (e) => {
+    const newSelectedStatus = e.target.value;
+    setSelectedStatus(newSelectedStatus);
   };
 
   return (
@@ -538,11 +551,11 @@ const OrderView = () => {
             <PrinterIcon className="h-6 w-6" />
           </button>
         </div>
-        <section className="absolute top-0 right-5 mt-5 w-[30%] 2xl:w-auto ">
+        <section className="absolute top-0 right-5 mt-5  ">
           <div className="flex gap-2">
             {filterType !== "range" &&
               formatDateToShow(workDate) === formattedDate && (
-                <div className="px-4 py-4 rounded-3xl flex items-center justify-center bg-white shadow-[0_8px_30px_rgb(0,0,0,0.12)]">
+                <div className="px-4 py-4 rounded-3xl flex items-center justify-center bg-white shadow-[0_8px_30px_rgb(0,0,0,0.12)] ">
                   <div>
                     <h1 className=" text-lg 2xl:text-xl font-bold text-dark-blue">
                       Today
@@ -636,12 +649,44 @@ const OrderView = () => {
                 <th className="py-4">Customer</th>
                 <th className="py-4">Amount</th>
                 <th className="py-4">Profit %</th>
-                <th className="py-4">Route</th>
+                <th className="py-4">
+                  Route{" "}
+                  <select
+                    value={selectedRoute}
+                    onChange={(e) =>
+                      handleRouteSelection({ value: e.target.value })
+                    }
+                    className="w-[15px] ml-[2px]"
+                  >
+                    {" "}
+                    <option value=""></option>
+                    <option value="">All routes</option>
+                    {uniqueRoutesArray.map((route) => (
+                      <option key={route} value={route}>
+                        {route}
+                      </option>
+                    ))}
+                  </select>
+                </th>
                 <th className="py-4">Drop</th>
                 <th className="py-4"># Products</th>
                 {/* <th className="py-4">Responsable</th> */}
                 <th className="py-4">Delivery date</th>
-                <th className="py-4 rounded-tr-lg">Status</th>
+                <th className="py-4 rounded-tr-lg">
+                  Status{" "}
+                  <select
+                    onChange={handleStatusChange}
+                    className="w-[15px] ml-[2px]"
+                  >
+                    <option value=""></option>
+                    <option value="">All status</option>
+                    {uniqueStatuses.map((status, index) => (
+                      <option key={index} value={status}>
+                        {status}
+                      </option>
+                    ))}
+                  </select>
+                </th>
               </tr>
             </thead>
 
