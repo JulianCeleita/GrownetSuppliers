@@ -1,6 +1,6 @@
 //BASE URL
-const BASE_URL = "https://api.grownetapp.com/grownet/api/";
-//const BASE_URL = "http://3.139.16.141/api/";
+// const BASE_URL = "https://api.grownetapp.com/grownet/api/";
+const BASE_URL = "http://3.139.16.141/api/";
 
 // login
 export const loginUrl = `${BASE_URL}login/login`;
@@ -50,6 +50,7 @@ export const restaurantsData = `${BASE_URL}customers/all`;
 export const createOrders = `${BASE_URL}orders/create`;
 export const ordersDate = `${BASE_URL}orders/search/date`;
 export const customerSupplier = `${BASE_URL}customers/supplier/`;
+export const deleteOrder = `${BASE_URL}orders/delete/`;
 
 export const printInvoices = `${BASE_URL}invoice/generate`;
 

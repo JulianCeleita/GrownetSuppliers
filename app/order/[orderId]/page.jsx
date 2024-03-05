@@ -2,6 +2,7 @@
 import EditTable from "@/app/components/EditTable";
 import {
   customersData,
+  deleteOrder,
   orderDetail,
   restaurantsData,
   routesByDate,
@@ -15,6 +16,7 @@ import {
   ArrowLeftIcon,
   ChevronDownIcon,
   ChevronUpIcon,
+  TrashIcon,
 } from "@heroicons/react/24/outline";
 import axios from "axios";
 import Link from "next/link";
@@ -25,6 +27,7 @@ import { fetchCustomersDate, fetchOrderDetail } from "@/app/api/ordersRequest";
 import { CircleProgressBar } from "@/app/components/CircleProgressBar";
 import Select from "react-select";
 import { getPercentageOrder } from "../../api/percentageOrderRequest";
+import ModalDelete from "@/app/components/ModalDelete";
 
 const OrderDetailPage = () => {
   const [hasMounted, setHasMounted] = useState(false);
@@ -60,6 +63,8 @@ const OrderDetailPage = () => {
   const params = useParams();
   const [confirmCreateOrder, setConfirmCreateOrder] = useState(false);
   const [dataLoaded, setDataLoaded] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [messageDelete, setMessageDelete] = useState("");
   const [specialRequirements, setSpecialRequirements] = useState(
     orderDetail.observation ? orderDetail.observation : ""
   );
@@ -254,6 +259,10 @@ const OrderDetailPage = () => {
     fetchCustomersDate(token, orderDate, selectedAccNumber2, setCustomerDate);
   }, [orderDate, selectedAccNumber2]);
 
+  if (orderDetail.state_name === "Received" || orderDetail.state_name === "Generated") {
+    setMessageDelete("")
+  }
+
   //RUN BUTTON WITH CRT + ENTER
   const handleKeyDown = (event) => {
     if (event.ctrlKey && event.key === "Enter") {
@@ -268,6 +277,25 @@ const OrderDetailPage = () => {
       document.removeEventListener("keydown", handleKeyDown);
     };
   }, []);
+
+  const handleDeleteOrder = (orderId) => {
+    axios
+      .post(`${deleteOrder}${orderId}`, null, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+      .then((response) => {
+        console.log("🚀 ~ .then ~ response:", response)
+        setShowDeleteModal(false);
+        clearStates();
+        onClose();
+        router.push("/orders");
+      })
+      .catch((error) => {
+        console.error("Error al eliminar la orden:", error);
+      });
+  };
 
   if (!hasMounted) {
     return null;
@@ -433,21 +461,25 @@ const OrderDetailPage = () => {
           className="border p-2 rounded-md min-w-[150px]"
         />
         <button
-          className="bg-dark-blue rounded-md ml-3 hover:scale-110 focus:outline-none flex text-white px-2 py-1 items-center align-middle"
+          className="bg-dark-blue rounded-md ml-3 transition-all hover:scale-110 focus:outline-none flex text-white px-2 py-1 items-center align-middle"
           onClick={() => setDetails(!details)}
         >
           Details
           <ChevronDownIcon
-            className={`h-5 w-5 ml-1 text-white transform transition duration-500 ${
-              details ? "rotate-180" : "rotate-0"
-            }`}
+            className={`h-5 w-5 ml-1 text-white transform transition duration-500 ${details ? "rotate-180" : "rotate-0"
+              }`}
           />
+        </button>
+        <button
+          className="bg-red-600 rounded-md ml-3 transition-all hover:scale-110 focus:outline-none flex text-white px-2 py-1 items-center align-middle"
+        onClick={() => setShowDeleteModal(true)}
+        >
+          <TrashIcon className={`h-[25px] w-[25px] text-white`} />
         </button>
       </div>
       <div
-        className={`transition-opacity duration-500 ease-out ${
-          details ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-10"
-        } transform`}
+        className={`transition-opacity duration-500 ease-out ${details ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-10"
+          } transform`}
         style={{ transitionProperty: "opacity, transform" }}
       >
         {details && (
@@ -530,6 +562,11 @@ const OrderDetailPage = () => {
           )
         )}
       </div>
+      <ModalDelete
+        isvisible={showDeleteModal}
+        onClose={() => setShowDeleteModal(false)}
+        onConfirm={() => handleDeleteOrder(orderId)}
+      />
     </Layout>
   );
 };
