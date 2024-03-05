@@ -167,9 +167,7 @@ export default function EditTable({
   const [previousCode, setPreviousCode] = useState({});
   const [activeInputIndex, setActiveInputIndex] = useState(null);
   const [activeColumnIndex, setActiveColumnIndex] = useState(null);
-  const [hoverValue, setHoverValue] = useState("");
 
-  console.log("🚀 ~ orderDetail:", orderDetail)
   const columns = [
     "Code",
     "Description",
@@ -662,11 +660,6 @@ export default function EditTable({
         },
       });
       const productByCodeData = response.data.data[0];
-      console.log(
-        "🚀 ~ fetchProductCode ~ productByCodeData:",
-        productByCodeData
-      );
-
       const updatedRows = rows.map((row, index) => {
         if (
           index === rowIndex &&
@@ -703,6 +696,16 @@ export default function EditTable({
       );
       setRows(updatedRows);
       setProductByCode(productByCodeData);
+
+      setTimeout(() => {
+        const inputToFocus = document.querySelector(
+          `input[data-row-index="${rowIndex}"][data-field-name="quantity"]`
+        );
+  
+        if (inputToFocus != null) {
+          inputToFocus.focus();
+        }
+      }, 50);
     } catch (error) {
       console.error("Error al hacer la solicitud:", error.message);
       const currentProductCode = rows[rowIndex]["Code"] || "0";
@@ -902,7 +905,6 @@ export default function EditTable({
                 <tbody className="text-left">
                   {rows.map((row, rowIndex) => {
                     const product = findProductById(row.Code);
-                    console.log(product)
                     return (
                       <tr
                         key={rowIndex}
@@ -1100,7 +1102,6 @@ export default function EditTable({
                                     <div
                                       className="inline-block"
                                       onMouseEnter={(e) => {
-                                        console.log(row)
                                         if (column === "quantity") {
                                           if (product?.quantity === undefined) {
                                             e.target.value = `${row?.quantity}`;
@@ -1111,8 +1112,6 @@ export default function EditTable({
                                       }}
                                       onMouseLeave={(e) => {
                                         if (column === "quantity") {
-                                          console.log("salí")
-                                          console.log(row)
                                           e.target.value = `${row.quantity}`;
                                         }
                                       }}

@@ -80,10 +80,10 @@ const OrderView = () => {
 
   const formattedDate = selectedDate
     ? new Date(selectedDate).toLocaleDateString("es-CO", {
-        day: "2-digit",
-        month: "2-digit",
-        year: "2-digit",
-      })
+      day: "2-digit",
+      month: "2-digit",
+      year: "2-digit",
+    })
     : formatDateToShow(workDate);
   const formatDateToTransform = (dateString) => {
     const date = new Date(dateString);
@@ -147,6 +147,7 @@ const OrderView = () => {
 
   useEffect(() => {
     if (routePercentages) {
+      console.log("🚀 ~ useEffect ~ routePercentages:", routePercentages)
       const result = routePercentages.find(
         (item) => item.nameRoute === selectedRoute
       );
@@ -305,30 +306,17 @@ const OrderView = () => {
     await getPercentages(option.value);
   };
 
-  const filteredOrders = selectedRoute
-    ? sortedOrders
-        .filter(
-          (order) =>
-            order.route.toLowerCase() === selectedRoute.toLowerCase() &&
-            (order.reference
-              .toString()
-              .toLowerCase()
-              .includes(searchQuery.toLowerCase()) ||
-              order.accountName
-                .toLowerCase()
-                .includes(searchQuery.toLowerCase()))
-        )
-        .sort((a, b) => b.reference - a.reference)
-    : sortedOrders
-        .filter(
-          (order) =>
-            order.reference
-              .toString()
-              .toLowerCase()
-              .includes(searchQuery.toLowerCase()) ||
-            order.accountName.toLowerCase().includes(searchQuery.toLowerCase())
-        )
-        .sort((a, b) => b.reference - a.reference);
+  const filteredOrders = sortedOrders
+    .filter(order => {
+      const isRouteMatch = selectedRoute ? order.route.toLowerCase() === selectedRoute.toLowerCase() : true;
+      const isGroupMatch = selectedGroup ? order.group_name.toLowerCase() === selectedGroup.toLowerCase() : true;
+
+      const isSearchQueryMatch = order.reference.toString().toLowerCase().includes(searchQuery.toLowerCase()) ||
+        order.accountName.toLowerCase().includes(searchQuery.toLowerCase());
+
+      return isRouteMatch && isGroupMatch && isSearchQueryMatch;
+    })
+    .sort((a, b) => b.reference - a.reference);
 
   // console.log("filteredOrders", filteredOrders);
 
@@ -368,13 +356,12 @@ const OrderView = () => {
           </Link>
         </div>
         <div
-          className={`flex ml-10 mb-0 items-center space-x-2 mt-${
-            filterType === "range" && window.innerWidth < 1500
+          className={`flex ml-10 mb-0 items-center space-x-2 mt-${filterType === "range" && window.innerWidth < 1500
               ? "[45px]"
               : filterType === "date" && window.innerWidth < 1300
-              ? "[50px]"
-              : "[20px]"
-          }
+                ? "[50px]"
+                : "[20px]"
+            }
           `}
         >
           <div className="">
@@ -473,7 +460,7 @@ const OrderView = () => {
             {[
               ...new Set(
                 orders.map((order) =>
-                  order.group !== null ? order.group : "No group"
+                  order.group_name !== null ? order.group_name : "No group"
                 )
               ),
             ].map((uniqueGroup) => (
@@ -657,7 +644,13 @@ const OrderView = () => {
                         className="py-4 pl-4"
                         onClick={(e) => goToOrder(e, order)}
                       >
-                        -
+                        {order.drop}
+                      </td>
+                      <td
+                        className="py-4 pl-4"
+                        onClick={(e) => goToOrder(e, order)}
+                      >
+                        {order.quantity_products}
                       </td>
                       <td
                         className="py-4 pl-4"
