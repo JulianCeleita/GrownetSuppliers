@@ -1,5 +1,7 @@
 "use client";
 import {
+  MinusCircleIcon,
+  NoSymbolIcon,
   PencilSquareIcon,
   PlusCircleIcon,
   TrashIcon,
@@ -17,12 +19,14 @@ import {
   fetchPresentationsSupplier,
 } from "../api/presentationsRequest";
 import CreateProduct from "../components/CreateProduct";
+import AutomaticShort from "../components/AutomaticShort";
 
 function Presentations() {
   const { token } = useTokenStore();
   const [uoms, setUoms] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [showNewPresentations, setShowNewPresentations] = useState(false);
+  const [showAutomaticShorts, setShowAutomaticShorts] = useState(false);
   const [showEditPresentations, setShowEditPresentations] = useState(false);
   const [selectedPresentation, setSelectedPresentation] = useState(null);
   const { user, setUser } = useUserStore();
@@ -80,14 +84,25 @@ function Presentations() {
           <h1 className="text-2xl text-white font-semibold ml-20 mt-2">
             Catalogue list
           </h1>
-          <button
-            className="flex bg-green py-3 px-4 rounded-lg text-white font-medium hover:bg-dark-blue hover:scale-110 "
-            type="button"
-            onClick={() => setShowNewPresentations(true)}
-          >
-            <PlusCircleIcon className="h-6 w-6 mr-3 font-bold" />
-            New Presentations
-          </button>
+
+          <div className="flex gap-4">
+            <button
+              className="flex bg-dark-blue py-3 px-4 rounded-lg text-white font-medium hover:bg-dark-blue hover:scale-110 transition-all"
+              type="button"
+              onClick={() => setShowAutomaticShorts(true)}
+            >
+              <NoSymbolIcon className="h-6 w-6 mr-2 font-bold" />
+              Automatic Shorts
+            </button>
+            <button
+              className="flex bg-green py-3 px-4 rounded-lg text-white font-medium hover:scale-110 transition-all"
+              type="button"
+              onClick={() => setShowNewPresentations(true)}
+            >
+              <PlusCircleIcon className="h-6 w-6 mr-2 font-bold" />
+              New Presentations
+            </button>
+          </div>
         </div>
         <div className="flex items-center justify-center mb-20">
           <table className="w-[95%] bg-white rounded-2xl text-center shadow-[0_8px_30px_rgb(0,0,0,0.12)]">
@@ -158,6 +173,12 @@ function Presentations() {
         <CreateProduct
           isvisible={showNewPresentations}
           onClose={() => setShowNewPresentations(false)}
+          setProducts={setProducts}
+          setIsLoading={setIsLoading}
+        />
+        <AutomaticShort
+          isvisible={showAutomaticShorts}
+          onClose={() => setShowAutomaticShorts(false)}
           setProducts={setProducts}
           setIsLoading={setIsLoading}
         />
