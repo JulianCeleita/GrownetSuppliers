@@ -3,6 +3,14 @@ import {
   Bars3Icon,
   XMarkIcon,
   MoonIcon,
+  CircleStackIcon,
+  ChevronDownIcon,
+  ChevronUpIcon,
+  UserIcon,
+  ShoppingCartIcon,
+  CalendarIcon,
+  BuildingStorefrontIcon,
+  ClipboardIcon,
 } from "@heroicons/react/24/outline";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -18,6 +26,7 @@ import useWorkDateStore from "../store/useWorkDateStore";
 
 const SideBar = () => {
   const { removeToken, setToken } = useTokenStore();
+  const [openMenu, setOpenMenu] = useState(false);
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const [activeLink, setActiveLink] = useState("");
@@ -113,7 +122,7 @@ const SideBar = () => {
                     <XMarkIcon className="h-6 w-6" aria-hidden="true" />
                   </button>
                 </div>
-                <div className="flex h-full flex-col bg-dark-blue py-6">
+                <div className="flex h-full flex-col bg-dark-blue py-6 font-poppins">
                   <div className="px-4 sm:px-6">
                     <Dialog.Title className="text-base font-semibold leading-6 text-white">
                       <div className="bg-[#046373] py-3 px-5 rounded-2xl flex items-center mt-8">
@@ -124,7 +133,7 @@ const SideBar = () => {
                           height={80}
                         />
                         <div className="ml-5">
-                          <h1 className="font-semibold text-lg">Hi, 📦🚀✨</h1>
+                          <h1 className="font-semibold text-lg">Hi, 📦🚀</h1>
                           <p className="font-normal text-[15px]">
                             Welcome to suppliers
                           </p>
@@ -136,8 +145,9 @@ const SideBar = () => {
                     <div className="pl-4">
                       <Link
                         href="/users"
-                        className="relative group text-white rounded m-2 py-2 transition-all hover:text-light-green hover:scale-110"
+                        className="flex gap-2 text-white  py-3 transition-all hover:text-light-green"
                       >
+                        <UserIcon class="h-6 w-6" />
                         <h3
                           className={activeLink === "users" ? "active" : ""}
                           onClick={() => setActiveLink("users")}
@@ -155,8 +165,9 @@ const SideBar = () => {
                       </Link>
                       <Link
                         href="/orders"
-                        className="relative group text-white rounded m-2 py-2 transition-all hover:text-light-green hover:scale-110"
+                        className="flex gap-2 text-white  py-3 transition-all hover:text-light-green"
                       >
+                        <ShoppingCartIcon class="h-6 w-6" />
                         <h3
                           className={activeLink === "orders" ? "active" : ""}
                           onClick={() => setActiveLink("orders")}
@@ -175,8 +186,9 @@ const SideBar = () => {
 
                       <Link
                         href="/calendar"
-                        className="relative group text-white rounded m-2 py-2 transition-all hover:text-light-green hover:scale-110"
+                        className="flex gap-2 text-white  py-3 transition-all hover:text-light-green"
                       >
+                        <CalendarIcon class="h-6 w-6" />
                         <div
                           className={activeLink === "calendar" ? "active" : ""}
                           onClick={() => setActiveLink("calendar")}
@@ -190,10 +202,10 @@ const SideBar = () => {
                         )}
                       </Link>
 
-                      {user && user.rol_name === "AdminGrownet" && (
+                      {/* {user && user.rol_name === "AdminGrownet" && (
                         <Link
                           href="/products"
-                          className="relative group text-white rounded m-2 py-2 transition-all hover:text-light-green hover:scale-110"
+                          className="relative group text-white rounded m-2 py-2 transition-all hover:text-light-green"
                         >
                           <h3
                             className={
@@ -212,12 +224,12 @@ const SideBar = () => {
                             <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-white group-hover:w-full transition-all duration-300 ease-in-out"></span>
                           )}
                         </Link>
-                      )}
+                      )} */}
 
-                      {user && user.rol_name === "AdminGrownet" && (
+                      {/* {user && user.rol_name === "AdminGrownet" && (
                         <Link
                           href="/categories"
-                          className="relative group text-white rounded m-2 py-2 transition-all hover:text-light-green hover:scale-110"
+                          className="relative group text-white rounded m-2 py-2 transition-all hover:text-light-green"
                         >
                           <h3
                             className={
@@ -236,12 +248,50 @@ const SideBar = () => {
                             <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-white group-hover:w-full transition-all duration-300 ease-in-out"></span>
                           )}
                         </Link>
+                      )} */}
+                      {user && user.rol_name === "AdminGrownet" && (
+                        <div className="relative py-3">
+                          <button
+                            className="flex justify-between w-full text-white hover:text-light-green"
+                            onClick={() => setOpenMenu(!openMenu)}
+                          >
+                            <div className="flex gap-2">
+                              <CircleStackIcon className="h-6 w-6" />
+                              <h3>Database</h3>
+                            </div>
+
+                            {openMenu === false ? (
+                              <ChevronDownIcon class="h-6 w-6" />
+                            ) : (
+                              <ChevronUpIcon class="h-6 w-6" />
+                            )}
+                          </button>
+                          {openMenu && (
+                            <div className="mt-3 border-l-[1px] border-light-green pl-5">
+                              <Link href="/suppliers" className="text-white">
+                                <h3 className="hover:bg-[#046373] px-2 py-2 pl-4 rounded-xl w-[360px]">
+                                  Suppliers
+                                </h3>
+                              </Link>
+                              <Link href="/products" className="text-white">
+                                <h3 className="hover:bg-[#046373] px-2 py-2 pl-4 rounded-xl w-[360px]">
+                                  Products
+                                </h3>
+                              </Link>
+                              <Link href="/categories" className="text-white">
+                                <h3 className="hover:bg-[#046373] px-2 py-2 pl-4 rounded-xl w-[360px]">
+                                  Categories
+                                </h3>
+                              </Link>
+                            </div>
+                          )}
+                        </div>
                       )}
 
-                      {user && user.rol_name === "AdminGrownet" && (
+                      {/* {user && user.rol_name === "AdminGrownet" && (
                         <Link
                           href="/suppliers"
-                          className="relative group text-white rounded m-2 py-2 transition-all hover:text-light-green hover:scale-110"
+                          className="relative group text-white rounded m-2 py-2 transition-all hover:text-light-green"
                         >
                           <h3
                             className={
@@ -260,54 +310,60 @@ const SideBar = () => {
                             <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-white group-hover:w-full transition-all duration-300 ease-in-out"></span>
                           )}
                         </Link>
-                      )}
+                      )} */}
 
-                      {user && user.rol_name === "Administrador" && (
-                        <Link
-                          href="/customers"
-                          className="relative group text-white rounded m-2 py-2 transition-all hover:text-light-green hover:scale-110"
-                        >
-                          <h3
-                            className={
-                              activeLink === "customers" ? "active" : ""
-                            }
-                            onClick={() => setActiveLink("customers")}
+                      {user &&
+                        (user.rol_name === "Administrador" ||
+                          user.rol_name === "AdminGrownet") && (
+                          <Link
+                            href="/customers"
+                            className="flex gap-2 text-white  py-3 transition-all hover:text-light-green"
                           >
-                            Customers
-                          </h3>
+                            <BuildingStorefrontIcon class="h-6 w-6" />
+                            <h3
+                              className={
+                                activeLink === "customers" ? "active" : ""
+                              }
+                              onClick={() => setActiveLink("customers")}
+                            >
+                              Customers
+                            </h3>
 
-                          {activeLink === "customers" && (
-                            <span className="absolute bottom-0 left-0 h-0.5 bg-light-green w-full transition-all duration-300 ease-in-out"></span>
-                          )}
+                            {activeLink === "customers" && (
+                              <span className="absolute bottom-0 left-0 h-0.5 bg-light-green w-full transition-all duration-300 ease-in-out"></span>
+                            )}
 
-                          {activeLink !== "customers" && (
-                            <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-white group-hover:w-full transition-all duration-300 ease-in-out"></span>
-                          )}
-                        </Link>
-                      )}
-                      {user && user.rol_name === "Administrador" && (
-                        <Link
-                          href="/presentations"
-                          className="relative group text-white rounded m-2 py-2 transition-all hover:text-light-green hover:scale-110"
-                        >
-                          <h3
-                            className={
-                              activeLink === "catalogs" ? "active" : ""
-                            }
-                            onClick={() => setActiveLink("presentations")}
+                            {activeLink !== "customers" && (
+                              <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-white group-hover:w-full transition-all duration-300 ease-in-out"></span>
+                            )}
+                          </Link>
+                        )}
+                      {user &&
+                        (user.rol_name === "Administrador" ||
+                          user.rol_name === "AdminGrownet") && (
+                          <Link
+                            href="/presentations"
+                            className="flex gap-2 text-white  py-3 transition-all hover:text-light-green"
                           >
-                            Catalogue
-                          </h3>
+                            <ClipboardIcon class="h-6 w-6" />
+                            <h3
+                              className={
+                                activeLink === "catalogs" ? "active" : ""
+                              }
+                              onClick={() => setActiveLink("presentations")}
+                            >
+                              Catalogue
+                            </h3>
 
-                          {activeLink === "presentations" && (
-                            <span className="absolute bottom-0 left-0 h-0.5 bg-light-green w-full transition-all duration-300 ease-in-out"></span>
-                          )}
+                            {activeLink === "presentations" && (
+                              <span className="absolute bottom-0 left-0 h-0.5 bg-light-green w-full transition-all duration-300 ease-in-out"></span>
+                            )}
 
-                          {activeLink !== "presentations" && (
-                            <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-white group-hover:w-full transition-all duration-300 ease-in-out"></span>
-                          )}
-                        </Link>
-                      )}
+                            {activeLink !== "presentations" && (
+                              <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-white group-hover:w-full transition-all duration-300 ease-in-out"></span>
+                            )}
+                          </Link>
+                        )}
                     </div>
                     <div className="flex items-center absolute bottom-0  gap 2 justify-between w-full right-0 px-5">
                       <button
