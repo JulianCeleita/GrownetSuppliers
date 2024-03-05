@@ -148,20 +148,7 @@ const SideBar = () => {
                         className="flex gap-2 text-white  py-3 transition-all hover:text-light-green"
                       >
                         <UserIcon class="h-6 w-6" />
-                        <h3
-                          className={activeLink === "users" ? "active" : ""}
-                          onClick={() => setActiveLink("users")}
-                        >
-                          Users
-                        </h3>
-
-                        {activeLink === "users" && (
-                          <span className="absolute bottom-0 left-0 h-0.5 bg-light-green w-full transition-all duration-300 ease-in-out"></span>
-                        )}
-
-                        {activeLink !== "users" && (
-                          <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-white group-hover:w-full transition-all duration-300 ease-in-out"></span>
-                        )}
+                        <h3>Users</h3>
                       </Link>
                       <Link
                         href="/orders"
@@ -175,13 +162,13 @@ const SideBar = () => {
                           Orders
                         </h3>
 
-                        {activeLink === "orders" && (
+                        {/* {activeLink === "orders" && (
                           <span className="absolute bottom-0 left-0 h-0.5 bg-light-green w-full transition-all duration-300 ease-in-out"></span>
                         )}
 
                         {activeLink !== "orders" && (
                           <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-white group-hover:w-full transition-all duration-300 ease-in-out"></span>
-                        )}
+                        )} */}
                       </Link>
 
                       <Link
@@ -195,60 +182,13 @@ const SideBar = () => {
                         >
                           Calendar
                         </div>
-                        {activeLink === "calendar" ? (
+                        {/* {activeLink === "calendar" ? (
                           <span className="absolute bottom-0 left-0  h-0.5 bg-light-green w-full transition-all duration-300 ease-in-out"></span>
                         ) : (
                           <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-white group-hover:w-full transition-all duration-300 ease-in-out"></span>
-                        )}
+                        )} */}
                       </Link>
 
-                      {/* {user && user.rol_name === "AdminGrownet" && (
-                        <Link
-                          href="/products"
-                          className="relative group text-white rounded m-2 py-2 transition-all hover:text-light-green"
-                        >
-                          <h3
-                            className={
-                              activeLink === "products" ? "active" : ""
-                            }
-                            onClick={() => setActiveLink("products")}
-                          >
-                            Products
-                          </h3>
-
-                          {activeLink === "products" && (
-                            <span className="absolute bottom-0 left-0 h-0.5 bg-light-green w-full transition-all duration-300 ease-in-out"></span>
-                          )}
-
-                          {activeLink !== "products" && (
-                            <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-white group-hover:w-full transition-all duration-300 ease-in-out"></span>
-                          )}
-                        </Link>
-                      )} */}
-
-                      {/* {user && user.rol_name === "AdminGrownet" && (
-                        <Link
-                          href="/categories"
-                          className="relative group text-white rounded m-2 py-2 transition-all hover:text-light-green"
-                        >
-                          <h3
-                            className={
-                              activeLink === "categories" ? "active" : ""
-                            }
-                            onClick={() => setActiveLink("categories")}
-                          >
-                            Categories
-                          </h3>
-
-                          {activeLink === "categories" && (
-                            <span className="absolute bottom-0 left-0 h-0.5 bg-light-green w-full transition-all duration-300 ease-in-out"></span>
-                          )}
-
-                          {activeLink !== "categories" && (
-                            <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-white group-hover:w-full transition-all duration-300 ease-in-out"></span>
-                          )}
-                        </Link>
-                      )} */}
                       {user && user.rol_name === "AdminGrownet" && (
                         <div className="relative py-3">
                           <button
@@ -287,31 +227,6 @@ const SideBar = () => {
                           )}
                         </div>
                       )}
-
-                      {/* {user && user.rol_name === "AdminGrownet" && (
-                        <Link
-                          href="/suppliers"
-                          className="relative group text-white rounded m-2 py-2 transition-all hover:text-light-green"
-                        >
-                          <h3
-                            className={
-                              activeLink === "suppliers" ? "active" : ""
-                            }
-                            onClick={() => setActiveLink("suppliers")}
-                          >
-                            Suppliers
-                          </h3>
-
-                          {activeLink === "suppliers" && (
-                            <span className="absolute bottom-0 left-0 h-0.5 bg-light-green w-full transition-all duration-300 ease-in-out"></span>
-                          )}
-
-                          {activeLink !== "suppliers" && (
-                            <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-white group-hover:w-full transition-all duration-300 ease-in-out"></span>
-                          )}
-                        </Link>
-                      )} */}
-
                       {user &&
                         (user.rol_name === "Administrador" ||
                           user.rol_name === "AdminGrownet") && (
@@ -329,13 +244,13 @@ const SideBar = () => {
                               Customers
                             </h3>
 
-                            {activeLink === "customers" && (
+                            {/* {activeLink === "customers" && (
                               <span className="absolute bottom-0 left-0 h-0.5 bg-light-green w-full transition-all duration-300 ease-in-out"></span>
                             )}
 
                             {activeLink !== "customers" && (
                               <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-white group-hover:w-full transition-all duration-300 ease-in-out"></span>
-                            )}
+                            )} */}
                           </Link>
                         )}
                       {user &&
@@ -355,13 +270,13 @@ const SideBar = () => {
                               Catalogue
                             </h3>
 
-                            {activeLink === "presentations" && (
+                            {/* {activeLink === "presentations" && (
                               <span className="absolute bottom-0 left-0 h-0.5 bg-light-green w-full transition-all duration-300 ease-in-out"></span>
                             )}
 
                             {activeLink !== "presentations" && (
                               <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-white group-hover:w-full transition-all duration-300 ease-in-out"></span>
-                            )}
+                            )} */}
                           </Link>
                         )}
                     </div>
