@@ -82,7 +82,26 @@ const CustomersView = () => {
       customer.routes.some(route => route.days_id === Number(selectedDay))
     );
 
-    if (sortConfig.key) {
+    const getDropForDay = (customer, dayId) => {
+      const routeForDay = customer.routes.find(route => Number(route.days_id) === Number(dayId));
+      return routeForDay ? routeForDay.drop : 0;
+    };
+
+    if (sortConfig.key === 'drops' && selectedDay) {
+      filteredByDay.sort((a, b) => {
+        const dropA = getDropForDay(a, selectedDay);
+        const dropB = getDropForDay(b, selectedDay);
+  
+        const numDropA = Number(dropA);
+        const numDropB = Number(dropB);
+  
+        if (sortConfig.direction === 'ascending') {
+          return numDropA - numDropB;
+        } else {
+          return numDropB - numDropA;
+        }
+      });
+    } else if (sortConfig.key) {
       filteredByDay.sort((a, b) => {
         if (a[sortConfig.key] < b[sortConfig.key]) {
           return sortConfig.direction === 'ascending' ? -1 : 1;
@@ -93,7 +112,6 @@ const CustomersView = () => {
         return 0;
       });
     }
-
     setDisplayedCustomers(filteredByDay);
   }, [customers, sortConfig, searchTerm, selectedGroup, selectedRoute, selectedDay]);
 
@@ -136,12 +154,14 @@ const CustomersView = () => {
   };
 
   const requestSort = (key) => {
+    console.log("🚀 ~ requestSort ~ key:", key)
     let direction = 'ascending';
     if (sortConfig.key === key && sortConfig.direction === 'ascending') {
       direction = 'descending';
     } else {
       direction = 'ascending';
     }
+    console.log("direction and key:", sortConfig)
     setSortConfig({ key, direction });
   };
 
@@ -162,15 +182,6 @@ const CustomersView = () => {
     { id: 5, name: "Friday" },
     { id: 6, name: "Saturday" },
   ];
-
-  const getUniqueDrops = (routes) => {
-    return [...new Set(routes.map((route) => route.drop))];
-  };
-  const uniqueDrops = useMemo(() => {
-    return displayedCustomers.map((customer) =>
-      getUniqueDrops(customer.routes)
-    );
-  }, [displayedCustomers]);
 
   return (
     <Layout>
@@ -274,7 +285,7 @@ const CustomersView = () => {
                 <th className="py-4 ">Telephone</th>
                 <th className="py-4 cursor-pointer hover:bg-gray-100 transition-all" onClick={() => requestSort('group')}>Group</th>
                 <th className="py-4">Routes</th>
-                <th className="py-4">Drops</th>
+                <th className="py-4 cursor-pointer hover:bg-gray-100 transition-all" onClick={() => requestSort('drops')}>Drops</th>
                 <th className="py-4 rounded-tr-xl cursor-pointer hover:bg-gray-100 transition-all" onClick={() => requestSort('postCode')}>Post Code</th>
                 {/* <th className="py-4">Status</th> */}
               </tr>
@@ -344,7 +355,7 @@ const CustomersView = () => {
                         </td>
                         <td className="py-4 pl-8">
                           {
-                            selectedRoute && selectedDay ? (
+                            selectedRoute || selectedDay ? (
                               <>
                                 {uniqueRouteNames}
                               </>
@@ -365,7 +376,7 @@ const CustomersView = () => {
                         </td>
                         <td className="py-4 pl-8">
                           {
-                            selectedRoute && selectedDay ? (
+                            selectedRoute || selectedDay ? (
                               <>
                                 {uniqueDrop}
                               </>
