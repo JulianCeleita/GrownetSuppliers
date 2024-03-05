@@ -462,18 +462,7 @@ const OrderView = () => {
               placeholderText={formatDateToShow(workDate)}
             />
           )}
-          <select
-            value={selectedRoute}
-            onChange={(e) => handleRouteSelection({ value: e.target.value })}
-            className="orm-select px-4 py-3 rounded-md border border-gray-300"
-          >
-            <option value="">All routes</option>
-            {uniqueRoutesArray.map((route) => (
-              <option key={route} value={route}>
-                {route}
-              </option>
-            ))}
-          </select>
+
           <select
             value={selectedGroup}
             onChange={handleGroupChange}
@@ -597,7 +586,25 @@ const OrderView = () => {
                 <th className="py-4">Customer</th>
                 <th className="py-4">Amount</th>
                 <th className="py-4">Profit %</th>
-                <th className="py-4">Route</th>
+                <th className="py-4">
+                  Route{" "}
+                  <select
+                    value={selectedRoute}
+                    onChange={(e) =>
+                      handleRouteSelection({ value: e.target.value })
+                    }
+                    className="w-[15px] ml-[2px]"
+                  >
+                    {" "}
+                    <option value=""></option>
+                    <option value="">All routes</option>
+                    {uniqueRoutesArray.map((route) => (
+                      <option key={route} value={route}>
+                        {route}
+                      </option>
+                    ))}
+                  </select>
+                </th>
                 <th className="py-4">Drop</th>
                 <th className="py-4"># Products</th>
                 {/* <th className="py-4">Responsable</th> */}
@@ -609,7 +616,7 @@ const OrderView = () => {
                     className="w-[15px] ml-[2px]"
                   >
                     <option value=""></option>
-                    <option value="">All</option>
+                    <option value="">All status</option>
                     {uniqueStatuses.map((status, index) => (
                       <option key={index} value={status}>
                         {status}
