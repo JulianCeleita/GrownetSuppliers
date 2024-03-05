@@ -65,6 +65,7 @@ const OrderView = () => {
   const [routeId, setRouteId] = useState();
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedGroup, setSelectedGroup] = useState("");
+  const [selectedStatus, setSelectedStatus] = useState("");
 
   const formatDateToShow = (dateString) => {
     if (!dateString) return "Loading...";
@@ -322,7 +323,13 @@ const OrderView = () => {
           .includes(searchQuery.toLowerCase()) ||
         order.accountName.toLowerCase().includes(searchQuery.toLowerCase());
 
-      return isRouteMatch && isGroupMatch && isSearchQueryMatch;
+      const isStatusMatch = selectedStatus
+        ? order.status_order.toLowerCase() === selectedStatus.toLowerCase()
+        : true;
+
+      return (
+        isRouteMatch && isGroupMatch && isSearchQueryMatch && isStatusMatch
+      );
     })
     .sort((a, b) => b.reference - a.reference);
 
@@ -347,6 +354,13 @@ const OrderView = () => {
       default:
         return "bg-primary-blue";
     }
+  };
+  const uniqueStatuses = [
+    ...new Set(sortedOrders.map((order) => order.status_order)),
+  ];
+  const handleStatusChange = (e) => {
+    const newSelectedStatus = e.target.value;
+    setSelectedStatus(newSelectedStatus);
   };
 
   return (
@@ -588,7 +602,21 @@ const OrderView = () => {
                 <th className="py-4"># Products</th>
                 {/* <th className="py-4">Responsable</th> */}
                 <th className="py-4">Delivery date</th>
-                <th className="py-4 rounded-tr-lg">Status</th>
+                <th className="py-4 rounded-tr-lg">
+                  Status{" "}
+                  <select
+                    onChange={handleStatusChange}
+                    className="w-[15px] ml-[2px]"
+                  >
+                    <option value=""></option>
+                    <option value="">All</option>
+                    {uniqueStatuses.map((status, index) => (
+                      <option key={index} value={status}>
+                        {status}
+                      </option>
+                    ))}
+                  </select>
+                </th>
               </tr>
             </thead>
 
