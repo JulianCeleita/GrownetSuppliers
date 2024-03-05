@@ -344,7 +344,7 @@ const CustomersView = () => {
                         </td>
                         <td className="py-4 pl-8">
                           {
-                            selectedRoute && selectedDay ? (
+                            selectedRoute || selectedDay ? (
                               <>
                                 {uniqueRouteNames}
                               </>
@@ -365,7 +365,7 @@ const CustomersView = () => {
                         </td>
                         <td className="py-4 pl-8">
                           {
-                            selectedRoute && selectedDay ? (
+                            selectedRoute || selectedDay ? (
                               <>
                                 {uniqueDrop}
                               </>
