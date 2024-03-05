@@ -574,6 +574,7 @@ const OrderView = () => {
                 <th className="py-4">Profit %</th>
                 <th className="py-4">Route</th>
                 <th className="py-4">Drop</th>
+                <th className="py-4"># Products</th>
                 {/* <th className="py-4">Responsable</th> */}
                 <th className="py-4">Delivery date</th>
                 <th className="py-4 rounded-tr-lg">Status</th>
