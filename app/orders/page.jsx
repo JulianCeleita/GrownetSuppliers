@@ -499,11 +499,11 @@ const OrderView = () => {
             <PrinterIcon className="h-6 w-6" />
           </button>
         </div>
-        <section className="absolute top-0 right-5 mt-5 w-[30%] 2xl:w-auto ">
+        <section className="absolute top-0 right-5 mt-5  ">
           <div className="flex gap-2">
             {filterType !== "range" &&
               formatDateToShow(workDate) === formattedDate && (
-                <div className="px-4 py-4 rounded-3xl flex items-center justify-center bg-white shadow-[0_8px_30px_rgb(0,0,0,0.12)]">
+                <div className="px-4 py-4 rounded-3xl flex items-center justify-center bg-white shadow-[0_8px_30px_rgb(0,0,0,0.12)] ">
                   <div>
                     <h1 className=" text-lg 2xl:text-xl font-bold text-dark-blue">
                       Today
