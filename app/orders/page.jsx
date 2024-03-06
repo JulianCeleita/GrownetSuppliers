@@ -27,6 +27,7 @@ import useUserStore from "../store/useUserStore";
 import useWorkDateStore from "../store/useWorkDateStore";
 import Image from "next/image";
 import ModalOrderError from "../components/ModalOrderError";
+import { saveAs } from 'file-saver';
 
 export const customStyles = {
   placeholder: (provided) => ({
@@ -268,18 +269,7 @@ const OrderView = () => {
       })
       .then((response) => {
         console.log("🚀 ~ .then ~ response.data.message:", response.data);
-        if (response.data.status === 400) {
-        } else {
-          console.log("🚀 ~ .then ~ response:", response);
-          const url = window.URL.createObjectURL(new Blob([response.data]));
-          const link = document.createElement("a");
-          link.href = url;
-          link.setAttribute("download", "orders.csv");
-          document.body.appendChild(link);
-          link.click();
-          document.body.removeChild(link);
-          window.URL.revokeObjectURL(url);
-        }
+        saveAs(new Blob([response.data], { type: 'text/csv' }), 'orders.csv');
       })
       .catch((error) => {
         console.log("🚀 ~ downloadCSV ~ error:", error.response.data.msg);
