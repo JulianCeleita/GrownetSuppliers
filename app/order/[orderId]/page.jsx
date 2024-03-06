@@ -28,6 +28,7 @@ import { CircleProgressBar } from "@/app/components/CircleProgressBar";
 import Select from "react-select";
 import { getPercentageOrder } from "../../api/percentageOrderRequest";
 import ModalDelete from "@/app/components/ModalDelete";
+import ModalOrderDelete from "@/app/components/ModalDeleteOrder";
 
 const OrderDetailPage = () => {
   const [hasMounted, setHasMounted] = useState(false);
@@ -66,7 +67,7 @@ const OrderDetailPage = () => {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [messageDelete, setMessageDelete] = useState("");
   const [specialRequirements, setSpecialRequirements] = useState(
-    orderDetail.observation ? orderDetail.observation : ""
+    orderDetail?.observation ? orderDetail.observation : ""
   );
   const [customerDate, setCustomerDate] = useState();
   const [customersRef, setCustomersRef] = useState(
@@ -259,9 +260,15 @@ const OrderDetailPage = () => {
     fetchCustomersDate(token, orderDate, selectedAccNumber2, setCustomerDate);
   }, [orderDate, selectedAccNumber2]);
 
-  if (orderDetail.state_name === "Received" || orderDetail.state_name === "Generated") {
-    setMessageDelete("")
-  }
+  useEffect(() => {
+    if (showDeleteModal) {
+      if (orderDetail.state_name === "Received" || orderDetail.state_name === "Generated") {
+        setMessageDelete("You won't be able to revert this")
+      } else {
+        setMessageDelete("This order is already being processed, are you sure you want to delete it?")
+      }
+    }
+  }, [showDeleteModal])
 
   //RUN BUTTON WITH CRT + ENTER
   const handleKeyDown = (event) => {
@@ -287,9 +294,6 @@ const OrderDetailPage = () => {
       })
       .then((response) => {
         console.log("🚀 ~ .then ~ response:", response)
-        setShowDeleteModal(false);
-        clearStates();
-        onClose();
         router.push("/orders");
       })
       .catch((error) => {
@@ -562,10 +566,11 @@ const OrderDetailPage = () => {
           )
         )}
       </div>
-      <ModalDelete
+      <ModalOrderDelete
         isvisible={showDeleteModal}
         onClose={() => setShowDeleteModal(false)}
         onConfirm={() => handleDeleteOrder(orderId)}
+        message={messageDelete}
       />
     </Layout>
   );

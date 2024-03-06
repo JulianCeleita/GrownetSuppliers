@@ -6,7 +6,7 @@ import {
 } from "@heroicons/react/24/outline";
 import axios from "axios";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import ModalDelete from "../components/ModalDelete";
 import { deleteCustomer } from "../config/urls.config";
 import Layout from "../layoutS";
@@ -40,7 +40,7 @@ const CustomersView = () => {
   const [showEditCustomer, setShowEditCustomer] = useState(false);
   const [updateCustomers, setUpdateCustomers] = useState(false);
   const [displayedCustomers, setDisplayedCustomers] = useState([]);
-  const [selectedDay, setSelectedDay] = useState('');
+  const [selectedDay, setSelectedDay] = useState("");
   const [sortConfig, setSortConfig] = useState({ key: null, direction: 'ascending' });
 
   useEffect(() => {
@@ -82,7 +82,26 @@ const CustomersView = () => {
       customer.routes.some(route => route.days_id === Number(selectedDay))
     );
 
-    if (sortConfig.key) {
+    const getDropForDay = (customer, dayId) => {
+      const routeForDay = customer.routes.find(route => Number(route.days_id) === Number(dayId));
+      return routeForDay ? routeForDay.drop : 0;
+    };
+
+    if (sortConfig.key === 'drops' && selectedDay) {
+      filteredByDay.sort((a, b) => {
+        const dropA = getDropForDay(a, selectedDay);
+        const dropB = getDropForDay(b, selectedDay);
+  
+        const numDropA = Number(dropA);
+        const numDropB = Number(dropB);
+  
+        if (sortConfig.direction === 'ascending') {
+          return numDropA - numDropB;
+        } else {
+          return numDropB - numDropA;
+        }
+      });
+    } else if (sortConfig.key) {
       filteredByDay.sort((a, b) => {
         if (a[sortConfig.key] < b[sortConfig.key]) {
           return sortConfig.direction === 'ascending' ? -1 : 1;
@@ -93,7 +112,6 @@ const CustomersView = () => {
         return 0;
       });
     }
-
     setDisplayedCustomers(filteredByDay);
   }, [customers, sortConfig, searchTerm, selectedGroup, selectedRoute, selectedDay]);
 
@@ -135,6 +153,18 @@ const CustomersView = () => {
     setSelectedGroup(e.target.value);
   };
 
+  const requestSort = (key) => {
+    console.log("🚀 ~ requestSort ~ key:", key)
+    let direction = 'ascending';
+    if (sortConfig.key === key && sortConfig.direction === 'ascending') {
+      direction = 'descending';
+    } else {
+      direction = 'ascending';
+    }
+    console.log("direction and key:", sortConfig)
+    setSortConfig({ key, direction });
+  };
+
   const statusColorClass = (status) => {
     switch (status) {
       case 1:
@@ -145,12 +175,12 @@ const CustomersView = () => {
   };
 
   const daysMapping = [
-    { id: 1, name: 'Monday' },
-    { id: 2, name: 'Tuesday' },
-    { id: 3, name: 'Wednesday' },
-    { id: 4, name: 'Thursday' },
-    { id: 5, name: 'Friday' },
-    { id: 6, name: 'Saturday' }
+    { id: 1, name: "Monday" },
+    { id: 2, name: "Tuesday" },
+    { id: 3, name: "Wednesday" },
+    { id: 4, name: "Thursday" },
+    { id: 5, name: "Friday" },
+    { id: 6, name: "Saturday" },
   ];
 
   return (
@@ -205,11 +235,7 @@ const CustomersView = () => {
             <option value="">All days</option>
             {daysMapping &&
               daysMapping.map((day) => (
-                <option
-                  key={day.id}
-                  value={day.id}
-                  className="text-black"
-                >
+                <option key={day.id} value={day.id} className="text-black">
                   {day.name}
                 </option>
               ))}
@@ -254,13 +280,13 @@ const CustomersView = () => {
           <table className="w-[90%] bg-white rounded-2xl  shadow-[rgba(17,_17,_26,_0.1)_0px_0px_16px]">
             <thead className="sticky top-0 bg-white text-center shadow-[0px_11px_15px_-3px_#edf2f7]">
               <tr className="border-stone-100 border-b-0 text-dark-blue rounded-t-3xl">
-                <th className="py-4 rounded-tl-xl">Acc Number</th>
-                <th className="py-4 ">Name</th>
+                <th className="py-4 rounded-tl-xl cursor-pointer hover:bg-gray-100 transition-all" onClick={() => requestSort('accountNumber')}>Acc Number</th>
+                <th className="py-4 cursor-pointer hover:bg-gray-100 transition-all" onClick={() => requestSort('accountName')}>Name</th>
                 <th className="py-4 ">Telephone</th>
-                <th className="py-4">Group</th>
+                <th className="py-4 cursor-pointer hover:bg-gray-100 transition-all" onClick={() => requestSort('group')}>Group</th>
                 <th className="py-4">Routes</th>
-                <th className="py-4">Drops</th>
-                <th className="py-4 rounded-tr-xl">Post Code</th>
+                <th className="py-4 cursor-pointer hover:bg-gray-100 transition-all" onClick={() => requestSort('drops')}>Drops</th>
+                <th className="py-4 rounded-tr-xl cursor-pointer hover:bg-gray-100 transition-all" onClick={() => requestSort('postCode')}>Post Code</th>
                 {/* <th className="py-4">Status</th> */}
               </tr>
             </thead>
@@ -329,7 +355,7 @@ const CustomersView = () => {
                         </td>
                         <td className="py-4 pl-8">
                           {
-                            selectedRoute && selectedDay ? (
+                            selectedRoute || selectedDay ? (
                               <>
                                 {uniqueRouteNames}
                               </>
@@ -344,12 +370,13 @@ const CustomersView = () => {
                                   {index < arr.length - 1 && " - "}
                                 </span>
                               ))
+
                             )
                           }
                         </td>
                         <td className="py-4 pl-8">
                           {
-                            selectedRoute && selectedDay ? (
+                            selectedRoute || selectedDay ? (
                               <>
                                 {uniqueDrop}
                               </>
@@ -365,6 +392,7 @@ const CustomersView = () => {
                                   {index < arr.length - 1 && " - "}
                                 </span>
                               ))
+
                             )
                           }
                         </td>
