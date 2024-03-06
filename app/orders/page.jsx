@@ -462,7 +462,18 @@ const OrderView = () => {
               placeholderText={formatDateToShow(workDate)}
             />
           )}
-
+          <select
+            value={selectedRoute}
+            onChange={(e) => handleRouteSelection({ value: e.target.value })}
+            className="orm-select px-4 py-3 rounded-md border border-gray-300"
+          >
+            <option value="">All routes</option>
+            {uniqueRoutesArray.map((route) => (
+              <option key={route} value={route}>
+                {route}
+              </option>
+            ))}
+          </select>
           <select
             value={selectedGroup}
             onChange={handleGroupChange}
