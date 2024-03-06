@@ -25,6 +25,7 @@ import useTokenStore from "../store/useTokenStore";
 import useUserStore from "../store/useUserStore";
 import useWorkDateStore from "../store/useWorkDateStore";
 import Image from "next/image";
+import ModalOrderError from "../components/ModalOrderError";
 
 export const customStyles = {
   placeholder: (provided) => ({
@@ -68,6 +69,9 @@ const OrderView = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedGroup, setSelectedGroup] = useState("");
   const [selectedStatus, setSelectedStatus] = useState("");
+  const [showErrorCsv, setShowErrorCsv] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
+  
 
   const formatDateToShow = (dateString) => {
     if (!dateString) return "Loading...";
@@ -263,15 +267,21 @@ const OrderView = () => {
         // responseType: "blob",
       })
       .then((response) => {
-        console.log("🚀 ~ .then ~ response:", response)
-        const url = window.URL.createObjectURL(new Blob([response.data]));
-        const link = document.createElement('a');
-        link.href = url;
-        link.setAttribute('download', 'orders.csv');
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        window.URL.revokeObjectURL(url);
+        console.log("🚀 ~ .then ~ response.data.message:", response.data)
+        if (response.data.status === 400) {
+          setShowErrorCsv(true);
+          setErrorMessage(response.data.msg);
+        } else {
+          console.log("🚀 ~ .then ~ response:", response)
+          const url = window.URL.createObjectURL(new Blob([response.data]));
+          const link = document.createElement('a');
+          link.href = url;
+          link.setAttribute('download', 'orders.csv');
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+          window.URL.revokeObjectURL(url);
+        }
       })
       .catch((error) => {
         console.error("Error al descargar csv: ", error);
@@ -784,6 +794,12 @@ const OrderView = () => {
           </div>
         )}
       </div>
+      <ModalOrderError
+        isvisible={showErrorCsv}
+        onClose={() => setShowErrorCsv(false)}
+        title={"Error downloading csv"}
+        message={errorMessage}
+      />
     </Layout>
   );
 };
