@@ -4,6 +4,7 @@ import {
   ExclamationCircleIcon,
   PlusCircleIcon,
   PrinterIcon,
+  TableCellsIcon,
   TrashIcon,
 } from "@heroicons/react/24/outline";
 import axios from "axios";
@@ -18,13 +19,14 @@ import {
   fetchOrdersDateByWorkDate,
 } from "../api/ordersRequest";
 import { CircleProgressBar } from "../components/CircleProgressBar";
-import { printInvoices } from "../config/urls.config";
+import { orderCSV, printInvoices } from "../config/urls.config";
 import Layout from "../layoutS";
 import usePercentageStore from "../store/usePercentageStore";
 import useTokenStore from "../store/useTokenStore";
 import useUserStore from "../store/useUserStore";
 import useWorkDateStore from "../store/useWorkDateStore";
 import Image from "next/image";
+import ModalOrderError from "../components/ModalOrderError";
 
 export const customStyles = {
   placeholder: (provided) => ({
@@ -60,6 +62,7 @@ const OrderView = () => {
   const [endDateByNet, setEndDateByNet] = useState("");
   const [selectedOrders, setSelectedOrders] = useState({ route: "" });
   const [selectedRoute, setSelectedRoute] = useState("");
+  const [selectedRouteId, setSelectedRouteId] = useState("");
   const [filterType, setFilterType] = useState("date");
   const [showPercentage, setShowPercentage] = useState(null);
   const [totalNet, setTotalNet] = useState("");
@@ -67,6 +70,8 @@ const OrderView = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedGroup, setSelectedGroup] = useState("");
   const [selectedStatus, setSelectedStatus] = useState("");
+  const [showErrorCsv, setShowErrorCsv] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
 
   const formatDateToShow = (dateString) => {
     if (!dateString) return "Loading...";
@@ -247,6 +252,42 @@ const OrderView = () => {
       .map(([reference]) => reference);
   };
 
+  const downloadCSV = () => {
+    const postDataCSV = {
+      route_id: selectedRouteId,
+      date: workDate,
+    };
+    console.log("🚀 ~ downloadCSV ~ postDataCSV:", postDataCSV);
+
+    axios
+      .post(orderCSV, postDataCSV, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        // responseType: "blob",
+      })
+      .then((response) => {
+        console.log("🚀 ~ .then ~ response.data.message:", response.data);
+        if (response.data.status === 400) {
+        } else {
+          console.log("🚀 ~ .then ~ response:", response);
+          const url = window.URL.createObjectURL(new Blob([response.data]));
+          const link = document.createElement("a");
+          link.href = url;
+          link.setAttribute("download", "orders.csv");
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+          window.URL.revokeObjectURL(url);
+        }
+      })
+      .catch((error) => {
+        console.log("🚀 ~ downloadCSV ~ error:", error.response.data.msg);
+        setShowErrorCsv(true);
+        setErrorMessage(error.response.data.msg);
+        console.error("Error al descargar csv: ", error);
+      });
+  };
   const printOrders = () => {
     const ordersToPrint = objectToArray(selectedOrders);
 
@@ -292,10 +333,21 @@ const OrderView = () => {
       const dateB = new Date(b.date_delivery);
       return dateA - dateB;
     });
+  console.log("🚀 ~ OrderView ~ sortedOrders:", sortedOrders);
 
-  const uniqueRoutesArray = [
-    ...new Set(sortedOrders.map((order) => order.route)),
-  ];
+  const uniqueRoutesSet = new Set(
+    sortedOrders.map((order) => order.route_id + "_" + order.route)
+  );
+
+  // Ahora convertimos el Set nuevamente en un array, pero esta vez, cada elemento será un objeto con route_id y route_name.
+  const uniqueRoutesArray = Array.from(uniqueRoutesSet).map((route) => {
+    const [routeId, routeName] = route.split("_");
+    return {
+      route_id: parseInt(routeId, 10), // Convertimos el route_id de string a número
+      route_name: routeName,
+    };
+  });
+  console.log("🚀 ~ OrderView ~ uniqueRoutesArray:", uniqueRoutesArray);
 
   const getPercentages = async (value) => {
     if (value !== "" || value !== null || value !== undefined) {
@@ -303,9 +355,15 @@ const OrderView = () => {
     }
   };
 
-  const handleRouteSelection = async (option) => {
-    setSelectedRoute(option.value);
-    await getPercentages(option.value);
+  const handleRouteChange = (event) => {
+    if (event.target.value) {
+      const selectedOption = JSON?.parse(event.target.value);
+      setSelectedRoute(selectedOption.route_name);
+      setSelectedRouteId(selectedOption.route_id);
+    } else {
+      setSelectedRoute("");
+      setSelectedRouteId("");
+    }
   };
 
   const filteredOrders = sortedOrders
@@ -334,6 +392,14 @@ const OrderView = () => {
     })
     .sort((a, b) => b.reference - a.reference);
 
+  const uniqueStatuses = [
+    ...new Set(sortedOrders.map((order) => order.status_order)),
+  ];
+  const handleStatusChange = (e) => {
+    const newSelectedStatus = e.target.value;
+    setSelectedStatus(newSelectedStatus);
+  };
+
   // console.log("filteredOrders", filteredOrders);
 
   const statusColorClass = (status) => {
@@ -355,13 +421,6 @@ const OrderView = () => {
       default:
         return "bg-primary-blue";
     }
-  };
-  const uniqueStatuses = [
-    ...new Set(sortedOrders.map((order) => order.status_order)),
-  ];
-  const handleStatusChange = (e) => {
-    const newSelectedStatus = e.target.value;
-    setSelectedStatus(newSelectedStatus);
   };
 
   return (
@@ -475,14 +534,23 @@ const OrderView = () => {
             />
           )}
           <select
-            value={selectedRoute}
-            onChange={(e) => handleRouteSelection({ value: e.target.value })}
-            className="orm-select px-4 py-3 rounded-md border border-gray-300"
+            value={JSON.stringify({
+              route_id: selectedRouteId,
+              route_name: selectedRoute,
+            })}
+            onChange={handleRouteChange}
+            className="form-select px-4 py-3 rounded-md border border-gray-300"
           >
             <option value="">All routes</option>
             {uniqueRoutesArray.map((route) => (
-              <option key={route} value={route}>
-                {route}
+              <option
+                key={route.route_id}
+                value={JSON.stringify({
+                  route_id: route.route_id,
+                  route_name: route.route_name,
+                })}
+              >
+                {route.route_name}
               </option>
             ))}
           </select>
@@ -505,17 +573,28 @@ const OrderView = () => {
             ))}
           </select>
           <button
+            disabled={!selectedRoute}
+            className={`flex ${
+              selectedRoute
+                ? "bg-green text-white hover:bg-dark-blue"
+                : "bg-gray-grownet text-white cursor-not-allowed"
+            } py-3 px-4 rounded-lg font-medium transition-all`}
+            onClick={() => downloadCSV()}
+          >
+            <TableCellsIcon className="h-6" />
+          </button>
+          <button
             className="flex bg-primary-blue text-white py-3 px-4 rounded-lg font-medium transition-all cursor-pointer hover:bg-dark-blue hover:scale-110"
             onClick={() => printOrders()}
           >
             <PrinterIcon className="h-6 w-6" />
           </button>
         </div>
-        <section className="absolute top-0 right-5 mt-5  ">
+        <section className="absolute top-0 right-5 mt-5 w-[30%] 2xl:w-auto ">
           <div className="flex gap-2">
             {filterType !== "range" &&
               formatDateToShow(workDate) === formattedDate && (
-                <div className="px-4 py-4 rounded-3xl flex items-center justify-center bg-white shadow-[0_8px_30px_rgb(0,0,0,0.12)] ">
+                <div className="px-4 py-4 rounded-3xl flex items-center justify-center bg-white shadow-[0_8px_30px_rgb(0,0,0,0.12)]">
                   <div>
                     <h1 className=" text-lg 2xl:text-xl font-bold text-dark-blue">
                       Today
@@ -609,25 +688,7 @@ const OrderView = () => {
                 <th className="py-4">Customer</th>
                 <th className="py-4">Amount</th>
                 <th className="py-4">Profit %</th>
-                <th className="py-4">
-                  Route{" "}
-                  <select
-                    value={selectedRoute}
-                    onChange={(e) =>
-                      handleRouteSelection({ value: e.target.value })
-                    }
-                    className="w-[15px] ml-[2px]"
-                  >
-                    {" "}
-                    <option value=""></option>
-                    <option value="">All routes</option>
-                    {uniqueRoutesArray.map((route) => (
-                      <option key={route} value={route}>
-                        {route}
-                      </option>
-                    ))}
-                  </select>
-                </th>
+                <th className="py-4">Route</th>
                 <th className="py-4">Drop</th>
                 <th className="py-4"># Products</th>
                 {/* <th className="py-4">Responsable</th> */}
@@ -638,8 +699,7 @@ const OrderView = () => {
                     onChange={handleStatusChange}
                     className="w-[15px] ml-[2px]"
                   >
-                    <option value=""></option>
-                    <option value="">All status</option>
+                    <option value="">All</option>
                     {uniqueStatuses.map((status, index) => (
                       <option key={index} value={status}>
                         {status}
@@ -760,6 +820,12 @@ const OrderView = () => {
           </div>
         )}
       </div>
+      <ModalOrderError
+        isvisible={showErrorCsv}
+        onClose={() => setShowErrorCsv(false)}
+        title={"Error downloading csv"}
+        message={errorMessage}
+      />
     </Layout>
   );
 };
