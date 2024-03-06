@@ -260,7 +260,7 @@ const OrderView = () => {
         headers: {
           Authorization: `Bearer ${token}`,
         },
-        responseType: "blob",
+        // responseType: "blob",
       })
       .then((response) => {
         console.log("🚀 ~ .then ~ response:", response)
@@ -663,7 +663,6 @@ const OrderView = () => {
                     onChange={handleStatusChange}
                     className="w-[15px] ml-[2px]"
                   >
-                    <option value=""></option>
                     <option value="">All</option>
                     {uniqueStatuses.map((status, index) => (
                       <option key={index} value={status}>
