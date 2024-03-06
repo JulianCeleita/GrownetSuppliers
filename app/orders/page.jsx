@@ -4,6 +4,7 @@ import {
   ExclamationCircleIcon,
   PlusCircleIcon,
   PrinterIcon,
+  TrashIcon,
 } from "@heroicons/react/24/outline";
 import axios from "axios";
 import Link from "next/link";
@@ -387,14 +388,25 @@ const OrderView = () => {
           }
           `}
         >
-          <div className="">
+          <div className="border border-gray-300 rounded-md py-3 px-2 flex items-center">
             <input
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search..."
-              className="border border-gray-300 rounded-md py-3 px-2 placeholder-[#04444F] focus:border-[#04444F] focus:border-2 focus:outline-none"
+              placeholder="Search"
+              className="placeholder-[#04444F] outline-none"
             />
+            {searchQuery != "" && (
+              <button
+                onClick={() => {
+                  setSearchQuery("");
+                  setSelectedRoute("");
+                  setSelectedGroup("");
+                }}
+              >
+                <TrashIcon className="h-6 w-6 text-danger" />
+              </button>
+            )}
           </div>
           <select
             value={filterType}
@@ -493,7 +505,7 @@ const OrderView = () => {
             ))}
           </select>
           <button
-            className="flex bg-primary-blue text-white py-3 px-4 rounded-full font-medium transition-all cursor-pointer hover:bg-dark-blue hover:scale-110"
+            className="flex bg-primary-blue text-white py-3 px-4 rounded-lg font-medium transition-all cursor-pointer hover:bg-dark-blue hover:scale-110"
             onClick={() => printOrders()}
           >
             <PrinterIcon className="h-6 w-6" />

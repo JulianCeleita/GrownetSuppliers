@@ -236,7 +236,7 @@ const SideBar = () => {
                               </Link>
                               <Link href="/categories" className="text-white">
                                 <h3
-                                  className={`hover:bg-[#046373] px-2 py-2 pl-4 rounded-xl w-[360px]${
+                                  className={`hover:bg-[#046373] px-2 py-2 pl-4 rounded-xl w-[360px] mb-2 ${
                                     pathname === "/categories"
                                       ? "bg-[#046373]"
                                       : null
