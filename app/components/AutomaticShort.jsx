@@ -4,6 +4,9 @@ import { useEffect, useState } from "react";
 import ReactCountryFlag from "react-country-flag";
 import {
   addPresentationUrl,
+  categoriesShort,
+  categoriesUrl,
+  productShort,
   productsUrl,
   taxexUrl,
   uomUrl,
@@ -21,19 +24,49 @@ function AutomaticShort({ isvisible, onClose, setProducts, setIsLoading }) {
   const { token } = useTokenStore();
   const [uoms, setUoms] = useState([]);
   const [products2, setProducts2] = useState([]);
+  const [categories, setCategories] = useState([]);
   const [selecteProductsStatus, setSelectedProductsStatus] =
-    useState("Red pepper");
+    useState("");
+  const [selectedCategoriesId, setSelectedCategoriesId] =
+    useState("");
   const [repeatedCode, setRepeatedCode] = useState(false);
   const [codePresentation, setCodePresentation] = useState("");
   const { user } = useUserStore();
   const [product, setProduct] = useState(true);
+  const [selectedShort, setSelectedShort] = useState("");
+  const [selectedShort2, setSelectedShort2] = useState("");
   const toggleProduct = () => {
     setProduct((current) => !current);
   };
 
+  useEffect(() => {
+    console.log("🚀 ~ AutomaticShort ~ selectedShort:", selectedShort)
+  }, [selectedShort])
+  
   //Api products
   useEffect(() => {
-    const fetchData = async () => {
+    const fetchDataCategories = async () => {
+      try {
+        const response = await axios.get(categoriesUrl, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        console.log("🚀 ~ fetchDataCategories ~ response:", response)
+
+        const sortedCategories = response.data.categories.sort((a, b) =>
+          a.name.localeCompare(b.name)
+        );
+
+        const filteredCategories = sortedCategories.filter(
+          (product) => product.stateProduct_id !== 2
+        );
+        setCategories(filteredCategories);
+      } catch (error) {
+        console.error("Error al obtener los productos:", error);
+      }
+    };
+    const fetchDataProducts = async () => {
       try {
         const response = await axios.get(productsUrl, {
           headers: {
@@ -54,7 +87,8 @@ function AutomaticShort({ isvisible, onClose, setProducts, setIsLoading }) {
       }
     };
 
-    fetchData();
+    fetchDataCategories();
+    fetchDataProducts();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -62,18 +96,15 @@ function AutomaticShort({ isvisible, onClose, setProducts, setIsLoading }) {
     return null;
   }
 
-  //Add presentation api
-  const sendData = (e) => {
+  //Add automatic short api
+  const sendDataProduct = (e) => {
     e.preventDefault();
-    const postData = product
-      ? {
-          products_id: selecteProductsStatus,
-        }
-      : {
-          products_id: selecteProductsStatus,
-        };
-    axios
-      .post(addPresentationUrl, postData, {
+    const postDataProduct = {
+          id: selecteProductsStatus,
+          short: selectedShort
+      }
+      console.log("🚀 ~ sendDataProduct ~ postData:", postDataProduct)
+      axios.post(productShort, postDataProduct, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -87,14 +118,30 @@ function AutomaticShort({ isvisible, onClose, setProducts, setIsLoading }) {
         onClose();
       })
       .catch((response, error) => {
-        if (response.response.data.status === 400) {
-          if (
-            response.response.data.message.includes("Already existing code")
-          ) {
-            setRepeatedCode(true);
-            console.log("Already existing code");
-          }
+        console.error("Error al agregar la nueva presentación: ", error);
+      });
+  };
+  const sendDataCategories = (e) => {
+    e.preventDefault();
+    const postDataCategories = {
+          id: selectedCategoriesId,
+          short: selectedShort
+      }
+      console.log("🚀 ~ sendDataCategories ~ postData:", postDataCategories)
+      axios.post(productShort, postDataCategories, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+      .then((response) => {
+        if (user.id_supplier) {
+          fetchPresentationsSupplier(token, user, setProducts, setIsLoading);
+        } else {
+          fetchPresentations(token, setProducts, setIsLoading);
         }
+        onClose();
+      })
+      .catch((response, error) => {
         console.error("Error al agregar la nueva presentación: ", error);
       });
   };
@@ -135,7 +182,7 @@ function AutomaticShort({ isvisible, onClose, setProducts, setIsLoading }) {
         </div>
 
         {product ? (
-          <form className="text-left  flex flex-col" onSubmit={sendData}>
+          <form className="text-left  flex flex-col" onSubmit={sendDataProduct}>
             <label htmlFor="produvt" className="mt-2">
               Product:
             </label>
@@ -154,7 +201,27 @@ function AutomaticShort({ isvisible, onClose, setProducts, setIsLoading }) {
                   {product.name}
                 </option>
               ))}
-            </select>       
+            </select>   
+            <label htmlFor="short" className="mt-2">
+              Automatic short:
+            </label>    
+            <select
+              id="short"
+              name="short"
+              className="border p-3 rounded-md mr-3 my-3"
+              onChange={(e) => setSelectedShort(e.target.value)}
+              required
+            >
+              <option disabled selected>
+                Select option
+              </option>
+                <option key={"1"} value="1">
+                  Active
+                </option>
+                <option key={"0"} value="0">
+                  Inactive
+                </option>
+            </select>
             <div className="mt-3 text-center">
               <button
                 type="submit"
@@ -172,25 +239,45 @@ function AutomaticShort({ isvisible, onClose, setProducts, setIsLoading }) {
             </div>
           </form>
         ) : (
-          <form className="text-left  flex flex-col" onSubmit={sendData}>
-            <label htmlFor="produvt" className="mt-3">
+          <form className="text-left  flex flex-col" onSubmit={sendDataCategories}>
+            <label htmlFor="category" className="mt-3">
               Category:
             </label>
             <select
-              id="produvt"
-              name="produvt"
+              id="category"
+              name="category"
               className="border p-3 rounded-md mr-3 my-3"
-              onChange={(e) => setSelectedProductsStatus(e.target.value)}
+              onChange={(e) => setSelectedCategoriesId(e.target.value)}
               required
             >
               <option disabled selected>
                 Select category
               </option>
-              {/* {products2.map((product) => (
-                <option key={product.id} value={product.id}>
-                  {product.name}
+              {categories.map((category) => (
+                <option key={category.id} value={category.id}>
+                  {category.name}
                 </option>
-              ))} */}
+              ))}
+            </select>
+            <label htmlFor="short" className="mt-2">
+              Automatic short:
+            </label>    
+            <select
+              id="short"
+              name="short"
+              className="border p-3 rounded-md mr-3 my-3"
+              onChange={(e) => setSelectedShort2(e.target.value)}
+              required
+            >
+              <option disabled selected>
+                Select option
+              </option>
+                <option key={"1"} value="1">
+                  Active
+                </option>
+                <option key={"0"} value="0">
+                  Inactive
+                </option>
             </select>
             <div className="mt-3 text-center">
               <button
