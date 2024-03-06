@@ -341,13 +341,17 @@ const OrderView = () => {
     }
   };
 
-  
 
-  const handleRouteSelection = async (option) => {
-    console.log("🚀 ~ handleRouteSelection ~ option:", option)
-    setSelectedRoute(option.value);
-    setSelectedRouteId(option.key);
-    await getPercentages(option.value);
+
+  const handleRouteChange = (event) => {
+    if (event.target.value) {
+      const selectedOption = JSON?.parse(event.target.value);
+      setSelectedRoute(selectedOption.route_name);
+      setSelectedRouteId(selectedOption.route_id);
+    } else {
+      setSelectedRoute("")
+      setSelectedRouteId("")
+    }
   };
 
   const filteredOrders = sortedOrders
@@ -492,16 +496,13 @@ const OrderView = () => {
             />
           )}
           <select
-            value={selectedRoute}
-            onChange={(e) => {
-              handleRouteSelection({ value: e.target.value })
-              // setSelectedRouteId(e.target.key)
-            }}
-            className="orm-select px-4 py-3 rounded-md border border-gray-300"
+            value={JSON.stringify({ route_id: selectedRouteId, route_name: selectedRoute })}
+            onChange={handleRouteChange}
+            className="form-select px-4 py-3 rounded-md border border-gray-300"
           >
             <option value="">All routes</option>
             {uniqueRoutesArray.map((route) => (
-              <option key={route.route_id} value={route.route_name}>
+              <option key={route.route_id} value={JSON.stringify({ route_id: route.route_id, route_name: route.route_name })}>
                 {route.route_name}
               </option>
             ))}
