@@ -542,10 +542,10 @@ const OrderView = () => {
           </select>
           <button
             disabled={!selectedRoute}
-            className={`flex ${selectedRoute ? 'bg-light-green text-black hover:bg-dark-green hover:text-white' : 'bg-gray-500 text-gray-400 cursor-not-allowed'} py-3 px-4 rounded-full font-medium transition-all`}
+            className={`flex ${selectedRoute ? 'bg-green text-white hover:bg-dark-blue' : 'bg-gray-grownet text-white cursor-not-allowed'} py-3 px-4 rounded-full font-medium transition-all`}
             onClick={() => downloadCSV()}
           >
-            <TableCellsIcon className="h-6 w-6" />
+            <TableCellsIcon className="h-6" />
           </button>
           <button
             className="flex bg-primary-blue text-white py-3 px-4 rounded-full font-medium transition-all cursor-pointer hover:bg-dark-blue hover:scale-110"
