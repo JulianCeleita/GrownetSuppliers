@@ -14,7 +14,8 @@ import {
 } from "@heroicons/react/24/outline";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Fragment, useLayoutEffect, useState } from "react";
+import { usePathname } from "next/navigation";
+import { Fragment, useLayoutEffect, useState, useEffect } from "react";
 import useUserStore from "../store/useUserStore";
 import { Dialog, Transition } from "@headlessui/react";
 import useTokenStore from "../store/useTokenStore";
@@ -28,12 +29,11 @@ const SideBar = () => {
   const { removeToken, setToken } = useTokenStore();
   const [openMenu, setOpenMenu] = useState(false);
   const router = useRouter();
+  const pathname = usePathname();
   const [open, setOpen] = useState(false);
-  const [activeLink, setActiveLink] = useState("");
   const { user, removeUser, setUser } = useUserStore();
   const { token } = useTokenStore();
   const { workDate } = useWorkDateStore();
-  console.log("workDate", workDate);
 
   const handleLogout = () => {
     router.push("/");
@@ -76,6 +76,16 @@ const SideBar = () => {
       console.error("Error al enviar la solicitud POST:", error);
     }
   };
+  useEffect(() => {
+    if (
+      pathname === "/products" ||
+      pathname === "/suppliers" ||
+      pathname === "/categories"
+    ) {
+      console.log("si");
+      setOpenMenu(true);
+    }
+  }, [pathname]);
 
   return (
     <div>
@@ -145,54 +155,48 @@ const SideBar = () => {
                     <div className="pl-4">
                       <Link
                         href="/users"
-                        className="flex gap-2 text-white  py-3 transition-all hover:text-light-green"
+                        className={`flex gap-2 py-3 transition-all ${
+                          pathname === "/users"
+                            ? "text-light-green"
+                            : "text-white"
+                        } hover:text-light-green`}
                       >
                         <UserIcon class="h-6 w-6" />
                         <h3>Users</h3>
                       </Link>
+
                       <Link
                         href="/orders"
-                        className="flex gap-2 text-white  py-3 transition-all hover:text-light-green"
+                        className={`flex gap-2 py-3 transition-all ${
+                          pathname === "/orders"
+                            ? "text-light-green"
+                            : "text-white"
+                        } hover:text-light-green`}
                       >
                         <ShoppingCartIcon class="h-6 w-6" />
-                        <h3
-                          className={activeLink === "orders" ? "active" : ""}
-                          onClick={() => setActiveLink("orders")}
-                        >
-                          Orders
-                        </h3>
-
-                        {/* {activeLink === "orders" && (
-                          <span className="absolute bottom-0 left-0 h-0.5 bg-light-green w-full transition-all duration-300 ease-in-out"></span>
-                        )}
-
-                        {activeLink !== "orders" && (
-                          <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-white group-hover:w-full transition-all duration-300 ease-in-out"></span>
-                        )} */}
+                        <h3>Orders</h3>
                       </Link>
 
                       <Link
                         href="/calendar"
-                        className="flex gap-2 text-white  py-3 transition-all hover:text-light-green"
+                        className={`flex gap-2 py-3 transition-all ${
+                          pathname === "/calendar"
+                            ? "text-light-green"
+                            : "text-white"
+                        } hover:text-light-green`}
                       >
                         <CalendarIcon class="h-6 w-6" />
-                        <div
-                          className={activeLink === "calendar" ? "active" : ""}
-                          onClick={() => setActiveLink("calendar")}
-                        >
-                          Calendar
-                        </div>
-                        {/* {activeLink === "calendar" ? (
-                          <span className="absolute bottom-0 left-0  h-0.5 bg-light-green w-full transition-all duration-300 ease-in-out"></span>
-                        ) : (
-                          <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-white group-hover:w-full transition-all duration-300 ease-in-out"></span>
-                        )} */}
+                        <div>Calendar</div>
                       </Link>
 
                       {user && user.rol_name === "AdminGrownet" && (
                         <div className="relative py-3">
                           <button
-                            className="flex justify-between w-full text-white hover:text-light-green"
+                            className={`flex justify-between w-full ${
+                              openMenu === true
+                                ? "text-light-green"
+                                : "text-white"
+                            } hover:text-light-green`}
                             onClick={() => setOpenMenu(!openMenu)}
                           >
                             <div className="flex gap-2">
@@ -209,17 +213,35 @@ const SideBar = () => {
                           {openMenu && (
                             <div className="mt-3 border-l-[1px] border-light-green pl-5">
                               <Link href="/suppliers" className="text-white">
-                                <h3 className="hover:bg-[#046373] px-2 py-2 pl-4 rounded-xl w-[360px]">
+                                <h3
+                                  className={`hover:bg-[#046373] px-2 py-2 pl-4 rounded-xl w-[360px] mb-2 ${
+                                    pathname === "/suppliers"
+                                      ? "bg-[#046373]"
+                                      : null
+                                  }`}
+                                >
                                   Suppliers
                                 </h3>
                               </Link>
                               <Link href="/products" className="text-white">
-                                <h3 className="hover:bg-[#046373] px-2 py-2 pl-4 rounded-xl w-[360px]">
+                                <h3
+                                  className={`hover:bg-[#046373] px-2 py-2 pl-4 rounded-xl w-[360px] mb-2 ${
+                                    pathname === "/products"
+                                      ? "bg-[#046373]"
+                                      : null
+                                  }`}
+                                >
                                   Products
                                 </h3>
                               </Link>
                               <Link href="/categories" className="text-white">
-                                <h3 className="hover:bg-[#046373] px-2 py-2 pl-4 rounded-xl w-[360px]">
+                                <h3
+                                  className={`hover:bg-[#046373] px-2 py-2 pl-4 rounded-xl w-[360px]${
+                                    pathname === "/categories"
+                                      ? "bg-[#046373]"
+                                      : null
+                                  }`}
+                                >
                                   Categories
                                 </h3>
                               </Link>
@@ -232,25 +254,14 @@ const SideBar = () => {
                           user.rol_name === "AdminGrownet") && (
                           <Link
                             href="/customers"
-                            className="flex gap-2 text-white  py-3 transition-all hover:text-light-green"
+                            className={`flex gap-2 py-3 transition-all ${
+                              pathname === "/customers"
+                                ? "text-light-green"
+                                : "text-white"
+                            } hover:text-light-green`}
                           >
                             <BuildingStorefrontIcon class="h-6 w-6" />
-                            <h3
-                              className={
-                                activeLink === "customers" ? "active" : ""
-                              }
-                              onClick={() => setActiveLink("customers")}
-                            >
-                              Customers
-                            </h3>
-
-                            {/* {activeLink === "customers" && (
-                              <span className="absolute bottom-0 left-0 h-0.5 bg-light-green w-full transition-all duration-300 ease-in-out"></span>
-                            )}
-
-                            {activeLink !== "customers" && (
-                              <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-white group-hover:w-full transition-all duration-300 ease-in-out"></span>
-                            )} */}
+                            <h3>Customers</h3>
                           </Link>
                         )}
                       {user &&
@@ -258,25 +269,14 @@ const SideBar = () => {
                           user.rol_name === "AdminGrownet") && (
                           <Link
                             href="/presentations"
-                            className="flex gap-2 text-white  py-3 transition-all hover:text-light-green"
+                            className={`flex gap-2 py-3 transition-all ${
+                              pathname === "/presentations"
+                                ? "text-light-green"
+                                : "text-white"
+                            } hover:text-light-green`}
                           >
                             <ClipboardIcon class="h-6 w-6" />
-                            <h3
-                              className={
-                                activeLink === "catalogs" ? "active" : ""
-                              }
-                              onClick={() => setActiveLink("presentations")}
-                            >
-                              Catalogue
-                            </h3>
-
-                            {/* {activeLink === "presentations" && (
-                              <span className="absolute bottom-0 left-0 h-0.5 bg-light-green w-full transition-all duration-300 ease-in-out"></span>
-                            )}
-
-                            {activeLink !== "presentations" && (
-                              <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-white group-hover:w-full transition-all duration-300 ease-in-out"></span>
-                            )} */}
+                            <h3>Catalogue</h3>
                           </Link>
                         )}
                     </div>
