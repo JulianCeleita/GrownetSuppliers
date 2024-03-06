@@ -110,6 +110,7 @@ function AutomaticShort({ isvisible, onClose, setProducts, setIsLoading }) {
         },
       })
       .then((response) => {
+        console.log("🚀 ~ .then ~ response:", response)
         if (user.id_supplier) {
           fetchPresentationsSupplier(token, user, setProducts, setIsLoading);
         } else {
@@ -134,6 +135,7 @@ function AutomaticShort({ isvisible, onClose, setProducts, setIsLoading }) {
         },
       })
       .then((response) => {
+        console.log("🚀 ~ .then ~ response:", response)
         if (user.id_supplier) {
           fetchPresentationsSupplier(token, user, setProducts, setIsLoading);
         } else {
