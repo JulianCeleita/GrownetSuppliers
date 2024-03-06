@@ -50,7 +50,6 @@ export const restaurantsData = `${BASE_URL}customers/all`;
 export const createOrders = `${BASE_URL}orders/create`;
 export const ordersDate = `${BASE_URL}orders/search/date`;
 export const customerSupplier = `${BASE_URL}customers/supplier/`;
-export const orderCSV = `${BASE_URL}SCVExport/ordersDetails`;
 
 export const printInvoices = `${BASE_URL}invoice/generate`;
 

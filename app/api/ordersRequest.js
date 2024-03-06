@@ -129,7 +129,6 @@ export const fetchOrdersDate = async (
         "Content-Type": "application/json",
       },
     });
-    console.log("🚀 ~ response:", response)
     setTotalNet(response.data);
     setOrders(response.data.orders);
     setIsLoading(false);
