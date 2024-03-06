@@ -1,12 +1,13 @@
 "use client";
 import {
   ExclamationCircleIcon,
-  MagnifyingGlassIcon,
   PlusCircleIcon,
+  TrashIcon,
+  MagnifyingGlassIcon,
 } from "@heroicons/react/24/outline";
 import axios from "axios";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import ModalDelete from "../components/ModalDelete";
 import { deleteCustomer } from "../config/urls.config";
 import Layout from "../layoutS";
@@ -40,8 +41,11 @@ const CustomersView = () => {
   const [showEditCustomer, setShowEditCustomer] = useState(false);
   const [updateCustomers, setUpdateCustomers] = useState(false);
   const [displayedCustomers, setDisplayedCustomers] = useState([]);
-  const [selectedDay, setSelectedDay] = useState('');
-  const [sortConfig, setSortConfig] = useState({ key: null, direction: 'ascending' });
+  const [selectedDay, setSelectedDay] = useState("");
+  const [sortConfig, setSortConfig] = useState({
+    key: null,
+    direction: "ascending",
+  });
 
   useEffect(() => {
     if (user && user?.rol_name === "AdminGrownet") {
@@ -61,41 +65,72 @@ const CustomersView = () => {
   }, [searchTerm, routes, updateCustomers]);
 
   useEffect(() => {
-    let filteredBySearchTerm = customers.filter(customer =>
-      customer.accountName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      customer.accountNumber.toLowerCase().includes(searchTerm.toLowerCase())
+    let filteredBySearchTerm = customers.filter(
+      (customer) =>
+        customer.accountName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        customer.accountNumber.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
-    let filteredByGroup = filteredBySearchTerm.filter(customer =>
-      !selectedGroup ||
-      (selectedGroup === "No group" && !customer.group) ||
-      (customer.group === selectedGroup)
+    let filteredByGroup = filteredBySearchTerm.filter(
+      (customer) =>
+        !selectedGroup ||
+        (selectedGroup === "No group" && !customer.group) ||
+        customer.group === selectedGroup
     );
 
-    let filteredByRoute = filteredByGroup.filter(customer =>
-      !selectedRoute ||
-      customer.routes.some(route => route.name === selectedRoute)
+    let filteredByRoute = filteredByGroup.filter(
+      (customer) =>
+        !selectedRoute ||
+        customer.routes.some((route) => route.name === selectedRoute)
     );
 
-    let filteredByDay = filteredByRoute.filter(customer =>
-      !selectedDay ||
-      customer.routes.some(route => route.days_id === Number(selectedDay))
+    let filteredByDay = filteredByRoute.filter(
+      (customer) =>
+        !selectedDay ||
+        customer.routes.some((route) => route.days_id === Number(selectedDay))
     );
 
-    if (sortConfig.key) {
+    const getDropForDay = (customer, dayId) => {
+      const routeForDay = customer.routes.find(
+        (route) => Number(route.days_id) === Number(dayId)
+      );
+      return routeForDay ? routeForDay.drop : 0;
+    };
+
+    if (sortConfig.key === "drops" && selectedDay) {
+      filteredByDay.sort((a, b) => {
+        const dropA = getDropForDay(a, selectedDay);
+        const dropB = getDropForDay(b, selectedDay);
+
+        const numDropA = Number(dropA);
+        const numDropB = Number(dropB);
+
+        if (sortConfig.direction === "ascending") {
+          return numDropA - numDropB;
+        } else {
+          return numDropB - numDropA;
+        }
+      });
+    } else if (sortConfig.key) {
       filteredByDay.sort((a, b) => {
         if (a[sortConfig.key] < b[sortConfig.key]) {
-          return sortConfig.direction === 'ascending' ? -1 : 1;
+          return sortConfig.direction === "ascending" ? -1 : 1;
         }
         if (a[sortConfig.key] > b[sortConfig.key]) {
-          return sortConfig.direction === 'ascending' ? 1 : -1;
+          return sortConfig.direction === "ascending" ? 1 : -1;
         }
         return 0;
       });
     }
-
     setDisplayedCustomers(filteredByDay);
-  }, [customers, sortConfig, searchTerm, selectedGroup, selectedRoute, selectedDay]);
+  }, [
+    customers,
+    sortConfig,
+    searchTerm,
+    selectedGroup,
+    selectedRoute,
+    selectedDay,
+  ]);
 
   const [showDeleteModal, setShowDeleteModal] = useState(false);
 
@@ -135,6 +170,18 @@ const CustomersView = () => {
     setSelectedGroup(e.target.value);
   };
 
+  const requestSort = (key) => {
+    console.log("🚀 ~ requestSort ~ key:", key);
+    let direction = "ascending";
+    if (sortConfig.key === key && sortConfig.direction === "ascending") {
+      direction = "descending";
+    } else {
+      direction = "ascending";
+    }
+    console.log("direction and key:", sortConfig);
+    setSortConfig({ key, direction });
+  };
+
   const statusColorClass = (status) => {
     switch (status) {
       case 1:
@@ -145,14 +192,14 @@ const CustomersView = () => {
   };
 
   const daysMapping = [
-    { id: 1, name: 'Monday' },
-    { id: 2, name: 'Tuesday' },
-    { id: 3, name: 'Wednesday' },
-    { id: 4, name: 'Thursday' },
-    { id: 5, name: 'Friday' },
-    { id: 6, name: 'Saturday' }
+    { id: 1, name: "Monday" },
+    { id: 2, name: "Tuesday" },
+    { id: 3, name: "Wednesday" },
+    { id: 4, name: "Thursday" },
+    { id: 5, name: "Friday" },
+    { id: 6, name: "Saturday" },
   ];
-
+  console.log(selectedDay + "hola");
   return (
     <Layout>
       <div className="-mt-16">
@@ -167,18 +214,27 @@ const CustomersView = () => {
             <PlusCircleIcon className="h-6 w-6 mr-1" /> New Customer
           </button>
         </div>
-        <div className="w-[98%] flex items-center justify-center mb-5 mt-5">
-          <div className="relative w-[60%] max-w-[65%]">
+        <div className="flex items-center justify-center mb-5 mt-5">
+          <div className="w-[65%]  rounded-lg border border-gray-200 bg-white py-3 flex">
             <input
               type="text"
               placeholder="Search customers by name or account number"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-12 pr-4 py-3 h-[50px] w-full rounded-lg border border-gray-200 bg-white text-dark-blue placeholder-gray-400"
+              className="pl-5 w-full text-dark-blue placeholder-gray-400 outline-none"
             />
-            <div className="absolute left-3 top-1/2 transform -translate-y-1/2">
-              <MagnifyingGlassIcon className="h-5 w-5 text-gray-400 mr-5" />
-            </div>
+            {searchTerm != "" && (
+              <button
+                onClick={() => {
+                  setSearchTerm("");
+                  setSelectedRoute("");
+                  setSelectedGroup("");
+                  setSelectedDay("");
+                }}
+              >
+                <TrashIcon className="h-6 w-6 text-danger mr-2" />
+              </button>
+            )}
           </div>
           {/* 
           TODO: si se decide implementar filtro por status, descomentar este codigo
@@ -198,18 +254,14 @@ const CustomersView = () => {
             </option>
           </select> */}
           <select
-            value={selectedDay.name}
+            value={selectedDay}
             onChange={handleDayChange}
             className="ml-2 border p-2 rounded-md bg-white bg-clip-padding bg-no-repeat w-auto border-gray-200 px-4 py-2 pr-8 leading-tight h-[50px] text-dark-blue"
           >
             <option value="">All days</option>
             {daysMapping &&
               daysMapping.map((day) => (
-                <option
-                  key={day.id}
-                  value={day.id}
-                  className="text-black"
-                >
+                <option key={day.id} value={day.id} className="text-black">
                   {day.name}
                 </option>
               ))}
@@ -251,16 +303,41 @@ const CustomersView = () => {
           </select>
         </div>
         <div className="flex items-center justify-center mb-20 ">
-          <table className="w-[90%] bg-white rounded-2xl  shadow-[rgba(17,_17,_26,_0.1)_0px_0px_16px]">
+          <table className="w-[95%] bg-white rounded-2xl  shadow-[rgba(17,_17,_26,_0.1)_0px_0px_16px]">
             <thead className="sticky top-0 bg-white text-center shadow-[0px_11px_15px_-3px_#edf2f7]">
               <tr className="border-stone-100 border-b-0 text-dark-blue rounded-t-3xl">
-                <th className="py-4 rounded-tl-xl">Acc Number</th>
-                <th className="py-4 ">Name</th>
+                <th
+                  className="py-4 rounded-tl-xl cursor-pointer hover:bg-gray-100 transition-all"
+                  onClick={() => requestSort("accountNumber")}
+                >
+                  Acc Number
+                </th>
+                <th
+                  className="py-4 cursor-pointer hover:bg-gray-100 transition-all"
+                  onClick={() => requestSort("accountName")}
+                >
+                  Name
+                </th>
                 <th className="py-4 ">Telephone</th>
-                <th className="py-4">Group</th>
+                <th
+                  className="py-4 cursor-pointer hover:bg-gray-100 transition-all"
+                  onClick={() => requestSort("group")}
+                >
+                  Group
+                </th>
                 <th className="py-4">Routes</th>
-                <th className="py-4">Drops</th>
-                <th className="py-4 rounded-tr-xl">Post Code</th>
+                <th
+                  className="py-4 cursor-pointer hover:bg-gray-100 transition-all"
+                  onClick={() => requestSort("drops")}
+                >
+                  Drops
+                </th>
+                <th
+                  className="py-4 rounded-tr-xl cursor-pointer hover:bg-gray-100 transition-all"
+                  onClick={() => requestSort("postCode")}
+                >
+                  Post Code
+                </th>
                 {/* <th className="py-4">Status</th> */}
               </tr>
             </thead>
@@ -283,31 +360,39 @@ const CustomersView = () => {
 
                   // Filtro de grupo, si selectedGroup está definido.
                   if (selectedGroup) {
-                    matchingRoutes = matchingRoutes.filter(route =>
-                      selectedGroup === "No group" ? !customer.group : customer.group === selectedGroup
+                    matchingRoutes = matchingRoutes.filter((route) =>
+                      selectedGroup === "No group"
+                        ? !customer.group
+                        : customer.group === selectedGroup
                     );
                   }
 
                   // Filtrar por día y ruta si están seleccionados.
                   if (selectedRoute) {
-                    matchingRoutes = matchingRoutes.filter(route =>
-                      route.name === selectedRoute
+                    matchingRoutes = matchingRoutes.filter(
+                      (route) => route.name === selectedRoute
                     );
                   }
 
                   if (selectedDay) {
-                    matchingRoutes = matchingRoutes.filter(route =>
-                      route.days_id === Number(selectedDay)
+                    matchingRoutes = matchingRoutes.filter(
+                      (route) => route.days_id === Number(selectedDay)
                     );
                   }
 
                   // Eliminar rutas duplicadas y unirlas con una coma y un espacio.
-                  const uniqueRouteNames = [...new Set(matchingRoutes.map(route => route.name))].join(", ");
-                  const uniqueDrop = matchingRoutes.length > 0
-                    ? [...new Set(matchingRoutes.map(route => route.drop))]
-                    : [];
+                  const uniqueRouteNames = [
+                    ...new Set(matchingRoutes.map((route) => route.name)),
+                  ].join(", ");
+                  const uniqueDrop =
+                    matchingRoutes.length > 0
+                      ? [...new Set(matchingRoutes.map((route) => route.drop))]
+                      : [];
 
-                  if (matchingRoutes.length > 0 || (!selectedRoute && !selectedDay)) {
+                  if (
+                    matchingRoutes.length > 0 ||
+                    (!selectedRoute && !selectedDay)
+                  ) {
                     return (
                       <tr
                         key={customer.id}
@@ -328,45 +413,36 @@ const CustomersView = () => {
                             : "No group"}
                         </td>
                         <td className="py-4 pl-8">
-                          {
-                            selectedRoute && selectedDay ? (
-                              <>
-                                {uniqueRouteNames}
-                              </>
-                            ) : (
-                              [
-                                ...new Set(
-                                  customer.routes.map((route) => route.name)
-                                ),
-                              ].map((name, index, arr) => (
-                                <span key={name}>
-                                  {name}
-                                  {index < arr.length - 1 && " - "}
-                                </span>
-                              ))
-                            )
-                          }
+                          {selectedRoute || selectedDay ? (
+                            <>{uniqueRouteNames}</>
+                          ) : (
+                            [
+                              ...new Set(
+                                customer.routes.map((route) => route.name)
+                              ),
+                            ].map((name, index, arr) => (
+                              <span key={name}>
+                                {name}
+                                {index < arr.length - 1 && " - "}
+                              </span>
+                            ))
+                          )}
                         </td>
                         <td className="py-4 pl-8">
-                          {
-                            selectedRoute && selectedDay ? (
-                              <>
-                                {uniqueDrop}
-                              </>
-
-                            ) : (
-                              [
-                                ...new Set(
-                                  customer.routes.map((route) => route.drop)
-                                ),
-                              ].map((name, index, arr) => (
-                                <span key={name}>
-                                  {name}
-                                  {index < arr.length - 1 && " - "}
-                                </span>
-                              ))
-                            )
-                          }
+                          {selectedRoute || selectedDay ? (
+                            <>{uniqueDrop}</>
+                          ) : (
+                            [
+                              ...new Set(
+                                customer.routes.map((route) => route.drop)
+                              ),
+                            ].map((name, index, arr) => (
+                              <span key={name}>
+                                {name}
+                                {index < arr.length - 1 && " - "}
+                              </span>
+                            ))
+                          )}
                         </td>
                         <td className="py-4 pl-8 w-[120px]">
                           {customer.postCode}
