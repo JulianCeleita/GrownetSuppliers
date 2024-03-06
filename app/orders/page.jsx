@@ -269,8 +269,7 @@ const OrderView = () => {
       .then((response) => {
         console.log("🚀 ~ .then ~ response.data.message:", response.data)
         if (response.data.status === 400) {
-          setShowErrorCsv(true);
-          setErrorMessage(response.data.msg);
+         
         } else {
           console.log("🚀 ~ .then ~ response:", response)
           const url = window.URL.createObjectURL(new Blob([response.data]));
@@ -284,6 +283,9 @@ const OrderView = () => {
         }
       })
       .catch((error) => {
+        console.log("🚀 ~ downloadCSV ~ error:", error.response.data.msg)
+        setShowErrorCsv(true);
+        setErrorMessage(error.response.data.msg);
         console.error("Error al descargar csv: ", error);
       });
   };
