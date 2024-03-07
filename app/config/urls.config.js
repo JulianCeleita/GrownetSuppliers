@@ -114,3 +114,7 @@ export const routesByDate = `${BASE_URL}deliveryRoutes/show`;
 
 // Types
 export const typesUrl = `${BASE_URL}types/all`;
+
+// Shorts
+export const productShort = `${BASE_URL}products/short`
+export const categoriesShort = `${BASE_URL}categories/short`

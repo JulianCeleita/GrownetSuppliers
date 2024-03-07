@@ -74,6 +74,7 @@ const OrderView = () => {
   const [showErrorCsv, setShowErrorCsv] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
 
+
   const formatDateToShow = (dateString) => {
     if (!dateString) return "Loading...";
 
@@ -254,12 +255,29 @@ const OrderView = () => {
   };
 
   const downloadCSV = () => {
-    const postDataCSV = {
-      route_id: selectedRouteId,
-      date: workDate,
-    };
-    console.log("🚀 ~ downloadCSV ~ postDataCSV:", postDataCSV);
+    let date;
 
+    if (selectedDate) {
+      date = new Date(selectedDate);
+
+      const formattedDate = `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}-${date.getDate().toString().padStart(2, '0')}`;
+
+      var postDataCSV = {
+        route_id: selectedRouteId,
+        date: formattedDate,
+      };
+
+      console.log("🚀 ~ downloadCSV ~ postDataCSV:", postDataCSV);
+    } else {
+      date = workDate;
+
+      var postDataCSV = {
+        route_id: selectedRouteId,
+        date: date,
+      };
+
+      console.log("🚀 ~ downloadCSV ~ postDataCSV:", postDataCSV);
+    }
     axios
       .post(orderCSV, postDataCSV, {
         headers: {
@@ -268,13 +286,13 @@ const OrderView = () => {
         // responseType: "blob",
       })
       .then((response) => {
-        console.log("🚀 ~ .then ~ response.data.message:", response.data);
+        console.log("🚀 ~ .then ~ response:", response);
         saveAs(new Blob([response.data], { type: 'text/csv' }), 'orders.csv');
       })
       .catch((error) => {
-        console.log("🚀 ~ downloadCSV ~ error:", error.response.data.msg);
+        console.log("🚀 ~ downloadCSV ~ error:", error);
         setShowErrorCsv(true);
-        setErrorMessage(error.response.data.msg);
+        setErrorMessage(error?.response?.data?.msg);
         console.error("Error al descargar csv: ", error);
       });
   };
