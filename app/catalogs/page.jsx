@@ -1,5 +1,9 @@
 "use client";
-import { InformationCircleIcon, PlusCircleIcon, TrashIcon } from "@heroicons/react/24/outline";
+import {
+  InformationCircleIcon,
+  PlusCircleIcon,
+  TrashIcon,
+} from "@heroicons/react/24/outline";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -21,7 +25,6 @@ import CreateProduct from "../components/CreateProduct";
 
 import ModalPrices from "../components/ModalPrices";
 import ModalEditProduct from "../components/ModalEditProduct";
-
 
 const PricesView = () => {
   const router = useRouter();
@@ -55,8 +58,6 @@ const PricesView = () => {
   const closeModal = () => {
     setIsModalOpen(false);
   };
-
-
 
   const options = customerList.map((customer) => ({
     value: customer.accountName,
@@ -231,7 +232,7 @@ const PricesView = () => {
             styles={{
               menuList: (provided) => ({
                 ...provided,
-                overflowX: 'hidden',
+                overflowX: "hidden",
               }),
             }}
           />
@@ -243,8 +244,9 @@ const PricesView = () => {
               <th className={`py-4  ${showTableBody ? "" : "absolute"}`}>
                 <button onClick={() => setShowTableBody(!showTableBody)}>
                   <ChevronDoubleDownIcon
-                    className={`transform transition-transform duration-500 h-5 w-5 ${showTableBody ? "rotate-0" : "rotate-180"
-                      }`}
+                    className={`transform transition-transform duration-500 h-5 w-5 ${
+                      showTableBody ? "rotate-0" : "rotate-180"
+                    }`}
                   />
                 </button>
               </th>
@@ -277,8 +279,8 @@ const PricesView = () => {
                     <td
                       className="py-4"
                       onClick={() => {
-                        setSelectedProduct(price)
-                        setShowEditPresentations(true)
+                        setSelectedProduct(price);
+                        setShowEditPresentations(true);
                       }}
                     >
                       5PP
@@ -286,8 +288,8 @@ const PricesView = () => {
                     <td
                       className="py-4"
                       onClick={() => {
-                        setSelectedProduct(price)
-                        setShowEditPresentations(true)
+                        setSelectedProduct(price);
+                        setShowEditPresentations(true);
                       }}
                     >
                       {price.product} - {price.presentation}
@@ -295,8 +297,8 @@ const PricesView = () => {
                     <td
                       className="py-4"
                       onClick={() => {
-                        setSelectedProduct(price)
-                        setShowEditPresentations(true)
+                        setSelectedProduct(price);
+                        setShowEditPresentations(true);
                       }}
                     >
                       kl
@@ -304,8 +306,8 @@ const PricesView = () => {
                     <td
                       className="py-4"
                       onClick={() => {
-                        setSelectedProduct(price)
-                        setShowEditPresentations(true)
+                        setSelectedProduct(price);
+                        setShowEditPresentations(true);
                       }}
                     >
                       {price.cost}
@@ -361,8 +363,8 @@ const PricesView = () => {
                     <td
                       className="py-4"
                       onClick={() => {
-                        setSelectedProduct(price)
-                        setShowEditPresentations(true)
+                        setSelectedProduct(price);
+                        setShowEditPresentations(true);
                       }}
                     >
                       {calculateUtilityValue(
@@ -372,19 +374,19 @@ const PricesView = () => {
                         price.bands_id
                       ).percentage
                         ? calculateUtilityValue(
-                          price,
-                          price.cost,
-                          price.utility,
-                          price.bands_id
-                        ).percentage
+                            price,
+                            price.cost,
+                            price.utility,
+                            price.bands_id
+                          ).percentage
                         : price.utility}
                       %
                     </td>
                     <td
                       className="py-4"
                       onClick={() => {
-                        setSelectedProduct(price)
-                        setShowEditPresentations(true)
+                        setSelectedProduct(price);
+                        setShowEditPresentations(true);
                       }}
                     >
                       {calculateUtilityValue(
@@ -394,17 +396,17 @@ const PricesView = () => {
                         price.bands_id
                       ).dollars
                         ? calculateUtilityValue(
-                          price,
-                          price.cost,
-                          price.utility,
-                          price.bands_id
-                        ).dollars
+                            price,
+                            price.cost,
+                            price.utility,
+                            price.bands_id
+                          ).dollars
                         : calculateUtilityValue(
-                          price,
-                          price.cost,
-                          price.utility,
-                          price.bands_id
-                        )}
+                            price,
+                            price.cost,
+                            price.utility,
+                            price.bands_id
+                          )}
                       $
                     </td>
                     <td
@@ -463,7 +465,6 @@ const PricesView = () => {
           onClose={() => setShowEditPresentations(false)}
           setProducts={setProducts}
           setIsLoading={setIsLoading}
-          
         />
         <ModalDelete
           isvisible={showDeleteModal}

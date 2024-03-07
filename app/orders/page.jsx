@@ -5,6 +5,7 @@ import {
   PlusCircleIcon,
   PrinterIcon,
   TableCellsIcon,
+  TrashIcon,
 } from "@heroicons/react/24/outline";
 import axios from "axios";
 import Link from "next/link";
@@ -88,10 +89,10 @@ const OrderView = () => {
 
   const formattedDate = selectedDate
     ? new Date(selectedDate).toLocaleDateString("es-CO", {
-      day: "2-digit",
-      month: "2-digit",
-      year: "2-digit",
-    })
+        day: "2-digit",
+        month: "2-digit",
+        year: "2-digit",
+      })
     : formatDateToShow(workDate);
   const formatDateToTransform = (dateString) => {
     const date = new Date(dateString);
@@ -348,19 +349,21 @@ const OrderView = () => {
       const dateB = new Date(b.date_delivery);
       return dateA - dateB;
     });
-  console.log("🚀 ~ OrderView ~ sortedOrders:", sortedOrders)
+  console.log("🚀 ~ OrderView ~ sortedOrders:", sortedOrders);
 
-  const uniqueRoutesSet = new Set(sortedOrders.map(order => order.route_id + '_' + order.route));
+  const uniqueRoutesSet = new Set(
+    sortedOrders.map((order) => order.route_id + "_" + order.route)
+  );
 
   // Ahora convertimos el Set nuevamente en un array, pero esta vez, cada elemento será un objeto con route_id y route_name.
-  const uniqueRoutesArray = Array.from(uniqueRoutesSet).map(route => {
-    const [routeId, routeName] = route.split('_');
+  const uniqueRoutesArray = Array.from(uniqueRoutesSet).map((route) => {
+    const [routeId, routeName] = route.split("_");
     return {
       route_id: parseInt(routeId, 10), // Convertimos el route_id de string a número
-      route_name: routeName
+      route_name: routeName,
     };
   });
-  console.log("🚀 ~ OrderView ~ uniqueRoutesArray:", uniqueRoutesArray)
+  console.log("🚀 ~ OrderView ~ uniqueRoutesArray:", uniqueRoutesArray);
 
   const getPercentages = async (value) => {
     if (value !== "" || value !== null || value !== undefined) {
@@ -368,16 +371,14 @@ const OrderView = () => {
     }
   };
 
-
-
   const handleRouteChange = (event) => {
     if (event.target.value) {
       const selectedOption = JSON?.parse(event.target.value);
       setSelectedRoute(selectedOption.route_name);
       setSelectedRouteId(selectedOption.route_id);
     } else {
-      setSelectedRoute("")
-      setSelectedRouteId("")
+      setSelectedRoute("");
+      setSelectedRouteId("");
     }
   };
 
@@ -453,22 +454,34 @@ const OrderView = () => {
           </Link>
         </div>
         <div
-          className={`flex ml-10 mb-0 items-center space-x-2 mt-${filterType === "range" && window.innerWidth < 1500
-            ? "[45px]"
-            : filterType === "date" && window.innerWidth < 1300
+          className={`flex ml-10 mb-0 items-center space-x-2 mt-${
+            filterType === "range" && window.innerWidth < 1500
+              ? "[45px]"
+              : filterType === "date" && window.innerWidth < 1300
               ? "[50px]"
               : "[20px]"
-            }
+          }
           `}
         >
-          <div className="">
+          <div className="border border-gray-300 rounded-md py-3 px-2 flex items-center">
             <input
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search..."
-              className="border border-gray-300 rounded-md py-3 px-2 placeholder-[#04444F] focus:border-[#04444F] focus:border-2 focus:outline-none"
+              placeholder="Search"
+              className="placeholder-[#04444F] outline-none"
             />
+            {searchQuery != "" && (
+              <button
+                onClick={() => {
+                  setSearchQuery("");
+                  setSelectedRoute("");
+                  setSelectedGroup("");
+                }}
+              >
+                <TrashIcon className="h-6 w-6 text-danger" />
+              </button>
+            )}
           </div>
           <select
             value={filterType}
@@ -537,13 +550,22 @@ const OrderView = () => {
             />
           )}
           <select
-            value={JSON.stringify({ route_id: selectedRouteId, route_name: selectedRoute })}
+            value={JSON.stringify({
+              route_id: selectedRouteId,
+              route_name: selectedRoute,
+            })}
             onChange={handleRouteChange}
             className="form-select px-4 py-3 rounded-md border border-gray-300"
           >
             <option value="">All routes</option>
             {uniqueRoutesArray.map((route) => (
-              <option key={route.route_id} value={JSON.stringify({ route_id: route.route_id, route_name: route.route_name })}>
+              <option
+                key={route.route_id}
+                value={JSON.stringify({
+                  route_id: route.route_id,
+                  route_name: route.route_name,
+                })}
+              >
                 {route.route_name}
               </option>
             ))}
@@ -568,13 +590,17 @@ const OrderView = () => {
           </select>
           <button
             disabled={!selectedRoute}
-            className={`flex ${selectedRoute ? 'bg-green text-white hover:bg-dark-blue' : 'bg-gray-grownet text-white cursor-not-allowed'} py-3 px-4 rounded-full font-medium transition-all`}
+            className={`flex ${
+              selectedRoute
+                ? "bg-green text-white hover:bg-dark-blue"
+                : "bg-gray-grownet text-white cursor-not-allowed"
+            } py-3 px-4 rounded-lg font-medium transition-all`}
             onClick={() => downloadCSV()}
           >
             <TableCellsIcon className="h-6" />
           </button>
           <button
-            className="flex bg-primary-blue text-white py-3 px-4 rounded-full font-medium transition-all cursor-pointer hover:bg-dark-blue hover:scale-110"
+            className="flex bg-primary-blue text-white py-3 px-4 rounded-lg font-medium transition-all cursor-pointer hover:bg-dark-blue hover:scale-110"
             onClick={() => printOrders()}
           >
             <PrinterIcon className="h-6 w-6" />

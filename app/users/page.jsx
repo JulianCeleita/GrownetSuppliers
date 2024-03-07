@@ -59,7 +59,7 @@ function Users() {
           Users <span className="text-light-green">list</span>
         </h1>
         <div className="flex gap-16 items-center justify-center mb-0  mt-12">
-          <table className="w-[90%] bg-white rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.12)] mb-10">
+          <table className="w-[95%] bg-white rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.12)] mb-10">
             <thead className="sticky top-0 shadow-[0px_11px_15px_-3px_#edf2f7] bg-white text-center">
               <tr className="border-b-2 border-stone-100  text-dark-blue">
                 <th className="py-4 rounded-tl-lg">User</th>
