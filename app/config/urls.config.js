@@ -118,3 +118,7 @@ export const typesUrl = `${BASE_URL}types/all`;
 // Shorts
 export const productShort = `${BASE_URL}products/short`
 export const categoriesShort = `${BASE_URL}categories/short`
+
+
+// Upload CSV
+export const uploadCsv = `${BASE_URL}orders/uploadCSV`
