@@ -141,6 +141,7 @@ export default function EditTable({
     setTotalProfit,
     setTotalProfitPercentage,
     orderDetail,
+    customers,
     setOrderDetail,
   } = useTableStore();
 
@@ -258,6 +259,9 @@ export default function EditTable({
       setDescriptionData
     );
     fetchOrderDetail(token, setOrderDetail, setIsLoading, orderId);
+    // setTimeout(() => {
+    //   setOrderDetail(orderDetail[0])
+    // }, 500);
   }, [orderId, token, setOrderDetail]);
 
   useEffect(() => {
@@ -517,7 +521,7 @@ export default function EditTable({
       });
       setRows(updatedRows);
     }
-    orderDetail.products?.push(productByCode);
+    orderDetail?.products?.push(productByCode);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [productByCode]);
 
@@ -702,7 +706,7 @@ export default function EditTable({
         const inputToFocus = document.querySelector(
           `input[data-row-index="${rowIndex}"][data-field-name="quantity"]`
         );
-  
+
         if (inputToFocus != null) {
           inputToFocus.focus();
         }
@@ -746,12 +750,14 @@ export default function EditTable({
         });
       if (!filteredProducts || filteredProducts.length === 0) {
         setShowErrorOrderModal(true);
-        setOrderError("You must leave at least one product in the order.");
+    
         return;
       }
 
       const jsonOrderData = {
-        accountNumber_customers: selectedAccNumber,
+        accountNumber_customers: customers && customers
+          ? customers[0].accountNumber
+          : selectedAccNumber,
         date_delivery: dateDelivery,
         id_suppliers: orderDetail.id_suppliers,
         net: parseFloat(totalNetSum),
@@ -776,6 +782,7 @@ export default function EditTable({
       }, 1000);
     } catch (error) {
       setShowErrorOrderModal(true);
+      console.log(error);
     }
   };
 
@@ -836,9 +843,12 @@ export default function EditTable({
       }));
     }
   };
-  
+
   const findProductById = (productId) => {
-    return orderDetail.products.find((product) => product.presentations_code === productId);
+    if (orderDetail?.products >= 0) {
+
+      return orderDetail.products.find((product) => product.presentations_code === productId);
+    }
   };
 
   return (
