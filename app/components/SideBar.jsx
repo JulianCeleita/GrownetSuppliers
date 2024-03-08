@@ -310,20 +310,20 @@ const SideBar = () => {
                     </div>
                     <div className="flex items-center absolute bottom-0  gap 2 justify-between w-full right-0 px-5">
                       <button
-                        className="flex bg-white p-3 mt-14 text-dark-blue hover:scale-105 transition-all font-medium rounded-full"
+                        className="flex bg-white p-3 text-dark-blue hover:scale-105 transition-all font-medium rounded-full"
                         onClick={handleLogout}
                       >
                         <ArrowLeftOnRectangleIcon className="h-6 w-6 mr-2" />
                         Log out
                       </button>
-                      <div className="flex flex-col gap-3">
-                        <button
+                      <div className="flex flex-col">
+                        {/* <button
                           className="flex bg-white p-3 text-dark-blue hover:scale-105 transition-all font-medium rounded-full"
                           onClick={handleButtonOpen}
                         >
                           <SunIcon className="h-6 w-6 text-dark-blue mr-2" />
                           Open Day
-                        </button>
+                        </button> */}
                         <button
                           className="flex bg-white p-3 text-dark-blue hover:scale-105 transition-all font-medium rounded-full"
                           onClick={handleButtonClose}
