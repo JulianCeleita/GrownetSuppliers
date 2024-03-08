@@ -44,22 +44,22 @@ function CalendarView() {
     if (csvFile) {
       console.log("Archivo CSV seleccionado:", csvFile);
 
-      const uploadFile = {
-        csv: csvFile
-      }
-      console.log("🚀 ~ handleUpload ~ uploadFile:", uploadFile)
+      const csv = new FormData();
+      csv.append("csv", csvFile);
+      console.log("🚀 ~ handleUpload ~ formData:", csv)
 
-      axios.post(uploadCsv, uploadFile, {
+      axios.post(uploadCsv, csv, {
         headers: {
           Authorization: `Bearer ${token}`,
+          "Content-Type": "multipart/form-data",
         },
       })
-      .then((response) => {
-        console.log("🚀 ~ .then ~ response:", response)
-      })
-      .catch((error) => {
-        console.error("Error al cargar el csv: ", error);
-      });
+        .then((response) => {
+          console.log("🚀 ~ .then ~ response:", response);
+        })
+        .catch((error) => {
+          console.error("Error al cargar el csv: ", error);
+        });
     } else {
       console.log("No se seleccionó ningún archivo CSV.");
     }
