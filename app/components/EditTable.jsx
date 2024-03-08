@@ -115,6 +115,7 @@ export default function EditTable({
   setSpecialRequirements,
   percentageDetail,
   dataLoaded,
+  selectedAccNumber,
 }) {
   // const [rows, setRows] = useState(
   //   Array.from({ length: 0 }, () => ({ ...initialRowsState }))
@@ -750,6 +751,7 @@ export default function EditTable({
       }
 
       const jsonOrderData = {
+        accountNumber_customers: selectedAccNumber,
         date_delivery: dateDelivery,
         id_suppliers: orderDetail.id_suppliers,
         net: parseFloat(totalNetSum),

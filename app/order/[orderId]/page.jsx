@@ -71,8 +71,18 @@ const OrderDetailPage = () => {
   );
   const [customerDate, setCustomerDate] = useState();
   const [customersRef, setCustomersRef] = useState(
-    orderDetail.customers_ref ? orderDetail.customers_ref : ""
+    orderDetail?.customers_ref ? orderDetail.customers_ref : ""
   );
+
+  let accountNumberCustomer = selectedAccNumber && selectedAccNumber
+    ? orderDetail.accountName
+    : ""
+
+  if (selectedAccName) {
+    accountNumberCustomer = selectedAccNumber
+  } else {
+    accountNumberCustomer = orderDetail.accountNumber
+  }
   let orderId;
   if (params) {
     ({ orderId } = params);
@@ -476,7 +486,7 @@ const OrderDetailPage = () => {
         </button>
         <button
           className="bg-red-600 rounded-md ml-3 transition-all hover:scale-110 focus:outline-none flex text-white px-2 py-1 items-center align-middle"
-        onClick={() => setShowDeleteModal(true)}
+          onClick={() => setShowDeleteModal(true)}
         >
           <TrashIcon className={`h-[25px] w-[25px] text-white`} />
         </button>
@@ -561,6 +571,7 @@ const OrderDetailPage = () => {
                 percentageDetail={percentageDetail}
                 dataLoaded={dataLoaded}
                 customersRef={customersRef}
+                selectedAccNumber={accountNumberCustomer}
               />
             </>
           )
@@ -575,4 +586,5 @@ const OrderDetailPage = () => {
     </Layout>
   );
 };
+    console.log("🚀 ~ OrderDetailPage ~ orderDetail:", orderDetail)
 export default OrderDetailPage;
