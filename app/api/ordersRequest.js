@@ -182,9 +182,13 @@ export const fetchCustomersDate = async (
           Authorization: `Bearer ${token}`,
         },
       });
-      if (response.data.routes) {
+
+      if (
+        response.data.routes &&
+        response.data.routes[0].nameRoute !== "R100"
+      ) {
         setCustomerDate(response.data.routes);
-      } else if (response.data.message) {
+      } else {
         setShowErrorRoutes(true);
       }
 

@@ -9,6 +9,9 @@ function ModalOrderError({
   message,
   setIsSelectDisabled,
   setCustomerDate = () => {},
+  handleKeyPress = () => {},
+  handleDateRef = () => {},
+  errorList,
 }) {
   const modalRef = useRef();
 
@@ -31,6 +34,19 @@ function ModalOrderError({
   const handleKeyCloseModal = (event) => {
     if (event.key === "Enter" || event.key === "Escape") {
       onClose();
+      handleKeyPress();
+    }
+  };
+  const handleAccept = () => {
+    onClose();
+    handleKeyPress();
+  };
+  const handleClose = () => {
+    if (errorList) {
+      handleDateRef();
+      onClose();
+    } else {
+      onClose();
     }
   };
 
@@ -49,15 +65,27 @@ function ModalOrderError({
           <XMarkIcon className="h-6 w-6 text-gray-500" />
         </button>
         <ExclamationCircleIcon className="h-12 w-12 text-danger mb-2" />
-        <h1 className="text-2xl font-medium text-dark-blue mb-2">{title}</h1>
+        <h1 className="text-2xl font-medium text-dark-blue mb-2 text-center">
+          {title}
+        </h1>
         <p className="text-dark-blue text-lg text-center">{error}</p>
         <p className="text-dark-blue text-lg text-center">{message}</p>
-        <button
-          onClick={() => onClose()}
-          className="bg-primary-blue py-3 px-4 rounded-lg text-white font-medium mr-3 hover:bg-green mt-5"
-        >
-          Close
-        </button>
+        <div>
+          <button
+            onClick={handleClose}
+            className="bg-primary-blue py-3 px-4 rounded-lg text-white font-medium mr-3 hover:bg-green mt-5"
+          >
+            {errorList ? "Cancel" : "Close"}
+          </button>
+          {errorList && (
+            <button
+              onClick={handleAccept}
+              className="bg-primary-blue py-3 px-4 rounded-lg text-white font-medium mr-3 hover:bg-green mt-5"
+            >
+              Accept
+            </button>
+          )}
+        </div>
       </div>
     </div>
   );

@@ -176,13 +176,13 @@ const CreateOrderView = () => {
     }
   };
   useEffect(() => {
-      fetchCustomersDate(
-        token,
-        orderDate,
-        selectedAccNumber2,
-        setCustomerDate,
-        setShowErrorRoutes
-      );
+    fetchCustomersDate(
+      token,
+      orderDate,
+      selectedAccNumber2,
+      setCustomerDate,
+      setShowErrorRoutes
+    );
   }, [orderDate, selectedAccNumber2, arrows]);
   const restaurantList = Array.isArray(restaurants) ? restaurants : [];
   //VENTANA TOTAL
@@ -227,6 +227,11 @@ const CreateOrderView = () => {
   const handleKeyPress = (e) => {
     if (customerInputRef.current) {
       customerInputRef.current.focus();
+    }
+  };
+  const handleDateRef = () => {
+    if (dateInputRef.current) {
+      dateInputRef.current.focus();
     }
   };
   const resetStates = () => {
@@ -474,11 +479,12 @@ const CreateOrderView = () => {
       <ModalOrderError
         isvisible={showErrorRoutes}
         onClose={() => setShowErrorRoutes(false)}
-        title={"Date without routes"}
-        message={
-          "There are no routes assigned for the selected date. Please change the date to an available day."
-        }
+        title={"This client does not have an assigned route"}
+        message={"Are you sure you want to assign this order to Route 100?"}
         setCustomerDate={setCustomerDate}
+        handleKeyPress={handleKeyPress}
+        handleDateRef={handleDateRef}
+        errorList
       />
     </Layout>
   );
