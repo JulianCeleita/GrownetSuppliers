@@ -31,6 +31,7 @@ import Image from "next/image";
 import ModalOrderError from "../components/ModalOrderError";
 import { saveAs } from 'file-saver';
 import Swal from "sweetalert2";
+import ModalSuccessfull from "../components/ModalSuccessfull";
 
 export const customStyles = {
   placeholder: (provided) => ({
@@ -78,6 +79,8 @@ const OrderView = () => {
   const [errorMessage, setErrorMessage] = useState("");
   const [fileName, setFileName] = useState("");
   const [csvFile, setCsvFile] = useState(null);
+  const [showModalSuccessfull, setShowModalSuccessfull] = useState(false);
+  const [showModalError, setShowModalError] = useState(false);
 
 
   const formatDateToShow = (dateString) => {
@@ -407,13 +410,15 @@ const OrderView = () => {
       })
         .then((response) => {
           console.log("🚀 ~ .then ~ response:", response);
-          Swal.fire({
-            title: "CSV was upload!",
-            icon: "success"
-          });
-          handleRemoveFile();
+          if (response.status === 200) {
+            setShowModalSuccessfull(true);
+            handleRemoveFile();
+          } else {
+            setShowModalError(true)
+          }
         })
         .catch((error) => {
+          setShowModalError(true)
           console.error("Error al cargar el csv: ", error);
         });
     } else {
@@ -431,28 +436,28 @@ const OrderView = () => {
   };
 
   const filteredOrders = sortedOrders?.filter((order) => {
-      const isRouteMatch = selectedRoute
-        ? order.route.toLowerCase() === selectedRoute.toLowerCase()
-        : true;
-      const isGroupMatch = selectedGroup
-        ? order.group_name.toLowerCase() === selectedGroup.toLowerCase()
-        : true;
+    const isRouteMatch = selectedRoute
+      ? order.route.toLowerCase() === selectedRoute.toLowerCase()
+      : true;
+    const isGroupMatch = selectedGroup
+      ? order.group_name.toLowerCase() === selectedGroup.toLowerCase()
+      : true;
 
-      const isSearchQueryMatch =
-        order.reference
-          .toString()
-          .toLowerCase()
-          .includes(searchQuery.toLowerCase()) ||
-        order.accountName.toLowerCase().includes(searchQuery.toLowerCase());
+    const isSearchQueryMatch =
+      order.reference
+        .toString()
+        .toLowerCase()
+        .includes(searchQuery.toLowerCase()) ||
+      order.accountName.toLowerCase().includes(searchQuery.toLowerCase());
 
-      const isStatusMatch = selectedStatus
-        ? order.status_order.toLowerCase() === selectedStatus.toLowerCase()
-        : true;
+    const isStatusMatch = selectedStatus
+      ? order.status_order.toLowerCase() === selectedStatus.toLowerCase()
+      : true;
 
-      return (
-        isRouteMatch && isGroupMatch && isSearchQueryMatch && isStatusMatch
-      );
-    })
+    return (
+      isRouteMatch && isGroupMatch && isSearchQueryMatch && isStatusMatch
+    );
+  })
     .sort((a, b) => b.reference - a.reference);
 
   const uniqueStatuses = [
@@ -917,6 +922,23 @@ const OrderView = () => {
         onClose={() => setShowErrorCsv(false)}
         title={"Error downloading csv"}
         message={errorMessage}
+      />
+      <ModalSuccessfull
+        isvisible={showModalSuccessfull}
+        onClose={() => setShowModalSuccessfull(false)}
+        title="Congratulations"
+        text="The csv was uploaded successfully, thank you for using"
+        textGrownet="Grownet"
+        button=" Close"
+        confirmed={true}
+      />
+      <ModalOrderError
+        isvisible={showModalError}
+        onClose={() => setShowModalError(false)}
+        title={"Error in CSV"}
+        message={
+          "The CSV could not be uploaded, review all fields in the file or try uploading a new one."
+        }
       />
     </Layout >
   );
