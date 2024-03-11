@@ -1,8 +1,7 @@
 "use client";
+import { TruckIcon } from "@heroicons/react/24/solid";
 import {
-  ArrowUpTrayIcon,
   CalendarIcon,
-  CloudArrowUpIcon,
   ExclamationCircleIcon,
   PlusCircleIcon,
   PrinterIcon,
@@ -21,7 +20,7 @@ import {
   fetchOrdersDateByWorkDate,
 } from "../api/ordersRequest";
 import { CircleProgressBar } from "../components/CircleProgressBar";
-import { orderCSV, printInvoices, uploadCsv } from "../config/urls.config";
+import { orderCSV, printInvoices } from "../config/urls.config";
 import Layout from "../layoutS";
 import usePercentageStore from "../store/usePercentageStore";
 import useTokenStore from "../store/useTokenStore";
@@ -29,8 +28,7 @@ import useUserStore from "../store/useUserStore";
 import useWorkDateStore from "../store/useWorkDateStore";
 import Image from "next/image";
 import ModalOrderError from "../components/ModalOrderError";
-import { saveAs } from 'file-saver';
-import Swal from "sweetalert2";
+import { saveAs } from "file-saver";
 
 export const customStyles = {
   placeholder: (provided) => ({
@@ -76,9 +74,6 @@ const OrderView = () => {
   const [selectedStatus, setSelectedStatus] = useState("");
   const [showErrorCsv, setShowErrorCsv] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
-  const [fileName, setFileName] = useState("");
-  const [csvFile, setCsvFile] = useState(null);
-
 
   const formatDateToShow = (dateString) => {
     if (!dateString) return "Loading...";
@@ -94,10 +89,10 @@ const OrderView = () => {
 
   const formattedDate = selectedDate
     ? new Date(selectedDate).toLocaleDateString("es-CO", {
-      day: "2-digit",
-      month: "2-digit",
-      year: "2-digit",
-    })
+        day: "2-digit",
+        month: "2-digit",
+        year: "2-digit",
+      })
     : formatDateToShow(workDate);
   const formatDateToTransform = (dateString) => {
     const date = new Date(dateString);
@@ -265,7 +260,9 @@ const OrderView = () => {
     if (selectedDate) {
       date = new Date(selectedDate);
 
-      const formattedDate = `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}-${date.getDate().toString().padStart(2, '0')}`;
+      const formattedDate = `${date.getFullYear()}-${(date.getMonth() + 1)
+        .toString()
+        .padStart(2, "0")}-${date.getDate().toString().padStart(2, "0")}`;
 
       var postDataCSV = {
         route_id: selectedRouteId,
@@ -292,7 +289,15 @@ const OrderView = () => {
       })
       .then((response) => {
         console.log("🚀 ~ .then ~ response:", response);
-        saveAs(new Blob([response.data], { type: 'text/csv' }), 'orders.csv');
+        // const url = window.URL.createObjectURL(new Blob([response.data]));
+        // const link = document.createElement("a");
+        // link.href = url;
+        // link.setAttribute("download", "orders.csv");
+        // document.body.appendChild(link);
+        // link.click();
+        // document.body.removeChild(link);
+        // window.URL.revokeObjectURL(url);
+        saveAs(new Blob([response.data], { type: "text/csv" }), "orders.csv");
       })
       .catch((error) => {
         console.log("🚀 ~ downloadCSV ~ error:", error);
@@ -339,7 +344,8 @@ const OrderView = () => {
       });
   };
 
-  const sortedOrders = orders?.filter((order) => filterOrdersByDate(order))
+  const sortedOrders = orders
+    .filter((order) => filterOrdersByDate(order))
     .sort((a, b) => {
       const dateA = new Date(a.date_delivery);
       const dateB = new Date(b.date_delivery);
@@ -348,13 +354,14 @@ const OrderView = () => {
   console.log("🚀 ~ OrderView ~ sortedOrders:", sortedOrders);
 
   const uniqueRoutesSet = new Set(
-    sortedOrders?.map((order) => order.route_id + "_" + order.route)
+    sortedOrders.map((order) => order.route_id + "_" + order.route)
   );
 
+  // Ahora convertimos el Set nuevamente en un array, pero esta vez, cada elemento será un objeto con route_id y route_name.
   const uniqueRoutesArray = Array.from(uniqueRoutesSet).map((route) => {
     const [routeId, routeName] = route.split("_");
     return {
-      route_id: parseInt(routeId, 10),
+      route_id: parseInt(routeId, 10), // Convertimos el route_id de string a número
       route_name: routeName,
     };
   });
@@ -377,52 +384,8 @@ const OrderView = () => {
     }
   };
 
-  const handleFileChange = (event) => {
-    const file = event.target.files[0];
-    setCsvFile(file);
-    setFileName(file ? file.name : "");
-  };
-
-  const handleUpload = () => {
-    if (csvFile) {
-      console.log("Archivo CSV seleccionado:", csvFile);
-
-      const csv = new FormData();
-      csv.append("csv", csvFile);
-      console.log("🚀 ~ handleUpload ~ formData:", csv)
-
-      axios.post(uploadCsv, csv, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "multipart/form-data",
-        },
-      })
-        .then((response) => {
-          console.log("🚀 ~ .then ~ response:", response);
-          Swal.fire({
-            title: "CSV was upload!",
-            icon: "success"
-          });
-          handleRemoveFile();
-        })
-        .catch((error) => {
-          console.error("Error al cargar el csv: ", error);
-        });
-    } else {
-      console.log("No se seleccionó ningún archivo CSV.");
-    }
-  };
-
-  const handleRemoveFile = () => {
-    const fileInput = document.getElementById("fileInput");
-    if (fileInput) {
-      fileInput.value = null;
-    }
-    setCsvFile(null);
-    setFileName("");
-  };
-
-  const filteredOrders = sortedOrders?.filter((order) => {
+  const filteredOrders = sortedOrders
+    .filter((order) => {
       const isRouteMatch = selectedRoute
         ? order.route.toLowerCase() === selectedRoute.toLowerCase()
         : true;
@@ -448,7 +411,7 @@ const OrderView = () => {
     .sort((a, b) => b.reference - a.reference);
 
   const uniqueStatuses = [
-    ...new Set(sortedOrders?.map((order) => order.status_order)),
+    ...new Set(sortedOrders.map((order) => order.status_order)),
   ];
   const handleStatusChange = (e) => {
     const newSelectedStatus = e.target.value;
@@ -483,53 +446,17 @@ const OrderView = () => {
       <div className="-mt-24">
         <div className="flex gap-6 p-8">
           <h1 className="text-2xl text-light-green font-semibold mt-1 ml-24">
-            Orders <span className="text-white">list</span>
+            Deliveries <span className="text-white">list</span>
           </h1>
-          <Link
-            className="flex bg-green py-3 px-4 rounded-full text-white font-medium transition-all hover:bg-dark-blue hover:scale-110 "
-            href="/orders/create-order"
-          >
-            <PlusCircleIcon className="h-6 w-6 mr-1" /> New Order
-          </Link>
-          <div className="flex items-center gap-2">
-            <label className="bg-dark-blue p-5 text-sm text-white h-12 w-38 hover:scale-105 transition-all font-semibold rounded-full cursor-pointer flex flex-col items-center justify-center">
-              <div className="flex">
-                <ArrowUpTrayIcon className="h-6 w-6 mr-1" /> Upload CSV
-                <input
-                  id="fileInput"
-                  type="file"
-                  accept=".csv"
-                  onChange={handleFileChange}
-                  className="absolute hidden opacity-0"
-                />
-              </div>
-            </label>
-            {csvFile && (
-              <>
-                <button
-                  className="bg-green p-2 text-sm flex text-center items-center pl-3 text-white hover:scale-105 transition-all font-semibold rounded-full w-16"
-                  onClick={handleUpload}
-                >
-                  Send
-                </button>
-                <button
-                  className="bg-none p-2 transition-all text-white hover:scale-110 h-8 w-8 rounded-full bg-white text-center items-center flex"
-                  onClick={handleRemoveFile}
-                >
-                  <TrashIcon className="h-8 w-8 text-black font-bold" />
-                </button>
-              </>
-
-            )}
-          </div>
         </div>
         <div
-          className={`flex ml-10 mb-0 items-center space-x-2 mt-${filterType === "range" && window.innerWidth < 1500
-            ? "[45px]"
-            : filterType === "date" && window.innerWidth < 1300
+          className={`flex ml-10 mt-4 mb-0 items-center space-x-2 mt-${
+            filterType === "range" && window.innerWidth < 1500
+              ? "[45px]"
+              : filterType === "date" && window.innerWidth < 1300
               ? "[50px]"
               : "[20px]"
-            }
+          }
           `}
         >
           <div className="border border-gray-300 rounded-md py-3 px-2 flex items-center">
@@ -544,8 +471,6 @@ const OrderView = () => {
               <button
                 onClick={() => {
                   setSearchQuery("");
-                  setSelectedRoute("");
-                  setSelectedGroup("");
                 }}
               >
                 <TrashIcon className="h-6 w-6 text-danger" />
@@ -618,285 +543,20 @@ const OrderView = () => {
               placeholderText={formatDateToShow(workDate)}
             />
           )}
-          <select
-            value={JSON.stringify({
-              route_id: selectedRouteId,
-              route_name: selectedRoute,
-            })}
-            onChange={handleRouteChange}
-            className="form-select px-4 py-3 rounded-md border border-gray-300"
-          >
-            <option value="">All routes</option>
-            {uniqueRoutesArray.map((route) => (
-              <option
-                key={route.route_id}
-                value={JSON.stringify({
-                  route_id: route.route_id,
-                  route_name: route.route_name,
-                })}
-              >
-                {route.route_name}
-              </option>
-            ))}
-          </select>
-          <select
-            value={selectedGroup}
-            onChange={handleGroupChange}
-            className="orm-select px-4 py-3 rounded-md border border-gray-300"
-          >
-            <option value="">All groups</option>
-            {[
-              ...new Set(
-                orders?.map((order) =>
-                  order.group_name !== null ? order.group_name : "No group"
-                )
-              ),
-            ].map((uniqueGroup) => (
-              <option key={uniqueGroup} className="text-black">
-                {uniqueGroup}
-              </option>
-            ))}
-          </select>
-          <button
-            disabled={!selectedRoute}
-            className={`flex ${selectedRoute
-              ? "bg-green text-white hover:bg-dark-blue"
-              : "bg-gray-grownet text-white cursor-not-allowed"
-              } py-3 px-4 rounded-lg font-medium transition-all`}
-            onClick={() => downloadCSV()}
-          >
-            <TableCellsIcon className="h-6" />
-          </button>
-          <button
-            className="flex bg-primary-blue text-white py-3 px-4 rounded-lg font-medium transition-all cursor-pointer hover:bg-dark-blue hover:scale-110"
-            onClick={() => printOrders()}
-          >
-            <PrinterIcon className="h-6 w-6" />
-          </button>
         </div>
-        <section className="absolute top-0 right-5 mt-5 w-[30%] 2xl:w-auto ">
-          <div className="flex gap-2">
-            {filterType !== "range" &&
-              formatDateToShow(workDate) === formattedDate && (
-                <div className="px-4 py-4 rounded-3xl flex items-center justify-center bg-white shadow-[0_8px_30px_rgb(0,0,0,0.12)]">
-                  <div>
-                    <h1 className=" text-lg 2xl:text-xl font-bold text-dark-blue">
-                      Today
-                    </h1>
-                    <div className="flex items-center justify-center text-center">
-                      <div className="pr-1">
-                        <p className="text-4xl  2xl:text-5xl font-bold text-primary-blue">
-                          {ordersWorkDate}
-                        </p>
-                      </div>
-                      <div className="grid grid-cols-1 text-left">
-                        <h2 className="text-sm text-dark-blue px-1 font-medium">
-                          Orders
-                        </h2>
-                        <div className="flex items-center text-center justify-center py-1 px-2 w-[80px] 2xl:w-[95px] rounded-lg text-sm bg-background-green">
-                          <CalendarIcon className="h-4 w-4 text-green" />
-                          <h2 className="ml-1 text-green">
-                            {formatDateToShow(workDate)}
-                          </h2>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  {/* TODO AGREGAR EN ESTE DIV EL PORCENTAJE DE LOADING PARA RUTA SELECCIONADA */}
-                  <div className="flex col-span-1 items-center justify-center">
-                    {showPercentage === null ? (
-                      <div className="flex items-center justify-center bg-primary-blue rounded-full w-8 h-8 2xl:w-16 2xl:h-16">
-                        <Image
-                          src="/loadingBlanco.png"
-                          alt="Percent"
-                          width={200}
-                          height={200}
-                          className="w-6 h-4 2xl:w-10 2xl:h-7"
-                        />
-                      </div>
-                    ) : (
-                      <CircleProgressBar percentage={showPercentage} />
-                    )}
-                  </div>
-                </div>
-              )}
 
-            <div className="flex gap-3 px-4 py-4 items-center justify-center rounded-3xl bg-white shadow-[0_8px_30px_rgb(0,0,0,0.12)]">
-              <div>
-                <h1 className="flex text-lg 2xl:text-xl font-bold items-center justify-center">
-                  Total net
-                </h1>
-                <div className="flex justify-center text-center">
-                  <p className="text-lg 2xl:text-[25px] font-bold text-primary-blue p-0 m-0">
-                    £
-                    {totalNet.total_net
-                      ? parseFloat(totalNet.total_net).toFixed(2)
-                      : "0"}
-                  </p>
-                </div>
-              </div>
-              <div className="border-l border-green border-dashed">
-                <h1 className="flex text-lg 2xl:text-xl font-bold items-center justify-center">
-                  Profit
-                </h1>
-                <div className="flex justify-center text-center">
-                  <div>
-                    <p className="text-lg 2xl:text-[25px] font-bold text-primary-blue pl-2">
-                      {totalNet.profit
-                        ? parseFloat(totalNet.profit).toFixed(2)
-                        : "0"}
-                      %
-                    </p>
-                  </div>
-                </div>
-              </div>
+        <div className="flex flex-col mb-20 mt-4  p-2 px-10 text-dark-blue">
+          <h1 className="text-left mb-4 font-semibold">Route 0</h1>
+          <div className="flex">
+            <div className="flex items-center py-4 px-5 rounded-xl mr-4 shadow-[0px_2px_3px_-1px_rgba(0,0,0,0.1),0px_1px_0px_0px_rgba(25,28,33,0.02),0px_0px_0px_1px_rgba(25,28,33,0.08)]">
+              <TruckIcon className="h-10 w-10 pr-2 text-gray-input" />
+              <h1>Field to fork</h1>
+            </div>
+            <div className="flex items-center py-4 px-5 rounded-xl mr-4 shadow-[0px_2px_3px_-1px_rgba(0,0,0,0.1),0px_1px_0px_0px_rgba(25,28,33,0.02),0px_0px_0px_1px_rgba(25,28,33,0.08)]">
+              <TruckIcon className="h-10 w-10 pr-2 text-green" />
+              <h1>Field to fork</h1>
             </div>
           </div>
-        </section>
-
-        <div className="flex items-center justify-center mb-20 mt-4  p-2">
-          <table className="w-[95%] bg-white first-line:bg-white rounded-2xl text-left shadow-[rgba(17,_17,_26,_0.1)_0px_0px_16px]">
-            <thead className="relative top-0 text-center shadow-[0px_11px_15px_-3px_#edf2f7]">
-              <tr className="  text-dark-blue">
-                <th className="py-4 flex items-center justify-center rounded-tl-lg">
-                  <label className="inline-flex items-center">
-                    <input
-                      type="checkbox"
-                      className="form-checkbox h-5 w-5 text-blue-500"
-                      onChange={(e) => selectAll(e.target.checked)}
-                    />
-                  </label>
-                </th>
-                <th className="py-4"># Invoice</th>
-                <th className="py-4">Acc number</th>
-                <th className="py-4">Customer</th>
-                <th className="py-4">Amount</th>
-                <th className="py-4">Profit %</th>
-                <th className="py-4">Route</th>
-                <th className="py-4">Drop</th>
-                <th className="py-4"># Products</th>
-                {/* <th className="py-4">Responsable</th> */}
-                <th className="py-4">Delivery date</th>
-                <th className="py-4 rounded-tr-lg">
-                  Status{" "}
-                  <select
-                    onChange={handleStatusChange}
-                    className="w-[15px] ml-[2px]"
-                  >
-                    <option value="">All</option>
-                    {uniqueStatuses.map((status, index) => (
-                      <option key={index} value={status}>
-                        {status}
-                      </option>
-                    ))}
-                  </select>
-                </th>
-              </tr>
-            </thead>
-
-            <tbody>
-              {!isLoading &&
-                (filteredOrders?.length > 0 ? (
-                  filteredOrders?.map((order, index) => (
-                    <tr
-                      key={index}
-                      className="text-dark-blue border-b-[1.5px] cursor-pointer hover:bg-[#F6F6F6]"
-                    >
-                      <td className="py-4 pl-4 cursor-default">
-                        <label className="inline-flex items-center">
-                          <input
-                            type="checkbox"
-                            className="form-checkbox h-5 w-5 text-blue-500"
-                            checked={!!selectedOrders[order.reference]}
-                            onChange={(e) => {
-                              handleOrderSelect(order, e.target.checked);
-                              if (e.target.checked) {
-                                setRouteId(order.route_id);
-                              }
-                            }}
-                          />
-                        </label>
-                      </td>
-                      <td
-                        className="py-4 pl-4"
-                        onClick={(e) => goToOrder(e, order)}
-                      >
-                        {order.reference}
-                      </td>
-                      <td
-                        className="py-4 pl-4"
-                        onClick={(e) => goToOrder(e, order)}
-                      >
-                        {order.accountNumber}
-                      </td>
-                      <td
-                        className="py-4 pl-4"
-                        onClick={(e) => goToOrder(e, order)}
-                      >
-                        {order.accountName}
-                      </td>
-                      <td
-                        className="py-4 pl-4"
-                        onClick={(e) => goToOrder(e, order)}
-                      >
-                        {order.net}
-                      </td>
-                      <td
-                        className="py-4 pl-4"
-                        onClick={(e) => goToOrder(e, order)}
-                      >
-                        {order.profitOrder ? order.profitOrder.toFixed(2) : ""}
-                      </td>
-                      <td
-                        className="py-4 pl-4"
-                        onClick={(e) => goToOrder(e, order)}
-                      >
-                        {order.route}
-                      </td>
-                      {/* <td className="py-4 pl-4">{order.created_by}</td> */}
-                      <td
-                        className="py-4 pl-4"
-                        onClick={(e) => goToOrder(e, order)}
-                      >
-                        {order.drop}
-                      </td>
-                      <td
-                        className="py-4 pl-4"
-                        onClick={(e) => goToOrder(e, order)}
-                      >
-                        {order.quantity_products}
-                      </td>
-                      <td
-                        className="py-4 pl-4"
-                        onClick={(e) => goToOrder(e, order)}
-                      >
-                        {order.date_delivery}
-                      </td>
-                      <td
-                        className="py-4 pl-4 flex gap-2 justify-center"
-                        onClick={(e) => goToOrder(e, order)}
-                      >
-                        <div
-                          className={`inline-block mt-1 rounded-full text-white ${statusColorClass(
-                            order.status_order
-                          )} w-3 h-3 flex items-center justify-center`}
-                        ></div>
-                        {order.status_order}
-                      </td>
-                    </tr>
-                  ))
-                ) : (
-                  <tr>
-                    <td colSpan="9" className="py-4 text-center text-dark-blue">
-                      <p className="flex items-center justify-center text-gray my-10">
-                        <ExclamationCircleIcon class="h-12 w-12 mr-10 text-gray" />
-                        Results not found. Try a different search!
-                      </p>
-                    </td>
-                  </tr>
-                ))}
-            </tbody>
-          </table>
         </div>
         {isLoading && (
           <div className="flex justify-center items-center mb-20 -mt-20">
@@ -910,7 +570,7 @@ const OrderView = () => {
         title={"Error downloading csv"}
         message={errorMessage}
       />
-    </Layout >
+    </Layout>
   );
 };
 
