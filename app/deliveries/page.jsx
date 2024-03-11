@@ -1,4 +1,5 @@
 "use client";
+import { TruckIcon } from "@heroicons/react/24/solid";
 import {
   CalendarIcon,
   ExclamationCircleIcon,
@@ -27,7 +28,7 @@ import useUserStore from "../store/useUserStore";
 import useWorkDateStore from "../store/useWorkDateStore";
 import Image from "next/image";
 import ModalOrderError from "../components/ModalOrderError";
-import { saveAs } from 'file-saver';
+import { saveAs } from "file-saver";
 
 export const customStyles = {
   placeholder: (provided) => ({
@@ -73,7 +74,6 @@ const OrderView = () => {
   const [selectedStatus, setSelectedStatus] = useState("");
   const [showErrorCsv, setShowErrorCsv] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
-
 
   const formatDateToShow = (dateString) => {
     if (!dateString) return "Loading...";
@@ -260,7 +260,9 @@ const OrderView = () => {
     if (selectedDate) {
       date = new Date(selectedDate);
 
-      const formattedDate = `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}-${date.getDate().toString().padStart(2, '0')}`;
+      const formattedDate = `${date.getFullYear()}-${(date.getMonth() + 1)
+        .toString()
+        .padStart(2, "0")}-${date.getDate().toString().padStart(2, "0")}`;
 
       var postDataCSV = {
         route_id: selectedRouteId,
@@ -295,7 +297,7 @@ const OrderView = () => {
         // link.click();
         // document.body.removeChild(link);
         // window.URL.revokeObjectURL(url);
-        saveAs(new Blob([response.data], { type: 'text/csv' }), 'orders.csv');
+        saveAs(new Blob([response.data], { type: "text/csv" }), "orders.csv");
       })
       .catch((error) => {
         console.log("🚀 ~ downloadCSV ~ error:", error);
@@ -448,7 +450,7 @@ const OrderView = () => {
           </h1>
         </div>
         <div
-          className={`flex ml-10 mb-0 items-center space-x-2 mt-${
+          className={`flex ml-10 mt-4 mb-0 items-center space-x-2 mt-${
             filterType === "range" && window.innerWidth < 1500
               ? "[45px]"
               : filterType === "date" && window.innerWidth < 1300
@@ -543,8 +545,18 @@ const OrderView = () => {
           )}
         </div>
 
-        <div className="flex items-center justify-center mb-20 mt-4  p-2">
-          {/* TODO: Agregar la logica para mostrar los deliveries */}
+        <div className="flex flex-col mb-20 mt-4  p-2 px-10 text-dark-blue">
+          <h1 className="text-left mb-4 font-semibold">Route 0</h1>
+          <div className="flex">
+            <div className="flex items-center py-4 px-5 rounded-xl mr-4 shadow-[0px_2px_3px_-1px_rgba(0,0,0,0.1),0px_1px_0px_0px_rgba(25,28,33,0.02),0px_0px_0px_1px_rgba(25,28,33,0.08)]">
+              <TruckIcon className="h-10 w-10 pr-2 text-gray-input" />
+              <h1>Field to fork</h1>
+            </div>
+            <div className="flex items-center py-4 px-5 rounded-xl mr-4 shadow-[0px_2px_3px_-1px_rgba(0,0,0,0.1),0px_1px_0px_0px_rgba(25,28,33,0.02),0px_0px_0px_1px_rgba(25,28,33,0.08)]">
+              <TruckIcon className="h-10 w-10 pr-2 text-green" />
+              <h1>Field to fork</h1>
+            </div>
+          </div>
         </div>
         {isLoading && (
           <div className="flex justify-center items-center mb-20 -mt-20">
