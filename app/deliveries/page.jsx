@@ -230,8 +230,7 @@ const DeliveryView = () => {
       .map(([reference]) => reference);
   };
 
-  const sortedOrders = orders
-    .filter((order) => filterOrdersByDate(order))
+  const sortedOrders = orders?.filter((order) => filterOrdersByDate(order))
     .sort((a, b) => {
       const dateA = new Date(a.date_delivery);
       const dateB = new Date(b.date_delivery);
@@ -240,7 +239,7 @@ const DeliveryView = () => {
   console.log("🚀 ~ DeliveryView ~ sortedOrders:", sortedOrders);
 
   const uniqueRoutesSet = new Set(
-    sortedOrders.map((order) => order.route_id + "_" + order.route)
+    sortedOrders?.map((order) => order.route_id + "_" + order.route)
   );
 
   // Ahora convertimos el Set nuevamente en un array, pero esta vez, cada elemento será un objeto con route_id y route_name.
@@ -252,32 +251,6 @@ const DeliveryView = () => {
     };
   });
   console.log("🚀 ~ DeliveryView ~ uniqueRoutesArray:", uniqueRoutesArray);
-
-  const filteredOrders = sortedOrders
-    .filter((order) => {
-      const isRouteMatch = selectedRoute
-        ? order.route.toLowerCase() === selectedRoute.toLowerCase()
-        : true;
-      const isGroupMatch = selectedGroup
-        ? order.group_name.toLowerCase() === selectedGroup.toLowerCase()
-        : true;
-
-      const isSearchQueryMatch =
-        order.reference
-          .toString()
-          .toLowerCase()
-          .includes(searchQuery.toLowerCase()) ||
-        order.accountName.toLowerCase().includes(searchQuery.toLowerCase());
-
-      const isStatusMatch = selectedStatus
-        ? order.status_order.toLowerCase() === selectedStatus.toLowerCase()
-        : true;
-
-      return (
-        isRouteMatch && isGroupMatch && isSearchQueryMatch && isStatusMatch
-      );
-    })
-    .sort((a, b) => b.reference - a.reference);
 
   const toggleRouteDetails = (routeId) => {
     setRouteDetailsVisible((prevVisible) => ({
