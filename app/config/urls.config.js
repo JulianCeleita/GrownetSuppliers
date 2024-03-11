@@ -2,10 +2,10 @@
 // const BASE_URL = "https://api.grownetapp.com/grownet/api/";
 const BASE_URL = "http://3.139.16.141/api/";
 
-// login
+// Login
 export const loginUrl = `${BASE_URL}login/login`;
 
-// users
+// Users
 export const usersUrl = `${BASE_URL}user/all`;
 
 // Products
@@ -52,17 +52,17 @@ export const ordersDate = `${BASE_URL}orders/search/date`;
 export const customerSupplier = `${BASE_URL}customers/supplier/`;
 export const orderCSV = `${BASE_URL}SCVExport/ordersDetails`;
 export const deleteOrder = `${BASE_URL}orders/delete/`;
-
 export const printInvoices = `${BASE_URL}invoice/generate`;
-
 export const customersData = `${BASE_URL}customers/serch/`;
-
 export const presentationsCode = `${BASE_URL}presentations/search/`;
-
 export const presentationData = `${BASE_URL}products/presentations/all`;
 export const createStorageOrder = `${BASE_URL}orders/create`;
 export const editStorageOrder = `${BASE_URL}orders/edit/`;
 
+// Upload CSV
+export const uploadCsv = `${BASE_URL}orders/uploadCSV`
+
+// Day managment
 export const closeDay = `${BASE_URL}suppliers/operationEnd`;
 export const openDay = `${BASE_URL}suppliers/operationStart`;
 
@@ -119,6 +119,3 @@ export const typesUrl = `${BASE_URL}types/all`;
 export const productShort = `${BASE_URL}products/short`
 export const categoriesShort = `${BASE_URL}categories/short`
 
-
-// Upload CSV
-export const uploadCsv = `${BASE_URL}orders/uploadCSV`
