@@ -332,7 +332,7 @@ function CreateProduct({ isvisible, onClose, setProducts, setIsLoading }) {
                 onChange={(e) => setCostPresentation(e.target.value)}
                 required
               ></input>
-              <label className="ml-2">Quantity: </label>
+              <label className="ml-2">Conversion: </label>
               <input
                 className="border p-3 rounded-md mr-3 mt-3"
                 placeholder="50"
@@ -441,7 +441,7 @@ function CreateProduct({ isvisible, onClose, setProducts, setIsLoading }) {
                 onChange={(e) => setCostPresentation(e.target.value)}
                 required
               ></input>
-              <label className="ml-2">Quantity: </label>
+              <label className="ml-2">Conversion: </label>
               <input
                 className="border p-3 rounded-md mr-3 mt-3"
                 placeholder="50"
