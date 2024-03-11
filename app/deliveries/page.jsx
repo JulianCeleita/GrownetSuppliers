@@ -29,6 +29,7 @@ import useWorkDateStore from "../store/useWorkDateStore";
 import Image from "next/image";
 import ModalOrderError from "../components/ModalOrderError";
 import { saveAs } from "file-saver";
+import MenuDelivery from "../components/MenuDelivery";
 
 export const customStyles = {
   placeholder: (provided) => ({
@@ -45,7 +46,7 @@ export const customStyles = {
   }),
 };
 
-const OrderView = () => {
+const DeliveryView = () => {
   const router = useRouter();
   const { token } = useTokenStore();
   const { workDate, setFetchWorkDate } = useWorkDateStore();
@@ -74,6 +75,8 @@ const OrderView = () => {
   const [selectedStatus, setSelectedStatus] = useState("");
   const [showErrorCsv, setShowErrorCsv] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
+  const [showMenuDelivery, setShowMenuDelivery] = useState(false);
+  const [routeDetailsVisible, setRouteDetailsVisible] = useState({});
 
   const formatDateToShow = (dateString) => {
     if (!dateString) return "Loading...";
@@ -89,10 +92,10 @@ const OrderView = () => {
 
   const formattedDate = selectedDate
     ? new Date(selectedDate).toLocaleDateString("es-CO", {
-        day: "2-digit",
-        month: "2-digit",
-        year: "2-digit",
-      })
+      day: "2-digit",
+      month: "2-digit",
+      year: "2-digit",
+    })
     : formatDateToShow(workDate);
   const formatDateToTransform = (dateString) => {
     const date = new Date(dateString);
@@ -221,127 +224,10 @@ const OrderView = () => {
     return false;
   };
 
-  const goToOrder = (e, order) => {
-    e.preventDefault();
-    router.push(`/order/${order.reference}`, undefined, {
-      shallow: true,
-    });
-  };
-
-  const handleOrderSelect = (order, checked) => {
-    setSelectedOrders((prevState) => ({
-      ...prevState,
-      [order.reference]: checked,
-    }));
-  };
-
-  const handleGroupChange = (e) => {
-    setSelectedGroup(e.target.value);
-  };
-
-  const selectAll = (checked) => {
-    const newSelectedOrders = {};
-    filteredOrders.forEach((order) => {
-      newSelectedOrders[order.reference] = checked;
-    });
-    setSelectedOrders(newSelectedOrders);
-    setShowPercentage(null);
-  };
-
   const objectToArray = (object) => {
     return Object.entries(object)
       .filter(([reference, checked]) => checked)
       .map(([reference]) => reference);
-  };
-
-  const downloadCSV = () => {
-    let date;
-
-    if (selectedDate) {
-      date = new Date(selectedDate);
-
-      const formattedDate = `${date.getFullYear()}-${(date.getMonth() + 1)
-        .toString()
-        .padStart(2, "0")}-${date.getDate().toString().padStart(2, "0")}`;
-
-      var postDataCSV = {
-        route_id: selectedRouteId,
-        date: formattedDate,
-      };
-
-      console.log("🚀 ~ downloadCSV ~ postDataCSV:", postDataCSV);
-    } else {
-      date = workDate;
-
-      var postDataCSV = {
-        route_id: selectedRouteId,
-        date: date,
-      };
-
-      console.log("🚀 ~ downloadCSV ~ postDataCSV:", postDataCSV);
-    }
-    axios
-      .post(orderCSV, postDataCSV, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-        // responseType: "blob",
-      })
-      .then((response) => {
-        console.log("🚀 ~ .then ~ response:", response);
-        // const url = window.URL.createObjectURL(new Blob([response.data]));
-        // const link = document.createElement("a");
-        // link.href = url;
-        // link.setAttribute("download", "orders.csv");
-        // document.body.appendChild(link);
-        // link.click();
-        // document.body.removeChild(link);
-        // window.URL.revokeObjectURL(url);
-        saveAs(new Blob([response.data], { type: "text/csv" }), "orders.csv");
-      })
-      .catch((error) => {
-        console.log("🚀 ~ downloadCSV ~ error:", error);
-        setShowErrorCsv(true);
-        setErrorMessage(error?.response?.data?.msg);
-        console.error("Error al descargar csv: ", error);
-      });
-  };
-  const printOrders = () => {
-    const ordersToPrint = objectToArray(selectedOrders);
-
-    const postDataPrint = {
-      references: ordersToPrint,
-    };
-
-    axios
-      .post(printInvoices, postDataPrint, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-        responseType: "blob",
-      })
-      .then((response) => {
-        const blob = new Blob([response.data], { type: "application/pdf" });
-        // const downloadUrl = URL.createObjectURL(blob);
-        // const link = document.createElement("a");
-        // link.href = downloadUrl;
-        // link.setAttribute("download", "invoice.pdf");
-        // link.style.display = "none";
-        // document.body.appendChild(link);
-        // link.click();
-        // if (document.body.contains(link)) {
-        //   console.log("entro aqui en removeChild");
-        //   document.body.removeChild(link);
-        // }
-        // URL.revokeObjectURL(downloadUrl);
-
-        // Para abrir automáticamente el archivo
-        const fileURL = URL.createObjectURL(blob);
-        window.open(fileURL);
-      })
-      .catch((error) => {
-        console.error("Error al imprimir invoice: ", error);
-      });
   };
 
   const sortedOrders = orders
@@ -351,7 +237,7 @@ const OrderView = () => {
       const dateB = new Date(b.date_delivery);
       return dateA - dateB;
     });
-  console.log("🚀 ~ OrderView ~ sortedOrders:", sortedOrders);
+  console.log("🚀 ~ DeliveryView ~ sortedOrders:", sortedOrders);
 
   const uniqueRoutesSet = new Set(
     sortedOrders.map((order) => order.route_id + "_" + order.route)
@@ -365,24 +251,7 @@ const OrderView = () => {
       route_name: routeName,
     };
   });
-  console.log("🚀 ~ OrderView ~ uniqueRoutesArray:", uniqueRoutesArray);
-
-  const getPercentages = async (value) => {
-    if (value !== "" || value !== null || value !== undefined) {
-      await setFetchRoutePercentages(token, workDate);
-    }
-  };
-
-  const handleRouteChange = (event) => {
-    if (event.target.value) {
-      const selectedOption = JSON?.parse(event.target.value);
-      setSelectedRoute(selectedOption.route_name);
-      setSelectedRouteId(selectedOption.route_id);
-    } else {
-      setSelectedRoute("");
-      setSelectedRouteId("");
-    }
-  };
+  console.log("🚀 ~ DeliveryView ~ uniqueRoutesArray:", uniqueRoutesArray);
 
   const filteredOrders = sortedOrders
     .filter((order) => {
@@ -410,36 +279,13 @@ const OrderView = () => {
     })
     .sort((a, b) => b.reference - a.reference);
 
-  const uniqueStatuses = [
-    ...new Set(sortedOrders.map((order) => order.status_order)),
-  ];
-  const handleStatusChange = (e) => {
-    const newSelectedStatus = e.target.value;
-    setSelectedStatus(newSelectedStatus);
+  const toggleRouteDetails = (routeId) => {
+    setRouteDetailsVisible((prevVisible) => ({
+      ...prevVisible,
+      [routeId]: !prevVisible[routeId],
+    }));
   };
 
-  // console.log("filteredOrders", filteredOrders);
-
-  const statusColorClass = (status) => {
-    switch (status) {
-      case "Delivered":
-      case "Solved":
-      case "Loaded":
-      case "Printed":
-        return "bg-green";
-      case "Dispute":
-        return "bg-danger";
-      case "Generated":
-      case "Received":
-      case "Preparing":
-      case "Sent":
-        return "bg-primary-blue";
-      case "Packed":
-        return "bg-orange-grownet";
-      default:
-        return "bg-primary-blue";
-    }
-  };
 
   return (
     <Layout>
@@ -450,13 +296,12 @@ const OrderView = () => {
           </h1>
         </div>
         <div
-          className={`flex ml-10 mt-4 mb-0 items-center space-x-2 mt-${
-            filterType === "range" && window.innerWidth < 1500
-              ? "[45px]"
-              : filterType === "date" && window.innerWidth < 1300
+          className={`flex ml-10 mt-4 mb-0 items-center space-x-2 mt-${filterType === "range" && window.innerWidth < 1500
+            ? "[45px]"
+            : filterType === "date" && window.innerWidth < 1300
               ? "[50px]"
               : "[20px]"
-          }
+            }
           `}
         >
           <div className="border border-gray-300 rounded-md py-3 px-2 flex items-center">
@@ -545,9 +390,75 @@ const OrderView = () => {
           )}
         </div>
 
-        <div className="flex flex-col mb-20 mt-4  p-2 px-10 text-dark-blue">
+        <div className="flex flex-col mb-20 mt-4 p-2 px-10 text-dark-blue">
           <h1 className="text-left mb-4 font-semibold">Route 0</h1>
-          <div className="flex">
+          <div className="grid grid-cols-7 gap-2">
+            <div
+              onClick={() => setShowMenuDelivery(true)}
+              className="flex cursor-pointer hover:bg-gray-200 transition-all items-center py-4 px-5 rounded-xl mr-4 shadow-[0px_2px_3px_-1px_rgba(0,0,0,0.1),0px_1px_0px_0px_rgba(25,28,33,0.02),0px_0px_0px_1px_rgba(25,28,33,0.08)]">
+              <TruckIcon className="h-10 w-10 pr-2 text-gray-input" />
+              <h1>Field to fork</h1>
+            </div>
+            <div className="flex items-center py-4 px-5 rounded-xl mr-4 shadow-[0px_2px_3px_-1px_rgba(0,0,0,0.1),0px_1px_0px_0px_rgba(25,28,33,0.02),0px_0px_0px_1px_rgba(25,28,33,0.08)]">
+              <TruckIcon className="h-10 w-10 pr-2 text-green" />
+              <h1>Field to fork</h1>
+            </div>
+            <div className="flex items-center py-4 px-5 rounded-xl mr-4 shadow-[0px_2px_3px_-1px_rgba(0,0,0,0.1),0px_1px_0px_0px_rgba(25,28,33,0.02),0px_0px_0px_1px_rgba(25,28,33,0.08)]">
+              <TruckIcon className="h-10 w-10 pr-2 text-gray-input" />
+              <h1>Field to fork</h1>
+            </div>
+            <div className="flex items-center py-4 px-5 rounded-xl mr-4 shadow-[0px_2px_3px_-1px_rgba(0,0,0,0.1),0px_1px_0px_0px_rgba(25,28,33,0.02),0px_0px_0px_1px_rgba(25,28,33,0.08)]">
+              <TruckIcon className="h-10 w-10 pr-2 text-green" />
+              <h1>Field to fork</h1>
+            </div>
+            <div className="flex items-center py-4 px-5 rounded-xl mr-4 shadow-[0px_2px_3px_-1px_rgba(0,0,0,0.1),0px_1px_0px_0px_rgba(25,28,33,0.02),0px_0px_0px_1px_rgba(25,28,33,0.08)]">
+              <TruckIcon className="h-10 w-10 pr-2 text-gray-input" />
+              <h1>Field to fork</h1>
+            </div>
+            <div className="flex items-center py-4 px-5 rounded-xl mr-4 shadow-[0px_2px_3px_-1px_rgba(0,0,0,0.1),0px_1px_0px_0px_rgba(25,28,33,0.02),0px_0px_0px_1px_rgba(25,28,33,0.08)]">
+              <TruckIcon className="h-10 w-10 pr-2 text-green" />
+              <h1>Field to fork</h1>
+            </div>
+            <div className="flex items-center py-4 px-5 rounded-xl mr-4 shadow-[0px_2px_3px_-1px_rgba(0,0,0,0.1),0px_1px_0px_0px_rgba(25,28,33,0.02),0px_0px_0px_1px_rgba(25,28,33,0.08)]">
+              <TruckIcon className="h-10 w-10 pr-2 text-gray-input" />
+              <h1>Field to fork</h1>
+            </div>
+            <div className="flex items-center py-4 px-5 rounded-xl mr-4 shadow-[0px_2px_3px_-1px_rgba(0,0,0,0.1),0px_1px_0px_0px_rgba(25,28,33,0.02),0px_0px_0px_1px_rgba(25,28,33,0.08)]">
+              <TruckIcon className="h-10 w-10 pr-2 text-green" />
+              <h1>Field to fork</h1>
+            </div>
+            <div className="flex items-center py-4 px-5 rounded-xl mr-4 shadow-[0px_2px_3px_-1px_rgba(0,0,0,0.1),0px_1px_0px_0px_rgba(25,28,33,0.02),0px_0px_0px_1px_rgba(25,28,33,0.08)]">
+              <TruckIcon className="h-10 w-10 pr-2 text-gray-input" />
+              <h1>Field to fork</h1>
+            </div>
+            <div className="flex items-center py-4 px-5 rounded-xl mr-4 shadow-[0px_2px_3px_-1px_rgba(0,0,0,0.1),0px_1px_0px_0px_rgba(25,28,33,0.02),0px_0px_0px_1px_rgba(25,28,33,0.08)]">
+              <TruckIcon className="h-10 w-10 pr-2 text-green" />
+              <h1>Field to fork</h1>
+            </div>
+            <div className="flex items-center py-4 px-5 rounded-xl mr-4 shadow-[0px_2px_3px_-1px_rgba(0,0,0,0.1),0px_1px_0px_0px_rgba(25,28,33,0.02),0px_0px_0px_1px_rgba(25,28,33,0.08)]">
+              <TruckIcon className="h-10 w-10 pr-2 text-gray-input" />
+              <h1>Field to fork</h1>
+            </div>
+            <div className="flex items-center py-4 px-5 rounded-xl mr-4 shadow-[0px_2px_3px_-1px_rgba(0,0,0,0.1),0px_1px_0px_0px_rgba(25,28,33,0.02),0px_0px_0px_1px_rgba(25,28,33,0.08)]">
+              <TruckIcon className="h-10 w-10 pr-2 text-green" />
+              <h1>Field to fork</h1>
+            </div>
+            <div className="flex items-center py-4 px-5 rounded-xl mr-4 shadow-[0px_2px_3px_-1px_rgba(0,0,0,0.1),0px_1px_0px_0px_rgba(25,28,33,0.02),0px_0px_0px_1px_rgba(25,28,33,0.08)]">
+              <TruckIcon className="h-10 w-10 pr-2 text-gray-input" />
+              <h1>Field to fork</h1>
+            </div>
+            <div className="flex items-center py-4 px-5 rounded-xl mr-4 shadow-[0px_2px_3px_-1px_rgba(0,0,0,0.1),0px_1px_0px_0px_rgba(25,28,33,0.02),0px_0px_0px_1px_rgba(25,28,33,0.08)]">
+              <TruckIcon className="h-10 w-10 pr-2 text-green" />
+              <h1>Field to fork</h1>
+            </div>
+            <div className="flex items-center py-4 px-5 rounded-xl mr-4 shadow-[0px_2px_3px_-1px_rgba(0,0,0,0.1),0px_1px_0px_0px_rgba(25,28,33,0.02),0px_0px_0px_1px_rgba(25,28,33,0.08)]">
+              <TruckIcon className="h-10 w-10 pr-2 text-gray-input" />
+              <h1>Field to fork</h1>
+            </div>
+            <div className="flex items-center py-4 px-5 rounded-xl mr-4 shadow-[0px_2px_3px_-1px_rgba(0,0,0,0.1),0px_1px_0px_0px_rgba(25,28,33,0.02),0px_0px_0px_1px_rgba(25,28,33,0.08)]">
+              <TruckIcon className="h-10 w-10 pr-2 text-green" />
+              <h1>Field to fork</h1>
+            </div>
             <div className="flex items-center py-4 px-5 rounded-xl mr-4 shadow-[0px_2px_3px_-1px_rgba(0,0,0,0.1),0px_1px_0px_0px_rgba(25,28,33,0.02),0px_0px_0px_1px_rgba(25,28,33,0.08)]">
               <TruckIcon className="h-10 w-10 pr-2 text-gray-input" />
               <h1>Field to fork</h1>
@@ -564,6 +475,8 @@ const OrderView = () => {
           </div>
         )}
       </div>
+
+      <MenuDelivery open={showMenuDelivery} setOpen={setShowMenuDelivery} />
       <ModalOrderError
         isvisible={showErrorCsv}
         onClose={() => setShowErrorCsv(false)}
@@ -574,4 +487,4 @@ const OrderView = () => {
   );
 };
 
-export default OrderView;
+export default DeliveryView;
