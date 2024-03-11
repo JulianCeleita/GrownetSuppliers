@@ -1,6 +1,8 @@
 "use client";
 import {
+  ArrowUpTrayIcon,
   CalendarIcon,
+  CloudArrowUpIcon,
   ExclamationCircleIcon,
   PlusCircleIcon,
   PrinterIcon,
@@ -19,7 +21,7 @@ import {
   fetchOrdersDateByWorkDate,
 } from "../api/ordersRequest";
 import { CircleProgressBar } from "../components/CircleProgressBar";
-import { orderCSV, printInvoices } from "../config/urls.config";
+import { orderCSV, printInvoices, uploadCsv } from "../config/urls.config";
 import Layout from "../layoutS";
 import usePercentageStore from "../store/usePercentageStore";
 import useTokenStore from "../store/useTokenStore";
@@ -28,6 +30,7 @@ import useWorkDateStore from "../store/useWorkDateStore";
 import Image from "next/image";
 import ModalOrderError from "../components/ModalOrderError";
 import { saveAs } from 'file-saver';
+import Swal from "sweetalert2";
 
 export const customStyles = {
   placeholder: (provided) => ({
@@ -73,6 +76,8 @@ const OrderView = () => {
   const [selectedStatus, setSelectedStatus] = useState("");
   const [showErrorCsv, setShowErrorCsv] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
+  const [fileName, setFileName] = useState("");
+  const [csvFile, setCsvFile] = useState(null);
 
 
   const formatDateToShow = (dateString) => {
@@ -89,10 +94,10 @@ const OrderView = () => {
 
   const formattedDate = selectedDate
     ? new Date(selectedDate).toLocaleDateString("es-CO", {
-        day: "2-digit",
-        month: "2-digit",
-        year: "2-digit",
-      })
+      day: "2-digit",
+      month: "2-digit",
+      year: "2-digit",
+    })
     : formatDateToShow(workDate);
   const formatDateToTransform = (dateString) => {
     const date = new Date(dateString);
@@ -355,11 +360,10 @@ const OrderView = () => {
     sortedOrders.map((order) => order.route_id + "_" + order.route)
   );
 
-  // Ahora convertimos el Set nuevamente en un array, pero esta vez, cada elemento será un objeto con route_id y route_name.
   const uniqueRoutesArray = Array.from(uniqueRoutesSet).map((route) => {
     const [routeId, routeName] = route.split("_");
     return {
-      route_id: parseInt(routeId, 10), // Convertimos el route_id de string a número
+      route_id: parseInt(routeId, 10),
       route_name: routeName,
     };
   });
@@ -380,6 +384,51 @@ const OrderView = () => {
       setSelectedRoute("");
       setSelectedRouteId("");
     }
+  };
+
+  const handleFileChange = (event) => {
+    const file = event.target.files[0];
+    setCsvFile(file);
+    setFileName(file ? file.name : "");
+  };
+
+  const handleUpload = () => {
+    if (csvFile) {
+      console.log("Archivo CSV seleccionado:", csvFile);
+
+      const csv = new FormData();
+      csv.append("csv", csvFile);
+      console.log("🚀 ~ handleUpload ~ formData:", csv)
+
+      axios.post(uploadCsv, csv, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "multipart/form-data",
+        },
+      })
+        .then((response) => {
+          console.log("🚀 ~ .then ~ response:", response);
+          Swal.fire({
+            title: "CSV was upload!",
+            icon: "success"
+          });
+          handleRemoveFile();
+        })
+        .catch((error) => {
+          console.error("Error al cargar el csv: ", error);
+        });
+    } else {
+      console.log("No se seleccionó ningún archivo CSV.");
+    }
+  };
+
+  const handleRemoveFile = () => {
+    const fileInput = document.getElementById("fileInput");
+    if (fileInput) {
+      fileInput.value = null;
+    }
+    setCsvFile(null);
+    setFileName("");
   };
 
   const filteredOrders = sortedOrders
@@ -452,15 +501,45 @@ const OrderView = () => {
           >
             <PlusCircleIcon className="h-6 w-6 mr-1" /> New Order
           </Link>
+          <div className="flex items-center gap-2">
+            <label className="bg-dark-blue p-5 text-sm text-white h-12 w-38 hover:scale-105 transition-all font-semibold rounded-full cursor-pointer flex flex-col items-center justify-center">
+              <div className="flex">
+                <ArrowUpTrayIcon className="h-6 w-6 mr-1" /> Upload CSV
+                <input
+                  id="fileInput"
+                  type="file"
+                  accept=".csv"
+                  onChange={handleFileChange}
+                  className="absolute hidden opacity-0"
+                />
+              </div>
+            </label>
+            {csvFile && (
+              <>
+                <button
+                  className="bg-green p-2 text-sm flex text-center items-center pl-3 text-white hover:scale-105 transition-all font-semibold rounded-full w-16"
+                  onClick={handleUpload}
+                >
+                  Send
+                </button>
+                <button
+                  className="bg-none p-2 transition-all text-white hover:scale-110 h-8 w-8 rounded-full bg-white text-center items-center flex"
+                  onClick={handleRemoveFile}
+                >
+                  <TrashIcon className="h-8 w-8 text-black font-bold" />
+                </button>
+              </>
+
+            )}
+          </div>
         </div>
         <div
-          className={`flex ml-10 mb-0 items-center space-x-2 mt-${
-            filterType === "range" && window.innerWidth < 1500
-              ? "[45px]"
-              : filterType === "date" && window.innerWidth < 1300
+          className={`flex ml-10 mb-0 items-center space-x-2 mt-${filterType === "range" && window.innerWidth < 1500
+            ? "[45px]"
+            : filterType === "date" && window.innerWidth < 1300
               ? "[50px]"
               : "[20px]"
-          }
+            }
           `}
         >
           <div className="border border-gray-300 rounded-md py-3 px-2 flex items-center">
@@ -590,11 +669,10 @@ const OrderView = () => {
           </select>
           <button
             disabled={!selectedRoute}
-            className={`flex ${
-              selectedRoute
-                ? "bg-green text-white hover:bg-dark-blue"
-                : "bg-gray-grownet text-white cursor-not-allowed"
-            } py-3 px-4 rounded-lg font-medium transition-all`}
+            className={`flex ${selectedRoute
+              ? "bg-green text-white hover:bg-dark-blue"
+              : "bg-gray-grownet text-white cursor-not-allowed"
+              } py-3 px-4 rounded-lg font-medium transition-all`}
             onClick={() => downloadCSV()}
           >
             <TableCellsIcon className="h-6" />
@@ -734,7 +812,7 @@ const OrderView = () => {
                       key={index}
                       className="text-dark-blue border-b-[1.5px] cursor-pointer hover:bg-[#F6F6F6]"
                     >
-                      <td className="py-4 pl-4">
+                      <td className="py-4 pl-4 cursor-default">
                         <label className="inline-flex items-center">
                           <input
                             type="checkbox"
@@ -842,7 +920,7 @@ const OrderView = () => {
         title={"Error downloading csv"}
         message={errorMessage}
       />
-    </Layout>
+    </Layout >
   );
 };
 
