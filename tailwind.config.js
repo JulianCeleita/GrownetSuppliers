@@ -23,6 +23,7 @@ module.exports = {
         "background-green": "#D5FEDD",
         "bg-red": "#FCE5E4",
         "gray-input": "#A7A7A7",
+        "green-900": "#1f4a38",
       },
     },
   },
