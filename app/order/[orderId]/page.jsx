@@ -71,8 +71,16 @@ const OrderDetailPage = () => {
   );
   const [customerDate, setCustomerDate] = useState();
   const [customersRef, setCustomersRef] = useState(
-    orderDetail.customers_ref ? orderDetail.customers_ref : ""
+    orderDetail?.customers_ref ? orderDetail.customers_ref : ""
   );
+
+  let accountNumberCustomer = orderDetail?.accountName
+
+  if (selectedAccName) {
+    accountNumberCustomer = selectedAccNumber
+  } else {
+    accountNumberCustomer = orderDetail?.accountNumber
+  }
   let orderId;
   if (params) {
     ({ orderId } = params);
@@ -105,10 +113,12 @@ const OrderDetailPage = () => {
   }, [orderDetail]);
 
   useEffect(() => {
-    setAccName(orderDetail ? orderDetail.accountName : "");
-    setSelectedAccNumber2(orderDetail.accountNumber);
+    setSelectedAccName(orderDetail ? orderDetail.accountName : "");
+    setSelectedAccNumber(orderDetail?.accountNumber);
+    setSelectedAccNumber2(orderDetail?.accountNumber);
     setCustomersRef(orderDetail ? orderDetail.customers_ref : "");
   }, [orderDetail]);
+
 
   useEffect(() => {
     const fetchData = async () => {
@@ -136,8 +146,43 @@ const OrderDetailPage = () => {
     } else if (selectedAccName) {
       fetchDataAccName();
     }
+    
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  useEffect(() => {
+    if (selectedAccNumber || selectedAccName){
+    const fetchDataBySupplier = async () => {
+      try {
+        const responseRestaurants = await axios.get(
+          `${customerSupplier}${user.id_supplier}`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+        const sortedRestaurants = responseRestaurants.data.customers.sort(
+          (a, b) => a?.accountName?.localeCompare(b.accountName)
+        );
+        setRestaurants(sortedRestaurants);
+      } catch (error) {
+        console.error("Error fetching restaurants data by supplier", error);
+      }
+    };
+      fetchDataBySupplier();
+    
+    if (selectedAccNumber) {
+      setSelectedAccName(null);
+      fetchDataAccNumber();
+    }
+    if (selectedAccName) {
+      setSelectedAccNumber(null);
+      fetchDataAccName();
+    }}
+  }, [selectedAccNumber, selectedAccName])
+
+
 
   // Click en la pantalla
   useEffect(() => {
@@ -174,7 +219,7 @@ const OrderDetailPage = () => {
         orderDate: orderDate,
       };
       setCustomers(updatedCustomers);
-      setOrderDetail(updatedCustomers);
+      // setOrderDetail(updatedCustomers);
     } catch (error) {
       console.error("Error fetching AccNumber data", error);
     }
@@ -197,7 +242,7 @@ const OrderDetailPage = () => {
       };
 
       setCustomers(updatedCustomers);
-      setOrderDetail(updatedCustomers);
+      // setOrderDetail(updatedCustomers);
     } catch (error) {
       console.error("Error fetching AccNumber data", error);
     }
@@ -301,6 +346,12 @@ const OrderDetailPage = () => {
       });
   };
 
+  const handleSelectChange = (selectedOption) => {
+    setSelectedAccName(selectedOption.value);
+    setIsDropdownVisible(false);
+    setSelectedAccNumber2(selectedOption.accNumber);
+  };
+
   if (!hasMounted) {
     return null;
   }
@@ -312,26 +363,18 @@ const OrderDetailPage = () => {
           <h3 className="w-[42%] text-white">Account name:</h3>
           <div className="relative mb-2 w-[100%]">
             <Select
-              instanceId
               options={restaurantList.map((restaurant) => ({
                 value: restaurant.accountName,
                 label: restaurant.accountName,
                 accNumber: restaurant.accountNumber,
               }))}
-              onChange={(selectedOption) => {
-                setSelectedAccName(selectedOption.value);
-                setIsDropdownVisible(false);
-                setSelectedAccNumber2(selectedOption.accNumber);
-              }}
+              onChange={handleSelectChange}
               value={{
-                value:
-                  selectedAccNumber && selectedAccNumber
-                    ? orderDetail.accountName
-                    : "",
+                value: selectedAccNumber,
                 label:
-                  orderDetail && orderDetail.accountName
-                    ? orderDetail.accountName
-                    : "",
+                  customers && customers[0].accountName
+                    ? customers[0].accountName
+                    : "Search...",
               }}
               isSearchable
             />
@@ -341,7 +384,6 @@ const OrderDetailPage = () => {
           <h3 className="w-[42%] text-white">Account number:</h3>
           <div className="relative mb-2 w-[100%]">
             <Select
-              instanceId
               options={restaurantList.map((restaurant) => ({
                 value: restaurant.accountNumber,
                 label: restaurant.accountNumber,
@@ -352,14 +394,11 @@ const OrderDetailPage = () => {
                 setSelectedAccNumber2(selectedOption.value);
               }}
               value={{
-                value:
-                  selectedAccName && selectedAccName
-                    ? orderDetail.accountNumber
-                    : "",
+                value: selectedAccNumber,
                 label:
-                  orderDetail && orderDetail.accountNumber
-                    ? orderDetail.accountNumber
-                    : "",
+                  customers && customers[0].accountNumber
+                    ? customers[0].accountNumber
+                    : "Search...",
               }}
               isSearchable
             />
@@ -387,7 +426,7 @@ const OrderDetailPage = () => {
             <div className="flex flex-col col-span-1 pr-2 items-center justify-center">
               <h1 className="text-xl font-bold text-primary-blue">Status</h1>
               <h2 className="text-sm px-1 font-semibold">
-                {orderDetail.state_name}
+                {orderDetail?.state_name}
               </h2>
               <p className="text-green font-semibold py-1 px-2 rounded-lg text-[15px] bg-background-green text-center">
                 Items:{" "}
@@ -476,7 +515,7 @@ const OrderDetailPage = () => {
         </button>
         <button
           className="bg-red-600 rounded-md ml-3 transition-all hover:scale-110 focus:outline-none flex text-white px-2 py-1 items-center align-middle"
-        onClick={() => setShowDeleteModal(true)}
+          onClick={() => setShowDeleteModal(true)}
         >
           <TrashIcon className={`h-[25px] w-[25px] text-white`} />
         </button>
@@ -561,6 +600,7 @@ const OrderDetailPage = () => {
                 percentageDetail={percentageDetail}
                 dataLoaded={dataLoaded}
                 customersRef={customersRef}
+                selectedAccNumber={accountNumberCustomer}
               />
             </>
           )
@@ -575,4 +615,5 @@ const OrderDetailPage = () => {
     </Layout>
   );
 };
+console.log("🚀 ~ OrderDetailPage ~ orderDetail:", orderDetail)
 export default OrderDetailPage;

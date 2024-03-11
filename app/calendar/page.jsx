@@ -1,9 +1,11 @@
 "use client";
 import { TrashIcon } from "@heroicons/react/24/outline";
+import axios from "axios";
 import { format } from "date-fns";
 import { useEffect, useState } from "react";
 import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css";
+import { uploadCsv } from "../config/urls.config";
 import Layout from "../layoutS";
 import useTokenStore from "../store/useTokenStore";
 import useUserStore from "../store/useUserStore";
@@ -41,6 +43,23 @@ function CalendarView() {
   const handleUpload = () => {
     if (csvFile) {
       console.log("Archivo CSV seleccionado:", csvFile);
+
+      const csv = new FormData();
+      csv.append("csv", csvFile);
+      console.log("🚀 ~ handleUpload ~ formData:", csv)
+
+      axios.post(uploadCsv, csv, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "multipart/form-data",
+        },
+      })
+        .then((response) => {
+          console.log("🚀 ~ .then ~ response:", response);
+        })
+        .catch((error) => {
+          console.error("Error al cargar el csv: ", error);
+        });
     } else {
       console.log("No se seleccionó ningún archivo CSV.");
     }
