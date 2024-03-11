@@ -199,7 +199,7 @@ const SideBar = () => {
                           : "text-white"
                           } hover:text-light-green`}
                       >
-                        <UserIcon class="h-6 w-6" />
+                        <UserIcon className="h-6 w-6" />
                         <h3>Users</h3>
                       </Link>
 
@@ -210,7 +210,7 @@ const SideBar = () => {
                           : "text-white"
                           } hover:text-light-green`}
                       >
-                        <ShoppingCartIcon class="h-6 w-6" />
+                        <ShoppingCartIcon className="h-6 w-6" />
                         <h3>Orders</h3>
                       </Link>
 
@@ -221,7 +221,7 @@ const SideBar = () => {
                           : "text-white"
                           } hover:text-light-green`}
                       >
-                        <CalendarIcon class="h-6 w-6" />
+                        <CalendarIcon className="h-6 w-6" />
                         <div>Calendar</div>
                       </Link>
 
@@ -239,9 +239,9 @@ const SideBar = () => {
                           </div>
 
                           {openMenuTransport === false ? (
-                            <ChevronDownIcon class="h-6 w-6" />
+                            <ChevronDownIcon className="h-6 w-6" />
                           ) : (
-                            <ChevronUpIcon class="h-6 w-6" />
+                            <ChevronUpIcon className="h-6 w-6" />
                           )}
                         </button>
                         {openMenuTransport && (
@@ -276,9 +276,9 @@ const SideBar = () => {
                             </div>
 
                             {openMenu === false ? (
-                              <ChevronDownIcon class="h-6 w-6" />
+                              <ChevronDownIcon className="h-6 w-6" />
                             ) : (
-                              <ChevronUpIcon class="h-6 w-6" />
+                              <ChevronUpIcon className="h-6 w-6" />
                             )}
                           </button>
                           {openMenu && (
@@ -327,7 +327,7 @@ const SideBar = () => {
                               : "text-white"
                               } hover:text-light-green`}
                           >
-                            <BuildingStorefrontIcon class="h-6 w-6" />
+                            <BuildingStorefrontIcon className="h-6 w-6" />
                             <h3>Customers</h3>
                           </Link>
                         )}
@@ -341,7 +341,7 @@ const SideBar = () => {
                               : "text-white"
                               } hover:text-light-green`}
                           >
-                            <ClipboardIcon class="h-6 w-6" />
+                            <ClipboardIcon className="h-6 w-6" />
                             <h3>Catalogue</h3>
                           </Link>
                         )}
