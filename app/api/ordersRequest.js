@@ -167,8 +167,7 @@ export const fetchCustomersDate = async (
   token,
   date,
   accountNumber,
-  setCustomerDate,
-  setShowErrorRoutes
+  setCustomerDate
 ) => {
   if (accountNumber && date) {
     const postData = {
@@ -183,14 +182,7 @@ export const fetchCustomersDate = async (
         },
       });
 
-      if (
-        response.data.routes &&
-        response.data.routes[0].nameRoute !== "R100"
-      ) {
-        setCustomerDate(response.data.routes);
-      } else {
-        setShowErrorRoutes(true);
-      }
+      setCustomerDate(response.data.routes);
 
       console.log("response.data.routes:", response.data);
     } catch (error) {

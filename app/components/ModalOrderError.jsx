@@ -11,6 +11,7 @@ function ModalOrderError({
   setCustomerDate = () => {},
   handleKeyPress = () => {},
   handleDateRef = () => {},
+  setAccept,
   errorList,
 }) {
   const modalRef = useRef();
@@ -18,8 +19,6 @@ function ModalOrderError({
   useEffect(() => {
     if (isvisible) {
       modalRef.current.focus();
-
-      setCustomerDate();
     }
   }, [isvisible]);
 
@@ -35,16 +34,20 @@ function ModalOrderError({
     if (event.key === "Enter" || event.key === "Escape") {
       onClose();
       handleKeyPress();
+      setAccept(true);
     }
   };
   const handleAccept = () => {
     onClose();
     handleKeyPress();
+    setAccept(true);
   };
   const handleClose = () => {
     if (errorList) {
       handleDateRef();
+      setCustomerDate("");
       onClose();
+      setAccept(false);
     } else {
       onClose();
     }

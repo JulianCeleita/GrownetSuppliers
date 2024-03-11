@@ -44,7 +44,7 @@ const CreateOrderView = () => {
   const [confirmCreateOrder, setConfirmCreateOrder] = useState(false);
   const [specialRequirements, setSpecialRequirements] = useState("");
   const { user, setUser } = useUserStore();
-  const [customerDate, setCustomerDate] = useState();
+  const [customerDate, setCustomerDate] = useState("");
   const [customerRef, setCustomerRef] = useState("");
   const [isDateInputActive, setIsDateInputActive] = useState(false);
   const dateInputRef = useRef(null);
@@ -55,6 +55,7 @@ const CreateOrderView = () => {
   const [filledRowCount, setFilledRowCount] = useState(0);
   const [showErrorRoutes, setShowErrorRoutes] = useState(false);
   const [arrows, setArrows] = useState(false);
+  const [accept, setAccept] = useState(false);
   //Fecha input
   function getCurrentDate() {
     const today = new Date();
@@ -176,14 +177,17 @@ const CreateOrderView = () => {
     }
   };
   useEffect(() => {
-    fetchCustomersDate(
-      token,
-      orderDate,
-      selectedAccNumber2,
-      setCustomerDate,
-      setShowErrorRoutes
-    );
+    fetchCustomersDate(token, orderDate, selectedAccNumber2, setCustomerDate);
   }, [orderDate, selectedAccNumber2, arrows]);
+
+  useEffect(() => {
+    if (!accept) {
+      if (customerDate && customerDate[0].nameRoute === "R100") {
+        setShowErrorRoutes(true);
+      }
+    }
+  }, [customerDate, accept]);
+
   const restaurantList = Array.isArray(restaurants) ? restaurants : [];
   //VENTANA TOTAL
   const [showCheckboxColumnTotal, setShowCheckboxColumnTotal] = useState(false);
@@ -261,6 +265,14 @@ const CreateOrderView = () => {
       document.removeEventListener("keydown", handleKeyDown);
     };
   }, []);
+
+  const handleOnBlur = () => {
+    setArrows(false);
+  };
+  const handleOnBlurDate = () => {
+    setAccept(false);
+    setArrows(true);
+  };
   return (
     <Layout>
       <div className="max-w-[650px] -mt-[110px] ml-[115px]">
@@ -370,7 +382,7 @@ const CreateOrderView = () => {
           onChange={handleDateChange}
           onKeyDown={handleKeyPress}
           value={orderDate}
-          onBlur={() => setArrows(true)}
+          onBlur={handleOnBlurDate}
         />
         <label className="ml-3">Inv. number: </label>
         <input
@@ -387,7 +399,7 @@ const CreateOrderView = () => {
           onChange={(e) => setCustomerRef(e.target.value)}
           onKeyDown={handleCustomerRefKeyDown}
           className="border p-2 rounded-md min-w-[150px]"
-          onBlur={() => setArrows(false)}
+          onBlur={handleOnBlur}
         />
         <button
           className="bg-dark-blue rounded-md ml-3 hover:scale-110 focus:outline-none flex text-white px-2 py-1 items-center align-middle"
@@ -484,6 +496,7 @@ const CreateOrderView = () => {
         setCustomerDate={setCustomerDate}
         handleKeyPress={handleKeyPress}
         handleDateRef={handleDateRef}
+        setAccept={setAccept}
         errorList
       />
     </Layout>
