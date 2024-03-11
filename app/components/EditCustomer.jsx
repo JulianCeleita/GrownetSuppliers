@@ -363,7 +363,7 @@ const CustomerDetailPage = ({
               </h1>
               {isLoading ? (
                 <div className="flex justify-center items-center mb-20">
-                  <div class="loader"></div>
+                  <div className="loader"></div>
                 </div>
               ) : (
                 <form className="text-left mt-6" onSubmit={enviarData}>
