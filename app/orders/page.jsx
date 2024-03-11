@@ -29,8 +29,9 @@ import useUserStore from "../store/useUserStore";
 import useWorkDateStore from "../store/useWorkDateStore";
 import Image from "next/image";
 import ModalOrderError from "../components/ModalOrderError";
-import { saveAs } from 'file-saver';
+import { saveAs } from "file-saver";
 import Swal from "sweetalert2";
+import ModalSuccessfull from "../components/ModalSuccessfull";
 
 export const customStyles = {
   placeholder: (provided) => ({
@@ -78,7 +79,8 @@ const OrderView = () => {
   const [errorMessage, setErrorMessage] = useState("");
   const [fileName, setFileName] = useState("");
   const [csvFile, setCsvFile] = useState(null);
-
+  const [showModalSuccessfull, setShowModalSuccessfull] = useState(false);
+  const [showModalError, setShowModalError] = useState(false);
 
   const formatDateToShow = (dateString) => {
     if (!dateString) return "Loading...";
@@ -94,10 +96,10 @@ const OrderView = () => {
 
   const formattedDate = selectedDate
     ? new Date(selectedDate).toLocaleDateString("es-CO", {
-      day: "2-digit",
-      month: "2-digit",
-      year: "2-digit",
-    })
+        day: "2-digit",
+        month: "2-digit",
+        year: "2-digit",
+      })
     : formatDateToShow(workDate);
   const formatDateToTransform = (dateString) => {
     const date = new Date(dateString);
@@ -265,7 +267,9 @@ const OrderView = () => {
     if (selectedDate) {
       date = new Date(selectedDate);
 
-      const formattedDate = `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}-${date.getDate().toString().padStart(2, '0')}`;
+      const formattedDate = `${date.getFullYear()}-${(date.getMonth() + 1)
+        .toString()
+        .padStart(2, "0")}-${date.getDate().toString().padStart(2, "0")}`;
 
       var postDataCSV = {
         route_id: selectedRouteId,
@@ -292,7 +296,15 @@ const OrderView = () => {
       })
       .then((response) => {
         console.log("🚀 ~ .then ~ response:", response);
-        saveAs(new Blob([response.data], { type: 'text/csv' }), 'orders.csv');
+        // const url = window.URL.createObjectURL(new Blob([response.data]));
+        // const link = document.createElement("a");
+        // link.href = url;
+        // link.setAttribute("download", "orders.csv");
+        // document.body.appendChild(link);
+        // link.click();
+        // document.body.removeChild(link);
+        // window.URL.revokeObjectURL(url);
+        saveAs(new Blob([response.data], { type: "text/csv" }), "orders.csv");
       })
       .catch((error) => {
         console.log("🚀 ~ downloadCSV ~ error:", error);
@@ -339,7 +351,8 @@ const OrderView = () => {
       });
   };
 
-  const sortedOrders = orders?.filter((order) => filterOrdersByDate(order))
+  const sortedOrders = orders
+    ?.filter((order) => filterOrdersByDate(order))
     .sort((a, b) => {
       const dateA = new Date(a.date_delivery);
       const dateB = new Date(b.date_delivery);
@@ -389,23 +402,26 @@ const OrderView = () => {
 
       const csv = new FormData();
       csv.append("csv", csvFile);
-      console.log("🚀 ~ handleUpload ~ formData:", csv)
+      console.log("🚀 ~ handleUpload ~ formData:", csv);
 
-      axios.post(uploadCsv, csv, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "multipart/form-data",
-        },
-      })
+      axios
+        .post(uploadCsv, csv, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "multipart/form-data",
+          },
+        })
         .then((response) => {
           console.log("🚀 ~ .then ~ response:", response);
-          Swal.fire({
-            title: "CSV was upload!",
-            icon: "success"
-          });
-          handleRemoveFile();
+          if (response.status === 200) {
+            setShowModalSuccessfull(true);
+            handleRemoveFile();
+          } else {
+            setShowModalError(true);
+          }
         })
         .catch((error) => {
+          setShowModalError(true);
           console.error("Error al cargar el csv: ", error);
         });
     } else {
@@ -422,7 +438,8 @@ const OrderView = () => {
     setFileName("");
   };
 
-  const filteredOrders = sortedOrders?.filter((order) => {
+  const filteredOrders = sortedOrders
+    ?.filter((order) => {
       const isRouteMatch = selectedRoute
         ? order.route.toLowerCase() === selectedRoute.toLowerCase()
         : true;
@@ -455,11 +472,10 @@ const OrderView = () => {
     setSelectedStatus(newSelectedStatus);
   };
 
-  // console.log("filteredOrders", filteredOrders);
-
   const statusColorClass = (status) => {
     switch (status) {
       case "Delivered":
+        return "bg-green-900";
       case "Solved":
       case "Loaded":
       case "Printed":
@@ -519,17 +535,17 @@ const OrderView = () => {
                   <TrashIcon className="h-8 w-8 text-black font-bold" />
                 </button>
               </>
-
             )}
           </div>
         </div>
         <div
-          className={`flex ml-10 mb-0 items-center space-x-2 mt-${filterType === "range" && window.innerWidth < 1500
-            ? "[45px]"
-            : filterType === "date" && window.innerWidth < 1300
+          className={`flex ml-10 mb-0 items-center space-x-2 mt-${
+            filterType === "range" && window.innerWidth < 1500
+              ? "[45px]"
+              : filterType === "date" && window.innerWidth < 1300
               ? "[50px]"
               : "[20px]"
-            }
+          }
           `}
         >
           <div className="border border-gray-300 rounded-md py-3 px-2 flex items-center">
@@ -659,10 +675,11 @@ const OrderView = () => {
           </select>
           <button
             disabled={!selectedRoute}
-            className={`flex ${selectedRoute
-              ? "bg-green text-white hover:bg-dark-blue"
-              : "bg-gray-grownet text-white cursor-not-allowed"
-              } py-3 px-4 rounded-lg font-medium transition-all`}
+            className={`flex ${
+              selectedRoute
+                ? "bg-green text-white hover:bg-dark-blue"
+                : "bg-gray-grownet text-white cursor-not-allowed"
+            } py-3 px-4 rounded-lg font-medium transition-all`}
             onClick={() => downloadCSV()}
           >
             <TableCellsIcon className="h-6" />
@@ -910,7 +927,24 @@ const OrderView = () => {
         title={"Error downloading csv"}
         message={errorMessage}
       />
-    </Layout >
+      <ModalSuccessfull
+        isvisible={showModalSuccessfull}
+        onClose={() => setShowModalSuccessfull(false)}
+        title="Congratulations"
+        text="The csv was uploaded successfully, thank you for using"
+        textGrownet="Grownet"
+        button=" Close"
+        confirmed={true}
+      />
+      <ModalOrderError
+        isvisible={showModalError}
+        onClose={() => setShowModalError(false)}
+        title={"Error in CSV"}
+        message={
+          "The CSV could not be uploaded, review all fields in the file or try uploading a new one."
+        }
+      />
+    </Layout>
   );
 };
 
