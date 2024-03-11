@@ -222,6 +222,16 @@ const SideBar = () => {
                         <CalendarIcon class="h-6 w-6" />
                         <div>Calendar</div>
                       </Link>
+                      <Link
+                        href="/deliveries"
+                        className={`flex gap-2 py-3 transition-all ${pathname === "/deliveries"
+                          ? "text-light-green"
+                          : "text-white"
+                          } hover:text-light-green`}
+                      >
+                        <CalendarIcon class="h-6 w-6" />
+                        <div>Deliveries</div>
+                      </Link>
 
                       {user && user.rol_name === "AdminGrownet" && (
                         <div className="relative py-3">
