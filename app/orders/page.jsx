@@ -347,8 +347,7 @@ const OrderView = () => {
       });
   };
 
-  const sortedOrders = orders
-    .filter((order) => filterOrdersByDate(order))
+  const sortedOrders = orders?.filter((order) => filterOrdersByDate(order))
     .sort((a, b) => {
       const dateA = new Date(a.date_delivery);
       const dateB = new Date(b.date_delivery);
@@ -357,7 +356,7 @@ const OrderView = () => {
   console.log("🚀 ~ OrderView ~ sortedOrders:", sortedOrders);
 
   const uniqueRoutesSet = new Set(
-    sortedOrders.map((order) => order.route_id + "_" + order.route)
+    sortedOrders?.map((order) => order.route_id + "_" + order.route)
   );
 
   const uniqueRoutesArray = Array.from(uniqueRoutesSet).map((route) => {
@@ -431,8 +430,7 @@ const OrderView = () => {
     setFileName("");
   };
 
-  const filteredOrders = sortedOrders
-    .filter((order) => {
+  const filteredOrders = sortedOrders?.filter((order) => {
       const isRouteMatch = selectedRoute
         ? order.route.toLowerCase() === selectedRoute.toLowerCase()
         : true;
@@ -458,7 +456,7 @@ const OrderView = () => {
     .sort((a, b) => b.reference - a.reference);
 
   const uniqueStatuses = [
-    ...new Set(sortedOrders.map((order) => order.status_order)),
+    ...new Set(sortedOrders?.map((order) => order.status_order)),
   ];
   const handleStatusChange = (e) => {
     const newSelectedStatus = e.target.value;
@@ -657,7 +655,7 @@ const OrderView = () => {
             <option value="">All groups</option>
             {[
               ...new Set(
-                orders.map((order) =>
+                orders?.map((order) =>
                   order.group_name !== null ? order.group_name : "No group"
                 )
               ),
@@ -806,8 +804,8 @@ const OrderView = () => {
 
             <tbody>
               {!isLoading &&
-                (filteredOrders.length > 0 ? (
-                  filteredOrders.map((order, index) => (
+                (filteredOrders?.length > 0 ? (
+                  filteredOrders?.map((order, index) => (
                     <tr
                       key={index}
                       className="text-dark-blue border-b-[1.5px] cursor-pointer hover:bg-[#F6F6F6]"
