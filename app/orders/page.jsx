@@ -472,8 +472,6 @@ const OrderView = () => {
     setSelectedStatus(newSelectedStatus);
   };
 
-  console.log("filteredOrders", filteredOrders);
-
   const statusColorClass = (status) => {
     switch (status) {
       case "Delivered":
