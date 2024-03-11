@@ -34,7 +34,7 @@ function AutomaticShort({ isvisible, onClose, setProducts, setIsLoading }) {
   const { user } = useUserStore();
   const [product, setProduct] = useState(true);
   const [selectedShort, setSelectedShort] = useState("");
-  const [selectedShort2, setSelectedShort2] = useState("");
+  
   const toggleProduct = () => {
     setProduct((current) => !current);
   };
@@ -268,7 +268,7 @@ function AutomaticShort({ isvisible, onClose, setProducts, setIsLoading }) {
               id="short"
               name="short"
               className="border p-3 rounded-md mr-3 my-3"
-              onChange={(e) => setSelectedShort2(e.target.value)}
+              onChange={(e) => setSelectedShort(e.target.value)}
               required
             >
               <option disabled selected>
