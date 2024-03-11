@@ -12,6 +12,7 @@ import {
   BuildingStorefrontIcon,
   ClipboardIcon,
   SunIcon,
+  TruckIcon,
 } from "@heroicons/react/24/outline";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -31,6 +32,7 @@ import Swal from "sweetalert2";
 const SideBar = () => {
   const { removeToken, setToken } = useTokenStore();
   const [openMenu, setOpenMenu] = useState(false);
+  const [openMenuTransport, setOpenMenuTransport] = useState(false);
   const router = useRouter();
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
@@ -45,7 +47,7 @@ const SideBar = () => {
     removeToken();
     removeUser();
   };
-  
+
   const handleButtonOpen = async () => {
     await setFetchWorkDate(
       token,
@@ -53,7 +55,7 @@ const SideBar = () => {
       setEndDateByNet,
       setStartDateByNet
     )
-    
+
     try {
       const data = {
         supplier: user.id_supplier,
@@ -180,7 +182,7 @@ const SideBar = () => {
                           height={80}
                         />
                         <div className="ml-5">
-                          <h1 className="font-semibold text-lg">Hi, 📦🚀</h1>
+                          <h1 className="font-semibold text-lg">Hi, {user.name} 🚀</h1>
                           <p className="font-normal text-[15px]">
                             Welcome to suppliers
                           </p>
@@ -222,16 +224,42 @@ const SideBar = () => {
                         <CalendarIcon class="h-6 w-6" />
                         <div>Calendar</div>
                       </Link>
-                      <Link
-                        href="/deliveries"
-                        className={`flex gap-2 py-3 transition-all ${pathname === "/deliveries"
-                          ? "text-light-green"
-                          : "text-white"
-                          } hover:text-light-green`}
-                      >
-                        <CalendarIcon class="h-6 w-6" />
-                        <div>Deliveries</div>
-                      </Link>
+
+                      <div className="relative py-3">
+                        <button
+                          className={`flex justify-between w-full ${openMenu === true
+                            ? "text-light-green"
+                            : "text-white"
+                            } hover:text-light-green`}
+                          onClick={() => setOpenMenuTransport(!openMenuTransport)}
+                        >
+                          <div className="flex gap-2">
+                            <TruckIcon className="h-6 w-6" />
+                            <h3>Transport</h3>
+                          </div>
+
+                          {openMenuTransport === false ? (
+                            <ChevronDownIcon class="h-6 w-6" />
+                          ) : (
+                            <ChevronUpIcon class="h-6 w-6" />
+                          )}
+                        </button>
+                        {openMenuTransport && (
+                          <div className="mt-3 border-l-[1px] border-light-green pl-5">
+                            <Link href="/deliveries" className="text-white">
+                              <h3
+                                className={`hover:bg-[#046373] px-2 py-2 pl-4 rounded-xl w-[360px] mb-2 ${pathname === "/products"
+                                  ? "bg-[#046373]"
+                                  : null
+                                  }`}
+                              >
+                                Deliveries
+                              </h3>
+                            </Link>
+                          </div>
+                        )}
+                      </div>
+
 
                       {user && user.rol_name === "AdminGrownet" && (
                         <div className="relative py-3">
