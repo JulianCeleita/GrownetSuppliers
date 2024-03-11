@@ -475,7 +475,7 @@ const OrderView = () => {
   const statusColorClass = (status) => {
     switch (status) {
       case "Delivered":
-        return "bg-green-900";
+        return "bg-dark-blue";
       case "Solved":
       case "Loaded":
       case "Printed":
