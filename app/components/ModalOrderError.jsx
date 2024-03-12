@@ -58,7 +58,7 @@ function ModalOrderError({
       ref={modalRef}
       tabIndex="0"
       onKeyDown={handleKeyCloseModal}
-      className="fixed inset-0 bg-black bg-opacity-25 backdrop-blur-sm flex flex-col justify-center items-center"
+      className="fixed inset-0 bg-black bg-opacity-25 backdrop-blur-sm flex flex-col justify-center items-center z-50"
     >
       <div className="bg-white p-8 rounded-2xl w-[400px] flex flex-col items-center">
         <button
