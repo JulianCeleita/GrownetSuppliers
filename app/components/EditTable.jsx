@@ -169,7 +169,7 @@ export default function EditTable({
   const [previousCode, setPreviousCode] = useState({});
   const [activeInputIndex, setActiveInputIndex] = useState(null);
   const [activeColumnIndex, setActiveColumnIndex] = useState(null);
-  const [isHovered, setIsHovered] = useState(false);
+  const [hoveredRow, setHoveredRow] = useState({});
 
   const columns = [
     "Code",
@@ -298,6 +298,8 @@ export default function EditTable({
           Profit: "",
           Band: "",
           "Total Cost": "",
+          date_packing: product.date_packing,
+          date_loading: product.date_loading,
           user_loading: product.user_loading,
           user_packing: product.user_packing,
           user_prep: product.user_prep,
@@ -849,7 +851,7 @@ export default function EditTable({
       );
     }
   };
-  // console.log("rows", rows);
+  // console.log("hoveredRow", hoveredRow);
   return (
     <div className="flex flex-col p-8">
       {isLoading ? (
@@ -962,10 +964,16 @@ export default function EditTable({
                                           {row[column] != "" && (
                                             <div
                                               onMouseEnter={() =>
-                                                setIsHovered(true)
+                                                setHoveredRow({
+                                                  ...hoveredRow,
+                                                  [rowIndex]: true,
+                                                })
                                               }
                                               onMouseLeave={() =>
-                                                setIsHovered(false)
+                                                setHoveredRow({
+                                                  ...hoveredRow,
+                                                  [rowIndex]: false,
+                                                })
                                               }
                                             >
                                               <div
@@ -984,10 +992,43 @@ export default function EditTable({
                                             </div>
                                           )}
 
-                                          {isHovered && (
-                                            <div className="">
-                                              {row.user_loading -
-                                                row.user_packing}
+                                          {hoveredRow[rowIndex] && (
+                                            <div className="w-auto h-auto z-10 flex-col ">
+                                              <div className="absolute   bg-white p-3 text-dark-blue rounded-md  border-[2px] shadow-lg">
+                                                <div className=" bg-gray-100 my-2 rounded-md">
+                                                  <p>
+                                                    {row.user_packing
+                                                      ? `Packer: ${row.user_packing}`
+                                                      : ""}
+                                                  </p>
+                                                  <label>
+                                                    {" "}
+                                                    {row.date_packing
+                                                      ? `Packed: ${row.date_packing}`
+                                                      : ""}
+                                                  </label>
+                                                </div>
+                                                <div className=" bg-gray-100 my-2 rounded-md">
+                                                  <p>
+                                                    {row.user_loading
+                                                      ? `Loader: ${row.user_loading}`
+                                                      : ""}
+                                                  </p>
+                                                  <label>
+                                                    {" "}
+                                                    {row.date_loading
+                                                      ? `Loaded: ${row.date_loading}`
+                                                      : ""}
+                                                  </label>
+                                                </div>
+
+                                                <p>
+                                                  {" "}
+                                                  {row.state
+                                                    ? `State: ${row.state}`
+                                                    : ""}
+                                                </p>
+                                              </div>
                                             </div>
                                           )}
 
