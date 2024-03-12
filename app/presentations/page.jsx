@@ -46,7 +46,7 @@ function Presentations() {
       fetchPresentationsSupplier(token, user, setProducts, setIsLoading);
     }
   }, [user, token]);
-
+  
   //Delete
   const [showDeleteModal, setShowDeleteModal] = useState(false);
 

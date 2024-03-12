@@ -13,6 +13,7 @@ import {
   ClipboardIcon,
   SunIcon,
   TruckIcon,
+  CurrencyEuroIcon,
 } from "@heroicons/react/24/outline";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -335,6 +336,20 @@ const SideBar = () => {
                           >
                             <ClipboardIcon className="h-6 w-6" />
                             <h3>Catalogue</h3>
+                          </Link>
+                        )}
+                      {user &&
+                        (user.rol_name === "Administrador" ||
+                          user.rol_name === "AdminGrownet") && (
+                          <Link
+                            href="/purchasing"
+                            className={`flex gap-2 py-3 transition-all ${pathname === "/purchasing"
+                              ? "text-light-green"
+                              : "text-white"
+                              } hover:text-light-green`}
+                          >
+                            <CurrencyEuroIcon className="h-6 w-6" />
+                            <h3>Purchasing</h3>
                           </Link>
                         )}
                     </div>
