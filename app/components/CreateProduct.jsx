@@ -52,6 +52,7 @@ function CreateProduct({ isvisible, onClose, setProducts, setIsLoading }) {
         const sortedTaxes = response.data.taxes.sort(
           (a, b) => a.worth - b.worth
         );
+        console.log("🚀 ~ fetchTaxes ~ sortedTaxes:", sortedTaxes)
         setTax(sortedTaxes);
         setSelectedTax(sortedTaxes[0].id || "");
       } catch (error) {
@@ -263,7 +264,7 @@ function CreateProduct({ isvisible, onClose, setProducts, setIsLoading }) {
                 {tax.map((tax) =>
                   tax.countries_indicative === 44 ? (
                     <option key={tax.id} value={tax.id}>
-                      {tax.name}
+                      {`${tax.worth*100}%`}
                     </option>
                   ) : null
                 )}
