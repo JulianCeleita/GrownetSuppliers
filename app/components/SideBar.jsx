@@ -66,14 +66,13 @@ const SideBar = () => {
         supplier: user.id_supplier,
         day: workDate,
       };
-      console.log("🚀 ~ handleButtonOpen ~ data:", data)
+      ("🚀 ~ handleButtonOpen ~ data:", data)
 
       const response = await axios.post(openDay, data, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
-      console.log("🚀 ~ Respuesta al abrir el dia ~ response:", response)
     } catch (error) {
       // Maneja los errores de la solicitud
       console.error("Error al enviar la solicitud POST:", error.response.data.message);
@@ -97,8 +96,6 @@ const SideBar = () => {
           Authorization: `Bearer ${token}`,
         },
       });
-      console.log("Respuesta al cerrar el día:", response.data);
-      console.log("Información enviada", closeDay, data);
       if (response.data.status === 500) {
         setShowModalError(true);
         setMessageError(response.data.msg);
@@ -117,7 +114,6 @@ const SideBar = () => {
       pathname === "/suppliers" ||
       pathname === "/categories"
     ) {
-      console.log("si");
       setOpenMenu(true);
     }
   }, [pathname]);

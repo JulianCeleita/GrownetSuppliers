@@ -170,11 +170,9 @@ function NewCustomer({ isvisible, onClose, setUpdateCustomers }) {
       group_id: selectedGroup,
       countries_indicative: user?.country_indicative,
     };
-    console.log("🚀 ~ enviarData ~ postData:", postData)
     const postDataAssign = {
       ...prepareDataForBackend(),
     };
-    console.log("🚀 ~ enviarData ~ postDataAssign:", postDataAssign)
     axios
       .post(createCustomer, postData, {
         headers: {
@@ -182,7 +180,6 @@ function NewCustomer({ isvisible, onClose, setUpdateCustomers }) {
         },
       })
       .then((response) => {
-        console.log("🚀 ~ .then ~ response:", response)
         const customerAccountNumber = response?.data?.accountNumber;
         postDataAssign.customer = customerAccountNumber;
         axios
@@ -192,7 +189,6 @@ function NewCustomer({ isvisible, onClose, setUpdateCustomers }) {
             },
           })
           .then((assignResponse) => {
-            console.log("🚀 ~ .then ~ assignResponse:", assignResponse)
             Swal.fire({
               position: "top-end",
               icon: "success",

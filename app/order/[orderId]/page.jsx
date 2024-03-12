@@ -85,7 +85,6 @@ const OrderDetailPage = () => {
   if (params) {
     ({ orderId } = params);
   }
-  console.log("order detail", orderDetail);
   //Fecha input
   function getCurrentDate() {
     const today = new Date();
@@ -110,6 +109,7 @@ const OrderDetailPage = () => {
     if (orderDetail && orderDetail.date_delivery) {
       setSelectedDate(orderDetail.date_delivery);
     }
+    console.log("🚀 ~ OrderDetailPage ~ orderDetail:", orderDetail)
   }, [orderDetail]);
 
   useEffect(() => {
@@ -341,7 +341,6 @@ const OrderDetailPage = () => {
         },
       })
       .then((response) => {
-        console.log("🚀 ~ .then ~ response:", response);
         router.push("/orders");
       })
       .catch((error) => {
@@ -511,9 +510,8 @@ const OrderDetailPage = () => {
         >
           Details
           <ChevronDownIcon
-            className={`h-5 w-5 ml-1 text-white transform transition duration-500 ${
-              details ? "rotate-180" : "rotate-0"
-            }`}
+            className={`h-5 w-5 ml-1 text-white transform transition duration-500 ${details ? "rotate-180" : "rotate-0"
+              }`}
           />
         </button>
         <button
@@ -524,18 +522,15 @@ const OrderDetailPage = () => {
         </button>
       </div>
       <div
-        className={`transition-opacity duration-500 ease-out ${
-          details ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-10"
-        } transform`}
+        className={`transition-opacity duration-500 ease-out ${details ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-10"
+          } transform`}
         style={{ transitionProperty: "opacity, transform" }}
       >
         {details && (
-          <div className="bg-light-blue flex flex-wrap items-center justify-around mx-10 mt-2 px-2 py-1 rounded-md">
-            <div className="flex flex-col items-start mx-3">
+          <div className="bg-light-blue grid grid-cols-6 gap-4 mx-10 mt-2 px-2 py-1 rounded-md">
+            <div className="flex flex-col items-start">
               <h3 className="font-medium">Post Code:</h3>
-              <h3>
-                {customers && customers.postCode ? customers.postCode : "-"}
-              </h3>
+              <h3>{customers && customers.postCode ? customers.postCode : "-"}</h3>
             </div>
             <div className="flex flex-col items-start">
               <h3 className="font-medium">Telephone:</h3>
@@ -555,9 +550,7 @@ const OrderDetailPage = () => {
             </div>
             <div className="flex flex-col items-start">
               <h3 className="font-medium">Contact:</h3>
-              <h3>
-                {orderDetail && orderDetail.email ? orderDetail.email : "-"}
-              </h3>
+              <h3>{orderDetail && orderDetail.email ? orderDetail.email : "-"}</h3>
             </div>
             {customerDate && (
               <>
@@ -571,6 +564,17 @@ const OrderDetailPage = () => {
                 </div>
               </>
             )}
+            <div className="flex flex-col items-start">
+              <h3 className="font-medium">Driver:</h3>
+              <h3>{orderDetail && orderDetail.name ? orderDetail.name : "-"}</h3>
+            </div>
+            <div className="flex flex-col items-start">
+              <h3 className="font-medium">Delivery time:</h3>
+              <h3>
+                {orderDetail && orderDetail.end ? orderDetail.end : "-"}
+              </h3>
+            </div>
+
             <div className="flex flex-col items-start">
               <h3 className="font-medium">Delivery evidence:</h3>
               {orderDetail.evidences != null ? (
@@ -586,20 +590,20 @@ const OrderDetailPage = () => {
                 <p className="text-gray-input">Without evidence</p>
               )}
             </div>
-            <div className="flex flex-col items-start">
+            <div className="flex flex-col items-start min-w-[280px]">
               <h3 className="font-medium">Special requirements:</h3>
               <input
                 type="text"
                 value={specialRequirements}
                 onChange={(e) => setSpecialRequirements(e.target.value)}
-                className="p-2 border border-dark-blue rounded-lg m-1 w-[300px]"
+                className="p-2 border border-dark-blue rounded-lg m-1 w-full"
                 placeholder="Write your comments here"
               />
             </div>
           </div>
-        )}
-      </div>
-
+        )
+        }
+      </div >
       <div>
         {isLoading ? (
           <div className="flex justify-center items-center mt-24">
@@ -630,8 +634,7 @@ const OrderDetailPage = () => {
         onConfirm={() => handleDeleteOrder(orderId)}
         message={messageDelete}
       />
-    </Layout>
+    </Layout >
   );
 };
-console.log("🚀 ~ OrderDetailPage ~ orderDetail:", orderDetail);
 export default OrderDetailPage;

@@ -159,7 +159,6 @@ const DeliveryView = () => {
 
   useEffect(() => {
     if (routePercentages) {
-      console.log("🚀 ~ useEffect ~ routePercentages:", routePercentages);
       const result = routePercentages.find(
         (item) => item.nameRoute === selectedRoute
       );
@@ -237,7 +236,6 @@ const DeliveryView = () => {
       const dateB = new Date(b.date_delivery);
       return dateA - dateB;
     });
-  console.log("🚀 ~ DeliveryView ~ sortedOrders:", sortedOrders);
 
   const uniqueRoutesSet = new Set(
     sortedOrders?.map((order) => order.route_id + "_" + order.route)
@@ -251,7 +249,6 @@ const DeliveryView = () => {
       route_name: routeName,
     };
   });
-  console.log("🚀 ~ DeliveryView ~ uniqueRoutesArray:", uniqueRoutesArray);
 
   const toggleRouteDetails = (routeId) => {
     setRouteDetailsVisible((prevVisible) => ({

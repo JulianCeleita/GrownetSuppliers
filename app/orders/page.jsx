@@ -95,10 +95,10 @@ const OrderView = () => {
 
   const formattedDate = selectedDate
     ? new Date(selectedDate).toLocaleDateString("es-CO", {
-        day: "2-digit",
-        month: "2-digit",
-        year: "2-digit",
-      })
+      day: "2-digit",
+      month: "2-digit",
+      year: "2-digit",
+    })
     : formatDateToShow(workDate);
   const formatDateToTransform = (dateString) => {
     const date = new Date(dateString);
@@ -156,7 +156,6 @@ const OrderView = () => {
 
   useEffect(() => {
     if (routePercentages) {
-      console.log("🚀 ~ useEffect ~ routePercentages:", routePercentages);
       const result = routePercentages.find(
         (item) => item.nameRoute === selectedRoute
       );
@@ -269,7 +268,6 @@ const OrderView = () => {
         date: formattedDate,
       };
 
-      console.log("🚀 ~ downloadCSV ~ postDataCSV:", postDataCSV);
     } else {
       date = workDate;
 
@@ -278,7 +276,6 @@ const OrderView = () => {
         date: date,
       };
 
-      console.log("🚀 ~ downloadCSV ~ postDataCSV:", postDataCSV);
     }
     axios
       .post(orderCSV, postDataCSV, {
@@ -288,11 +285,9 @@ const OrderView = () => {
         // responseType: "blob",
       })
       .then((response) => {
-        console.log("🚀 ~ .then ~ response:", response);
         saveAs(new Blob([response.data], { type: "text/csv" }), "orders.csv");
       })
       .catch((error) => {
-        console.log("🚀 ~ downloadCSV ~ error:", error);
         setShowErrorCsv(true);
         setErrorMessage(error?.response?.data?.msg);
         console.error("Error al descargar csv: ", error);
@@ -331,7 +326,6 @@ const OrderView = () => {
       const dateB = new Date(b.date_delivery);
       return dateA - dateB;
     });
-  console.log("🚀 ~ OrderView ~ sortedOrders:", sortedOrders);
 
   const uniqueRoutesSet = new Set(
     sortedOrders?.map((order) => order.route_id + "_" + order.route)
@@ -344,7 +338,6 @@ const OrderView = () => {
       route_name: routeName,
     };
   });
-  console.log("🚀 ~ OrderView ~ uniqueRoutesArray:", uniqueRoutesArray);
 
   const getPercentages = async (value) => {
     if (value !== "" || value !== null || value !== undefined) {
@@ -371,11 +364,8 @@ const OrderView = () => {
 
   const handleUpload = () => {
     if (csvFile) {
-      console.log("Archivo CSV seleccionado:", csvFile);
-
       const csv = new FormData();
       csv.append("csv", csvFile);
-      console.log("🚀 ~ handleUpload ~ formData:", csv);
 
       axios
         .post(uploadCsv, csv, {
@@ -385,7 +375,6 @@ const OrderView = () => {
           },
         })
         .then((response) => {
-          console.log("🚀 ~ .then ~ response:", response);
           if (response.status === 200) {
             setShowModalSuccessfull(true);
             handleRemoveFile();
@@ -397,8 +386,6 @@ const OrderView = () => {
           setShowModalError(true);
           console.error("Error al cargar el csv: ", error);
         });
-    } else {
-      console.log("No se seleccionó ningún archivo CSV.");
     }
   };
 
@@ -512,13 +499,12 @@ const OrderView = () => {
           </div>
         </div>
         <div
-          className={`flex ml-10 mb-0 items-center space-x-2 mt-${
-            filterType === "range" && window.innerWidth < 1500
-              ? "[45px]"
-              : filterType === "date" && window.innerWidth < 1300
+          className={`flex ml-10 mb-0 items-center space-x-2 mt-${filterType === "range" && window.innerWidth < 1500
+            ? "[45px]"
+            : filterType === "date" && window.innerWidth < 1300
               ? "[50px]"
               : "[20px]"
-          }
+            }
           `}
         >
           <div className="border border-gray-300 rounded-md py-3 px-2 flex items-center">
@@ -648,11 +634,10 @@ const OrderView = () => {
           </select>
           <button
             disabled={!selectedRoute}
-            className={`flex ${
-              selectedRoute
-                ? "bg-green text-white hover:bg-dark-blue"
-                : "bg-gray-grownet text-white cursor-not-allowed"
-            } py-3 px-4 rounded-lg font-medium transition-all`}
+            className={`flex ${selectedRoute
+              ? "bg-green text-white hover:bg-dark-blue"
+              : "bg-gray-grownet text-white cursor-not-allowed"
+              } py-3 px-4 rounded-lg font-medium transition-all`}
             onClick={() => downloadCSV()}
           >
             <TableCellsIcon className="h-6" />
