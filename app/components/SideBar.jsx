@@ -178,7 +178,7 @@ const SideBar = () => {
                           height={80}
                         />
                         <div className="ml-5">
-                          <h1 className="font-semibold text-lg">Hi, {user.name} 🚀</h1>
+                          <h1 className="font-semibold text-lg">Hi, {user?.name} 🚀</h1>
                           <p className="font-normal text-[15px]">
                             Welcome to suppliers
                           </p>
