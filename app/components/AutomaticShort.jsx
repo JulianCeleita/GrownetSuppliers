@@ -34,7 +34,7 @@ function AutomaticShort({ isvisible, onClose, setProducts, setIsLoading }) {
   const { user } = useUserStore();
   const [product, setProduct] = useState(true);
   const [selectedShort, setSelectedShort] = useState("");
-  
+
   const toggleProduct = () => {
     setProduct((current) => !current);
   };
@@ -42,7 +42,7 @@ function AutomaticShort({ isvisible, onClose, setProducts, setIsLoading }) {
   useEffect(() => {
     console.log("🚀 ~ AutomaticShort ~ selectedShort:", selectedShort)
   }, [selectedShort])
-  
+
   //Api products
   useEffect(() => {
     const fetchDataCategories = async () => {
@@ -100,15 +100,15 @@ function AutomaticShort({ isvisible, onClose, setProducts, setIsLoading }) {
   const sendDataProduct = (e) => {
     e.preventDefault();
     const postDataProduct = {
-          id: selecteProductsStatus,
-          short: selectedShort
-      }
-      console.log("🚀 ~ sendDataProduct ~ postData:", postDataProduct)
-      axios.post(productShort, postDataProduct, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      })
+      id: selecteProductsStatus,
+      short: selectedShort
+    }
+    console.log("🚀 ~ sendDataProduct ~ postData:", postDataProduct)
+    axios.post(productShort, postDataProduct, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
       .then((response) => {
         console.log("🚀 ~ .then ~ response:", response)
         if (user.id_supplier) {
@@ -119,22 +119,23 @@ function AutomaticShort({ isvisible, onClose, setProducts, setIsLoading }) {
         onClose();
       })
       .catch((response, error) => {
-        console.error("Error al agregar la nueva presentación: ", error);
+        console.error("Error al parametrizar el producto: ", error);
       });
   };
   const sendDataCategories = (e) => {
     e.preventDefault();
     const postDataCategories = {
-          id: selectedCategoriesId,
-          short: selectedShort
-      }
-      console.log("🚀 ~ sendDataCategories ~ postData:", postDataCategories)
-      axios.post(productShort, postDataCategories, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      })
+      id: selectedCategoriesId,
+      short: selectedShort
+    }
+    console.log("🚀 ~ sendDataCategories ~ postData:", postDataCategories)
+    axios.post(categoriesShort, postDataCategories, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
       .then((response) => {
+        console.log("🚀 ~ sendDataCategories ~ productShort:", categoriesShort)
         console.log("🚀 ~ .then ~ response:", response)
         if (user.id_supplier) {
           fetchPresentationsSupplier(token, user, setProducts, setIsLoading);
@@ -144,7 +145,7 @@ function AutomaticShort({ isvisible, onClose, setProducts, setIsLoading }) {
         onClose();
       })
       .catch((response, error) => {
-        console.error("Error al agregar la nueva presentación: ", error);
+        console.error("Error al parametrizar la categoria: ", error);
       });
   };
 
@@ -163,21 +164,19 @@ function AutomaticShort({ isvisible, onClose, setProducts, setIsLoading }) {
         <div className="flex">
           <button
             onClick={toggleProduct}
-            className={`${
-              product
+            className={`${product
                 ? "bg-primary-blue hover:bg-dark-blue text-white"
                 : "bg-white text-dark-blue"
-            }  font-bold py-2 px-4 rounded`}
+              }  font-bold py-2 px-4 rounded`}
           >
             Product
           </button>{" "}
           <button
             onClick={toggleProduct}
-            className={`${
-              !product
+            className={`${!product
                 ? "bg-primary-blue hover:bg-dark-blue text-white"
                 : "bg-white text-dark-blue"
-            }  font-bold py-2 px-4 rounded`}
+              }  font-bold py-2 px-4 rounded`}
           >
             Category
           </button>
@@ -203,10 +202,10 @@ function AutomaticShort({ isvisible, onClose, setProducts, setIsLoading }) {
                   {product.name}
                 </option>
               ))}
-            </select>   
+            </select>
             <label htmlFor="short" className="mt-2">
               Automatic short:
-            </label>    
+            </label>
             <select
               id="short"
               name="short"
@@ -217,12 +216,12 @@ function AutomaticShort({ isvisible, onClose, setProducts, setIsLoading }) {
               <option disabled selected>
                 Select option
               </option>
-                <option key={"1"} value="1">
-                  Active
-                </option>
-                <option key={"0"} value="0">
-                  Inactive
-                </option>
+              <option key={"1"} value="1">
+                Active
+              </option>
+              <option key={"0"} value="0">
+                Inactive
+              </option>
             </select>
             <div className="mt-3 text-center">
               <button
@@ -263,7 +262,7 @@ function AutomaticShort({ isvisible, onClose, setProducts, setIsLoading }) {
             </select>
             <label htmlFor="short" className="mt-2">
               Automatic short:
-            </label>    
+            </label>
             <select
               id="short"
               name="short"
@@ -274,12 +273,12 @@ function AutomaticShort({ isvisible, onClose, setProducts, setIsLoading }) {
               <option disabled selected>
                 Select option
               </option>
-                <option key={"1"} value="1">
-                  Active
-                </option>
-                <option key={"0"} value="0">
-                  Inactive
-                </option>
+              <option key={"1"} value="1">
+                Active
+              </option>
+              <option key={"0"} value="0">
+                Inactive
+              </option>
             </select>
             <div className="mt-3 text-center">
               <button
