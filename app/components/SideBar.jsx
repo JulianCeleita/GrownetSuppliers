@@ -27,6 +27,8 @@ import axios from "axios";
 import { closeDay, openDay } from "../config/urls.config";
 import useWorkDateStore from "../store/useWorkDateStore";
 import Swal from "sweetalert2";
+import ModalSuccessfull from "./ModalSuccessfull";
+import ModalOrderError from "./ModalOrderError";
 
 
 const SideBar = () => {
@@ -41,6 +43,9 @@ const SideBar = () => {
   const { workDate, setFetchWorkDate } = useWorkDateStore();
   const [startDateByNet, setStartDateByNet] = useState("");
   const [endDateByNet, setEndDateByNet] = useState("");
+  const [showSuccessfullClose, setShowSuccessfullClose] = useState(false);
+  const [showModalError, setShowModalError] = useState(false);
+  const [messageError, setMessageError] = useState("");
 
   const handleLogout = () => {
     router.push("/");
@@ -95,24 +100,15 @@ const SideBar = () => {
       console.log("Respuesta al cerrar el día:", response.data);
       console.log("Información enviada", closeDay, data);
       if (response.data.status === 500) {
-        Swal.fire({
-          icon: "error",
-          title: "Oops...",
-          text: `${response.data.msg}`,
-        });
+        setShowModalError(true);
+        setMessageError(response.data.msg);
       } else {
-        Swal.fire({
-          title: "Day closed correctly!",
-          icon: "success"
-        });
+        setShowSuccessfullClose(true);
       }
     } catch (error) {
       console.error("Error al enviar la solicitud POST:", error);
-      Swal.fire({
-        icon: "error",
-        title: "Oops...",
-        text: `${error.response.data.message}`,
-      });
+      setShowModalError(true);
+      setMessageError(error.response.data.response_start_operation.message_start_operation);
     }
   };
   useEffect(() => {
@@ -379,6 +375,22 @@ const SideBar = () => {
           </Transition.Child>
         </Dialog>
       </Transition.Root>
+      <ModalSuccessfull
+        isvisible={showSuccessfullClose}
+        onClose={() => setShowSuccessfullClose(false)}
+        title="Congratulations"
+        text="Day closed correctly!"
+        button=" Close"
+        confirmed={true}
+      />
+      <ModalOrderError 
+        isvisible={showModalError}
+        onClose={() => setShowModalError(false)}
+        title={"Error closing the day"}
+        message={
+          messageError
+        }
+      />
     </div>
   );
 };
