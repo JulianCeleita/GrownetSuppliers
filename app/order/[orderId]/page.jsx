@@ -358,7 +358,6 @@ const OrderDetailPage = () => {
   if (!hasMounted) {
     return null;
   }
-  console.log(orderDetail.image + "esta es la imagen");
   return (
     <Layout>
       <div className="max-w-[650px] -mt-[110px] ml-[115px]">
@@ -574,9 +573,9 @@ const OrderDetailPage = () => {
             )}
             <div className="flex flex-col items-start">
               <h3 className="font-medium">Delivery evidence:</h3>
-              {orderDetail.image != null ? (
+              {orderDetail.evidences != null ? (
                 <a
-                  href={orderDetail.image}
+                  href={orderDetail.evidences}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-primary-blue font-medium hover:scale-105 hover:text-green transition-all"
