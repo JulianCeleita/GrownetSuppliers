@@ -115,6 +115,7 @@ export default function EditTable({
   setSpecialRequirements,
   percentageDetail,
   dataLoaded,
+  customersRef,
   selectedAccNumber,
 }) {
   // const [rows, setRows] = useState(
@@ -163,12 +164,12 @@ export default function EditTable({
   const [orderError, setOrderError] = useState("");
   const [isSelectDisabled, setIsSelectDisabled] = useState(true);
   const isEditable =
-    orderDetail?.state_name === "Loaded" ||
-    orderDetail?.state_name === "Packed";
+    orderDetail.state_name === "Received" || orderDetail.state_name === "Packed";
   const [existingCodes, setExistingCodes] = useState(new Set());
   const [previousCode, setPreviousCode] = useState({});
   const [activeInputIndex, setActiveInputIndex] = useState(null);
   const [activeColumnIndex, setActiveColumnIndex] = useState(null);
+  const [hoveredRow, setHoveredRow] = useState({});
 
   const columns = [
     "Code",
@@ -275,11 +276,10 @@ export default function EditTable({
         const quantity = !product.state_definitive
           ? product.quantity
           : product.state_definitive
-            ? product.quantity_definitive
-            : product.state_definitive === "N/A"
-              ? product.quantity_definitive
-              : "";
-
+          ? product.quantity_definitive
+          : product.state_definitive === "N/A"
+          ? product.quantity_definitive
+          : "";
         return {
           state: product.state_definitive,
           isExistingProduct: true,
@@ -298,6 +298,11 @@ export default function EditTable({
           Profit: "",
           Band: "",
           "Total Cost": "",
+          date_packing: product.date_packing,
+          date_loading: product.date_loading,
+          user_loading: product.user_loading,
+          user_packing: product.user_packing,
+          user_prep: product.user_prep,
         };
       });
 
@@ -321,10 +326,6 @@ export default function EditTable({
       setExistingCodes(newExistingCodes);
     }
   }, [orderDetail, percentageDetail, dataLoaded]);
-
-  // useEffect(() => {
-  //   console.log("existing codes", existingCodes);
-  // }, [existingCodes]);
 
   const handleContextMenu = (e) => {
     e.preventDefault();
@@ -600,21 +601,18 @@ export default function EditTable({
     if (shouldSynchronize) {
       synchronizeExistingCodes();
       setShouldSynchronize(false);
-
-      // setTimeout(() => {
       console.log("exist", existingCodes);
-      // }, 300);
     }
   }, [shouldSynchronize, rows]);
 
   const handleCloseModal = (event) => {
     event.stopPropagation();
     setShowErrorDuplicate(false);
-    console.log("🚀 ~ setTimeout ~ activeColumnIndex index column que llega :", activeColumnIndex)
-    console.log("🚀 ~ setTimeout ~ activeInputIndex index row que llega:", activeInputIndex)
     setTimeout(() => {
-      const inputToFocus = document.querySelector(`input[data-row-index="${activeInputIndex}"][data-column-index="${activeColumnIndex}"]`);
-      console.log("🚀 ~ setTimeout ~ inputToFocus:", inputToFocus)
+      const inputToFocus = document.querySelector(
+        `input[data-row-index="${activeInputIndex}"][data-column-index="${activeColumnIndex}"]`
+      );
+      console.log("🚀 ~ setTimeout ~ inputToFocus:", inputToFocus);
       if (inputToFocus) {
         inputToFocus.focus();
       }
@@ -636,8 +634,8 @@ export default function EditTable({
       const condition = codeToUse
         ? existingCodes.has(lowerCodeToUse)
         : existingCodes.has(rows[rowIndex].Code.toLowerCase()) ||
-        existingCodes.has(lowerCaseCode) ||
-        existingCodes.has(lowerCodeToUse);
+          existingCodes.has(lowerCaseCode) ||
+          existingCodes.has(lowerCodeToUse);
 
       if (condition) {
         setActiveInputIndex(rowIndex);
@@ -750,14 +748,16 @@ export default function EditTable({
         });
       if (!filteredProducts || filteredProducts.length === 0) {
         setShowErrorOrderModal(true);
-    
+
         return;
       }
 
       const jsonOrderData = {
-        accountNumber_customers: customers && customers
-          ? customers[0].accountNumber
-          : selectedAccNumber,
+        accountNumber_customers:
+          customers && customers
+            ? customers[0].accountNumber
+            : selectedAccNumber,
+        customers_ref: customersRef,
         date_delivery: dateDelivery,
         id_suppliers: orderDetail.id_suppliers,
         net: parseFloat(totalNetSum),
@@ -845,12 +845,13 @@ export default function EditTable({
   };
 
   const findProductById = (productId) => {
-    if (orderDetail?.products >= 0) {
-
-      return orderDetail.products.find((product) => product.presentations_code === productId);
+    if (orderDetail.products) {
+      return orderDetail.products.find(
+        (product) => product.presentations_code === productId
+      );
     }
   };
-
+  // console.log("hoveredRow", hoveredRow);
   return (
     <div className="flex flex-col p-8">
       {isLoading ? (
@@ -885,26 +886,29 @@ export default function EditTable({
                           <th
                             key={index}
                             scope="col"
-                            className={`py-3 px-2 capitalize ${index === firstVisibleColumnIndex
-                              ? "rounded-tl-lg"
-                              : ""
-                              } ${index === lastVisibleColumnIndex
+                            className={`py-3 px-2 capitalize ${
+                              index === firstVisibleColumnIndex
+                                ? "rounded-tl-lg"
+                                : ""
+                            } ${
+                              index === lastVisibleColumnIndex
                                 ? "rounded-tr-lg"
                                 : ""
-                              } ${column === "quantity" ||
-                                column === "VAT %" ||
-                                column === "UOM" ||
-                                column === "Net"
+                            } ${
+                              column === "quantity" ||
+                              column === "VAT %" ||
+                              column === "UOM" ||
+                              column === "Net"
                                 ? "w-20"
                                 : column === "Packsize" ||
                                   column === "Total Price"
-                                  ? "w-40"
-                                  : column === "Code"
-                                    ? "w-[8em]"
-                                    : column === "Description"
-                                      ? "w-auto"
-                                      : ""
-                              }`}
+                                ? "w-40"
+                                : column === "Code"
+                                ? "w-[8em]"
+                                : column === "Description"
+                                ? "w-auto"
+                                : ""
+                            }`}
                             onContextMenu={(e) => handleContextMenu(e)}
                           >
                             <p className="text-lg text-dark-blue">{column}</p>
@@ -920,10 +924,11 @@ export default function EditTable({
                     return (
                       <tr
                         key={rowIndex}
-                        className={`${row.state === "N/A"
-                          ? " line-through text-primary-blue decoration-dark-blue"
-                          : ""
-                          } text-dark-blue border-b-2 border-stone-100`}
+                        className={`${
+                          row.state === "N/A"
+                            ? " line-through text-primary-blue decoration-dark-blue"
+                            : ""
+                        } text-dark-blue border-b-2 border-stone-100`}
                       >
                         {/* CODIGO DE PRODUCTO */}
                         {columns.map(
@@ -955,21 +960,78 @@ export default function EditTable({
                                     >
                                       {column === "Code" && (
                                         //Codigo del estado
-                                        <div className="flex flex-row items-center">
+                                        <div className="flex flex-row items-center ">
                                           {row[column] != "" && (
                                             <div
-                                              className={`w-2 h-2 rounded-full ${row.state === "SHORT" ||
-                                                row.state === "ND"
-                                                ? "bg-danger"
-                                                : row.state === "PD" ||
-                                                  row.state === "FULL"
-                                                  ? "bg-green"
-                                                  : row.state === "N/A"
+                                              onMouseEnter={() =>
+                                                setHoveredRow({
+                                                  ...hoveredRow,
+                                                  [rowIndex]: true,
+                                                })
+                                              }
+                                              onMouseLeave={() =>
+                                                setHoveredRow({
+                                                  ...hoveredRow,
+                                                  [rowIndex]: false,
+                                                })
+                                              }
+                                            >
+                                              <div
+                                                className={`w-2 h-2 rounded-full ${
+                                                  row.state === "SHORT" ||
+                                                  row.state === "ND"
+                                                    ? "bg-danger"
+                                                    : row.state === "PD" ||
+                                                      row.state === "FULL"
+                                                    ? "bg-green"
+                                                    : row.state === "N/A"
                                                     ? "bg-primary-blue"
                                                     : "bg-gray-input"
                                                 } mr-2`}
-                                            />
+                                              />
+                                            </div>
                                           )}
+
+                                          {hoveredRow[rowIndex] && (
+                                            <div className="w-auto h-auto z-10 flex-col ">
+                                              <div className="absolute   bg-white p-3 text-dark-blue rounded-md  border-[2px] shadow-lg">
+                                                <div className=" bg-gray-100 my-2 rounded-md">
+                                                  <p>
+                                                    {row.user_packing
+                                                      ? `Packer: ${row.user_packing}`
+                                                      : ""}
+                                                  </p>
+                                                  <label>
+                                                    {" "}
+                                                    {row.date_packing
+                                                      ? `Packed: ${row.date_packing}`
+                                                      : ""}
+                                                  </label>
+                                                </div>
+                                                <div className=" bg-gray-100 my-2 rounded-md">
+                                                  <p>
+                                                    {row.user_loading
+                                                      ? `Loader: ${row.user_loading}`
+                                                      : ""}
+                                                  </p>
+                                                  <label>
+                                                    {" "}
+                                                    {row.date_loading
+                                                      ? `Loaded: ${row.date_loading}`
+                                                      : ""}
+                                                  </label>
+                                                </div>
+
+                                                <p>
+                                                  {" "}
+                                                  {row.state
+                                                    ? `State: ${row.state}`
+                                                    : ""}
+                                                </p>
+                                              </div>
+                                            </div>
+                                          )}
+
                                           <input
                                             data-column-index={columnIndex}
                                             data-row-index={rowIndex}
@@ -977,26 +1039,34 @@ export default function EditTable({
                                             ref={inputRefs[column][rowIndex]}
                                             data-field-name={column}
                                             disabled={
-                                              row.isExistingProduct && isEditable
+                                              row.isExistingProduct && !isEditable
                                             }
-                                            className={`pl-2 h-[30px] outline-none w-full ${inputTypes[column] === "number"
-                                              ? "hide-number-arrows"
-                                              : ""
-                                              } ${row.state === "N/A"
+                                            className={`pl-2 h-[30px] outline-none w-full ${
+                                              inputTypes[column] === "number"
+                                                ? "hide-number-arrows"
+                                                : ""
+                                            } ${
+                                              row.state === "N/A"
                                                 ? " line-through text-primary-blue decoration-black"
                                                 : ""
-                                              }`}
+                                            }`}
                                             value={row[column] || ""}
                                             onChange={(e) => {
-                                              setCurrentValues((prevValues) => ({
-                                                [column]: e.target.value,
-                                              }));
+                                              setCurrentValues(
+                                                (prevValues) => ({
+                                                  [column]: e.target.value,
+                                                })
+                                              );
 
                                               const updatedRows = [...rows];
                                               updatedRows[rowIndex][column] =
                                                 e.target.value;
                                               setRows(updatedRows);
-                                              handleCodeChange(e, rowIndex, column);
+                                              handleCodeChange(
+                                                e,
+                                                rowIndex,
+                                                column
+                                              );
                                             }}
                                             step={0.1}
                                             onKeyDown={(e) =>
@@ -1013,7 +1083,8 @@ export default function EditTable({
                                       )}
                                       {column === "Packsize" && row[column]}
                                       {column === "UOM" && row[column]}
-                                      {column === "price" && calculatePrice(row)}
+                                      {column === "price" &&
+                                        calculatePrice(row)}
                                       {column === "Total Net" &&
                                         calculateTotalNet(row)}
                                       {column === "VAT %" && row[column]}
@@ -1045,20 +1116,24 @@ export default function EditTable({
                                           options={
                                             DescriptionData
                                               ? DescriptionData.map((item) => ({
-                                                value: item.productName,
-                                                label: `${item.code} - ${item.product_name} - ${item.name}`,
-                                                code: item.code,
-                                              }))
+                                                  value: item.productName,
+                                                  label: `${item.code} - ${item.product_name} - ${item.name}`,
+                                                  code: item.code,
+                                                }))
                                               : []
                                           }
                                           value={{
                                             label: row[column] || "",
                                             value: row[column] || "",
                                           }}
-                                          onChange={(selectedDescription, e) => {
+                                          onChange={(
+                                            selectedDescription,
+                                            e
+                                          ) => {
                                             setCurrentValues((prevValues) => ({
                                               // ...prevValues,
-                                              [column]: selectedDescription.code,
+                                              [column]:
+                                                selectedDescription.code,
                                             }));
 
                                             const updatedRows = [...rows];
@@ -1103,10 +1178,12 @@ export default function EditTable({
                                           }}
                                           isDisabled={
                                             (row.isExistingProduct &&
-                                              isEditable) ||
+                                              !isEditable) ||
                                             isSelectDisabled
                                           }
-                                          onBlur={() => setIsSelectDisabled(true)}
+                                          onBlur={() =>
+                                            setIsSelectDisabled(true)
+                                          }
                                         />
                                       )}
                                     </span>
@@ -1135,15 +1212,17 @@ export default function EditTable({
                                         ref={inputRefs[column][rowIndex]}
                                         data-field-name={column}
                                         disabled={
-                                          row.isExistingProduct && isEditable
+                                          row.isExistingProduct && !isEditable
                                         }
-                                        className={`pl-2 h-[30px] outline-none w-full ${inputTypes[column] === "number"
-                                          ? "hide-number-arrows"
-                                          : ""
-                                          } ${row.state === "N/A"
+                                        className={`pl-2 h-[30px] outline-none w-full ${
+                                          inputTypes[column] === "number"
+                                            ? "hide-number-arrows"
+                                            : ""
+                                        } ${
+                                          row.state === "N/A"
                                             ? " line-through text-primary-blue decoration-black"
                                             : ""
-                                          }`}
+                                        }`}
                                         value={row[column] || ""}
                                         onFocus={(e) => {
                                           if (column === "quantity") {
@@ -1194,8 +1273,12 @@ export default function EditTable({
                                             e.preventDefault();
                                           }
                                         }}
-                                        readOnly={column === "Net" && isReadOnly}
-                                        onDoubleClick={() => setIsReadOnly(false)}
+                                        readOnly={
+                                          column === "Net" && isReadOnly
+                                        }
+                                        onDoubleClick={() =>
+                                          setIsReadOnly(false)
+                                        }
                                         onBlur={() => setIsReadOnly(true)}
                                       />
                                     </div>
@@ -1205,7 +1288,7 @@ export default function EditTable({
                             )
                         )}
                       </tr>
-                    )
+                    );
                   })}
                 </tbody>
               </table>

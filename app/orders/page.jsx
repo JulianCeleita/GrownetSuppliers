@@ -30,7 +30,6 @@ import useWorkDateStore from "../store/useWorkDateStore";
 import Image from "next/image";
 import ModalOrderError from "../components/ModalOrderError";
 import { saveAs } from "file-saver";
-import Swal from "sweetalert2";
 import ModalSuccessfull from "../components/ModalSuccessfull";
 
 export const customStyles = {
@@ -109,12 +108,6 @@ const OrderView = () => {
     return `${year}-${month}-${day}`;
   };
   useEffect(() => {
-    // if (user && user.rol_name === "AdminGrownet") {
-    //   fetchOrders(token, setOrders, setIsLoading);
-    // } else {
-    //   fetchOrdersSupplier(token, user, setOrders, setIsLoading);
-    // }
-
     const handleOutsideClick = (e) => {
       if (showDatePicker && !e.target.closest(".react-datepicker")) {
         setShowDatePicker(false);
@@ -159,7 +152,7 @@ const OrderView = () => {
       setOrders,
       setIsLoading
     );
-  }, [endDateByNet, startDateByNet, routeId]);
+  }, [endDateByNet, startDateByNet]);
 
   useEffect(() => {
     if (routePercentages) {
@@ -296,7 +289,7 @@ const OrderView = () => {
       })
       .then((response) => {
         console.log("🚀 ~ .then ~ response:", response);
-        saveAs(new Blob([response.data], { type: 'text/csv' }), 'orders.csv');
+        saveAs(new Blob([response.data], { type: "text/csv" }), "orders.csv");
       })
       .catch((error) => {
         console.log("🚀 ~ downloadCSV ~ error:", error);
@@ -321,18 +314,6 @@ const OrderView = () => {
       })
       .then((response) => {
         const blob = new Blob([response.data], { type: "application/pdf" });
-        // const downloadUrl = URL.createObjectURL(blob);
-        // const link = document.createElement("a");
-        // link.href = downloadUrl;
-        // link.setAttribute("download", "invoice.pdf");
-        // link.style.display = "none";
-        // document.body.appendChild(link);
-        // link.click();
-        // if (document.body.contains(link)) {
-        //   console.log("entro aqui en removeChild");
-        //   document.body.removeChild(link);
-        // }
-        // URL.revokeObjectURL(downloadUrl);
 
         // Para abrir automáticamente el archivo
         const fileURL = URL.createObjectURL(blob);
