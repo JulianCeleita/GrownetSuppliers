@@ -280,6 +280,7 @@ export default function EditTable({
           ? product.quantity_definitive
           : "";
 
+          console.log("QUANTITTYYYYYY", quantity)
         return {
           state: product.state_definitive,
           isExistingProduct: true,
@@ -857,7 +858,7 @@ export default function EditTable({
   };
 
   const findProductById = (productId) => {
-    if (orderDetail?.products >= 0) {
+    if (orderDetail.products) {
       return orderDetail.products.find(
         (product) => product.presentations_code === productId
       );
