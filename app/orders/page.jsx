@@ -80,6 +80,7 @@ const OrderView = () => {
   const [csvFile, setCsvFile] = useState(null);
   const [showModalSuccessfull, setShowModalSuccessfull] = useState(false);
   const [showModalError, setShowModalError] = useState(false);
+  const [errorCsvMessage, setErrorCsvMessage] = useState("")
 
   const formatDateToShow = (dateString) => {
     if (!dateString) return "Loading...";
@@ -380,10 +381,12 @@ const OrderView = () => {
             handleRemoveFile();
           } else {
             setShowModalError(true);
+            setErrorCsvMessage(response.data.msg)
           }
         })
         .catch((error) => {
           setShowModalError(true);
+          setErrorCsvMessage(error.response.data.msg)
           console.error("Error al cargar el csv: ", error);
         });
     }
@@ -898,9 +901,7 @@ const OrderView = () => {
         isvisible={showModalError}
         onClose={() => setShowModalError(false)}
         title={"Error in CSV"}
-        message={
-          "The CSV could not be uploaded, review all fields in the file or try uploading a new one."
-        }
+        message={errorCsvMessage}
       />
     </Layout>
   );
