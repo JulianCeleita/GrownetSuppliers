@@ -164,12 +164,13 @@ export default function EditTable({
   const [orderError, setOrderError] = useState("");
   const [isSelectDisabled, setIsSelectDisabled] = useState(true);
   const isEditable =
-    orderDetail.state_name === "Received" || orderDetail.state_name === "Packed";
+    orderDetail.state_name === "Received" ||
+    orderDetail.state_name === "Packed";
   const [existingCodes, setExistingCodes] = useState(new Set());
   const [previousCode, setPreviousCode] = useState({});
   const [activeInputIndex, setActiveInputIndex] = useState(null);
   const [activeColumnIndex, setActiveColumnIndex] = useState(null);
-  const [isHovered, setIsHovered] = useState(false);
+  const [hoveredRow, setHoveredRow] = useState({});
 
   const columns = [
     "Code",
@@ -298,6 +299,8 @@ export default function EditTable({
           Profit: "",
           Band: "",
           "Total Cost": "",
+          date_packing: product.date_packing,
+          date_loading: product.date_loading,
           user_loading: product.user_loading,
           user_packing: product.user_packing,
           user_prep: product.user_prep,
@@ -849,7 +852,7 @@ export default function EditTable({
       );
     }
   };
-  // console.log("rows", rows);
+  // console.log("hoveredRow", hoveredRow);
   return (
     <div className="flex flex-col p-8">
       {isLoading ? (
@@ -962,10 +965,16 @@ export default function EditTable({
                                           {row[column] != "" && (
                                             <div
                                               onMouseEnter={() =>
-                                                setIsHovered(true)
+                                                setHoveredRow({
+                                                  ...hoveredRow,
+                                                  [rowIndex]: true,
+                                                })
                                               }
                                               onMouseLeave={() =>
-                                                setIsHovered(false)
+                                                setHoveredRow({
+                                                  ...hoveredRow,
+                                                  [rowIndex]: false,
+                                                })
                                               }
                                             >
                                               <div
@@ -984,10 +993,74 @@ export default function EditTable({
                                             </div>
                                           )}
 
-                                          {isHovered && (
-                                            <div className="">
-                                              {row.user_loading -
-                                                row.user_packing}
+                                          {hoveredRow[rowIndex] && (
+                                            <div className="w-auto h-auto z-10  ">
+                                              <div className="absolute  mt-3 bg-white p-3 text-dark-blue rounded-xl  border-[2px] shadow-lg">
+                                                <div className="  flex">
+                                                  <h3 className="font-semibold">
+                                                    Packer:&nbsp;
+                                                  </h3>
+                                                  <p>
+                                                    {row.user_packing
+                                                      ? row.user_packing
+                                                      : "-"}
+                                                  </p>
+                                                </div>
+                                                <div className="flex">
+                                                  <h3 className="font-semibold">
+                                                    Packed:&nbsp;
+                                                  </h3>
+                                                  <p>
+                                                    {row.date_packing
+                                                      ? row.date_packing
+                                                      : "-"}
+                                                  </p>
+                                                </div>
+                                                <div className=" flex">
+                                                  <h3 className="font-semibold">
+                                                    Loader:&nbsp;
+                                                  </h3>
+                                                  <p>
+                                                    {row.user_loading
+                                                      ? row.user_loading
+                                                      : "-"}
+                                                  </p>
+                                                </div>
+                                                <div className="flex">
+                                                  <h3 className="font-semibold">
+                                                    Loaded:&nbsp;
+                                                  </h3>
+                                                  <label>
+                                                    {row.date_loading
+                                                      ? row.date_loading
+                                                      : "-"}
+                                                  </label>
+                                                </div>
+                                                <div className="flex items-center">
+                                                  <h3 className="font-semibold">
+                                                    {" "}
+                                                    State:
+                                                  </h3>
+                                                  <div
+                                                    className={`ml-2 w-3 h-3 rounded-full ${
+                                                      row.state === "SHORT" ||
+                                                      row.state === "ND"
+                                                        ? "bg-danger"
+                                                        : row.state === "PD" ||
+                                                          row.state === "FULL"
+                                                        ? "bg-green"
+                                                        : row.state === "N/A"
+                                                        ? "bg-primary-blue"
+                                                        : "bg-gray-input"
+                                                    } mr-2`}
+                                                  />
+                                                  <p className="">
+                                                    {row.state
+                                                      ? row.state
+                                                      : "-"}
+                                                  </p>
+                                                </div>
+                                              </div>
                                             </div>
                                           )}
 
@@ -998,7 +1071,8 @@ export default function EditTable({
                                             ref={inputRefs[column][rowIndex]}
                                             data-field-name={column}
                                             disabled={
-                                              row.isExistingProduct && !isEditable
+                                              row.isExistingProduct &&
+                                              !isEditable
                                             }
                                             className={`pl-2 h-[30px] outline-none w-full ${
                                               inputTypes[column] === "number"
