@@ -115,6 +115,7 @@ export default function EditTable({
   setSpecialRequirements,
   percentageDetail,
   dataLoaded,
+  customersRef,
   selectedAccNumber,
 }) {
   // const [rows, setRows] = useState(
@@ -279,8 +280,6 @@ export default function EditTable({
           : product.state_definitive === "N/A"
           ? product.quantity_definitive
           : "";
-
-          console.log("QUANTITTYYYYYY", quantity)
         return {
           state: product.state_definitive,
           isExistingProduct: true,
@@ -325,10 +324,6 @@ export default function EditTable({
       setExistingCodes(newExistingCodes);
     }
   }, [orderDetail, percentageDetail, dataLoaded]);
-
-  // useEffect(() => {
-  //   console.log("existing codes", existingCodes);
-  // }, [existingCodes]);
 
   const handleContextMenu = (e) => {
     e.preventDefault();
@@ -604,24 +599,13 @@ export default function EditTable({
     if (shouldSynchronize) {
       synchronizeExistingCodes();
       setShouldSynchronize(false);
-
-      // setTimeout(() => {
       console.log("exist", existingCodes);
-      // }, 300);
     }
   }, [shouldSynchronize, rows]);
 
   const handleCloseModal = (event) => {
     event.stopPropagation();
     setShowErrorDuplicate(false);
-    console.log(
-      "🚀 ~ setTimeout ~ activeColumnIndex index column que llega :",
-      activeColumnIndex
-    );
-    console.log(
-      "🚀 ~ setTimeout ~ activeInputIndex index row que llega:",
-      activeInputIndex
-    );
     setTimeout(() => {
       const inputToFocus = document.querySelector(
         `input[data-row-index="${activeInputIndex}"][data-column-index="${activeColumnIndex}"]`
@@ -771,6 +755,7 @@ export default function EditTable({
           customers && customers
             ? customers[0].accountNumber
             : selectedAccNumber,
+        customers_ref: customersRef,
         date_delivery: dateDelivery,
         id_suppliers: orderDetail.id_suppliers,
         net: parseFloat(totalNetSum),
