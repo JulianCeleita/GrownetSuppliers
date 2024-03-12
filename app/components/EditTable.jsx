@@ -163,8 +163,7 @@ export default function EditTable({
   const [orderError, setOrderError] = useState("");
   const [isSelectDisabled, setIsSelectDisabled] = useState(true);
   const isEditable =
-    orderDetail?.state_name === "Loaded" ||
-    orderDetail?.state_name === "Packed";
+    orderDetail.state_name === "Received" || orderDetail.state_name === "Packed";
   const [existingCodes, setExistingCodes] = useState(new Set());
   const [previousCode, setPreviousCode] = useState({});
   const [activeInputIndex, setActiveInputIndex] = useState(null);
@@ -977,7 +976,7 @@ export default function EditTable({
                                             ref={inputRefs[column][rowIndex]}
                                             data-field-name={column}
                                             disabled={
-                                              row.isExistingProduct && isEditable
+                                              row.isExistingProduct && !isEditable
                                             }
                                             className={`pl-2 h-[30px] outline-none w-full ${inputTypes[column] === "number"
                                               ? "hide-number-arrows"
@@ -1103,7 +1102,7 @@ export default function EditTable({
                                           }}
                                           isDisabled={
                                             (row.isExistingProduct &&
-                                              isEditable) ||
+                                              !isEditable) ||
                                             isSelectDisabled
                                           }
                                           onBlur={() => setIsSelectDisabled(true)}
@@ -1135,7 +1134,7 @@ export default function EditTable({
                                         ref={inputRefs[column][rowIndex]}
                                         data-field-name={column}
                                         disabled={
-                                          row.isExistingProduct && isEditable
+                                          row.isExistingProduct && !isEditable
                                         }
                                         className={`pl-2 h-[30px] outline-none w-full ${inputTypes[column] === "number"
                                           ? "hide-number-arrows"
