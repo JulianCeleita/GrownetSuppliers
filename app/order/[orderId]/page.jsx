@@ -74,12 +74,12 @@ const OrderDetailPage = () => {
     orderDetail?.customers_ref ? orderDetail.customers_ref : ""
   );
 
-  let accountNumberCustomer = orderDetail?.accountName
+  let accountNumberCustomer = orderDetail?.accountName;
 
   if (selectedAccName) {
-    accountNumberCustomer = selectedAccNumber
+    accountNumberCustomer = selectedAccNumber;
   } else {
-    accountNumberCustomer = orderDetail?.accountNumber
+    accountNumberCustomer = orderDetail?.accountNumber;
   }
   let orderId;
   if (params) {
@@ -119,7 +119,6 @@ const OrderDetailPage = () => {
     setCustomersRef(orderDetail ? orderDetail.customers_ref : "");
   }, [orderDetail]);
 
-
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -146,43 +145,42 @@ const OrderDetailPage = () => {
     } else if (selectedAccName) {
       fetchDataAccName();
     }
-    
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
-    if (selectedAccNumber || selectedAccName){
-    const fetchDataBySupplier = async () => {
-      try {
-        const responseRestaurants = await axios.get(
-          `${customerSupplier}${user.id_supplier}`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-        const sortedRestaurants = responseRestaurants.data.customers.sort(
-          (a, b) => a?.accountName?.localeCompare(b.accountName)
-        );
-        setRestaurants(sortedRestaurants);
-      } catch (error) {
-        console.error("Error fetching restaurants data by supplier", error);
-      }
-    };
+    if (selectedAccNumber || selectedAccName) {
+      const fetchDataBySupplier = async () => {
+        try {
+          const responseRestaurants = await axios.get(
+            `${customerSupplier}${user.id_supplier}`,
+            {
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            }
+          );
+          const sortedRestaurants = responseRestaurants.data.customers.sort(
+            (a, b) => a?.accountName?.localeCompare(b.accountName)
+          );
+          setRestaurants(sortedRestaurants);
+        } catch (error) {
+          console.error("Error fetching restaurants data by supplier", error);
+        }
+      };
       fetchDataBySupplier();
-    
-    if (selectedAccNumber) {
-      setSelectedAccName(null);
-      fetchDataAccNumber();
+
+      if (selectedAccNumber) {
+        setSelectedAccName(null);
+        fetchDataAccNumber();
+      }
+      if (selectedAccName) {
+        setSelectedAccNumber(null);
+        fetchDataAccName();
+      }
     }
-    if (selectedAccName) {
-      setSelectedAccNumber(null);
-      fetchDataAccName();
-    }}
-  }, [selectedAccNumber, selectedAccName])
-
-
+  }, [selectedAccNumber, selectedAccName]);
 
   // Click en la pantalla
   useEffect(() => {
@@ -307,13 +305,18 @@ const OrderDetailPage = () => {
 
   useEffect(() => {
     if (showDeleteModal) {
-      if (orderDetail.state_name === "Received" || orderDetail.state_name === "Generated") {
-        setMessageDelete("You won't be able to revert this")
+      if (
+        orderDetail.state_name === "Received" ||
+        orderDetail.state_name === "Generated"
+      ) {
+        setMessageDelete("You won't be able to revert this");
       } else {
-        setMessageDelete("This order is already being processed, are you sure you want to delete it?")
+        setMessageDelete(
+          "This order is already being processed, are you sure you want to delete it?"
+        );
       }
     }
-  }, [showDeleteModal])
+  }, [showDeleteModal]);
 
   //RUN BUTTON WITH CRT + ENTER
   const handleKeyDown = (event) => {
@@ -338,7 +341,7 @@ const OrderDetailPage = () => {
         },
       })
       .then((response) => {
-        console.log("🚀 ~ .then ~ response:", response)
+        console.log("🚀 ~ .then ~ response:", response);
         router.push("/orders");
       })
       .catch((error) => {
@@ -355,7 +358,7 @@ const OrderDetailPage = () => {
   if (!hasMounted) {
     return null;
   }
-
+  console.log(orderDetail.image + "esta es la imagen");
   return (
     <Layout>
       <div className="max-w-[650px] -mt-[110px] ml-[115px]">
@@ -509,20 +512,22 @@ const OrderDetailPage = () => {
         >
           Details
           <ChevronDownIcon
-            className={`h-5 w-5 ml-1 text-white transform transition duration-500 ${details ? "rotate-180" : "rotate-0"
-              }`}
+            className={`h-5 w-5 ml-1 text-white transform transition duration-500 ${
+              details ? "rotate-180" : "rotate-0"
+            }`}
           />
         </button>
         <button
-          className="bg-red-600 rounded-md ml-3 transition-all hover:scale-110 focus:outline-none flex text-white px-2 py-1 items-center align-middle"
+          className="bg-danger rounded-md ml-3 transition-all hover:scale-110 focus:outline-none flex text-white px-2 py-1 items-center align-middle"
           onClick={() => setShowDeleteModal(true)}
         >
           <TrashIcon className={`h-[25px] w-[25px] text-white`} />
         </button>
       </div>
       <div
-        className={`transition-opacity duration-500 ease-out ${details ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-10"
-          } transform`}
+        className={`transition-opacity duration-500 ease-out ${
+          details ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-10"
+        } transform`}
         style={{ transitionProperty: "opacity, transform" }}
       >
         {details && (
@@ -567,7 +572,21 @@ const OrderDetailPage = () => {
                 </div>
               </>
             )}
-
+            <div className="flex flex-col items-start">
+              <h3 className="font-medium">Delivery evidence:</h3>
+              {orderDetail.image != null ? (
+                <a
+                  href={orderDetail.image}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-primary-blue font-medium hover:scale-105 hover:text-green transition-all"
+                >
+                  View image
+                </a>
+              ) : (
+                <p className="text-gray-input">Without evidence</p>
+              )}
+            </div>
             <div className="flex flex-col items-start">
               <h3 className="font-medium">Special requirements:</h3>
               <input
@@ -615,5 +634,5 @@ const OrderDetailPage = () => {
     </Layout>
   );
 };
-console.log("🚀 ~ OrderDetailPage ~ orderDetail:", orderDetail)
+console.log("🚀 ~ OrderDetailPage ~ orderDetail:", orderDetail);
 export default OrderDetailPage;
