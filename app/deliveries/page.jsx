@@ -92,10 +92,10 @@ const DeliveryView = () => {
 
   const formattedDate = selectedDate
     ? new Date(selectedDate).toLocaleDateString("es-CO", {
-      day: "2-digit",
-      month: "2-digit",
-      year: "2-digit",
-    })
+        day: "2-digit",
+        month: "2-digit",
+        year: "2-digit",
+      })
     : formatDateToShow(workDate);
   const formatDateToTransform = (dateString) => {
     const date = new Date(dateString);
@@ -230,7 +230,8 @@ const DeliveryView = () => {
       .map(([reference]) => reference);
   };
 
-  const sortedOrders = orders?.filter((order) => filterOrdersByDate(order))
+  const sortedOrders = orders
+    ?.filter((order) => filterOrdersByDate(order))
     .sort((a, b) => {
       const dateA = new Date(a.date_delivery);
       const dateB = new Date(b.date_delivery);
@@ -259,7 +260,6 @@ const DeliveryView = () => {
     }));
   };
 
-
   return (
     <Layout>
       <div className="-mt-24">
@@ -269,12 +269,13 @@ const DeliveryView = () => {
           </h1>
         </div>
         <div
-          className={`flex ml-10 mt-4 mb-0 items-center space-x-2 mt-${filterType === "range" && window.innerWidth < 1500
-            ? "[45px]"
-            : filterType === "date" && window.innerWidth < 1300
+          className={`flex ml-10 mt-4 mb-0 items-center space-x-2 mt-${
+            filterType === "range" && window.innerWidth < 1500
+              ? "[45px]"
+              : filterType === "date" && window.innerWidth < 1300
               ? "[50px]"
               : "[20px]"
-            }
+          }
           `}
         >
           <div className="border border-gray-300 rounded-md py-3 px-2 flex items-center">
@@ -368,12 +369,13 @@ const DeliveryView = () => {
           <div className="grid grid-cols-7 gap-2">
             <div
               onClick={() => setShowMenuDelivery(true)}
-              className="flex cursor-pointer hover:bg-gray-200 transition-all items-center py-4 px-5 rounded-xl mr-4 shadow-[0px_2px_3px_-1px_rgba(0,0,0,0.1),0px_1px_0px_0px_rgba(25,28,33,0.02),0px_0px_0px_1px_rgba(25,28,33,0.08)]">
-              <TruckIcon className="h-10 w-10 pr-2 text-gray-input" />
+              className="flex cursor-pointer hover:bg-gray-200 transition-all items-center py-4 px-5 rounded-xl mr-4 shadow-[0px_2px_3px_-1px_rgba(0,0,0,0.1),0px_1px_0px_0px_rgba(25,28,33,0.02),0px_0px_0px_1px_rgba(25,28,33,0.08)]"
+            >
+              <TruckIcon className="h-10 w-10 pr-2 text-green" />
               <h1>Field to fork</h1>
             </div>
-            <div className="flex items-center py-4 px-5 rounded-xl mr-4 shadow-[0px_2px_3px_-1px_rgba(0,0,0,0.1),0px_1px_0px_0px_rgba(25,28,33,0.02),0px_0px_0px_1px_rgba(25,28,33,0.08)]">
-              <TruckIcon className="h-10 w-10 pr-2 text-green" />
+            <div className="flex items-center bg-white py-4 px-5 rounded-xl mr-4 shadow-[0_0px_40px_rgba(4,_68,_79,_0.4)]">
+              <TruckIcon className="h-10 w-10 pr-2 text-gray-input" />
               <h1>Field to fork</h1>
             </div>
             <div className="flex items-center py-4 px-5 rounded-xl mr-4 shadow-[0px_2px_3px_-1px_rgba(0,0,0,0.1),0px_1px_0px_0px_rgba(25,28,33,0.02),0px_0px_0px_1px_rgba(25,28,33,0.08)]">

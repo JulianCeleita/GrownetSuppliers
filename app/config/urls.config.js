@@ -1,6 +1,6 @@
 //BASE URL
-const BASE_URL = "https://api.grownetapp.com/grownet/api/";
-//const BASE_URL = "http://3.139.16.141/api/";
+// const BASE_URL = "https://api.grownetapp.com/grownet/api/";
+const BASE_URL = "http://3.139.16.141/api/";
 
 // Login
 export const loginUrl = `${BASE_URL}login/login`;
@@ -60,7 +60,7 @@ export const createStorageOrder = `${BASE_URL}orders/create`;
 export const editStorageOrder = `${BASE_URL}orders/edit/`;
 
 // Upload CSV
-export const uploadCsv = `${BASE_URL}orders/uploadCSV`
+export const uploadCsv = `${BASE_URL}orders/uploadCSV`;
 
 // Day managment
 export const closeDay = `${BASE_URL}suppliers/operationEnd`;
@@ -116,6 +116,5 @@ export const routesByDate = `${BASE_URL}deliveryRoutes/show`;
 export const typesUrl = `${BASE_URL}types/all`;
 
 // Shorts
-export const productShort = `${BASE_URL}products/short`
-export const categoriesShort = `${BASE_URL}categories/short`
-
+export const productShort = `${BASE_URL}products/short`;
+export const categoriesShort = `${BASE_URL}categories/short`;
