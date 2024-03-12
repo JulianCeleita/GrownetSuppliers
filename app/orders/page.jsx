@@ -152,7 +152,7 @@ const OrderView = () => {
       setOrders,
       setIsLoading
     );
-  }, [endDateByNet, startDateByNet, routeId]);
+  }, [endDateByNet, startDateByNet]);
 
   useEffect(() => {
     if (routePercentages) {
