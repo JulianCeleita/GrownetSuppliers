@@ -272,7 +272,7 @@ function EditPresentation({
               {tax.map((tax) =>
                 tax.countries_indicative === 44 ? (
                   <option key={tax.id} value={tax.id}>
-                    {tax.name}
+                    {`${tax.worth*100}%`}
                   </option>
                 ) : null
               )}

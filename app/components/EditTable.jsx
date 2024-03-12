@@ -115,6 +115,7 @@ export default function EditTable({
   setSpecialRequirements,
   percentageDetail,
   dataLoaded,
+  customersRef,
   selectedAccNumber,
 }) {
   // const [rows, setRows] = useState(
@@ -163,8 +164,7 @@ export default function EditTable({
   const [orderError, setOrderError] = useState("");
   const [isSelectDisabled, setIsSelectDisabled] = useState(true);
   const isEditable =
-    orderDetail?.state_name === "Loaded" ||
-    orderDetail?.state_name === "Packed";
+    orderDetail.state_name === "Received" || orderDetail.state_name === "Packed";
   const [existingCodes, setExistingCodes] = useState(new Set());
   const [previousCode, setPreviousCode] = useState({});
   const [activeInputIndex, setActiveInputIndex] = useState(null);
@@ -280,7 +280,6 @@ export default function EditTable({
           : product.state_definitive === "N/A"
           ? product.quantity_definitive
           : "";
-
         return {
           state: product.state_definitive,
           isExistingProduct: true,
@@ -327,10 +326,6 @@ export default function EditTable({
       setExistingCodes(newExistingCodes);
     }
   }, [orderDetail, percentageDetail, dataLoaded]);
-
-  // useEffect(() => {
-  //   console.log("existing codes", existingCodes);
-  // }, [existingCodes]);
 
   const handleContextMenu = (e) => {
     e.preventDefault();
@@ -606,24 +601,13 @@ export default function EditTable({
     if (shouldSynchronize) {
       synchronizeExistingCodes();
       setShouldSynchronize(false);
-
-      // setTimeout(() => {
       console.log("exist", existingCodes);
-      // }, 300);
     }
   }, [shouldSynchronize, rows]);
 
   const handleCloseModal = (event) => {
     event.stopPropagation();
     setShowErrorDuplicate(false);
-    console.log(
-      "🚀 ~ setTimeout ~ activeColumnIndex index column que llega :",
-      activeColumnIndex
-    );
-    console.log(
-      "🚀 ~ setTimeout ~ activeInputIndex index row que llega:",
-      activeInputIndex
-    );
     setTimeout(() => {
       const inputToFocus = document.querySelector(
         `input[data-row-index="${activeInputIndex}"][data-column-index="${activeColumnIndex}"]`
@@ -773,6 +757,7 @@ export default function EditTable({
           customers && customers
             ? customers[0].accountNumber
             : selectedAccNumber,
+        customers_ref: customersRef,
         date_delivery: dateDelivery,
         id_suppliers: orderDetail.id_suppliers,
         net: parseFloat(totalNetSum),
@@ -860,7 +845,7 @@ export default function EditTable({
   };
 
   const findProductById = (productId) => {
-    if (orderDetail?.products >= 0) {
+    if (orderDetail.products) {
       return orderDetail.products.find(
         (product) => product.presentations_code === productId
       );
@@ -1054,8 +1039,7 @@ export default function EditTable({
                                             ref={inputRefs[column][rowIndex]}
                                             data-field-name={column}
                                             disabled={
-                                              row.isExistingProduct &&
-                                              isEditable
+                                              row.isExistingProduct && !isEditable
                                             }
                                             className={`pl-2 h-[30px] outline-none w-full ${
                                               inputTypes[column] === "number"
@@ -1194,7 +1178,7 @@ export default function EditTable({
                                           }}
                                           isDisabled={
                                             (row.isExistingProduct &&
-                                              isEditable) ||
+                                              !isEditable) ||
                                             isSelectDisabled
                                           }
                                           onBlur={() =>
@@ -1228,7 +1212,7 @@ export default function EditTable({
                                         ref={inputRefs[column][rowIndex]}
                                         data-field-name={column}
                                         disabled={
-                                          row.isExistingProduct && isEditable
+                                          row.isExistingProduct && !isEditable
                                         }
                                         className={`pl-2 h-[30px] outline-none w-full ${
                                           inputTypes[column] === "number"
