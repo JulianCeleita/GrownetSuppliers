@@ -145,7 +145,7 @@ function AutomaticShort({ isvisible, onClose, setProducts, setIsLoading }) {
         onClose();
       })
       .catch((response, error) => {
-        console.error("Error al agregar la nueva presentación: ", error);
+        console.error("Error al parametrizar la categoria: ", error);
       });
   };
 
