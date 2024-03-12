@@ -163,8 +163,8 @@ export default function EditTable({
   const [orderError, setOrderError] = useState("");
   const [isSelectDisabled, setIsSelectDisabled] = useState(true);
   const isEditable =
-    orderDetail.state_name === "Received" ||
-    orderDetail.state_name === "Packed";
+    orderDetail?.state_name === "Received" ||
+    orderDetail?.state_name === "Packed";
   const [existingCodes, setExistingCodes] = useState(new Set());
   const [previousCode, setPreviousCode] = useState({});
   const [activeInputIndex, setActiveInputIndex] = useState(null);
