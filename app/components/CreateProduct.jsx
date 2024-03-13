@@ -24,6 +24,7 @@ function CreateProduct({ isvisible, onClose, setProducts, setIsLoading }) {
   const [namePresentation, setNamePresentation] = useState("");
   const [costPresentation, setCostPresentation] = useState("");
   const [quantityPresentation, setQuantityPresentation] = useState("");
+  const [selectedShort, setSelectedShort] = useState("");
   const [selecteUomsStatus, setSelectedUomsStatus] = useState("unit");
   const [selecteUomsStatus2, setSelectedUomsStatus2] = useState("");
   const [selecteProductsStatus, setSelectedProductsStatus] =
@@ -123,26 +124,28 @@ function CreateProduct({ isvisible, onClose, setProducts, setIsLoading }) {
     e.preventDefault();
     const postData = bulk
       ? {
-          uoms_id: selecteUomsStatus,
-          products_id: selecteProductsStatus,
-          quantity: quantityPresentation,
-          name: `${namePresentation.trim()} ${selecteUomsStatus2}`,
-          cost: costPresentation,
-          code: codePresentation,
-          tax: selectedTax,
-          type: selectedType,
-          supplier_id: user.id_supplier,
-        }
+        uoms_id: selecteUomsStatus,
+        products_id: selecteProductsStatus,
+        quantity: quantityPresentation,
+        name: `${namePresentation.trim()} ${selecteUomsStatus2}`,
+        cost: costPresentation,
+        code: codePresentation,
+        tax: selectedTax,
+        type: selectedType,
+        supplier_id: user.id_supplier,
+        flagshort: selectedShort
+      }
       : {
-          uoms_id: selecteUomsStatus,
-          products_id: selecteProductsStatus,
-          quantity: quantityPresentation,
-          name: `${namePresentation.trim()} ${selecteUomsStatus2}`,
-          cost: costPresentation,
-          code: codePresentation,
-          type: selectedType,
-          supplier_id: user.id_supplier,
-        };
+        uoms_id: selecteUomsStatus,
+        products_id: selecteProductsStatus,
+        quantity: quantityPresentation,
+        name: `${namePresentation.trim()} ${selecteUomsStatus2}`,
+        cost: costPresentation,
+        code: codePresentation,
+        type: selectedType,
+        supplier_id: user.id_supplier,
+      };
+
     axios
       .post(addPresentationUrl, postData, {
         headers: {
@@ -189,21 +192,19 @@ function CreateProduct({ isvisible, onClose, setProducts, setIsLoading }) {
         <div className="flex">
           <button
             onClick={toggleBulk}
-            className={`${
-              bulk
-                ? "bg-primary-blue hover:bg-dark-blue text-white"
-                : "bg-white text-dark-blue"
-            }  font-bold py-2 px-4 rounded`}
+            className={`${bulk
+              ? "bg-primary-blue hover:bg-dark-blue text-white"
+              : "bg-white text-dark-blue"
+              }  font-bold py-2 px-4 rounded`}
           >
             Bulk
           </button>{" "}
           <button
             onClick={toggleBulk}
-            className={`${
-              !bulk
-                ? "bg-primary-blue hover:bg-dark-blue text-white"
-                : "bg-white text-dark-blue"
-            }  font-bold py-2 px-4 rounded`}
+            className={`${!bulk
+              ? "bg-primary-blue hover:bg-dark-blue text-white"
+              : "bg-white text-dark-blue"
+              }  font-bold py-2 px-4 rounded`}
           >
             Split
           </button>
@@ -262,7 +263,7 @@ function CreateProduct({ isvisible, onClose, setProducts, setIsLoading }) {
                 {tax.map((tax) =>
                   tax.countries_indicative === 44 ? (
                     <option key={tax.id} value={tax.id}>
-                      {`${tax.worth*100}%`}
+                      {`${tax.worth * 100}%`}
                     </option>
                   ) : null
                 )}
@@ -339,6 +340,28 @@ function CreateProduct({ isvisible, onClose, setProducts, setIsLoading }) {
                 onChange={(e) => setQuantityPresentation(e.target.value)}
                 required
               ></input>
+            </div>
+            <div>
+              <label htmlFor="short" className="mt-2 mr-2">
+                Automatic short:
+              </label>
+              <select
+                id="short"
+                name="short"
+                className="border p-3 rounded-md mr-3 my-3"
+                onChange={(e) => setSelectedShort(e.target.value)}
+                required
+              >
+                <option disabled selected>
+                  Select option
+                </option>
+                <option key={"1"} value="1">
+                  Active
+                </option>
+                <option key={"0"} value="0">
+                  Disable
+                </option>
+              </select>
             </div>
             <div className="mt-3 text-center">
               <button

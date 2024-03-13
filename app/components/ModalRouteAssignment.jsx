@@ -2,7 +2,6 @@ import React, { useEffect, useRef, useState } from 'react'
 import Spinner from './Spinner';
 import { fetchAssignRoute } from '../api/assignRouteRequest';
 import useTokenStore from '../store/useTokenStore';
-import { set } from 'date-fns';
 
 export const ModalRouteAssignment = ({ show, onClose }) => {
 
