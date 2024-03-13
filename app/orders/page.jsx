@@ -82,6 +82,8 @@ const OrderView = () => {
   const [showModalSuccessfull, setShowModalSuccessfull] = useState(false);
   const [showModalError, setShowModalError] = useState(false);
   const [errorCsvMessage, setErrorCsvMessage] = useState("");
+  const [sortList, setSortList] = useState("invoice");
+  const [sortType, setSortType] = useState(false);
 
   const formatDateToShow = (dateString) => {
     if (!dateString) return "Loading...";
@@ -433,11 +435,63 @@ const OrderView = () => {
         isRouteMatch && isGroupMatch && isSearchQueryMatch && isStatusMatch
       );
     })
-    .sort((a, b) => b.reference - a.reference);
+    .sort((a, b) => {
+      if (sortList === "invoice") {
+        if (!sortType) {
+          return a.reference - b.reference;
+        } else {
+          return b.reference - a.reference;
+        }
+      } else if (sortList === "accNumber") {
+        if (!sortType) {
+          return a.accountNumber
+            .toLowerCase()
+            .localeCompare(b.accountNumber.toLowerCase());
+        } else {
+          return b.accountNumber
+            .toLowerCase()
+            .localeCompare(a.accountNumber.toLowerCase());
+        }
+      } else if (sortList === "customer") {
+        if (!sortType) {
+          return a.accountName
+            .toLowerCase()
+            .localeCompare(b.accountName.toLowerCase());
+        } else {
+          return b.accountName
+            .toLowerCase()
+            .localeCompare(a.accountName.toLowerCase());
+        }
+      } else if (sortList === "amount") {
+        if (!sortType) {
+          return a.net - b.net;
+        } else {
+          return b.net - a.net;
+        }
+      }
+    });
 
+  const handleClickInvoice = () => {
+    setSortList("invoice");
+    setSortType((prevSortType) => !prevSortType);
+  };
+  const handleClickCustomer = () => {
+    setSortList("customer");
+    setSortType((prevSortType) => !prevSortType);
+  };
+  const handleClickAmount = () => {
+    setSortList("amount");
+    setSortType((prevSortType) => !prevSortType);
+  };
+  const handleClickAccNumber = () => {
+    setSortList("accNumber");
+    setSortType((prevSortType) => !prevSortType);
+  };
   const uniqueStatuses = [
     ...new Set(sortedOrders?.map((order) => order.status_order)),
   ];
+
+  console.log("filteredOrders", filteredOrders);
   const handleStatusChange = (e) => {
     const newSelectedStatus = e.target.value;
     setSelectedStatus(newSelectedStatus);
@@ -765,10 +819,30 @@ const OrderView = () => {
                     />
                   </label>
                 </th>
-                <th className="py-4"># Invoice</th>
-                <th className="py-4">Acc number</th>
-                <th className="py-4">Customer</th>
-                <th className="py-4">Amount</th>
+                <th
+                  className="py-4 cursor-pointer hover:bg-gray-100 transition-all"
+                  onClick={handleClickInvoice}
+                >
+                  # Invoice
+                </th>
+                <th
+                  className="py-4 cursor-pointer hover:bg-gray-100 transition-all"
+                  onClick={handleClickAccNumber}
+                >
+                  Acc number
+                </th>
+                <th
+                  className="py-4 cursor-pointer hover:bg-gray-100 transition-all"
+                  onClick={handleClickCustomer}
+                >
+                  Customer
+                </th>
+                <th
+                  className="py-4 cursor-pointer hover:bg-gray-100 transition-all"
+                  onClick={handleClickAmount}
+                >
+                  Amount
+                </th>
                 <th className="py-4">Profit %</th>
                 <th className="py-4">Route</th>
                 <th className="py-4">Drop</th>
