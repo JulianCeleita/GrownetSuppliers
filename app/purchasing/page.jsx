@@ -82,7 +82,7 @@ function Purchasing() {
       <div>
         <div className="flex justify-between p-8 -mt-24 overflow">
           <h1 className="text-2xl text-white font-semibold ml-20 mt-2">
-            Purchasing
+            <span className="text-light-green">Purchasing </span> list
           </h1>
 
           <div className="flex gap-4">
@@ -105,24 +105,47 @@ function Purchasing() {
           </div>
         </div>
         <div className="flex items-center justify-center mb-20 overflow-x-auto">
-          <table className="w-[95%] bg-white rounded-2xl text-center shadow-[0_8px_30px_rgb(0,0,0,0.12)]">
+          <table className="w-[95%] bg-white first-line:bg-white rounded-2xl text-left shadow-[rgba(17,_17,_26,_0.1)_0px_0px_16px]">
             <thead className="sticky top-0 bg-white shadow-[0px_11px_15px_-3px_#edf2f7] ">
               <tr className="border-b-2 border-stone-100 text-dark-blue">
                 <th className="p-4 rounded-tl-lg">Code</th>
+                <th className="p-4 rounded-tl-lg">Category</th>
+                <th className="p-4 rounded-tl-lg">Description</th>
                 <th className="p-4">Requisition</th>
                 <th className="p-4">Short</th>
                 <th className="p-4">Supplier</th>
-                <th className="p-4 min-w-[120px]">Product</th>
-                <th className="p-4">Unit of measurement</th>
-                <th className="p-4">Packsize</th>
-                <th className="p-4">Type</th>
+                <th className="p-4">SOH</th>
+                <th className="p-4">Ordered</th>
                 <th className="p-4">Cost</th>
-                <th className="p-4">Qty</th>
-                <th className="p-4 min-w-[100px] rounded-tr-lg">Operate</th>
+                <th className="p-4">Total cost</th>
+                <th className="p-4">New order</th>
+                <th className="p-4 rounded-tr-lg">Notes</th>
               </tr>
             </thead>
             <tbody>
-              {sortedPresentations.map((presentation) => (
+              <tr className="text-dark-blue border-b-2 border-stone-100">
+                <td className="py-4 pl-3">Test</td>
+                <td className="py-4">Test</td>
+                <td className="py-4">Test</td>
+                <td className="py-4">Test</td>
+                <td className="py-4">Test</td>
+                <td className="py-4">
+                  <input placeholder="Edit" className="w-20"></input>
+                </td>
+                <td className="py-4">Test</td>
+                <td className="py-4">Test</td>
+                <td className="py-4">
+                  <input placeholder="Edit" className="w-20"></input>
+                </td>
+                <td className="py-4">£ Test</td>
+                <td className="py-4">
+                  <input placeholder="Edit" className="w-20"></input>
+                </td>
+                <td className="py-4">
+                  <input placeholder="Edit" className="w-20"></input>
+                </td>
+              </tr>
+              {/* {sortedPresentations.map((presentation) => (
                 <tr
                   key={presentation.id}
                   className="text-dark-blue border-b-2 border-stone-100 "
@@ -160,7 +183,7 @@ function Purchasing() {
                     </button>
                   </td>
                 </tr>
-              ))}
+              ))} */}
             </tbody>
           </table>
         </div>

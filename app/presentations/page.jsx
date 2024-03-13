@@ -84,7 +84,6 @@ function Presentations() {
           <h1 className="text-2xl text-white font-semibold ml-20 mt-2">
             <span className="text-light-green">Catalogue </span>list
           </h1>
-
           <div className="flex gap-4">
             <button
               className="flex bg-dark-blue py-3 px-4 rounded-lg text-white font-medium hover:bg-dark-blue hover:scale-110 transition-all"
