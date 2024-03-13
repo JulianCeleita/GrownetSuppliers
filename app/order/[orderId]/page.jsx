@@ -65,6 +65,7 @@ const OrderDetailPage = () => {
   const [confirmCreateOrder, setConfirmCreateOrder] = useState(false);
   const [dataLoaded, setDataLoaded] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [postCode, setPostCode] = useState("-");
   const [messageDelete, setMessageDelete] = useState("");
   const [specialRequirements, setSpecialRequirements] = useState(
     orderDetail?.observation ? orderDetail.observation : ""
@@ -109,7 +110,6 @@ const OrderDetailPage = () => {
     if (orderDetail && orderDetail.date_delivery) {
       setSelectedDate(orderDetail.date_delivery);
     }
-    console.log("🚀 ~ OrderDetailPage ~ orderDetail:", orderDetail)
   }, [orderDetail]);
 
   useEffect(() => {
@@ -117,6 +117,7 @@ const OrderDetailPage = () => {
     setSelectedAccNumber(orderDetail?.accountNumber);
     setSelectedAccNumber2(orderDetail?.accountNumber);
     setCustomersRef(orderDetail ? orderDetail.customers_ref : "");
+    setPostCode(orderDetail ? orderDetail.postCode : "");
   }, [orderDetail]);
 
   useEffect(() => {
@@ -530,27 +531,39 @@ const OrderDetailPage = () => {
           <div className="bg-light-blue grid grid-cols-6 gap-4 mx-10 mt-2 px-2 py-1 rounded-md">
             <div className="flex flex-col items-start">
               <h3 className="font-medium">Post Code:</h3>
-              <h3>{customers && customers.postCode ? customers.postCode : "-"}</h3>
+              <h3>
+                {customers && customers[0].postCode
+                  ? customers[0].postCode
+                  : orderDetail && orderDetail.postCode
+                    ? orderDetail.postCode
+                    : "-"}
+              </h3>
             </div>
             <div className="flex flex-col items-start">
               <h3 className="font-medium">Telephone:</h3>
-              <h3>
-                {orderDetail && orderDetail.telephone_customer
+              {customers && customers[0].telephone
+                ? customers[0].telephone
+                : orderDetail && orderDetail.telephone_customer
                   ? orderDetail.telephone_customer
                   : "-"}
-              </h3>
             </div>
             <div className="flex flex-col items-start">
               <h3 className="font-medium">Address:</h3>
               <h3>
-                {orderDetail && orderDetail.address_delivery
-                  ? orderDetail.address_delivery
-                  : "-"}
+                {customers && customers[0].address
+                  ? customers[0].address
+                  : orderDetail.address_delivery}
               </h3>
             </div>
             <div className="flex flex-col items-start">
               <h3 className="font-medium">Contact:</h3>
-              <h3>{orderDetail && orderDetail.email ? orderDetail.email : "-"}</h3>
+              <h3>
+                {customers && customers[0].email
+                  ? customers[0].email
+                  : orderDetail && orderDetail.email
+                    ? orderDetail.email
+                    : "-"}
+              </h3>
             </div>
             {customerDate && (
               <>
@@ -623,6 +636,7 @@ const OrderDetailPage = () => {
                 dataLoaded={dataLoaded}
                 customersRef={customersRef}
                 selectedAccNumber={accountNumberCustomer}
+                deliveryCustomer={orderDetail.address_delivery}
               />
             </>
           )
