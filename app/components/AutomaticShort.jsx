@@ -9,6 +9,8 @@ import {
   productShort,
   productsUrl,
   taxexUrl,
+  typeShort,
+  typesUrl,
   uomUrl,
 } from "../config/urls.config";
 import useTokenStore from "../store/useTokenStore";
@@ -25,15 +27,19 @@ function AutomaticShort({ isvisible, onClose, setProducts, setIsLoading }) {
   const [uoms, setUoms] = useState([]);
   const [products2, setProducts2] = useState([]);
   const [categories, setCategories] = useState([]);
+  const [types, setTypes] = useState([]);
   const [selecteProductsStatus, setSelectedProductsStatus] =
     useState("");
   const [selectedCategoriesId, setSelectedCategoriesId] =
+    useState("");
+  const [selectedTypeId, setSelectedTypeId] =
     useState("");
   const [repeatedCode, setRepeatedCode] = useState(false);
   const [codePresentation, setCodePresentation] = useState("");
   const { user } = useUserStore();
   const [product, setProduct] = useState(true);
   const [selectedShort, setSelectedShort] = useState("");
+  const [selectedShort2, setSelectedShort2] = useState("");
 
   const toggleProduct = () => {
     setProduct((current) => !current);
@@ -81,11 +87,30 @@ function AutomaticShort({ isvisible, onClose, setProducts, setIsLoading }) {
         console.error("Error al obtener los productos:", error);
       }
     };
+    const fetchDataTypes = async () => {
+      try {
+        const response = await axios.get(typesUrl, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
 
+        const sortedTypes = response.data.type.sort((a, b) =>
+          a.name.localeCompare(b.name)
+        );
+
+        setTypes(sortedTypes);
+      } catch (error) {
+        console.error("Error al obtener los productos:", error);
+      }
+    };
+
+    fetchDataTypes()
     fetchDataCategories();
     fetchDataProducts();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+  
 
   if (!isvisible) {
     return null;
@@ -115,13 +140,14 @@ function AutomaticShort({ isvisible, onClose, setProducts, setIsLoading }) {
         console.error("Error al parametrizar el producto: ", error);
       });
   };
-  const sendDataCategories = (e) => {
+  const sendDataType = (e) => {
     e.preventDefault();
-    const postDataCategories = {
-      id: selectedCategoriesId,
-      short: selectedShort
+    const postDataType = {
+      supplier_id: user.id_supplier,
+      type_id: selectedTypeId,
+      flagshort: selectedShort2
     }
-    axios.post(categoriesShort, postDataCategories, {
+    axios.post(typeShort, postDataType, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -135,7 +161,7 @@ function AutomaticShort({ isvisible, onClose, setProducts, setIsLoading }) {
         onClose();
       })
       .catch((response, error) => {
-        console.error("Error al parametrizar la categoria: ", error);
+        console.error("Error al parametrizar el type: ", error);
       });
   };
 
@@ -168,7 +194,7 @@ function AutomaticShort({ isvisible, onClose, setProducts, setIsLoading }) {
                 : "bg-white text-dark-blue"
               }  font-bold py-2 px-4 rounded`}
           >
-            Category
+            Type
           </button>
         </div>
 
@@ -210,7 +236,7 @@ function AutomaticShort({ isvisible, onClose, setProducts, setIsLoading }) {
                 Active
               </option>
               <option key={"0"} value="0">
-                Inactive
+                Disable
               </option>
             </select>
             <div className="mt-3 text-center">
@@ -230,23 +256,23 @@ function AutomaticShort({ isvisible, onClose, setProducts, setIsLoading }) {
             </div>
           </form>
         ) : (
-          <form className="text-left  flex flex-col" onSubmit={sendDataCategories}>
-            <label htmlFor="category" className="mt-3">
-              Category:
+          <form className="text-left  flex flex-col" onSubmit={sendDataType}>
+            <label htmlFor="type" className="mt-3">
+              Type:
             </label>
             <select
-              id="category"
-              name="category"
+              id="type"
+              name="type"
               className="border p-3 rounded-md mr-3 my-3"
-              onChange={(e) => setSelectedCategoriesId(e.target.value)}
+              onChange={(e) => setSelectedTypeId(e.target.value)}
               required
             >
               <option disabled selected>
-                Select category
+                Select type
               </option>
-              {categories.map((category) => (
-                <option key={category.id} value={category.id}>
-                  {category.name}
+              {types.map((type) => (
+                <option key={type.id} value={type.id}>
+                  {type.name}
                 </option>
               ))}
             </select>
@@ -257,7 +283,7 @@ function AutomaticShort({ isvisible, onClose, setProducts, setIsLoading }) {
               id="short"
               name="short"
               className="border p-3 rounded-md mr-3 my-3"
-              onChange={(e) => setSelectedShort(e.target.value)}
+              onChange={(e) => setSelectedShort2(e.target.value)}
               required
             >
               <option disabled selected>
@@ -267,7 +293,7 @@ function AutomaticShort({ isvisible, onClose, setProducts, setIsLoading }) {
                 Active
               </option>
               <option key={"0"} value="0">
-                Inactive
+                Disable
               </option>
             </select>
             <div className="mt-3 text-center">
