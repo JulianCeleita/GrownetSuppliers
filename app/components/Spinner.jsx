@@ -1,10 +1,9 @@
 import React from 'react';
 
 const Spinner = ({ size = 30 }) => {
-    const borderSize = size / 7.5; // Ajusta la proporción aquí
+    const borderSize = size / 7.5;
 
     return (
-
         <div className="spinner">
             <style jsx>{`
           .spinner {
@@ -22,7 +21,6 @@ const Spinner = ({ size = 30 }) => {
           }
         `}</style>
         </div>
-
     );
 };
 
