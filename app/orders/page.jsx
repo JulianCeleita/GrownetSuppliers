@@ -52,6 +52,7 @@ const OrderView = () => {
   const { token } = useTokenStore();
   const { workDate, setFetchWorkDate } = useWorkDateStore();
   const [ordersWorkDate, setOrdersWorkDate] = useState(0);
+  const [ordersLoadingToday, setOrdersLoadingToday] = useState(0);
   const { routePercentages, setFetchRoutePercentages } = usePercentageStore();
   const [isLoading, setIsLoading] = useState(true);
   const [orders, setOrders] = useState([]);
@@ -80,7 +81,7 @@ const OrderView = () => {
   const [csvFile, setCsvFile] = useState(null);
   const [showModalSuccessfull, setShowModalSuccessfull] = useState(false);
   const [showModalError, setShowModalError] = useState(false);
-  const [errorCsvMessage, setErrorCsvMessage] = useState("")
+  const [errorCsvMessage, setErrorCsvMessage] = useState("");
 
   const formatDateToShow = (dateString) => {
     if (!dateString) return "Loading...";
@@ -96,10 +97,10 @@ const OrderView = () => {
 
   const formattedDate = selectedDate
     ? new Date(selectedDate).toLocaleDateString("es-CO", {
-      day: "2-digit",
-      month: "2-digit",
-      year: "2-digit",
-    })
+        day: "2-digit",
+        month: "2-digit",
+        year: "2-digit",
+      })
     : formatDateToShow(workDate);
   const formatDateToTransform = (dateString) => {
     const date = new Date(dateString);
@@ -140,8 +141,12 @@ const OrderView = () => {
   }, [user, token]);
 
   useEffect(() => {
-    fetchOrdersDateByWorkDate(token, workDate, setOrdersWorkDate);
+    fetchOrdersDateByWorkDate(token, workDate, setOrdersWorkDate, setOrdersLoadingToday);
+    console.log(ordersLoadingToday);
   }, [workDate]);
+  useEffect(() => {
+    console.log(ordersLoadingToday);
+  }, [ordersLoadingToday]);
 
   useEffect(() => {
     fetchOrdersDate(
@@ -268,7 +273,6 @@ const OrderView = () => {
         route_id: selectedRouteId,
         date: formattedDate,
       };
-
     } else {
       date = workDate;
 
@@ -276,7 +280,6 @@ const OrderView = () => {
         route_id: selectedRouteId,
         date: date,
       };
-
     }
     axios
       .post(orderCSV, postDataCSV, {
@@ -381,12 +384,12 @@ const OrderView = () => {
             handleRemoveFile();
           } else {
             setShowModalError(true);
-            setErrorCsvMessage(response.data.msg)
+            setErrorCsvMessage(response.data.msg);
           }
         })
         .catch((error) => {
           setShowModalError(true);
-          setErrorCsvMessage(error.response.data.msg)
+          setErrorCsvMessage(error.response.data.msg);
           console.error("Error al cargar el csv: ", error);
         });
     }
@@ -502,21 +505,22 @@ const OrderView = () => {
           </div>
         </div>
         <div
-          className={`flex ml-10 mb-0 items-center space-x-2 mt-${filterType === "range" && window.innerWidth < 1500
-            ? "[45px]"
-            : filterType === "date" && window.innerWidth < 1300
+          className={`flex ml-10 mb-0 items-center space-x-2  mt-${
+            filterType === "range" && window.innerWidth < 1500
+              ? "[45px]"
+              : filterType === "date" && window.innerWidth < 1300
               ? "[50px]"
               : "[20px]"
-            }
+          }
           `}
         >
-          <div className="border border-gray-300 rounded-md py-3 px-2 flex items-center">
+          <div className="border border-gray-300  rounded-md py-3 px-2 flex items-center">
             <input
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search"
-              className="placeholder-[#04444F] outline-none"
+              className="placeholder-[#04444F] outline-none text-sm custom:text-base"
             />
             {searchQuery != "" && (
               <button
@@ -533,7 +537,7 @@ const OrderView = () => {
           <select
             value={filterType}
             onChange={(e) => setFilterType(e.target.value)}
-            className="form-select px-4 py-3 rounded-md border border-gray-300"
+            className="form-select px-4 py-3 rounded-md border border-gray-300 text-sm custom:text-base"
           >
             <option value="range">Filter by range</option>
             <option value="date">Filter by date</option>
@@ -555,7 +559,7 @@ const OrderView = () => {
                 selectsStart
                 startDate={startDate}
                 endDate={endDate}
-                className="form-input px-4 py-3 rounded-md border border-gray-300 w-[150px]"
+                className="form-input px-4 py-3 rounded-md border border-gray-300 w-[150px] text-sm custom:text-base"
                 dateFormat="dd/MM/yyyy"
                 placeholderText="dd/mm/yyyy"
               />
@@ -575,7 +579,7 @@ const OrderView = () => {
                 startDate={startDate}
                 endDate={endDate}
                 minDate={startDate}
-                className="form-input px-4 py-3 w-[150px] rounded-md border border-gray-300"
+                className="form-input px-4 py-3 w-[150px] rounded-md border border-gray-300 text-sm custom:text-base"
                 dateFormat="dd/MM/yyyy"
                 placeholderText="dd/mm/yyyy"
               />
@@ -591,7 +595,7 @@ const OrderView = () => {
                 setEndDateByNet(formatDateToTransform(date));
                 setDateFilter("date");
               }}
-              className="form-input px-4 py-3 w-[125px] rounded-md border border-gray-300 text-dark-blue placeholder-dark-blue"
+              className="form-input px-4 py-3 w-[125px] rounded-md border border-gray-300 text-dark-blue placeholder-dark-blue text-sm custom:text-base"
               dateFormat="dd/MM/yyyy"
               placeholderText={formatDateToShow(workDate)}
             />
@@ -602,7 +606,7 @@ const OrderView = () => {
               route_name: selectedRoute,
             })}
             onChange={handleRouteChange}
-            className="form-select px-4 py-3 rounded-md border border-gray-300"
+            className="form-select px-4 py-3 rounded-md border border-gray-300 text-sm custom:text-base"
           >
             <option value="">All routes</option>
             {uniqueRoutesArray.map((route) => (
@@ -620,7 +624,7 @@ const OrderView = () => {
           <select
             value={selectedGroup}
             onChange={handleGroupChange}
-            className="orm-select px-4 py-3 rounded-md border border-gray-300"
+            className="orm-select px-4 py-3 rounded-md border border-gray-300 text-sm custom:text-base"
           >
             <option value="">All groups</option>
             {[
@@ -637,10 +641,11 @@ const OrderView = () => {
           </select>
           <button
             disabled={!selectedRoute}
-            className={`flex ${selectedRoute
-              ? "bg-green text-white hover:bg-dark-blue"
-              : "bg-gray-grownet text-white cursor-not-allowed"
-              } py-3 px-4 rounded-lg font-medium transition-all`}
+            className={`flex ${
+              selectedRoute
+                ? "bg-green text-white hover:bg-dark-blue"
+                : "bg-gray-grownet text-white cursor-not-allowed"
+            } py-3 px-4 rounded-lg font-medium transition-all`}
             onClick={() => downloadCSV()}
           >
             <TableCellsIcon className="h-6" />
@@ -652,31 +657,41 @@ const OrderView = () => {
             <PrinterIcon className="h-6 w-6" />
           </button>
         </div>
-        <section className="absolute top-0 right-5 mt-5 w-[30%] 2xl:w-auto ">
+        <section className="absolute top-0 right-2 mt-5 w-auto lg:max-w-[30%] 2xl:max-w-[40%]">
           <div className="flex gap-2">
             {filterType !== "range" &&
               formatDateToShow(workDate) === formattedDate && (
-                <div className="px-4 py-4 rounded-3xl flex items-center justify-center bg-white shadow-[0_8px_30px_rgb(0,0,0,0.12)]">
+                <div className="pl-4 pr-2 py-4 rounded-3xl flex items-center justify-center bg-white shadow-[0_8px_30px_rgb(0,0,0,0.12)]">
                   <div>
                     <h1 className=" text-lg 2xl:text-xl font-bold text-dark-blue">
                       Today
                     </h1>
-                    <div className="flex items-center justify-center text-center">
-                      <div className="pr-1">
-                        <p className="text-4xl  2xl:text-5xl font-bold text-primary-blue">
-                          {ordersWorkDate}
-                        </p>
-                      </div>
-                      <div className="grid grid-cols-1 text-left">
-                        <h2 className="text-sm text-dark-blue px-1 font-medium">
-                          Orders
-                        </h2>
-                        <div className="flex items-center text-center justify-center py-1 px-2 w-[80px] 2xl:w-[95px] rounded-lg text-sm bg-background-green">
-                          <CalendarIcon className="h-4 w-4 text-green" />
-                          <h2 className="ml-1 text-green">
-                            {formatDateToShow(workDate)}
-                          </h2>
+                    <div className="flex flex-col">
+                      <div className="flex items-center justify-center text-center">
+                        <div className="pr-1">
+                          <p className="text-4xl  2xl:text-5xl font-bold text-primary-blue">
+                            {ordersWorkDate}
+                          </p>
                         </div>
+                        <div className="grid grid-cols-1 text-left">
+                          <h2 className="text-sm text-dark-blue px-1 font-medium">
+                            Orders
+                          </h2>
+                          <div className="flex items-center text-center justify-center py-1 px-2 w-[80px] 2xl:w-[95px] rounded-lg text-sm bg-background-green">
+                            <CalendarIcon className="h-4 w-4 text-green" />
+                            <h2 className="ml-1 text-green">
+                              {formatDateToShow(workDate)}
+                            </h2>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="flex items-start justify-start text-center flex-wrap">
+                        <h2 className="text-sm text-gray-500 font-medium pr-1 text-start">
+                          Orders loaded:
+                        </h2>
+                        <p className="text-sm font-bold text-primary-blue text-start">
+                          {ordersLoadingToday}
+                        </p>
                       </div>
                     </div>
                   </div>
