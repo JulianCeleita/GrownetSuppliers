@@ -407,7 +407,7 @@ const OrderDetailPage = () => {
           </div>
         </div>
       </div>
-      <section className="absolute top-0 right-10 mt-4">
+      <section className="absolute top-0 right-4 mt-4">
         <div className="flex justify-end">
           <button
             onClick={() => setConfirmCreateOrder(true)}
