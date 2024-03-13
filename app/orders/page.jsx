@@ -687,7 +687,7 @@ const OrderView = () => {
                       </div>
                       <div className="flex items-start justify-start text-center flex-wrap">
                         <h2 className="text-sm text-gray-500 font-medium pr-1 text-start">
-                          Orders Is loaded:
+                          Orders loaded:
                         </h2>
                         <p className="text-sm font-bold text-primary-blue text-start">
                           {ordersLoadingToday}
