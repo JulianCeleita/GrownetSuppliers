@@ -26,6 +26,9 @@ module.exports = {
         "green-900": "#1f4a38",
       },
     },
+    screens: {
+      custom: "1370px",
+    },
   },
   plugins: [],
 };

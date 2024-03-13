@@ -81,7 +81,7 @@ const OrderView = () => {
   const [csvFile, setCsvFile] = useState(null);
   const [showModalSuccessfull, setShowModalSuccessfull] = useState(false);
   const [showModalError, setShowModalError] = useState(false);
-  const [errorCsvMessage, setErrorCsvMessage] = useState("")
+  const [errorCsvMessage, setErrorCsvMessage] = useState("");
 
   const formatDateToShow = (dateString) => {
     if (!dateString) return "Loading...";
@@ -97,10 +97,10 @@ const OrderView = () => {
 
   const formattedDate = selectedDate
     ? new Date(selectedDate).toLocaleDateString("es-CO", {
-      day: "2-digit",
-      month: "2-digit",
-      year: "2-digit",
-    })
+        day: "2-digit",
+        month: "2-digit",
+        year: "2-digit",
+      })
     : formatDateToShow(workDate);
   const formatDateToTransform = (dateString) => {
     const date = new Date(dateString);
@@ -273,7 +273,6 @@ const OrderView = () => {
         route_id: selectedRouteId,
         date: formattedDate,
       };
-
     } else {
       date = workDate;
 
@@ -281,7 +280,6 @@ const OrderView = () => {
         route_id: selectedRouteId,
         date: date,
       };
-
     }
     axios
       .post(orderCSV, postDataCSV, {
@@ -386,12 +384,12 @@ const OrderView = () => {
             handleRemoveFile();
           } else {
             setShowModalError(true);
-            setErrorCsvMessage(response.data.msg)
+            setErrorCsvMessage(response.data.msg);
           }
         })
         .catch((error) => {
           setShowModalError(true);
-          setErrorCsvMessage(error.response.data.msg)
+          setErrorCsvMessage(error.response.data.msg);
           console.error("Error al cargar el csv: ", error);
         });
     }
@@ -507,21 +505,22 @@ const OrderView = () => {
           </div>
         </div>
         <div
-          className={`flex ml-10 mb-0 items-center space-x-2 mt-${filterType === "range" && window.innerWidth < 1500
-            ? "[45px]"
-            : filterType === "date" && window.innerWidth < 1300
+          className={`flex ml-10 mb-0 items-center space-x-2  mt-${
+            filterType === "range" && window.innerWidth < 1500
+              ? "[45px]"
+              : filterType === "date" && window.innerWidth < 1300
               ? "[50px]"
               : "[20px]"
-            }
+          }
           `}
         >
-          <div className="border border-gray-300 rounded-md py-3 px-2 flex items-center">
+          <div className="border border-gray-300  rounded-md py-3 px-2 flex items-center">
             <input
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search"
-              className="placeholder-[#04444F] outline-none"
+              className="placeholder-[#04444F] outline-none text-sm custom:text-base"
             />
             {searchQuery != "" && (
               <button
@@ -538,7 +537,7 @@ const OrderView = () => {
           <select
             value={filterType}
             onChange={(e) => setFilterType(e.target.value)}
-            className="form-select px-4 py-3 rounded-md border border-gray-300"
+            className="form-select px-4 py-3 rounded-md border border-gray-300 text-sm custom:text-base"
           >
             <option value="range">Filter by range</option>
             <option value="date">Filter by date</option>
@@ -560,7 +559,7 @@ const OrderView = () => {
                 selectsStart
                 startDate={startDate}
                 endDate={endDate}
-                className="form-input px-4 py-3 rounded-md border border-gray-300 w-[150px]"
+                className="form-input px-4 py-3 rounded-md border border-gray-300 w-[150px] text-sm custom:text-base"
                 dateFormat="dd/MM/yyyy"
                 placeholderText="dd/mm/yyyy"
               />
@@ -580,7 +579,7 @@ const OrderView = () => {
                 startDate={startDate}
                 endDate={endDate}
                 minDate={startDate}
-                className="form-input px-4 py-3 w-[150px] rounded-md border border-gray-300"
+                className="form-input px-4 py-3 w-[150px] rounded-md border border-gray-300 text-sm custom:text-base"
                 dateFormat="dd/MM/yyyy"
                 placeholderText="dd/mm/yyyy"
               />
@@ -596,7 +595,7 @@ const OrderView = () => {
                 setEndDateByNet(formatDateToTransform(date));
                 setDateFilter("date");
               }}
-              className="form-input px-4 py-3 w-[125px] rounded-md border border-gray-300 text-dark-blue placeholder-dark-blue"
+              className="form-input px-4 py-3 w-[125px] rounded-md border border-gray-300 text-dark-blue placeholder-dark-blue text-sm custom:text-base"
               dateFormat="dd/MM/yyyy"
               placeholderText={formatDateToShow(workDate)}
             />
@@ -607,7 +606,7 @@ const OrderView = () => {
               route_name: selectedRoute,
             })}
             onChange={handleRouteChange}
-            className="form-select px-4 py-3 rounded-md border border-gray-300"
+            className="form-select px-4 py-3 rounded-md border border-gray-300 text-sm custom:text-base"
           >
             <option value="">All routes</option>
             {uniqueRoutesArray.map((route) => (
@@ -625,7 +624,7 @@ const OrderView = () => {
           <select
             value={selectedGroup}
             onChange={handleGroupChange}
-            className="orm-select px-4 py-3 rounded-md border border-gray-300"
+            className="orm-select px-4 py-3 rounded-md border border-gray-300 text-sm custom:text-base"
           >
             <option value="">All groups</option>
             {[
@@ -642,10 +641,11 @@ const OrderView = () => {
           </select>
           <button
             disabled={!selectedRoute}
-            className={`flex ${selectedRoute
-              ? "bg-green text-white hover:bg-dark-blue"
-              : "bg-gray-grownet text-white cursor-not-allowed"
-              } py-3 px-4 rounded-lg font-medium transition-all`}
+            className={`flex ${
+              selectedRoute
+                ? "bg-green text-white hover:bg-dark-blue"
+                : "bg-gray-grownet text-white cursor-not-allowed"
+            } py-3 px-4 rounded-lg font-medium transition-all`}
             onClick={() => downloadCSV()}
           >
             <TableCellsIcon className="h-6" />

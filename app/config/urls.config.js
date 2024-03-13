@@ -1,7 +1,6 @@
 //BASE URL
-// const BASE_URL = "https://api.grownetapp.com/grownet/api/";
-const BASE_URL = "http://3.139.16.141/api/";
-// const BASE_URL = "http://grownetapp-LB-464556121.eu-west-2.elb.amazonaws.com/api/";
+const BASE_URL = "https://api.grownetapp.com/grownet/api/";
+// const BASE_URL = "http://3.139.16.141/api/";
 
 // Login
 export const loginUrl = `${BASE_URL}login/login`;
