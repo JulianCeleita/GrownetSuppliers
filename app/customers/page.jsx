@@ -171,14 +171,12 @@ const CustomersView = () => {
   };
 
   const requestSort = (key) => {
-    console.log("🚀 ~ requestSort ~ key:", key);
     let direction = "ascending";
     if (sortConfig.key === key && sortConfig.direction === "ascending") {
       direction = "descending";
     } else {
       direction = "ascending";
     }
-    console.log("direction and key:", sortConfig);
     setSortConfig({ key, direction });
   };
 
@@ -199,7 +197,6 @@ const CustomersView = () => {
     { id: 5, name: "Friday" },
     { id: 6, name: "Saturday" },
   ];
-  console.log(selectedDay + "hola");
   return (
     <Layout>
       <div className="-mt-16">

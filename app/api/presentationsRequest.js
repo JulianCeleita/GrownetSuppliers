@@ -43,7 +43,6 @@ export const fetchPresentationsSupplier = async (
         },
       }
     );
-    console.log("🚀 ~ response: presentationsSupplierUrl", response);
 
     const newPresentation = Array.isArray(response.data.presentations)
       ? response.data.presentations

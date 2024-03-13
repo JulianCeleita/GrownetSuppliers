@@ -132,7 +132,6 @@ export const fetchOrdersDate = async (
     setTotalNet(response.data);
     setOrders(response.data.orders);
     setIsLoading(false);
-    console.log("response data ", response.data);
   } catch (error) {
     console.error("Error al obtener el orders by date:", error);
   }
@@ -157,7 +156,6 @@ export const fetchOrdersDateByWorkDate = async (
       },
     });
     setOrdersWorkDate(response.data.orders.length);
-    // console.log("response data", response.data);
   } catch (error) {
     console.error("Error al obtener el orders by date:", error);
   }
@@ -174,7 +172,6 @@ export const fetchCustomersDate = async (
       date: date,
       accountNumber: accountNumber,
     };
-    console.log("postData", postData);
     try {
       const response = await axios.post(customersDate, postData, {
         headers: {
@@ -184,7 +181,6 @@ export const fetchCustomersDate = async (
 
       setCustomerDate(response.data.routes);
 
-      console.log("response.data.routes:", response.data);
     } catch (error) {
       console.error("Error al obtener customer date:", error);
     }

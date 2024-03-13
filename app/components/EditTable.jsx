@@ -33,7 +33,6 @@ export const fetchOrderDetail = async (
       ? response.data.order
       : [];
     setOrderDetail(response.data.order);
-    console.log("Detalles de la orden: ", response.data.order);
     setIsLoading(false);
   } catch (error) {
     console.error("Error al obtener el detalle:", error);
@@ -164,8 +163,8 @@ export default function EditTable({
   const [orderError, setOrderError] = useState("");
   const [isSelectDisabled, setIsSelectDisabled] = useState(true);
   const isEditable =
-    orderDetail.state_name === "Received" ||
-    orderDetail.state_name === "Packed";
+    orderDetail?.state_name === "Received" ||
+    orderDetail?.state_name === "Packed";
   const [existingCodes, setExistingCodes] = useState(new Set());
   const [previousCode, setPreviousCode] = useState({});
   const [activeInputIndex, setActiveInputIndex] = useState(null);
@@ -602,7 +601,6 @@ export default function EditTable({
     if (shouldSynchronize) {
       synchronizeExistingCodes();
       setShouldSynchronize(false);
-      console.log("exist", existingCodes);
     }
   }, [shouldSynchronize, rows]);
 
@@ -613,7 +611,6 @@ export default function EditTable({
       const inputToFocus = document.querySelector(
         `input[data-row-index="${activeInputIndex}"][data-column-index="${activeColumnIndex}"]`
       );
-      console.log("🚀 ~ setTimeout ~ inputToFocus:", inputToFocus);
       if (inputToFocus) {
         inputToFocus.focus();
       }
@@ -852,7 +849,6 @@ export default function EditTable({
       );
     }
   };
-  // console.log("hoveredRow", hoveredRow);
   return (
     <div className="flex flex-col p-8">
       {isLoading ? (

@@ -21,7 +21,7 @@ import {
 import CreateProduct from "../components/CreateProduct";
 import AutomaticShort from "../components/AutomaticShort";
 
-function Presentations() {
+function Purchasing() {
   const { token } = useTokenStore();
   const [uoms, setUoms] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -46,7 +46,7 @@ function Presentations() {
       fetchPresentationsSupplier(token, user, setProducts, setIsLoading);
     }
   }, [user, token]);
-  
+
   //Delete
   const [showDeleteModal, setShowDeleteModal] = useState(false);
 
@@ -80,9 +80,9 @@ function Presentations() {
   return (
     <Layout>
       <div>
-        <div className="flex justify-between p-8 -mt-24">
+        <div className="flex justify-between p-8 -mt-24 overflow">
           <h1 className="text-2xl text-white font-semibold ml-20 mt-2">
-            Catalogue list
+            Purchasing
           </h1>
 
           <div className="flex gap-4">
@@ -100,22 +100,25 @@ function Presentations() {
               onClick={() => setShowNewPresentations(true)}
             >
               <PlusCircleIcon className="h-6 w-6 mr-2 font-bold" />
-              New Presentations
+              New Purchasing
             </button>
           </div>
         </div>
-        <div className="flex items-center justify-center mb-20">
+        <div className="flex items-center justify-center mb-20 overflow-x-auto">
           <table className="w-[95%] bg-white rounded-2xl text-center shadow-[0_8px_30px_rgb(0,0,0,0.12)]">
             <thead className="sticky top-0 bg-white shadow-[0px_11px_15px_-3px_#edf2f7] ">
               <tr className="border-b-2 border-stone-100 text-dark-blue">
-                <th className="py-4 rounded-tl-lg">Code</th>
-                <th className="py-4">Product</th>
-                <th className="py-4">Unit of measurement</th>
-                <th className="py-4">Packsize</th>
-                <th className="py-4">Type</th>
-                <th className="py-4">Cost</th>
-                <th className="py-4">Qty</th>
-                <th className="py-4 rounded-tr-lg">Operate</th>
+                <th className="p-4 rounded-tl-lg">Code</th>
+                <th className="p-4">Requisition</th>
+                <th className="p-4">Short</th>
+                <th className="p-4">Supplier</th>
+                <th className="p-4 min-w-[120px]">Product</th>
+                <th className="p-4">Unit of measurement</th>
+                <th className="p-4">Packsize</th>
+                <th className="p-4">Type</th>
+                <th className="p-4">Cost</th>
+                <th className="p-4">Qty</th>
+                <th className="p-4 min-w-[100px] rounded-tr-lg">Operate</th>
               </tr>
             </thead>
             <tbody>
@@ -125,6 +128,9 @@ function Presentations() {
                   className="text-dark-blue border-b-2 border-stone-100 "
                 >
                   <td className="py-4">{presentation.code}</td>
+                  <td className="py-4">Req</td>
+                  <td className="py-4">Yes</td>
+                  <td className="py-4">Boba</td>
                   <td className="py-4">{presentation.product_name}</td>
                   <td className="py-4">{presentation.uom}</td>
                   <td className="py-4">{presentation.name}</td>
@@ -191,4 +197,4 @@ function Presentations() {
     </Layout>
   );
 }
-export default Presentations;
+export default Purchasing;

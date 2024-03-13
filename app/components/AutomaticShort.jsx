@@ -39,10 +39,6 @@ function AutomaticShort({ isvisible, onClose, setProducts, setIsLoading }) {
     setProduct((current) => !current);
   };
 
-  useEffect(() => {
-    console.log("🚀 ~ AutomaticShort ~ selectedShort:", selectedShort)
-  }, [selectedShort])
-
   //Api products
   useEffect(() => {
     const fetchDataCategories = async () => {
@@ -52,7 +48,6 @@ function AutomaticShort({ isvisible, onClose, setProducts, setIsLoading }) {
             Authorization: `Bearer ${token}`,
           },
         });
-        console.log("🚀 ~ fetchDataCategories ~ response:", response)
 
         const sortedCategories = response.data.categories.sort((a, b) =>
           a.name.localeCompare(b.name)
@@ -103,14 +98,12 @@ function AutomaticShort({ isvisible, onClose, setProducts, setIsLoading }) {
       id: selecteProductsStatus,
       short: selectedShort
     }
-    console.log("🚀 ~ sendDataProduct ~ postData:", postDataProduct)
     axios.post(productShort, postDataProduct, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
     })
       .then((response) => {
-        console.log("🚀 ~ .then ~ response:", response)
         if (user.id_supplier) {
           fetchPresentationsSupplier(token, user, setProducts, setIsLoading);
         } else {
@@ -128,15 +121,12 @@ function AutomaticShort({ isvisible, onClose, setProducts, setIsLoading }) {
       id: selectedCategoriesId,
       short: selectedShort
     }
-    console.log("🚀 ~ sendDataCategories ~ postData:", postDataCategories)
     axios.post(categoriesShort, postDataCategories, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
     })
       .then((response) => {
-        console.log("🚀 ~ sendDataCategories ~ productShort:", categoriesShort)
-        console.log("🚀 ~ .then ~ response:", response)
         if (user.id_supplier) {
           fetchPresentationsSupplier(token, user, setProducts, setIsLoading);
         } else {

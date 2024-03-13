@@ -52,7 +52,6 @@ function CreateProduct({ isvisible, onClose, setProducts, setIsLoading }) {
         const sortedTaxes = response.data.taxes.sort(
           (a, b) => a.worth - b.worth
         );
-        console.log("🚀 ~ fetchTaxes ~ sortedTaxes:", sortedTaxes)
         setTax(sortedTaxes);
         setSelectedTax(sortedTaxes[0].id || "");
       } catch (error) {
@@ -169,7 +168,6 @@ function CreateProduct({ isvisible, onClose, setProducts, setIsLoading }) {
             response.response.data.message.includes("Already existing code")
           ) {
             setRepeatedCode(true);
-            console.log("Already existing code");
           }
         }
         console.error("Error al agregar la nueva presentación: ", error);

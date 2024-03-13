@@ -32,7 +32,6 @@ const initialRowsState = {
 };
 
 const focusSelectInRow = (rowIndex, selectRefs) => {
-  console.log("entr0 aca focusSelectInRow ");
   if (selectRefs.current[rowIndex]) {
     selectRefs.current[rowIndex].focus();
   }
@@ -60,14 +59,11 @@ const useFocusOnEnter = (
       if (fieldName === "quantity" && event.target.value.trim() === "") {
         return;
       }
-      console.log("entr0 aca ", fieldName);
       if (codeFocus && fieldName === "Code") {
-        console.log("entr0 aca inputToFocus fieldName", fieldName);
         const inputToFocus = document.querySelector(
           `input[data-row-index="${activeInputIndex}"][data-column-index="${activeColumnIndex}"]`
         );
         if (inputToFocus != null) {
-          console.log("entr0 aca inputToFocus ", activeColumnIndex);
           inputToFocus.focus();
         }
         return;
@@ -497,10 +493,6 @@ export default function Table({
     }
   };
 
-  useEffect(() => {
-    console.log(activeInputIndex);
-  }, [activeInputIndex]);
-
   const handleCloseModal = (event) => {
     event.stopPropagation();
     setShowErrorDuplicate(false);
@@ -601,14 +593,11 @@ export default function Table({
   };
 
   const createOrder = async () => {
-    console.log("Checking if I can send order...");
     if (sendingOrder) {
-      console.log("I am already sending the past order...");
       return;
     }
     setConfirmCreateOrder(false);
     setSendingOrder(true);
-    console.log("I am sending order...");
 
     try {
       if (!customers) {
@@ -658,14 +647,12 @@ export default function Table({
       if (response.data.status !== 200) {
         setShowErrorOrderModal(true);
         setSendingOrder(false);
-        console.log("Order error", response.data);
         setOrderError(
           "Please check that the delivery day is available for this customer and that all products are correct."
         );
         return;
       }
       setSendingOrder(false);
-      console.log("Order ended", response.data);
       setShowConfirmModal(true);
       setRows(Array.from({ length: 5 }, () => ({ ...initialRowsState })));
       setSpecialRequirements("");
