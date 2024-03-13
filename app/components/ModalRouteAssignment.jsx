@@ -3,7 +3,6 @@ import Spinner from './Spinner';
 import { fetchAssignRoute } from '../api/assignRouteRequest';
 import useTokenStore from '../store/useTokenStore';
 import { fetchVehicleAndDriver } from '../api/vehiclesAndDriversRequest';
-import { set } from 'date-fns';
 
 export const ModalRouteAssignment = ({ show, onClose }) => {
 
