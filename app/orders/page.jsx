@@ -532,7 +532,7 @@ const OrderView = () => {
           >
             <PlusCircleIcon className="h-6 w-6 mr-1" /> New Order
           </Link>
-          <div className="flex items-center gap-2">
+          {/* <div className="flex items-center gap-2">
             <label className="bg-dark-blue p-5 text-sm text-white h-12 w-38 hover:scale-105 transition-all font-semibold rounded-full cursor-pointer flex flex-col items-center justify-center">
               <div className="flex">
                 <ArrowUpTrayIcon className="h-6 w-6 mr-1" /> Upload CSV
@@ -561,7 +561,7 @@ const OrderView = () => {
                 </button>
               </>
             )}
-          </div>
+          </div> */}
         </div>
         <div
           className={`flex ml-10 mb-0 items-center space-x-2  mt-${
