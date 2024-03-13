@@ -140,7 +140,8 @@ export const fetchOrdersDate = async (
 export const fetchOrdersDateByWorkDate = async (
   token,
   workDate,
-  setOrdersWorkDate
+  setOrdersWorkDate,
+  setOrdersLoadingToday
 ) => {
   const postData = {
     date: {
@@ -155,6 +156,8 @@ export const fetchOrdersDateByWorkDate = async (
         "Content-Type": "application/json",
       },
     });
+    console.log("🚀 ~ response:", response)
+    setOrdersLoadingToday(response.data.orders.filter(order => order.status_order === "Loaded").length);
     setOrdersWorkDate(response.data.orders.length);
   } catch (error) {
     console.error("Error al obtener el orders by date:", error);
