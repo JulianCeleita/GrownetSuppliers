@@ -127,3 +127,6 @@ export const categoriesShort = `${BASE_URL}categories/short`;
 //     route_id
 // }
 export const assignRoute = `${BASE_URL}logisticRoute/assignRoute`;
+
+// get Vehicles and Drivers
+export const vehiclesAndDrivers = `${BASE_URL}deliveryRoutes/vehiclesAndEmployees`;

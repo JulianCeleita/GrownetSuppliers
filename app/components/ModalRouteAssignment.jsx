@@ -2,6 +2,8 @@ import React, { useEffect, useRef, useState } from 'react'
 import Spinner from './Spinner';
 import { fetchAssignRoute } from '../api/assignRouteRequest';
 import useTokenStore from '../store/useTokenStore';
+import { fetchVehicleAndDriver } from '../api/vehiclesAndDriversRequest';
+import { set } from 'date-fns';
 
 export const ModalRouteAssignment = ({ show, onClose }) => {
 
@@ -9,6 +11,8 @@ export const ModalRouteAssignment = ({ show, onClose }) => {
     const [loading, setLoading] = useState(false);
     const { token } = useTokenStore();
     const [statusFetch, setStatusFetch] = useState({ status: 0, message: '' });
+    const [vehicles, setVehicles] = useState([])
+    const [drivers, setDrivers] = useState([])
     const [form, setForm] = useState({
         driverId: '',
         vehicleId: '',
@@ -43,9 +47,32 @@ export const ModalRouteAssignment = ({ show, onClose }) => {
         setStatusFetch({ status: status ? 1 : 2, message });
     };
 
+    const getVehiclesAndDrivers = async () => {
+        const { status, data } = await fetchVehicleAndDriver(token);
+        if (status) {
+            setDrivers(data.employees);
+            setVehicles(data.vehicles);
+        } else {
+            setStatusFetch({ status: 2, message: 'Error fetching vehicles and drivers' });
+        }
+    };
+
     useEffect(() => {
         if (show) {
             modalRef.current.focus();
+            getVehiclesAndDrivers();
+        }
+
+        return () => {
+            setForm({
+                driverId: '',
+                vehicleId: '',
+                date: '',
+                routeId: '',
+            });
+            setStatusFetch({ status: 0, message: '' });
+            setVehicles([]);
+            setDrivers([]);
         }
     }, [show]);
 
@@ -71,8 +98,6 @@ export const ModalRouteAssignment = ({ show, onClose }) => {
         return null;
     }
 
-    const drivers = ['27']
-    const vehicles = ['1', '2', '3']
     const routes = ['R1', 'R2', 'R3', 'R4', 'R5', 'R6', 'R7', 'R8', 'R9', 'R100']
 
     return (
@@ -106,7 +131,7 @@ export const ModalRouteAssignment = ({ show, onClose }) => {
                         >
                             <option value="">Select a driver</option>
                             {drivers.map((driver, index) => (
-                                <option key={index} value={driver}>{driver}</option>
+                                <option key={index} value={driver.id}>{driver.name}</option>
                             ))}
 
                         </select>
@@ -125,7 +150,7 @@ export const ModalRouteAssignment = ({ show, onClose }) => {
                         >
                             <option value="">Select a vehicle</option>
                             {vehicles.map((vehicle, index) => (
-                                <option key={index} value={vehicle}>{vehicle}</option>
+                                <option key={index} value={vehicle.id}>{vehicle.plaque}</option>
                             ))}
 
                         </select>
