@@ -39,6 +39,7 @@ const CustomerDetailPage = ({
   const [telephoneCustomer, setTelephoneCustomer] = useState("");
   const [postCode, setPostCode] = useState("");
   const [specialInstructions, setSpecialInstructions] = useState("");
+  const [lastOrderDate, setLastOrderDate] = useState("");
   const [mainContact, setMainContact] = useState("");
   const [countriesIndicative, setCountriesIndicative] = useState("");
   const [accountEmail, setAccountEmail] = useState("");
@@ -101,6 +102,7 @@ const CustomerDetailPage = ({
       setSelectedGroup(detailCustomer[0]?.group_id);
       setRouteName(detailCustomer[0]?.route);
       setGroupName(detailCustomer[0]?.group);
+      setLastOrderDate(detailCustomer[0]?.last_order_date);
 
       const { start, end } = handleGetHours(
         detailCustomer[0]?.delivery_window || ""
@@ -472,6 +474,9 @@ const CustomerDetailPage = ({
                             setSpecialInstructions(e.target.value)
                           }
                         />
+                      </div>
+                      <div className="flex items-center mt-3 ">
+                        <label className="mr-2">Last order: <span className="text-primary-blue">{lastOrderDate}</span></label>
                       </div>
                     </div>
                     <div className="ml-5 flex flex-col w-[50%] ">
