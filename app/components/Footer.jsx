@@ -5,27 +5,30 @@ import Link from "next/link";
 export default function Footer() {
   return (
     <footer className=" bottom-0 w-full bg-dark-blue rounded-t-3xl sticky top-[100vh]">
-      <div className="container px-5 py-5 mx-auto flex items-center sm:flex-row flex-col">
-        <Link href="#" className="ml-4">
-          <Image
-            src="/logoGrownetBlanco.svg"
-            width={100}
-            height={100}
-            alt="Logo Grownet"
-            priority={true}
-          />
-        </Link>
-        <p className="text-sm text-gray-300 sm:ml-4 sm:pl-4 sm:border-l-2 sm:border-gray-200 sm:py-2 sm:mt-0 mt-4">
-          © 2023 Grownet —
-          <a
-            href="https://twitter.com/knyttneve"
-            className="text-gray-400 ml-1"
-            rel="noopener noreferrer"
-            target="_blank"
-          >
-            All Rights Reserved.
-          </a>
-        </p>
+      <div className="container px-5 py-5 mx-auto flex items-center justify-between">
+        <div className="flex items-center justify-center">
+          <Link href="#" className="ml-4">
+            <Image
+              src="/logoGrownetBlanco.svg"
+              width={100}
+              height={100}
+              alt="Logo Grownet"
+              priority={true}
+            />
+          </Link>
+          <p className="text-sm text-gray-300 sm:ml-4 sm:pl-4 sm:border-l-2 sm:border-gray-200 ml-5">
+            © 2023 Grownet —
+            <a
+              href="https://twitter.com/knyttneve"
+              className="text-gray-400 ml-1"
+              rel="noopener noreferrer"
+              target="_blank"
+            >
+              All Rights Reserved.
+            </a>
+          </p>
+        </div>
+
         <span className="inline-flex sm:ml-auto sm:mt-0 mt-4 justify-center sm:justify-start">
           <a className="text-gray-300">
             <svg
