@@ -497,7 +497,7 @@ const OrderDetailPage = () => {
           onChange={handleDateChange}
           min={getCurrentDate()}
         />
-        <label className="ml-3">Inv. number: </label>
+        <label className="ml-2">Inv. number: </label>
         <input
           type="text"
           value={
@@ -506,7 +506,7 @@ const OrderDetailPage = () => {
           readOnly
           className="border ml-2 p-1.5 rounded-md w-[80px]"
         />
-        <label className="mx-3 text-lg">Customer Ref: </label>
+        <label className="mx-2">Customer Ref: </label>
         <input
           type="text"
           value={customersRef}
