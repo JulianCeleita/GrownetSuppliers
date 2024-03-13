@@ -407,7 +407,7 @@ const OrderDetailPage = () => {
           </div>
         </div>
       </div>
-      <section className="absolute top-0 right-10 mt-4">
+      <section className="absolute top-0 right-4 mt-4">
         <div className="flex justify-end">
           <button
             onClick={() => setConfirmCreateOrder(true)}
@@ -484,7 +484,11 @@ const OrderDetailPage = () => {
           </div>
         </div>
       </section>
-      <div className="flex items-center ml-5 mt-10 w-[70%] px-2 py-1 rounded-md">
+      <div
+        className={`flex items-center ml-5 w-[70%] px-2 py-1 rounded-md ${
+          window.innerWidth <= 1270 ? "mt-[80px]" : "mt-[25px]"
+        }`}
+      >
         <label className="text-dark-blue">Date: </label>
         <input
           type="date"
