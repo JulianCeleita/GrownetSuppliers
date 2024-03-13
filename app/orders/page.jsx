@@ -564,7 +564,7 @@ const OrderView = () => {
           </div> */}
         </div>
         <div
-          className={`flex ml-10 mb-0 items-center space-x-2  mt-${
+          className={`flex ml-7 mb-0 items-center space-x-2  mt-${
             filterType === "range" && window.innerWidth < 1500
               ? "[45px]"
               : filterType === "date" && window.innerWidth < 1300
@@ -579,7 +579,7 @@ const OrderView = () => {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search"
-              className="placeholder-[#04444F] outline-none text-sm custom:text-base"
+              className="placeholder-[#04444F] outline-none text-sm custom:text-base w-[170px]"
             />
             {searchQuery != "" && (
               <button
@@ -596,7 +596,7 @@ const OrderView = () => {
           <select
             value={filterType}
             onChange={(e) => setFilterType(e.target.value)}
-            className="form-select px-4 py-3 rounded-md border border-gray-300 text-sm custom:text-base"
+            className="form-select px-2 py-3 rounded-md border border-gray-300 text-sm custom:text-base w-[155px]"
           >
             <option value="range">Filter by range</option>
             <option value="date">Filter by date</option>
@@ -618,7 +618,7 @@ const OrderView = () => {
                 selectsStart
                 startDate={startDate}
                 endDate={endDate}
-                className="form-input px-4 py-3 rounded-md border border-gray-300 w-[150px] text-sm custom:text-base"
+                className="form-input px-3 py-3 rounded-md border border-gray-300 w-[120px] text-sm custom:text-base"
                 dateFormat="dd/MM/yyyy"
                 placeholderText="dd/mm/yyyy"
               />
@@ -638,7 +638,7 @@ const OrderView = () => {
                 startDate={startDate}
                 endDate={endDate}
                 minDate={startDate}
-                className="form-input px-4 py-3 w-[150px] rounded-md border border-gray-300 text-sm custom:text-base"
+                className="form-input px-3 py-3 w-[120px] rounded-md border border-gray-300 text-sm custom:text-base"
                 dateFormat="dd/MM/yyyy"
                 placeholderText="dd/mm/yyyy"
               />
@@ -654,7 +654,7 @@ const OrderView = () => {
                 setEndDateByNet(formatDateToTransform(date));
                 setDateFilter("date");
               }}
-              className="form-input px-4 py-3 w-[125px] rounded-md border border-gray-300 text-dark-blue placeholder-dark-blue text-sm custom:text-base"
+              className="form-input px-3 py-3 w-[95px] rounded-md border border-gray-300 text-dark-blue placeholder-dark-blue text-sm custom:text-base"
               dateFormat="dd/MM/yyyy"
               placeholderText={formatDateToShow(workDate)}
             />
@@ -665,7 +665,7 @@ const OrderView = () => {
               route_name: selectedRoute,
             })}
             onChange={handleRouteChange}
-            className="form-select px-4 py-3 rounded-md border border-gray-300 text-sm custom:text-base"
+            className="form-select px-3 py-3 rounded-md border border-gray-300 text-sm custom:text-base"
           >
             <option value="">All routes</option>
             {uniqueRoutesArray.map((route) => (
@@ -683,7 +683,7 @@ const OrderView = () => {
           <select
             value={selectedGroup}
             onChange={handleGroupChange}
-            className="orm-select px-4 py-3 rounded-md border border-gray-300 text-sm custom:text-base"
+            className="orm-select px-3 py-3 rounded-md border border-gray-300 text-sm custom:text-base"
           >
             <option value="">All groups</option>
             {[
@@ -728,7 +728,7 @@ const OrderView = () => {
                     <div className="flex flex-col">
                       <div className="flex items-center justify-center text-center">
                         <div className="pr-1">
-                          <p className="text-4xl  2xl:text-5xl font-bold text-primary-blue">
+                          <p className="text-[35px]  2xl:text-5xl font-bold text-primary-blue">
                             {ordersWorkDate}
                           </p>
                         </div>
@@ -773,7 +773,7 @@ const OrderView = () => {
                 </div>
               )}
 
-            <div className="flex gap-3 px-4 py-4 items-center justify-center rounded-3xl bg-white shadow-[0_8px_30px_rgb(0,0,0,0.12)]">
+            <div className="flex gap-3 px-3 py-4 items-center justify-center rounded-3xl bg-white shadow-[0_8px_30px_rgb(0,0,0,0.12)]">
               <div>
                 <h1 className="flex text-lg 2xl:text-xl font-bold items-center justify-center">
                   Total net
