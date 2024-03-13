@@ -30,6 +30,7 @@ import Image from "next/image";
 import ModalOrderError from "../components/ModalOrderError";
 import { saveAs } from "file-saver";
 import MenuDelivery from "../components/MenuDelivery";
+import { ModalRouteAssignment } from "../components/ModalRouteAssignment";
 
 export const customStyles = {
   placeholder: (provided) => ({
@@ -77,6 +78,11 @@ const DeliveryView = () => {
   const [errorMessage, setErrorMessage] = useState("");
   const [showMenuDelivery, setShowMenuDelivery] = useState(false);
   const [routeDetailsVisible, setRouteDetailsVisible] = useState({});
+  const [showModalAssignment, setShowModalAssignment] = useState(false);
+
+  const onCloseModalAssignment = () => {
+    setShowModalAssignment(false);
+  };
 
   const formatDateToShow = (dateString) => {
     if (!dateString) return "Loading...";
@@ -92,10 +98,10 @@ const DeliveryView = () => {
 
   const formattedDate = selectedDate
     ? new Date(selectedDate).toLocaleDateString("es-CO", {
-        day: "2-digit",
-        month: "2-digit",
-        year: "2-digit",
-      })
+      day: "2-digit",
+      month: "2-digit",
+      year: "2-digit",
+    })
     : formatDateToShow(workDate);
   const formatDateToTransform = (dateString) => {
     const date = new Date(dateString);
@@ -264,15 +270,22 @@ const DeliveryView = () => {
           <h1 className="text-2xl text-light-green font-semibold mt-1 ml-24">
             Deliveries <span className="text-white">list</span>
           </h1>
+          <div className="flex items-center space-x-4">
+            <button
+              onClick={() => setShowModalAssignment(true)}
+              className="flex items-center space-x-2 py-2 px-4 rounded-md bg-green text-white font-semibold"
+            >
+              <h1>Route assignments</h1>
+            </button>
+          </div>
         </div>
         <div
-          className={`flex ml-10 mt-4 mb-0 items-center space-x-2 mt-${
-            filterType === "range" && window.innerWidth < 1500
-              ? "[45px]"
-              : filterType === "date" && window.innerWidth < 1300
+          className={`flex ml-10 mt-4 mb-0 items-center space-x-2 mt-${filterType === "range" && window.innerWidth < 1500
+            ? "[45px]"
+            : filterType === "date" && window.innerWidth < 1300
               ? "[50px]"
               : "[20px]"
-          }
+            }
           `}
         >
           <div className="border border-gray-300 rounded-md py-3 px-2 flex items-center">
@@ -454,6 +467,10 @@ const DeliveryView = () => {
         onClose={() => setShowErrorCsv(false)}
         title={"Error downloading csv"}
         message={errorMessage}
+      />
+      <ModalRouteAssignment
+        show={showModalAssignment}
+        onClose={onCloseModalAssignment}
       />
     </Layout>
   );

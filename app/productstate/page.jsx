@@ -21,7 +21,7 @@ import {
 import CreateProduct from "../components/CreateProduct";
 import AutomaticShort from "../components/AutomaticShort";
 
-function Purchasing() {
+function ProductState() {
   const { token } = useTokenStore();
   const [uoms, setUoms] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -80,87 +80,59 @@ function Purchasing() {
   return (
     <Layout>
       <div>
-        <div className="flex justify-between p-8 -mt-24 overflow">
+        <div className="flex justify-between p-8 -mt-24">
           <h1 className="text-2xl text-white font-semibold ml-20 mt-2">
-            <span className="text-light-green">Purchasing </span> list
+            <span className="text-light-green">Products state </span>list
           </h1>
 
           <div className="flex gap-4">
-            <button
-              className="flex bg-dark-blue py-3 px-4 rounded-lg text-white font-medium hover:bg-dark-blue hover:scale-110 transition-all"
-              type="button"
-              onClick={() => setShowAutomaticShorts(true)}
-            >
-              <NoSymbolIcon className="h-6 w-6 mr-2 font-bold" />
-              Automatic Shorts
-            </button>
-            <button
+            {/* <button
               className="flex bg-green py-3 px-4 rounded-lg text-white font-medium hover:scale-110 transition-all"
               type="button"
               onClick={() => setShowNewPresentations(true)}
             >
               <PlusCircleIcon className="h-6 w-6 mr-2 font-bold" />
-              New Purchasing
-            </button>
+              New Presentations
+            </button> */}
           </div>
         </div>
-        <div className="flex items-center justify-center mb-20 overflow-x-auto">
-          <table className="w-[95%] bg-white first-line:bg-white rounded-2xl text-left shadow-[rgba(17,_17,_26,_0.1)_0px_0px_16px]">
+        <div className="flex items-center justify-center mb-20">
+          <table className="w-[95%] bg-white rounded-2xl  shadow-[0_8px_30px_rgb(0,0,0,0.12)]">
             <thead className="sticky top-0 bg-white shadow-[0px_11px_15px_-3px_#edf2f7] ">
               <tr className="border-b-2 border-stone-100 text-dark-blue">
-                <th className="p-4 rounded-tl-lg">Code</th>
-                <th className="p-4 rounded-tl-lg">Category</th>
-                <th className="p-4 rounded-tl-lg">Description</th>
-                <th className="p-4">Requisition</th>
-                <th className="p-4">Short</th>
-                <th className="p-4">Supplier</th>
-                <th className="p-4">SOH</th>
-                <th className="p-4">Ordered</th>
-                <th className="p-4">Cost</th>
-                <th className="p-4">Total cost</th>
-                <th className="p-4">New order</th>
-                <th className="p-4 rounded-tr-lg">Notes</th>
+                <th className="py-4 rounded-tl-lg">Code</th>
+                <th className="py-4">Product</th>
+                <th className="py-4">Unit of measurement</th>
+                <th className="py-4">Packsize</th>
+                <th className="py-4">Type</th>
+                <th className="py-4">Cost</th>
+                <th className="py-4">Qty</th>
+                <th className="py-4">Status</th>
+                {/* <th className="py-4 rounded-tr-lg">Operate</th> */}
               </tr>
             </thead>
             <tbody>
-              <tr className="text-dark-blue border-b-2 border-stone-100">
-                <td className="py-4 pl-3">Test</td>
-                <td className="py-4">Test</td>
-                <td className="py-4">Test</td>
-                <td className="py-4">Test</td>
-                <td className="py-4">Test</td>
-                <td className="py-4">
-                  <input placeholder="Edit" className="w-20"></input>
-                </td>
-                <td className="py-4">Test</td>
-                <td className="py-4">Test</td>
-                <td className="py-4">
-                  <input placeholder="Edit" className="w-20"></input>
-                </td>
-                <td className="py-4">£ Test</td>
-                <td className="py-4">
-                  <input placeholder="Edit" className="w-20"></input>
-                </td>
-                <td className="py-4">
-                  <input placeholder="Edit" className="w-20"></input>
-                </td>
-              </tr>
-              {/* {sortedPresentations.map((presentation) => (
+              {sortedPresentations.map((presentation) => (
                 <tr
                   key={presentation.id}
-                  className="text-dark-blue border-b-2 border-stone-100 "
+                  className="text-dark-blue border-b-2 border-stone-100"
                 >
-                  <td className="py-4">{presentation.code}</td>
-                  <td className="py-4">Req</td>
-                  <td className="py-4">Yes</td>
-                  <td className="py-4">Boba</td>
+                  <td className="py-4 pl-3">{presentation.code}</td>
                   <td className="py-4">{presentation.product_name}</td>
                   <td className="py-4">{presentation.uom}</td>
                   <td className="py-4">{presentation.name}</td>
                   <td className="py-4">{presentation.type}</td>
                   <td className="py-4">£ {presentation.cost}</td>
                   <td className="py-4">{presentation.quantity}</td>
-                  <td className="py-4 flex justify-center">
+                  <td className="py-4 px-3">
+                    <div className="flex items-center">
+                      <div
+                        className={`bg-green w-2 h-2 mr-2 rounded-full`}
+                      ></div>
+                      Status
+                    </div>
+                  </td>
+                  {/* <td className="py-4 pl-3 flex justify-center">
                     <button
                       onClick={() => {
                         setSelectedPresentation(presentation);
@@ -181,9 +153,9 @@ function Purchasing() {
                       <TrashIcon className="h-6 w-6 mr-1" />
                       Delete
                     </button>
-                  </td>
+                  </td> */}
                 </tr>
-              ))} */}
+              ))}
             </tbody>
           </table>
         </div>
@@ -205,12 +177,7 @@ function Purchasing() {
           setProducts={setProducts}
           setIsLoading={setIsLoading}
         />
-        <AutomaticShort
-          isvisible={showAutomaticShorts}
-          onClose={() => setShowAutomaticShorts(false)}
-          setProducts={setProducts}
-          setIsLoading={setIsLoading}
-        />
+
         {isLoading && (
           <div className="flex justify-center items-center mb-20">
             <div className="loader"></div>
@@ -220,4 +187,4 @@ function Purchasing() {
     </Layout>
   );
 }
-export default Purchasing;
+export default ProductState;

@@ -12,6 +12,7 @@ import {
   BuildingStorefrontIcon,
   ClipboardIcon,
   SunIcon,
+  CubeIcon,
   TruckIcon,
   CurrencyEuroIcon,
 } from "@heroicons/react/24/outline";
@@ -30,7 +31,6 @@ import useWorkDateStore from "../store/useWorkDateStore";
 import Swal from "sweetalert2";
 import ModalSuccessfull from "./ModalSuccessfull";
 import ModalOrderError from "./ModalOrderError";
-
 
 const SideBar = () => {
   const { removeToken, setToken } = useTokenStore();
@@ -60,14 +60,14 @@ const SideBar = () => {
       user.id_supplier,
       setEndDateByNet,
       setStartDateByNet
-    )
+    );
 
     try {
       const data = {
         supplier: user.id_supplier,
         day: workDate,
       };
-      ("🚀 ~ handleButtonOpen ~ data:", data)
+      "🚀 ~ handleButtonOpen ~ data:", data;
 
       const response = await axios.post(openDay, data, {
         headers: {
@@ -76,7 +76,10 @@ const SideBar = () => {
       });
     } catch (error) {
       // Maneja los errores de la solicitud
-      console.error("Error al enviar la solicitud POST:", error.response.data.message);
+      console.error(
+        "Error al enviar la solicitud POST:",
+        error.response.data.message
+      );
       Swal.fire({
         icon: "error",
         title: "Oops...",
@@ -106,7 +109,9 @@ const SideBar = () => {
     } catch (error) {
       console.error("Error al enviar la solicitud POST:", error);
       setShowModalError(true);
-      setMessageError(error.response.data.response_start_operation.message_start_operation);
+      setMessageError(
+        error.response.data.response_start_operation.message_start_operation
+      );
     }
   };
   useEffect(() => {
@@ -175,7 +180,9 @@ const SideBar = () => {
                           height={80}
                         />
                         <div className="ml-5">
-                          <h1 className="font-semibold text-lg">Hi, {user?.name} 🚀</h1>
+                          <h1 className="font-semibold text-lg">
+                            Hi, {user?.name} 📦🚀
+                          </h1>
                           <p className="font-normal text-[15px]">
                             Welcome to suppliers
                           </p>
@@ -187,10 +194,11 @@ const SideBar = () => {
                     <div className="pl-4">
                       <Link
                         href="/users"
-                        className={`flex gap-2 py-3 transition-all ${pathname === "/users"
-                          ? "text-light-green"
-                          : "text-white"
-                          } hover:text-light-green`}
+                        className={`flex gap-2 py-3 transition-all ${
+                          pathname === "/users"
+                            ? "text-light-green"
+                            : "text-white"
+                        } hover:text-light-green`}
                       >
                         <UserIcon className="h-6 w-6" />
                         <h3>Users</h3>
@@ -198,21 +206,34 @@ const SideBar = () => {
 
                       <Link
                         href="/orders"
-                        className={`flex gap-2 py-3 transition-all ${pathname === "/orders"
-                          ? "text-light-green"
-                          : "text-white"
-                          } hover:text-light-green`}
+                        className={`flex gap-2 py-3 transition-all ${
+                          pathname === "/orders"
+                            ? "text-light-green"
+                            : "text-white"
+                        } hover:text-light-green`}
                       >
                         <ShoppingCartIcon className="h-6 w-6" />
                         <h3>Orders</h3>
                       </Link>
+                      <Link
+                        href="/productstate"
+                        className={`flex gap-2 py-3 transition-all ${
+                          pathname === "/productstate"
+                            ? "text-light-green"
+                            : "text-white"
+                        } hover:text-light-green`}
+                      >
+                        <CubeIcon className="h-6 w-6" />
+                        <h3>Products State</h3>
+                      </Link>
 
                       <Link
                         href="/calendar"
-                        className={`flex gap-2 py-3 transition-all ${pathname === "/calendar"
-                          ? "text-light-green"
-                          : "text-white"
-                          } hover:text-light-green`}
+                        className={`flex gap-2 py-3 transition-all ${
+                          pathname === "/calendar"
+                            ? "text-light-green"
+                            : "text-white"
+                        } hover:text-light-green`}
                       >
                         <CalendarIcon className="h-6 w-6" />
                         <div>Calendar</div>
@@ -220,11 +241,14 @@ const SideBar = () => {
 
                       <div className="relative py-3">
                         <button
-                          className={`flex justify-between w-full ${openMenu === true
-                            ? "text-light-green"
-                            : "text-white"
-                            } hover:text-light-green`}
-                          onClick={() => setOpenMenuTransport(!openMenuTransport)}
+                          className={`flex justify-between w-full ${
+                            openMenu === true
+                              ? "text-light-green"
+                              : "text-white"
+                          } hover:text-light-green`}
+                          onClick={() =>
+                            setOpenMenuTransport(!openMenuTransport)
+                          }
                         >
                           <div className="flex gap-2">
                             <TruckIcon className="h-6 w-6" />
@@ -241,10 +265,11 @@ const SideBar = () => {
                           <div className="mt-3 border-l-[1px] border-light-green pl-5">
                             <Link href="/deliveries" className="text-white">
                               <h3
-                                className={`hover:bg-[#046373] px-2 py-2 pl-4 rounded-xl w-[360px] mb-2 ${pathname === "/products"
-                                  ? "bg-[#046373]"
-                                  : null
-                                  }`}
+                                className={`hover:bg-[#046373] px-2 py-2 pl-4 rounded-xl w-[360px] mb-2 ${
+                                  pathname === "/products"
+                                    ? "bg-[#046373]"
+                                    : null
+                                }`}
                               >
                                 Deliveries
                               </h3>
@@ -253,14 +278,14 @@ const SideBar = () => {
                         )}
                       </div>
 
-
                       {user && user.rol_name === "AdminGrownet" && (
                         <div className="relative py-3">
                           <button
-                            className={`flex justify-between w-full ${openMenu === true
-                              ? "text-light-green"
-                              : "text-white"
-                              } hover:text-light-green`}
+                            className={`flex justify-between w-full ${
+                              openMenu === true
+                                ? "text-light-green"
+                                : "text-white"
+                            } hover:text-light-green`}
                             onClick={() => setOpenMenu(!openMenu)}
                           >
                             <div className="flex gap-2">
@@ -278,30 +303,33 @@ const SideBar = () => {
                             <div className="mt-3 border-l-[1px] border-light-green pl-5">
                               <Link href="/suppliers" className="text-white">
                                 <h3
-                                  className={`hover:bg-[#046373] px-2 py-2 pl-4 rounded-xl w-[360px] mb-2 ${pathname === "/suppliers"
-                                    ? "bg-[#046373]"
-                                    : null
-                                    }`}
+                                  className={`hover:bg-[#046373] px-2 py-2 pl-4 rounded-xl w-[360px] mb-2 ${
+                                    pathname === "/suppliers"
+                                      ? "bg-[#046373]"
+                                      : null
+                                  }`}
                                 >
                                   Suppliers
                                 </h3>
                               </Link>
                               <Link href="/products" className="text-white">
                                 <h3
-                                  className={`hover:bg-[#046373] px-2 py-2 pl-4 rounded-xl w-[360px] mb-2 ${pathname === "/products"
-                                    ? "bg-[#046373]"
-                                    : null
-                                    }`}
+                                  className={`hover:bg-[#046373] px-2 py-2 pl-4 rounded-xl w-[360px] mb-2 ${
+                                    pathname === "/products"
+                                      ? "bg-[#046373]"
+                                      : null
+                                  }`}
                                 >
                                   Products
                                 </h3>
                               </Link>
                               <Link href="/categories" className="text-white">
                                 <h3
-                                  className={`hover:bg-[#046373] px-2 py-2 pl-4 rounded-xl w-[360px] mb-2 ${pathname === "/categories"
-                                    ? "bg-[#046373]"
-                                    : null
-                                    }`}
+                                  className={`hover:bg-[#046373] px-2 py-2 pl-4 rounded-xl w-[360px] mb-2 ${
+                                    pathname === "/categories"
+                                      ? "bg-[#046373]"
+                                      : null
+                                  }`}
                                 >
                                   Categories
                                 </h3>
@@ -315,10 +343,11 @@ const SideBar = () => {
                           user.rol_name === "AdminGrownet") && (
                           <Link
                             href="/customers"
-                            className={`flex gap-2 py-3 transition-all ${pathname === "/customers"
-                              ? "text-light-green"
-                              : "text-white"
-                              } hover:text-light-green`}
+                            className={`flex gap-2 py-3 transition-all ${
+                              pathname === "/customers"
+                                ? "text-light-green"
+                                : "text-white"
+                            } hover:text-light-green`}
                           >
                             <BuildingStorefrontIcon className="h-6 w-6" />
                             <h3>Customers</h3>
@@ -329,10 +358,11 @@ const SideBar = () => {
                           user.rol_name === "AdminGrownet") && (
                           <Link
                             href="/presentations"
-                            className={`flex gap-2 py-3 transition-all ${pathname === "/presentations"
-                              ? "text-light-green"
-                              : "text-white"
-                              } hover:text-light-green`}
+                            className={`flex gap-2 py-3 transition-all ${
+                              pathname === "/presentations"
+                                ? "text-light-green"
+                                : "text-white"
+                            } hover:text-light-green`}
                           >
                             <ClipboardIcon className="h-6 w-6" />
                             <h3>Catalogue</h3>
@@ -343,10 +373,11 @@ const SideBar = () => {
                           user.rol_name === "AdminGrownet") && (
                           <Link
                             href="/purchasing"
-                            className={`flex gap-2 py-3 transition-all ${pathname === "/purchasing"
-                              ? "text-light-green"
-                              : "text-white"
-                              } hover:text-light-green`}
+                            className={`flex gap-2 py-3 transition-all ${
+                              pathname === "/purchasing"
+                                ? "text-light-green"
+                                : "text-white"
+                            } hover:text-light-green`}
                           >
                             <CurrencyEuroIcon className="h-6 w-6" />
                             <h3>Purchasing</h3>
@@ -376,7 +407,6 @@ const SideBar = () => {
                           <MoonIcon className="h-6 w-6 text-dark-blue mr-2" />
                           Close Day
                         </button>
-
                       </div>
                     </div>
                   </div>
@@ -394,13 +424,11 @@ const SideBar = () => {
         button=" Close"
         confirmed={true}
       />
-      <ModalOrderError 
+      <ModalOrderError
         isvisible={showModalError}
         onClose={() => setShowModalError(false)}
         title={"Error closing the day"}
-        message={
-          messageError
-        }
+        message={messageError}
       />
     </div>
   );

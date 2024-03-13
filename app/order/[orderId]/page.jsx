@@ -65,6 +65,7 @@ const OrderDetailPage = () => {
   const [confirmCreateOrder, setConfirmCreateOrder] = useState(false);
   const [dataLoaded, setDataLoaded] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [postCode, setPostCode] = useState("-");
   const [messageDelete, setMessageDelete] = useState("");
   const [specialRequirements, setSpecialRequirements] = useState(
     orderDetail?.observation ? orderDetail.observation : ""
@@ -109,7 +110,6 @@ const OrderDetailPage = () => {
     if (orderDetail && orderDetail.date_delivery) {
       setSelectedDate(orderDetail.date_delivery);
     }
-    console.log("🚀 ~ OrderDetailPage ~ orderDetail:", orderDetail)
   }, [orderDetail]);
 
   useEffect(() => {
@@ -117,6 +117,7 @@ const OrderDetailPage = () => {
     setSelectedAccNumber(orderDetail?.accountNumber);
     setSelectedAccNumber2(orderDetail?.accountNumber);
     setCustomersRef(orderDetail ? orderDetail.customers_ref : "");
+    setPostCode(orderDetail ? orderDetail.postCode : "");
   }, [orderDetail]);
 
   useEffect(() => {
@@ -406,7 +407,7 @@ const OrderDetailPage = () => {
           </div>
         </div>
       </div>
-      <section className="absolute top-0 right-10 mt-4">
+      <section className="absolute top-0 right-4 mt-4">
         <div className="flex justify-end">
           <button
             onClick={() => setConfirmCreateOrder(true)}
@@ -425,8 +426,10 @@ const OrderDetailPage = () => {
         <div className="flex gap-2">
           <div className="px-4 py-4 rounded-3xl flex items-center justify-center bg-white shadow-[0_8px_30px_rgb(0,0,0,0.12)]">
             <div className="flex flex-col col-span-1 pr-2 items-center justify-center">
-              <h1 className="text-xl font-bold text-primary-blue">Status</h1>
-              <h2 className="text-sm px-1 font-semibold">
+              <h1 className="text-[18px] font-bold text-primary-blue">
+                Status
+              </h1>
+              <h2 className="text-sm font-semibold">
                 {orderDetail?.state_name}
               </h2>
               <p className="text-green font-semibold py-1 px-2 rounded-lg text-[15px] bg-background-green text-center">
@@ -456,16 +459,18 @@ const OrderDetailPage = () => {
                   <div key={column.name}>
                     {column.name === "Net Invoice" && (
                       <div className="pr-2">
-                        <h1 className="flex text-xl font-bold">Net invoice</h1>
-                        <p className="text-[28px] font-bold text-primary-blue">
+                        <h1 className="flex text-[18px] font-bold">
+                          Net invoice
+                        </h1>
+                        <p className="text-[24px] font-bold text-primary-blue">
                           {column.price}
                         </p>
                       </div>
                     )}
                     {column.name === "Profit (£)" && (
                       <div className="border-l border-green border-dashed pl-3">
-                        <h1 className=" text-xl font-bold">Profit</h1>
-                        <p className="text-[25px] font-bold text-primary-blue -mt-2">
+                        <h1 className=" text-[18px] font-bold">Profit</h1>
+                        <p className="text-[20px] font-bold text-primary-blue -mt-2">
                           {column.percentage}
                         </p>
                         <h2 className="ml-1 text-green font-semibold py-1 px-2 rounded-lg text-[15px] bg-background-green text-center -mt-1">
@@ -479,11 +484,11 @@ const OrderDetailPage = () => {
           </div>
         </div>
       </section>
-      <div className="flex items-center ml-10 mt-10 w-[70%] px-2 py-1 rounded-md">
+      <div className="flex items-center ml-5 mt-10 w-[70%] px-2 py-1 rounded-md">
         <label className="text-dark-blue">Date: </label>
         <input
           type="date"
-          className="border ml-2 p-1.5 rounded-md text-dark-blue"
+          className="border ml-2 p-1.5 rounded-md text-dark-blue w-[135px]"
           value={selectedDate}
           onChange={handleDateChange}
           min={getCurrentDate()}
@@ -495,62 +500,76 @@ const OrderDetailPage = () => {
             orderDetail && orderDetail.reference ? orderDetail.reference : ""
           }
           readOnly
-          className="border ml-2 p-1.5 rounded-md w-20"
+          className="border ml-2 p-1.5 rounded-md w-[80px]"
         />
         <label className="mx-3 text-lg">Customer Ref: </label>
         <input
           type="text"
           value={customersRef}
           onChange={(e) => setCustomersRef(e.target.value)}
-          className="border p-2 rounded-md min-w-[150px]"
+          className="border p-2 rounded-md w-[80px]"
         />
         <button
-          className="bg-dark-blue rounded-md ml-3 transition-all hover:scale-110 focus:outline-none flex text-white px-2 py-1 items-center align-middle"
+          className="bg-dark-blue rounded-md ml-3 transition-all hover:scale-110 focus:outline-none flex text-white p-2 items-center align-middle"
           onClick={() => setDetails(!details)}
         >
           Details
           <ChevronDownIcon
-            className={`h-5 w-5 ml-1 text-white transform transition duration-500 ${details ? "rotate-180" : "rotate-0"
-              }`}
+            className={`h-5 w-5 ml-1 text-white transform transition duration-500 ${
+              details ? "rotate-180" : "rotate-0"
+            }`}
           />
         </button>
         <button
-          className="bg-danger rounded-md ml-3 transition-all hover:scale-110 focus:outline-none flex text-white px-2 py-1 items-center align-middle"
+          className="bg-danger rounded-md ml-2 transition-all hover:scale-110 focus:outline-none flex text-white p-2 items-center align-middle"
           onClick={() => setShowDeleteModal(true)}
         >
           <TrashIcon className={`h-[25px] w-[25px] text-white`} />
         </button>
       </div>
       <div
-        className={`transition-opacity duration-500 ease-out ${details ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-10"
-          } transform`}
+        className={`transition-opacity duration-500 ease-out ${
+          details ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-10"
+        } transform`}
         style={{ transitionProperty: "opacity, transform" }}
       >
         {details && (
           <div className="bg-light-blue grid grid-cols-6 gap-4 mx-10 mt-2 px-2 py-1 rounded-md">
             <div className="flex flex-col items-start">
               <h3 className="font-medium">Post Code:</h3>
-              <h3>{customers && customers.postCode ? customers.postCode : "-"}</h3>
+              <h3>
+                {customers && customers[0].postCode
+                  ? customers[0].postCode
+                  : orderDetail && orderDetail.postCode
+                  ? orderDetail.postCode
+                  : "-"}
+              </h3>
             </div>
             <div className="flex flex-col items-start">
               <h3 className="font-medium">Telephone:</h3>
-              <h3>
-                {orderDetail && orderDetail.telephone_customer
-                  ? orderDetail.telephone_customer
-                  : "-"}
-              </h3>
+              {customers && customers[0].telephone
+                ? customers[0].telephone
+                : orderDetail && orderDetail.telephone_customer
+                ? orderDetail.telephone_customer
+                : "-"}
             </div>
             <div className="flex flex-col items-start">
               <h3 className="font-medium">Address:</h3>
               <h3>
-                {orderDetail && orderDetail.address_delivery
-                  ? orderDetail.address_delivery
-                  : "-"}
+                {customers && customers[0].address
+                  ? customers[0].address
+                  : orderDetail.address_delivery}
               </h3>
             </div>
             <div className="flex flex-col items-start">
               <h3 className="font-medium">Contact:</h3>
-              <h3>{orderDetail && orderDetail.email ? orderDetail.email : "-"}</h3>
+              <h3>
+                {customers && customers[0].email
+                  ? customers[0].email
+                  : orderDetail && orderDetail.email
+                  ? orderDetail.email
+                  : "-"}
+              </h3>
             </div>
             {customerDate && (
               <>
@@ -566,13 +585,13 @@ const OrderDetailPage = () => {
             )}
             <div className="flex flex-col items-start">
               <h3 className="font-medium">Driver:</h3>
-              <h3>{orderDetail && orderDetail.name ? orderDetail.name : "-"}</h3>
+              <h3>
+                {orderDetail && orderDetail.name ? orderDetail.name : "-"}
+              </h3>
             </div>
             <div className="flex flex-col items-start">
               <h3 className="font-medium">Delivery time:</h3>
-              <h3>
-                {orderDetail && orderDetail.end ? orderDetail.end : "-"}
-              </h3>
+              <h3>{orderDetail && orderDetail.end ? orderDetail.end : "-"}</h3>
             </div>
 
             <div className="flex flex-col items-start">
@@ -601,9 +620,8 @@ const OrderDetailPage = () => {
               />
             </div>
           </div>
-        )
-        }
-      </div >
+        )}
+      </div>
       <div>
         {isLoading ? (
           <div className="flex justify-center items-center mt-24">
@@ -623,6 +641,7 @@ const OrderDetailPage = () => {
                 dataLoaded={dataLoaded}
                 customersRef={customersRef}
                 selectedAccNumber={accountNumberCustomer}
+                deliveryCustomer={orderDetail.address_delivery}
               />
             </>
           )
@@ -634,7 +653,7 @@ const OrderDetailPage = () => {
         onConfirm={() => handleDeleteOrder(orderId)}
         message={messageDelete}
       />
-    </Layout >
+    </Layout>
   );
 };
 export default OrderDetailPage;

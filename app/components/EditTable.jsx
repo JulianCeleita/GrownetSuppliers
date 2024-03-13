@@ -116,6 +116,7 @@ export default function EditTable({
   dataLoaded,
   customersRef,
   selectedAccNumber,
+  selectedAddressCustomer,
 }) {
   // const [rows, setRows] = useState(
   //   Array.from({ length: 0 }, () => ({ ...initialRowsState }))
@@ -755,6 +756,10 @@ export default function EditTable({
           customers && customers
             ? customers[0].accountNumber
             : selectedAccNumber,
+        address_delivery:
+          customers && customers
+            ? customers[0]?.address
+            : selectedAddressCustomer,
         customers_ref: customersRef,
         date_delivery: dateDelivery,
         id_suppliers: orderDetail.id_suppliers,
@@ -861,7 +866,7 @@ export default function EditTable({
             <form
               ref={form}
               onKeyUp={(event) => onEnterKey(event)}
-              className=" whitespace-nowrap mb-4 mx-4"
+              className=" whitespace-nowrap mb-4 mx-3"
             >
               <table className="w-[100%] text-sm text-center table-auto bg-white rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.1)]">
                 <thead className="sticky top-0 shadow-[0px_11px_15px_-3px_#edf2f7] bg-white text-center">

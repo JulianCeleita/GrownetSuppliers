@@ -1,5 +1,5 @@
 //BASE URL
- const BASE_URL = "https://api.grownetapp.com/grownet/api/";
+const BASE_URL = "https://api.grownetapp.com/grownet/api/";
 //const BASE_URL = "http://3.139.16.141/api/";
 
 // Login
@@ -95,8 +95,6 @@ export const routesUrl = `${BASE_URL}deliveryRoutes/all`;
 // Groups
 export const groupsUrl = `${BASE_URL}group/all`;
 
-export const printOrdersUrl = `${BASE_URL}`;
-
 // peticion post
 // data
 // const postData = {
@@ -118,3 +116,14 @@ export const typesUrl = `${BASE_URL}types/all`;
 // Shorts
 export const productShort = `${BASE_URL}products/short`;
 export const categoriesShort = `${BASE_URL}categories/short`;
+
+// Assign route
+// Method: POST
+// URL: logisticRoute/assignRoute
+// body: {
+//     driver_id
+//     vehicle_id
+//     date
+//     route_id
+// }
+export const assignRoute = `${BASE_URL}logisticRoute/assignRoute`;
