@@ -141,7 +141,12 @@ const OrderView = () => {
   }, [user, token]);
 
   useEffect(() => {
-    fetchOrdersDateByWorkDate(token, workDate, setOrdersWorkDate, setOrdersLoadingToday);
+    fetchOrdersDateByWorkDate(
+      token,
+      workDate,
+      setOrdersWorkDate,
+      setOrdersLoadingToday
+    );
     console.log(ordersLoadingToday);
   }, [workDate]);
   useEffect(() => {
@@ -795,7 +800,7 @@ const OrderView = () => {
                       key={index}
                       className="text-dark-blue border-b-[1.5px] cursor-pointer hover:bg-[#F6F6F6]"
                     >
-                      <td className="py-4 pl-4 cursor-default">
+                      <td className="py-2 pl-4 cursor-default">
                         <label className="inline-flex items-center">
                           <input
                             type="checkbox"
@@ -811,62 +816,62 @@ const OrderView = () => {
                         </label>
                       </td>
                       <td
-                        className="py-4 pl-4"
+                        className="py-2 pl-4"
                         onClick={(e) => goToOrder(e, order)}
                       >
                         {order.reference}
                       </td>
                       <td
-                        className="py-4 pl-4"
+                        className="py-2 pl-4"
                         onClick={(e) => goToOrder(e, order)}
                       >
                         {order.accountNumber}
                       </td>
                       <td
-                        className="py-4 pl-4"
+                        className="py-2 pl-4"
                         onClick={(e) => goToOrder(e, order)}
                       >
                         {order.accountName}
                       </td>
                       <td
-                        className="py-4 pl-4"
+                        className="py-2 pl-4"
                         onClick={(e) => goToOrder(e, order)}
                       >
                         {order.net}
                       </td>
                       <td
-                        className="py-4 pl-4"
+                        className="py-2 pl-4"
                         onClick={(e) => goToOrder(e, order)}
                       >
                         {order.profitOrder ? order.profitOrder.toFixed(2) : ""}
                       </td>
                       <td
-                        className="py-4 pl-4"
+                        className="py-2 pl-4"
                         onClick={(e) => goToOrder(e, order)}
                       >
                         {order.route}
                       </td>
                       {/* <td className="py-4 pl-4">{order.created_by}</td> */}
                       <td
-                        className="py-4 pl-4"
+                        className="py-2 pl-4"
                         onClick={(e) => goToOrder(e, order)}
                       >
                         {order.drop}
                       </td>
                       <td
-                        className="py-4 pl-4"
+                        className="py-2 pl-4"
                         onClick={(e) => goToOrder(e, order)}
                       >
                         {order.quantity_products}
                       </td>
                       <td
-                        className="py-4 pl-4"
+                        className="py-2 pl-4"
                         onClick={(e) => goToOrder(e, order)}
                       >
                         {order.date_delivery}
                       </td>
                       <td
-                        className="py-4 pl-4 flex gap-2 justify-center"
+                        className="py-2 pl-4 flex gap-2 justify-center"
                         onClick={(e) => goToOrder(e, order)}
                       >
                         <div
