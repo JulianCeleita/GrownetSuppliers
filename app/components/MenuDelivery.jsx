@@ -68,7 +68,7 @@ const MenuDelivery = ({ open, setOpen, reference, setIsLoading }) => {
                     />
                   </button>
                 </div>
-                <div className="flex h-auto custom:h-full flex-col bg-white py-6 font-poppins px-3 items-center">
+                <div className="flex h-full flex-col bg-white py-6 font-poppins px-3 items-center">
                   <div className="px-10">
                     <Dialog.Title className="text-base font-semibold leading-6">
                       <h1 className="mt-3 text-center text-xl mb-5 font-bold  flex items-center justify-center">
