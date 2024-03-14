@@ -81,6 +81,7 @@ const DeliveryView = () => {
   const [routeDetailsVisible, setRouteDetailsVisible] = useState({});
   const [showModalAssignment, setShowModalAssignment] = useState(false);
   const [deliveries, setDeliveries] = useState(null);
+  const [reference, setReference] = useState("");
 
   const onCloseModalAssignment = () => {
     setShowModalAssignment(false);
@@ -164,6 +165,51 @@ const DeliveryView = () => {
       setSelectedDate(new Date(year, month - 1, day));
     }
   }, [workDate]);
+
+
+  const filterOrdersByDate = (order) => {
+    if (showAllOrders) {
+      return true;
+    }
+
+    const deliveryDate = convertUTCtoTimeZone(
+      new Date(order.date_delivery),
+      "America/Bogota"
+    );
+
+    deliveryDate.setHours(0, 0, 0, 0);
+
+    if (dateFilter === "today") {
+      return order.date_delivery === workDate;
+    }
+    if (dateFilter === "range" && startDate && endDate) {
+      const start = new Date(startDate);
+      const startFormatted = subtractDays(start, 1);
+      startFormatted.setHours(0, 0, 0, 0);
+      const end = new Date(endDate);
+      const endFormatted = subtractDays(end, 1);
+      endFormatted.setHours(23, 59, 59, 999);
+      return deliveryDate >= startFormatted && deliveryDate <= endFormatted;
+    }
+    if (dateFilter === "date" && selectedDate) {
+      const selectDa = formatDateToTransform(selectedDate);
+      return order.date_delivery === selectDa;
+    }
+
+    return false;
+  };
+
+  // const sortedOrders = orders
+  //   ?.filter((order) => filterOrdersByDate(order))
+  //   .sort((a, b) => {
+  //     const dateA = new Date(a.date_delivery);
+  //     const dateB = new Date(b.date_delivery);
+  //     return dateA - dateB;
+  //   });
+  const handleCLickModal = (customer) => {
+    setReference(customer);
+    setShowMenuDelivery(true);
+  };
 
   return (
     <Layout>
@@ -302,7 +348,6 @@ const DeliveryView = () => {
       </div>
 
       <MenuDelivery open={showMenuDelivery} setOpen={setShowMenuDelivery} />
-
       {/*TO DO: Modal y botón routes 
       <ModalRouteAssignment
         show={showModalAssignment}
