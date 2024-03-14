@@ -130,3 +130,6 @@ export const assignRoute = `${BASE_URL}logisticRoute/assignRoute`;
 
 // get Vehicles and Drivers
 export const vehiclesAndDrivers = `${BASE_URL}deliveryRoutes/vehiclesAndEmployees`;
+
+// get All Routes
+export const allRoutes = `${BASE_URL}deliveryRoutes/all`;

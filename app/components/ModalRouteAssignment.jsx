@@ -3,6 +3,7 @@ import Spinner from './Spinner';
 import { fetchAssignRoute } from '../api/assignRouteRequest';
 import useTokenStore from '../store/useTokenStore';
 import { fetchVehicleAndDriver } from '../api/vehiclesAndDriversRequest';
+import { getAllRoutes } from '../api/getAllRoutesRequest';
 
 export const ModalRouteAssignment = ({ show, onClose }) => {
 
@@ -12,6 +13,7 @@ export const ModalRouteAssignment = ({ show, onClose }) => {
     const [statusFetch, setStatusFetch] = useState({ status: 0, message: '' });
     const [vehicles, setVehicles] = useState([])
     const [drivers, setDrivers] = useState([])
+    const [routes, setRoutes] = useState([])
     const [form, setForm] = useState({
         driverId: '',
         vehicleId: '',
@@ -56,10 +58,21 @@ export const ModalRouteAssignment = ({ show, onClose }) => {
         }
     };
 
+    const getRoutes = async () => {
+        const { status, message, data } = await getAllRoutes(token);
+        if (status) {
+            setRoutes(data.routes);
+        } else {
+            setStatusFetch({ status: 2, message });
+        }
+
+    }
+
     useEffect(() => {
         if (show) {
             modalRef.current.focus();
             getVehiclesAndDrivers();
+            getRoutes();
         }
 
         return () => {
@@ -72,6 +85,7 @@ export const ModalRouteAssignment = ({ show, onClose }) => {
             setStatusFetch({ status: 0, message: '' });
             setVehicles([]);
             setDrivers([]);
+            setRoutes([]);
         }
     }, [show]);
 
@@ -96,8 +110,6 @@ export const ModalRouteAssignment = ({ show, onClose }) => {
     if (!show) {
         return null;
     }
-
-    const routes = ['R1', 'R2', 'R3', 'R4', 'R5', 'R6', 'R7', 'R8', 'R9', 'R100']
 
     return (
         <div
@@ -182,7 +194,7 @@ export const ModalRouteAssignment = ({ show, onClose }) => {
                         >
                             <option value="">Select a route</option>
                             {routes.map((route, index) => (
-                                <option key={index} value={route.substring(1)}>{route}</option>
+                                <option key={index} value={route.id}>{route.name}</option>
                             ))}
 
                         </select>
