@@ -98,13 +98,12 @@ const DeliveryView = () => {
     return `${day}/${month}/${year}`;
   };
 
-
   const formattedDate = selectedDate
     ? new Date(selectedDate).toLocaleDateString("es-CO", {
-      day: "2-digit",
-      month: "2-digit",
-      year: "2-digit",
-    })
+        day: "2-digit",
+        month: "2-digit",
+        year: "2-digit",
+      })
     : formatDateToShow(workDate);
 
   const formatDateToTransform = (dateString) => {
@@ -167,6 +166,7 @@ const DeliveryView = () => {
     );
     return adjustedDate;
   }
+
   useEffect(() => {
     if (workDate) {
       const [year, month, day] = workDate.split("-").map(Number);
@@ -174,50 +174,11 @@ const DeliveryView = () => {
     }
   }, [workDate]);
 
-  const filterOrdersByDate = (order) => {
-    if (showAllOrders) {
-      return true;
-    }
-
-    const deliveryDate = convertUTCtoTimeZone(
-      new Date(order.date_delivery),
-      "America/Bogota"
-    );
-
-    deliveryDate.setHours(0, 0, 0, 0);
-
-    if (dateFilter === "today") {
-      return order.date_delivery === workDate;
-    }
-    if (dateFilter === "range" && startDate && endDate) {
-      const start = new Date(startDate);
-      const startFormatted = subtractDays(start, 1);
-      startFormatted.setHours(0, 0, 0, 0);
-      const end = new Date(endDate);
-      const endFormatted = subtractDays(end, 1);
-      endFormatted.setHours(23, 59, 59, 999);
-      return deliveryDate >= startFormatted && deliveryDate <= endFormatted;
-    }
-    if (dateFilter === "date" && selectedDate) {
-      const selectDa = formatDateToTransform(selectedDate);
-      return order.date_delivery === selectDa;
-    }
-
-    return false;
-  };
-
-  // const sortedOrders = orders
-  //   ?.filter((order) => filterOrdersByDate(order))
-  //   .sort((a, b) => {
-  //     const dateA = new Date(a.date_delivery);
-  //     const dateB = new Date(b.date_delivery);
-  //     return dateA - dateB;
-  //   });
   const handleCLickModal = (customer) => {
     setReference(customer);
     setShowMenuDelivery(true);
   };
-
+  console.log("reference:", reference);
   return (
     <Layout>
       <div className="-mt-24">
@@ -225,8 +186,7 @@ const DeliveryView = () => {
           <h1 className="text-2xl text-light-green font-semibold mt-1 ml-24">
             Deliveries <span className="text-white">list</span>
           </h1>
-          <div className="flex items-center space-x-4">
-          </div>
+          <div className="flex items-center space-x-4"></div>
         </div>
 
         <div className={`flex ml-10 mt-4 mb-0 items-center space-x-2 `}>
@@ -305,7 +265,7 @@ const DeliveryView = () => {
                           {filteredCustomers.map((customer, index) => (
                             <div
                               key={index}
-                              onClick={() => setShowMenuDelivery(true)}
+                              onClick={() => handleCLickModal(customer.reference)}
                               className="flex cursor-pointer items-center py-4 px-5 rounded-xl mr-3 shadow-[0px_2px_3px_-1px_rgba(0,0,0,0.1),0px_1px_0px_0px_rgba(25,28,33,0.02),0px_0px_0px_1px_rgba(25,28,33,0.08)] w-auto hover:scale-105 transition-all"
                             >
                               <TruckIcon
@@ -349,12 +309,6 @@ const DeliveryView = () => {
         </div>
       </div>
 
-      <MenuDelivery open={showMenuDelivery} setOpen={setShowMenuDelivery} />
-      {/*TO DO: Modal y botón routes 
-      <ModalRouteAssignment
-        show={showModalAssignment}
-        onClose={onCloseModalAssignment}
-      /> */}
       <MenuDelivery
         open={showMenuDelivery}
         setOpen={setShowMenuDelivery}
