@@ -81,6 +81,7 @@ const DeliveryView = () => {
   const [routeDetailsVisible, setRouteDetailsVisible] = useState({});
   const [showModalAssignment, setShowModalAssignment] = useState(false);
   const [deliveries, setDeliveries] = useState(null);
+  const [reference, setReference] = useState("");
 
   const onCloseModalAssignment = () => {
     setShowModalAssignment(false);
@@ -100,10 +101,10 @@ const DeliveryView = () => {
 
   const formattedDate = selectedDate
     ? new Date(selectedDate).toLocaleDateString("es-CO", {
-      day: "2-digit",
-      month: "2-digit",
-      year: "2-digit",
-    })
+        day: "2-digit",
+        month: "2-digit",
+        year: "2-digit",
+      })
     : formatDateToShow(workDate);
   const formatDateToTransform = (dateString) => {
     const date = new Date(dateString);
@@ -132,7 +133,7 @@ const DeliveryView = () => {
   useEffect(() => {
     // fetchOrdersDateByWorkDate(token, workDate, setOrdersWorkDate);
     fetchDeliveries(token, setDeliveries, setIsLoading, selectedDate);
-    console.log(deliveries)
+    console.log(deliveries);
   }, [selectedDate]);
 
   useEffect(() => {
@@ -201,14 +202,17 @@ const DeliveryView = () => {
     return false;
   };
 
-  const sortedOrders = orders
-    ?.filter((order) => filterOrdersByDate(order))
-    .sort((a, b) => {
-      const dateA = new Date(a.date_delivery);
-      const dateB = new Date(b.date_delivery);
-      return dateA - dateB;
-    });
-
+  // const sortedOrders = orders
+  //   ?.filter((order) => filterOrdersByDate(order))
+  //   .sort((a, b) => {
+  //     const dateA = new Date(a.date_delivery);
+  //     const dateB = new Date(b.date_delivery);
+  //     return dateA - dateB;
+  //   });
+  const handleCLickModal = (customer) => {
+    setReference(customer);
+    setShowMenuDelivery(true);
+  };
   return (
     <Layout>
       <div className="-mt-24">
@@ -226,12 +230,13 @@ const DeliveryView = () => {
           </div>
         </div>
         <div
-          className={`flex ml-10 mt-4 mb-0 items-center space-x-2 mt-${filterType === "range" && window.innerWidth < 1500
-            ? "[45px]"
-            : filterType === "date" && window.innerWidth < 1300
+          className={`flex ml-10 mt-4 mb-0 items-center space-x-2 mt-${
+            filterType === "range" && window.innerWidth < 1500
+              ? "[45px]"
+              : filterType === "date" && window.innerWidth < 1300
               ? "[50px]"
               : "[20px]"
-            }
+          }
           `}
         >
           <div className="border border-gray-300 rounded-md py-3 px-2 flex items-center">
@@ -259,19 +264,19 @@ const DeliveryView = () => {
           >
             <option value="date">Filter by date</option>
           </select>
-              
-            <DatePicker
-              selected={selectedDate}
-              onChange={(date) => {
-                setSelectedDate(date);
-                setStartDateByNet(formatDateToTransform(date));
-                setEndDateByNet(formatDateToTransform(date));
-                setDateFilter("date");
-              }}
-              className="form-input px-4 py-3 w-[125px] rounded-md border border-gray-300 text-dark-blue placeholder-dark-blue"
-              dateFormat="dd/MM/yyyy"
-              placeholderText={formatDateToShow(workDate)}
-            />
+
+          <DatePicker
+            selected={selectedDate}
+            onChange={(date) => {
+              setSelectedDate(date);
+              setStartDateByNet(formatDateToTransform(date));
+              setEndDateByNet(formatDateToTransform(date));
+              setDateFilter("date");
+            }}
+            className="form-input px-4 py-3 w-[125px] rounded-md border border-gray-300 text-dark-blue placeholder-dark-blue"
+            dateFormat="dd/MM/yyyy"
+            placeholderText={formatDateToShow(workDate)}
+          />
         </div>
 
         <div className="flex flex-col mb-20 mt-4 p-2 px-10 text-dark-blue">
@@ -282,10 +287,16 @@ const DeliveryView = () => {
                 {delivery.customers.map((customer, index) => (
                   <div
                     key={index}
-                    onClick={() => setShowMenuDelivery(true)}
+                    onClick={() => handleCLickModal(customer.reference)}
                     className="flex cursor-pointer hover:bg-gray-200 transition-all items-center py-4 px-5 rounded-xl mr-4 shadow-[0px_2px_3px_-1px_rgba(0,0,0,0.1),0px_1px_0px_0px_rgba(25,28,33,0.02),0px_0px_0px_1px_rgba(25,28,33,0.08)]"
                   >
-                    <TruckIcon className={`h-10 w-10 pr-2 ${delivery.state === "delivered" ? 'text-green' : 'text-gray-500'}`} />
+                    <TruckIcon
+                      className={`h-10 w-10 pr-2 ${
+                        delivery.state === "delivered"
+                          ? "text-green"
+                          : "text-gray-500"
+                      }`}
+                    />
                     <h1>{customer.accountName}</h1>
                   </div>
                 ))}
@@ -300,7 +311,12 @@ const DeliveryView = () => {
         )}
       </div>
 
-      <MenuDelivery open={showMenuDelivery} setOpen={setShowMenuDelivery} />
+      <MenuDelivery
+        open={showMenuDelivery}
+        setOpen={setShowMenuDelivery}
+        reference={reference}
+        setIsLoading={setIsLoading}
+      />
       <ModalOrderError
         isvisible={showErrorCsv}
         onClose={() => setShowErrorCsv(false)}
