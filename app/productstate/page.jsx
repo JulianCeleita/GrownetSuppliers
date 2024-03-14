@@ -82,7 +82,7 @@ function ProductState() {
       <div>
         <div className="flex justify-between p-8 -mt-24">
           <h1 className="text-2xl text-white font-semibold ml-20 mt-2">
-            <span className="text-light-green">Products state </span>list
+            <span className="text-light-green">Products </span>state
           </h1>
 
           <div className="flex gap-4">
@@ -96,7 +96,7 @@ function ProductState() {
             </button> */}
           </div>
         </div>
-        <div className="flex items-center justify-center mb-20">
+        <div className="flex items-center justify-center mb-20 mt-6">
           <table className="w-[95%] bg-white rounded-2xl  shadow-[0_8px_30px_rgb(0,0,0,0.12)]">
             <thead className="sticky top-0 bg-white shadow-[0px_11px_15px_-3px_#edf2f7] ">
               <tr className="border-b-2 border-stone-100 text-dark-blue">
