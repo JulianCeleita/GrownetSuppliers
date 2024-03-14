@@ -253,16 +253,7 @@ const DeliveryView = () => {
                       );
                     }
                   );
-                  console.log(
-                    "🚀 ~ filteredCustomers ~ filteredCustomers:",
-                    filteredCustomers
-                  );
-                  console.log(
-                    "filteredCustomers ",
-                    filteredCustomers.length,
-                    "deliveries: ",
-                    deliveries.length
-                  );
+
                   if (filteredCustomers.length > 0) {
                     return (
                       <>
