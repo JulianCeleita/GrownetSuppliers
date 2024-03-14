@@ -20,6 +20,9 @@ const MenuDelivery = ({ open, setOpen, reference, setIsLoading }) => {
     setOpen(false);
     setDeliveryDetails({});
   };
+  const renderCrateStatus = () => {
+    return deliveryDetails?.crates === 1 ? "Yes" : "No";
+  };
   return (
     <div>
       <Transition.Root show={open} as={Fragment}>
@@ -165,7 +168,7 @@ const MenuDelivery = ({ open, setOpen, reference, setIsLoading }) => {
                       <strong>
                         <span className="mr-2 text-primary-blue">•</span>Crates:
                       </strong>{" "}
-                      {deliveryDetails?.crates}
+                      {renderCrateStatus()}
                     </p>
                     <p>
                       <strong>

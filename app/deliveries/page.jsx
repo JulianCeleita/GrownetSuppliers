@@ -81,6 +81,7 @@ const DeliveryView = () => {
   const [showModalAssignment, setShowModalAssignment] = useState(false);
   const [deliveries, setDeliveries] = useState(null);
   const [reference, setReference] = useState("");
+  const [dataLoaded, setDataLoaded] = useState(false);
   const onCloseModalAssignment = () => {
     setShowModalAssignment(false);
   };
@@ -128,7 +129,7 @@ const DeliveryView = () => {
 
   useEffect(() => {
     // fetchOrdersDateByWorkDate(token, workDate, setOrdersWorkDate);
-    fetchDeliveries(token, setDeliveries, setIsLoading, selectedDate);
+    fetchDeliveries(token, setDeliveries, setIsLoading, selectedDate, setDataLoaded);
     console.log(deliveries);
   }, [selectedDate]);
 
@@ -223,18 +224,26 @@ const DeliveryView = () => {
         </div>
 
         <div className="flex flex-col mb-20 mt-4 p-2 px-10 text-dark-blue">
-          {deliveries?.length > 0 ? (
-            deliveries?.map((delivery, index) => {
-              const filteredCustomers = delivery.customers.filter(
-                (customer) => {
-                  const matchCustomerName = customer.accountName
-                    .toLowerCase()
-                    .includes(searchQuery.trim().toLowerCase());
-                  const matchRoute = delivery.route
-                    .toLowerCase()
-                    .includes(searchQuery.trim().toLowerCase());
-                  return (
-                    searchQuery.trim() === "" || matchCustomerName || matchRoute
+          {isLoading || !dataLoaded ? (
+            <div className="flex justify-center items-center mb-20 -mt-20">
+              <div className="loader"></div>
+            </div>
+          ) : (
+            <>
+              {deliveries?.length > 0 ? (
+                deliveries?.map((delivery, index) => {
+                  const filteredCustomers = delivery.customers.filter(
+                    (customer) => {
+                      const matchCustomerName = customer.accountName
+                        .toLowerCase()
+                        .includes(searchQuery.trim().toLowerCase());
+                      const matchRoute = delivery.route
+                        .toLowerCase()
+                        .includes(searchQuery.trim().toLowerCase());
+                      return (
+                        searchQuery.trim() === "" || matchCustomerName || matchRoute
+                      );
+                    }
                   );
                 }
               );
@@ -273,38 +282,33 @@ const DeliveryView = () => {
                             <h1>{customer.accountName}</h1>
                           </div>
                         </div>
-                      ))}
-                    </div>
-                  </>
-                );
-              } else {
-                return (
-                  <div>
+                      </>
+                    );
+                  } else {
+                    return (
+                      <div>
+                        <p className="flex items-center justify-center text-gray my-10">
+                          <ExclamationCircleIcon className="h-12 w-12 mr-5 text-gray" />
+                          No deliveries found, please search again.
+                        </p>
+                      </div>
+                    );
+                  }
+                })
+              ) : (
+                <div>
+                  {(!isLoading && !dataLoaded) && (
                     <p className="flex items-center justify-center text-gray my-10">
                       <ExclamationCircleIcon className="h-12 w-12 mr-5 text-gray" />
-                      No deliveries found, please search again.
+                      No deliveries were found for this date. Please try searching
+                      for deliveries on a different date.
                     </p>
-                  </div>
-                );
-              }
-            })
-          ) : (
-            <div>
-              {!isLoading && (
-                <p className="flex items-center justify-center text-gray my-10">
-                  <ExclamationCircleIcon className="h-12 w-12 mr-5 text-gray" />
-                  No deliveries were found for this date. Please try searching
-                  for deliveries on a different date.
-                </p>
+                  )}
+                </div>
               )}
-            </div>
+            </>
           )}
         </div>
-        {isLoading && (
-          <div className="flex justify-center items-center mb-20 -mt-20">
-            <div className="loader"></div>
-          </div>
-        )}
       </div>
 
       <MenuDelivery
