@@ -100,10 +100,10 @@ const DeliveryView = () => {
 
   const formattedDate = selectedDate
     ? new Date(selectedDate).toLocaleDateString("es-CO", {
-      day: "2-digit",
-      month: "2-digit",
-      year: "2-digit",
-    })
+        day: "2-digit",
+        month: "2-digit",
+        year: "2-digit",
+      })
     : formatDateToShow(workDate);
   const formatDateToTransform = (dateString) => {
     const date = new Date(dateString);
@@ -214,24 +214,26 @@ const DeliveryView = () => {
       <div className="-mt-24">
         <div className="flex gap-6 p-8">
           <h1 className="text-2xl text-light-green font-semibold mt-1 ml-24">
-            Deliveries <span className="text-white">History</span>
+            Deliveries <span className="text-white">list</span>
           </h1>
           <div className="flex items-center space-x-4">
+            {/* TO DO: Modal y botón routes 
             <button
               onClick={() => setShowModalAssignment(true)}
               className="flex items-center space-x-2 py-2 px-4 rounded-md bg-green text-white font-semibold"
             >
               <h1>Route assignments</h1>
-            </button>
+            </button> */}
           </div>
         </div>
         <div
-          className={`flex ml-10 mt-4 mb-0 items-center space-x-2 mt-${filterType === "range" && window.innerWidth < 1500
-            ? "[45px]"
-            : filterType === "date" && window.innerWidth < 1300
+          className={`flex ml-10 mt-4 mb-0 items-center space-x-2 mt-${
+            filterType === "range" && window.innerWidth < 1500
+              ? "[45px]"
+              : filterType === "date" && window.innerWidth < 1300
               ? "[50px]"
               : "[20px]"
-            }
+          }
           `}
         >
           <div className="border border-gray-300 rounded-md py-3 px-2 flex items-center">
@@ -307,10 +309,11 @@ const DeliveryView = () => {
         title={"Error downloading csv"}
         message={errorMessage}
       />
+      {/*TO DO: Modal y botón routes 
       <ModalRouteAssignment
         show={showModalAssignment}
         onClose={onCloseModalAssignment}
-      />
+      /> */}
     </Layout>
   );
 };
