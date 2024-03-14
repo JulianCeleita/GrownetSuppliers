@@ -164,7 +164,7 @@ const DeliveryView = () => {
       setSelectedDate(new Date(year, month - 1, day));
     }
   }, [workDate]);
-  console.log(deliveries.length + "tamaño");
+
   return (
     <Layout>
       <div className="-mt-24">
