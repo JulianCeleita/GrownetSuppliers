@@ -85,7 +85,8 @@ const DeliveryView = () => {
   const onCloseModalAssignment = () => {
     setShowModalAssignment(false);
   };
-
+  let noDeliveriesFound = false;
+  console.log("aiuda", noDeliveriesFound);
   const formatDateToShow = (dateString) => {
     if (!dateString) return "Loading...";
 
@@ -311,7 +312,12 @@ const DeliveryView = () => {
           )}
         </div>
       </div>
-
+      {noDeliveriesFound && (
+        <p className="flex items-center justify-center text-gray my-10">
+          <ExclamationCircleIcon className="h-12 w-12 mr-5 text-gray" />
+          No deliveries found, please search again.
+        </p>
+      )}
       <MenuDelivery
         open={showMenuDelivery}
         setOpen={setShowMenuDelivery}
