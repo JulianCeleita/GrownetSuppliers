@@ -48,7 +48,7 @@ const MenuDelivery = ({ open, setOpen, reference, setIsLoading }) => {
             leaveTo="translate-x-full"
           >
             <div className="fixed inset-y-0 right-0 flex max-w-full text-dark-blue">
-              <Dialog.Panel className="pointer-events-auto relative w-screen max-w-[750px] max-h-full">
+              <Dialog.Panel className="pointer-events-auto relative w-screen max-w-[550px] custom:max-w-[750px] max-h-full overflow-y-auto">
                 <div className="absolute left-0 top-0 flex pl-2 pt-4  mr-2">
                   <button
                     type="button"
@@ -63,7 +63,7 @@ const MenuDelivery = ({ open, setOpen, reference, setIsLoading }) => {
                     />
                   </button>
                 </div>
-                <div className="flex h-full flex-col bg-white py-6 font-poppins px-3 items-center">
+                <div className="flex h-auto custom:h-full flex-col bg-white py-6 font-poppins px-3 items-center">
                   <div className="px-10">
                     <Dialog.Title className="text-base font-semibold leading-6">
                       <h1 className="mt-3 text-center text-xl mb-5 font-bold  flex items-center justify-center">
@@ -74,13 +74,13 @@ const MenuDelivery = ({ open, setOpen, reference, setIsLoading }) => {
                         {deliveryDetails.accountName}
                       </h1>
                       <img
-                        className="rounded-lg h-[310px]"
+                        className="rounded-lg h-[16.5em] custom:h-[310px]"
                         src="https://images.pexels.com/photos/442969/pexels-photo-442969.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"
                         alt="Grownet Logo"
                       />
                     </Dialog.Title>
                   </div>
-                  <div className="grid grid-cols-2 gap-2 mt-6 mx-10">
+                  <div className="grid grid-cols-2 gap-2 mt-6 mx-10 text-sm custom:text-base">
                     <p>
                       <strong>
                         <span className="mr-2 text-primary-blue">•</span>Account
