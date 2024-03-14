@@ -170,6 +170,7 @@ const DeliveryView = () => {
     return adjustedDate;
   }
 
+
   const filterOrdersByDate = (order) => {
     if (showAllOrders) {
       return true;
@@ -213,20 +214,22 @@ const DeliveryView = () => {
     setReference(customer);
     setShowMenuDelivery(true);
   };
+
   return (
     <Layout>
       <div className="-mt-24">
         <div className="flex gap-6 p-8">
           <h1 className="text-2xl text-light-green font-semibold mt-1 ml-24">
-            Deliveries <span className="text-white">History</span>
+            Deliveries <span className="text-white">list</span>
           </h1>
           <div className="flex items-center space-x-4">
+            {/* TO DO: Modal y botón routes 
             <button
               onClick={() => setShowModalAssignment(true)}
               className="flex items-center space-x-2 py-2 px-4 rounded-md bg-green text-white font-semibold"
             >
               <h1>Route assignments</h1>
-            </button>
+            </button> */}
           </div>
         </div>
         <div
@@ -280,29 +283,40 @@ const DeliveryView = () => {
         </div>
 
         <div className="flex flex-col mb-20 mt-4 p-2 px-10 text-dark-blue">
-          {deliveries?.map((delivery, index) => (
-            <>
-              <h1 className="text-left my-2 font-semibold">{delivery.route}</h1>
-              <div className="grid grid-cols-7 gap-2">
-                {delivery.customers.map((customer, index) => (
-                  <div
-                    key={index}
-                    onClick={() => handleCLickModal(customer.reference)}
-                    className="flex cursor-pointer hover:bg-gray-200 transition-all items-center py-4 px-5 rounded-xl mr-4 shadow-[0px_2px_3px_-1px_rgba(0,0,0,0.1),0px_1px_0px_0px_rgba(25,28,33,0.02),0px_0px_0px_1px_rgba(25,28,33,0.08)]"
-                  >
-                    <TruckIcon
-                      className={`h-10 w-10 pr-2 ${
-                        delivery.state === "delivered"
-                          ? "text-green"
-                          : "text-gray-500"
-                      }`}
-                    />
-                    <h1>{customer.accountName}</h1>
+
+          {deliveries?.map((delivery, index) => {
+            const filteredCustomers = delivery.customers.filter((customer) => {
+              const matchCustomerName = customer.accountName.toLowerCase().includes(searchQuery.trim().toLowerCase());
+              const matchRoute = delivery.route.toLowerCase().includes(searchQuery.trim().toLowerCase());
+              return searchQuery.trim() === "" || matchCustomerName || matchRoute;
+            });
+            console.log("🚀 ~ filteredCustomers ~ filteredCustomers:", filteredCustomers)
+
+            if (filteredCustomers.length > 0) {
+              return (
+                <>
+                  <h1 className="text-left my-2 font-semibold">{delivery.route}</h1>
+                  <div className="grid grid-cols-6 gap-2">
+                    {filteredCustomers.map((customer, index) => (
+                      <div
+                        key={index}
+                        onClick={() => handleCLickModal(customer.reference)}
+                        className="flex cursor-pointer hover:bg-gray-200 transition-all items-center py-4 px-5 rounded-xl mr-4 shadow-[0px_2px_3px_-1px_rgba(0,0,0,0.1),0px_1px_0px_0px_rgba(25,28,33,0.02),0px_0px_0px_1px_rgba(25,28,33,0.08)]"
+                      >
+                        <TruckIcon className={`min-w-[30px] min-h-[30px] w-[30px] h-[30px] ${customer.state === "Delivered" ? 'text-green' : 'text-gray-500'}`} />
+                        <div className="overflow-hidden flex-grow">
+                          <h1>{customer.accountName}</h1>
+                        </div>
+                      </div>
+                    ))}
+
                   </div>
-                ))}
-              </div>
-            </>
-          ))}
+                </>
+              );
+            } else {
+              return null;
+            }
+          })}
         </div>
         {isLoading && (
           <div className="flex justify-center items-center mb-20 -mt-20">
@@ -323,10 +337,11 @@ const DeliveryView = () => {
         title={"Error downloading csv"}
         message={errorMessage}
       />
+      {/*TO DO: Modal y botón routes 
       <ModalRouteAssignment
         show={showModalAssignment}
         onClose={onCloseModalAssignment}
-      />
+      /> */}
     </Layout>
   );
 };
