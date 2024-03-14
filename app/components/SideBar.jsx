@@ -271,7 +271,19 @@ const SideBar = () => {
                                     : null
                                 }`}
                               >
-                                Deliveries
+                                Deliveries History
+                              </h3>
+                            </Link>
+                            {/* TODO PAULA TERMINAR DE CONFIGURAR ESTA RUTA */}
+                            <Link href="/rounds" className="text-white">
+                              <h3
+                                className={`hover:bg-[#046373] px-2 py-2 pl-4 rounded-xl w-[360px] mb-2 ${
+                                  pathname === "/products"
+                                    ? "bg-[#046373]"
+                                    : null
+                                }`}
+                              >
+                                Rounds Allocations
                               </h3>
                             </Link>
                           </div>
