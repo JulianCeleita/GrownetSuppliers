@@ -1,5 +1,6 @@
 import { ArrowRightIcon } from "@heroicons/react/24/outline";
 import { TruckIcon } from "@heroicons/react/24/solid";
+import { ExclamationCircleIcon } from "@heroicons/react/24/outline";
 import { Fragment, useState, useEffect } from "react";
 import { Dialog, Transition } from "@headlessui/react";
 import { fetchDeliveriesDetails } from "../api/deliveryRequest";
@@ -76,18 +77,23 @@ const MenuDelivery = ({ open, setOpen, reference, setIsLoading }) => {
                       </h1>
                       {deliveryDetails.evidence ? (
                         <Image
-                          className="rounded-lg h-[16.5em] custom:h-[310px]"
+                          className="rounded-lg w-[400px] h-[300px]"
                           src={deliveryDetails.evidence}
                           alt="Grownet Logo"
-                          width={200}
-                          height={200}
+                          width={300}
+                          height={300}
                         />
                       ) : (
-                        <div>No hay foto</div>
+                        <div className="w-[500px] h-[300px] bg-dark-blue rounded-xl flex flex-col items-center justify-center">
+                          <ExclamationCircleIcon className="h-20 w-20 mb-5 text-white" />
+                          <p className="text-white font-medium text-center">
+                            Without evidence
+                          </p>
+                        </div>
                       )}
                     </Dialog.Title>
                   </div>
-                  <div className="grid grid-cols-2 gap-2 mt-6 mx-10 text-sm custom:text-base">
+                  <div className="grid grid-cols-2 gap-2 mt-6 mx-5 text-sm custom:text-base">
                     <p>
                       <strong>
                         <span className="mr-2 text-primary-blue">•</span>Account
