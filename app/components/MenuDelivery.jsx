@@ -80,7 +80,7 @@ const MenuDelivery = ({ open, setOpen, reference, setIsLoading }) => {
                       </h1>
                       {deliveryDetails.evidence ? (
                         <Image
-                          className="rounded-lg w-[400px] h-[300px]"
+                          className="rounded-lg w-[400px] h-[300px] custom-w-[300px]"
                           src={deliveryDetails.evidence}
                           alt="Grownet Logo"
                           width={300}
@@ -96,7 +96,7 @@ const MenuDelivery = ({ open, setOpen, reference, setIsLoading }) => {
                       )}
                     </Dialog.Title>
                   </div>
-                  <div className="grid grid-cols-2 gap-2 mt-6 mx-5 text-sm custom:text-base">
+                  <div className="grid grid-cols-2 gap-2 mt-6 mx-8 text-sm custom:text-base h-full">
                     <p>
                       <strong>
                         <span className="mr-2 text-primary-blue">•</span>Account
