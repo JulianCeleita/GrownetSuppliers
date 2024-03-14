@@ -42,16 +42,16 @@ function ModalSuccessfull({
         sendOrder()
       } else {
         onClose();
-        router.push('/orders');
+        // router.push('/orders');
       }
     }
 
     if (event.key === 'Escape') {
       onClose();
 
-      if (confirmed) {
-        router.push('/orders');
-      }
+      // if (confirmed) {
+      //   router.push('/orders');
+      // }
     }
   };
 
@@ -69,7 +69,7 @@ function ModalSuccessfull({
               className="text-dark-blue place-self-end "
               onClick={() => {
                 onClose();
-                router.push('/orders');
+                // router.push('/orders');
               }}
             >
               {!sendOrder && <XMarkIcon className="h-6 w-6 text-gray-500" />}
@@ -95,7 +95,7 @@ function ModalSuccessfull({
                     sendOrder();
                   } else {
                     onClose();
-                    router.push('/orders');
+                    // router.push('/orders');
                   }
                 }}
                 className="bg-primary-blue py-3 px-4 rounded-lg text-white font-medium mr-3 hover:bg-green mt-5"
