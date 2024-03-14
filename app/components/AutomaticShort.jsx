@@ -44,6 +44,7 @@ function AutomaticShort({ isvisible, onClose, setProducts, setIsLoading }) {
   const [showModalSuccessfull, setShowModalSuccessfull] = useState(false);
   const [showModalError, setShowModalError] = useState(false);
   const [messageErrorType, setMessageErrorType] = useState("");
+  const [descriptionData, setDescriptionData] = useState();
 
   const toggleProduct = () => {
     setProduct((current) => !current);
@@ -71,26 +72,6 @@ function AutomaticShort({ isvisible, onClose, setProducts, setIsLoading }) {
         console.error("Error al obtener los productos:", error);
       }
     };
-    const fetchDataProducts = async () => {
-      try {
-        const response = await axios.get(productsUrl, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-
-        const sortedProducts = response.data.products.sort((a, b) =>
-          a.name.localeCompare(b.name)
-        );
-
-        const filteredProducts = sortedProducts.filter(
-          (product) => product.stateProduct_id !== 2
-        );
-        setProducts2(filteredProducts);
-      } catch (error) {
-        console.error("Error al obtener los productos:", error);
-      }
-    };
     const fetchDataTypes = async () => {
       try {
         const response = await axios.get(typesUrl, {
@@ -111,7 +92,7 @@ function AutomaticShort({ isvisible, onClose, setProducts, setIsLoading }) {
 
     fetchDataTypes()
     fetchDataCategories();
-    fetchDataProducts();
+    fetchPresentationsSupplier(token, user, setProducts2, setIsLoading, setDescriptionData);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -124,23 +105,29 @@ function AutomaticShort({ isvisible, onClose, setProducts, setIsLoading }) {
   const sendDataProduct = (e) => {
     e.preventDefault();
     const postDataProduct = {
-      id: selecteProductsStatus,
-      short: selectedShort
+      flagshort: selectedShort
     }
-    axios.post(productShort, postDataProduct, {
+    axios.post(`${productShort}${selecteProductsStatus}`, postDataProduct, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
     })
       .then((response) => {
+        if (response.data.status === 500) {
+          setMessageErrorType(response.data.message)
+          setShowModalError(true);
+        } else {
+          setShowModalSuccessfull(true);
+        }
         if (user.id_supplier) {
           fetchPresentationsSupplier(token, user, setProducts, setIsLoading);
         } else {
           fetchPresentations(token, setProducts, setIsLoading);
         }
-        onClose();
       })
       .catch((response, error) => {
+        setMessageErrorType(response.response.data.message);
+        setShowModalError(true);
         console.error("Error al parametrizar el producto: ", error);
       });
   };
@@ -157,8 +144,7 @@ function AutomaticShort({ isvisible, onClose, setProducts, setIsLoading }) {
       },
     })
       .then((response) => {
-        console.log("🚀 ~ .then ~ response:", response)
-        if(response.data.status === 500) {
+        if (response.data.status === 500) {
           setMessageErrorType(response.data.message)
           setShowModalError(true);
         } else {
@@ -227,7 +213,7 @@ function AutomaticShort({ isvisible, onClose, setProducts, setIsLoading }) {
               </option>
               {products2.map((product) => (
                 <option key={product.id} value={product.id}>
-                  {product.name}
+                  {product.product_name} - {product.name}
                 </option>
               ))}
             </select>
