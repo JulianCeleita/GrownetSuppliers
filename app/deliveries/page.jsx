@@ -258,11 +258,10 @@ const DeliveryView = () => {
                           className="flex cursor-pointer items-center py-4 px-5 rounded-xl mr-3 shadow-[0px_2px_3px_-1px_rgba(0,0,0,0.1),0px_1px_0px_0px_rgba(25,28,33,0.02),0px_0px_0px_1px_rgba(25,28,33,0.08)] w-auto hover:scale-105 transition-all"
                         >
                           <TruckIcon
-                            className={`min-w-[30px] min-h-[30px] w-[30px] h-[30px] mr-2 ${
-                              customer.state === "Delivered"
+                            className={`min-w-[30px] min-h-[30px] w-[30px] h-[30px] mr-2 ${customer.state === "Delivered"
                                 ? "text-green"
                                 : "text-gray-500"
-                            }`}
+                              }`}
                           />
                           <div className="">
                             <h1>{customer.accountName}</h1>
@@ -273,7 +272,16 @@ const DeliveryView = () => {
                   </>
                 );
               } else {
-                return null;
+                console.log("estoy vacío")
+
+                return (
+                  <div>
+                    <p className="flex items-center justify-center text-gray my-10">
+                      <ExclamationCircleIcon className="h-12 w-12 mr-5 text-gray" />
+                      No deliveries found please search again.
+                    </p>
+                  </div>
+                );
               }
             })
           ) : (
