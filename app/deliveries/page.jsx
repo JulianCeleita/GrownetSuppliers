@@ -129,7 +129,13 @@ const DeliveryView = () => {
 
   useEffect(() => {
     // fetchOrdersDateByWorkDate(token, workDate, setOrdersWorkDate);
-    fetchDeliveries(token, setDeliveries, setIsLoading, selectedDate, setDataLoaded);
+    fetchDeliveries(
+      token,
+      setDeliveries,
+      setIsLoading,
+      selectedDate,
+      setDataLoaded
+    );
     console.log(deliveries);
   }, [selectedDate]);
 
@@ -241,46 +247,49 @@ const DeliveryView = () => {
                         .toLowerCase()
                         .includes(searchQuery.trim().toLowerCase());
                       return (
-                        searchQuery.trim() === "" || matchCustomerName || matchRoute
+                        searchQuery.trim() === "" ||
+                        matchCustomerName ||
+                        matchRoute
                       );
                     }
                   );
-                }
-              );
-              console.log(
-                "🚀 ~ filteredCustomers ~ filteredCustomers:",
-                filteredCustomers
-              );
-              console.log(
-                "filteredCustomers ",
-                filteredCustomers.length,
-                "deliveries: ",
-                deliveries.length
-              );
-              if (filteredCustomers.length > 0) {
-                return (
-                  <>
-                    <h1 className="text-left my-2 font-semibold">
-                      {delivery.route}
-                    </h1>
-                    <div className="flex flex-wrap">
-                      {filteredCustomers.map((customer, index) => (
-                        <div
-                          key={index}
-                          onClick={() => handleCLickModal(customer.reference)}
-                          className="flex cursor-pointer items-center py-4 px-5 rounded-xl mr-3 shadow-[0px_2px_3px_-1px_rgba(0,0,0,0.1),0px_1px_0px_0px_rgba(25,28,33,0.02),0px_0px_0px_1px_rgba(25,28,33,0.08)] w-auto hover:scale-105 transition-all"
-                        >
-                          {console.log("tamaño", filteredCustomers.length)}
-                          <TruckIcon
-                            className={`min-w-[30px] min-h-[30px] w-[30px] h-[30px] mr-2 ${
-                              customer.state === "Delivered"
-                                ? "text-green"
-                                : "text-gray-500"
-                            }`}
-                          />
-                          <div>
-                            <h1>{customer.accountName}</h1>
-                          </div>
+                  console.log(
+                    "🚀 ~ filteredCustomers ~ filteredCustomers:",
+                    filteredCustomers
+                  );
+                  console.log(
+                    "filteredCustomers ",
+                    filteredCustomers.length,
+                    "deliveries: ",
+                    deliveries.length
+                  );
+                  if (filteredCustomers.length > 0) {
+                    return (
+                      <>
+                        <h1 className="text-left my-2 font-semibold">
+                          {delivery.route}
+                        </h1>
+                        <div className="flex flex-wrap">
+                          {filteredCustomers.map((customer, index) => (
+                            <div
+                              key={index}
+                              onClick={() =>
+                                handleCLickModal(customer.reference)
+                              }
+                              className="flex cursor-pointer items-center py-4 px-5 rounded-xl mr-3 shadow-[0px_2px_3px_-1px_rgba(0,0,0,0.1),0px_1px_0px_0px_rgba(25,28,33,0.02),0px_0px_0px_1px_rgba(25,28,33,0.08)] w-auto hover:scale-105 transition-all"
+                            >
+                              <TruckIcon
+                                className={`min-w-[30px] min-h-[30px] w-[30px] h-[30px] mr-2 ${
+                                  customer.state === "Delivered"
+                                    ? "text-green"
+                                    : "text-gray-500"
+                                }`}
+                              />
+                              <div>
+                                <h1>{customer.accountName}</h1>
+                              </div>
+                            </div>
+                          ))}
                         </div>
                       </>
                     );
@@ -297,11 +306,11 @@ const DeliveryView = () => {
                 })
               ) : (
                 <div>
-                  {(!isLoading && !dataLoaded) && (
+                  {!isLoading && !dataLoaded && (
                     <p className="flex items-center justify-center text-gray my-10">
                       <ExclamationCircleIcon className="h-12 w-12 mr-5 text-gray" />
-                      No deliveries were found for this date. Please try searching
-                      for deliveries on a different date.
+                      No deliveries were found for this date. Please try
+                      searching for deliveries on a different date.
                     </p>
                   )}
                 </div>
