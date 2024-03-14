@@ -1,24 +1,25 @@
 "use client";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import Layout from "../layoutS";
 import { fetchAssignRoute } from "../api/assignRouteRequest";
 import useTokenStore from "../store/useTokenStore";
 import { fetchVehicleAndDriver } from "../api/vehiclesAndDriversRequest";
+import { getAllRoutes } from "../api/getAllRoutesRequest";
+import Spinner from "../components/Spinner";
 
 export default function RoundsAllocations() {
-  const [show, setShow] = useState(true);
   const [loading, setLoading] = useState(false);
   const { token } = useTokenStore();
   const [statusFetch, setStatusFetch] = useState({ status: 0, message: "" });
   const [vehicles, setVehicles] = useState([]);
   const [drivers, setDrivers] = useState([]);
+  const [routes, setRoutes] = useState([])
   const [form, setForm] = useState({
     driverId: "",
     vehicleId: "",
     date: "",
     routeId: "",
   });
-  const selectRef = useRef();
 
   const handleChange = (e) => {
     setForm({
@@ -65,22 +66,20 @@ export default function RoundsAllocations() {
     }
   };
 
+  const getRoutes = async () => {
+    const { status, message, data } = await getAllRoutes(token);
+    if (status) {
+      setRoutes(data.routes);
+    } else {
+      setStatusFetch({ status: 2, message });
+    }
+
+  }
+
   useEffect(() => {
-    if (show) {
-      selectRef.current.focus();
-      getVehiclesAndDrivers();
-    }
-  }, [show]);
-
-  const handleKeyCloseModal = (event) => {
-    if (event.key === "Escape") {
-      onClose();
-    }
-
-    if (event.key === "Enter") {
-      handleSubmit();
-    }
-  };
+    getVehiclesAndDrivers();
+    getRoutes();
+  }, []);
 
   const handleFocus = () => {
     setStatusFetch({ status: 0, message: "" });
@@ -89,12 +88,6 @@ export default function RoundsAllocations() {
   const handleBlur = () => {
     setStatusFetch({ status: 0, message: "" });
   };
-
-  if (!show) {
-    return null;
-  }
-
-  const routes = ["R1", "R2", "R3", "R4", "R5", "R6", "R7", "R8", "R9", "R100"];
 
   return (
     <Layout>
@@ -105,7 +98,7 @@ export default function RoundsAllocations() {
           </h1>
         </div>
         <div className="mt-5 px-10">
-          <h1 className="font-bold text-lg">Assingment</h1>
+          <h1 className="font-bold text-lg">Assignment</h1>
           <form
             className="space-y-4 mt-5 text-dark-blue flex items-left flex-col w-full"
             onSubmit={handleSubmit}
@@ -119,7 +112,6 @@ export default function RoundsAllocations() {
                 className="mt-1 block w-full rounded-md border-gray-300 border-2 shadow-sm p-3"
                 onFocus={handleFocus}
                 onBlur={handleBlur}
-                ref={selectRef}
               >
                 <option value="">Select a driver</option>
                 {drivers.map((driver, index) => (
@@ -175,8 +167,8 @@ export default function RoundsAllocations() {
               >
                 <option value="">Select a route</option>
                 {routes.map((route, index) => (
-                  <option key={index} value={route.substring(1)}>
-                    {route}
+                  <option key={index} value={route.id}>
+                    {route.name}
                   </option>
                 ))}
               </select>
@@ -192,13 +184,12 @@ export default function RoundsAllocations() {
             </button>
             {statusFetch.status !== 0 && (
               <p
-                className={`${
-                  statusFetch.status === 1
-                    ? "text-green"
-                    : statusFetch.status === 2
+                className={`${statusFetch.status === 1
+                  ? "text-green"
+                  : statusFetch.status === 2
                     ? "text-danger"
                     : "text-dark-blue"
-                } text-center rounded-lg bg-light-blue p-3 w-[full]`}
+                  } text-center rounded-lg bg-light-blue p-3 w-[full]`}
               >
                 {statusFetch.message}
               </p>
