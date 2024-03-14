@@ -135,3 +135,7 @@ export const vehiclesAndDrivers = `${BASE_URL}deliveryRoutes/vehiclesAndEmployee
 // Deliveries
 export const deliveriesUrl = `${BASE_URL}logisticRoute/transport/?date=`;
 export const deliveriesCustomerDetail = `${BASE_URL}logisticRoute/transport/customers-by-reference/`;
+
+// get All Routes
+export const allRoutes = `${BASE_URL}deliveryRoutes/all`;
+

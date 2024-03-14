@@ -30,7 +30,6 @@ import Image from "next/image";
 import ModalOrderError from "../components/ModalOrderError";
 import { saveAs } from "file-saver";
 import MenuDelivery from "../components/MenuDelivery";
-import { ModalRouteAssignment } from "../components/ModalRouteAssignment";
 import { fetchDeliveries } from "../api/deliveryRequest";
 
 export const customStyles = {
@@ -98,6 +97,15 @@ const DeliveryView = () => {
     const year = String(utcDate.getUTCFullYear()).slice(-2);
     return `${day}/${month}/${year}`;
   };
+
+
+  const formattedDate = selectedDate
+    ? new Date(selectedDate).toLocaleDateString("es-CO", {
+      day: "2-digit",
+      month: "2-digit",
+      year: "2-digit",
+    })
+    : formatDateToShow(workDate);
 
   const formatDateToTransform = (dateString) => {
     const date = new Date(dateString);
@@ -219,15 +227,9 @@ const DeliveryView = () => {
             Deliveries <span className="text-white">list</span>
           </h1>
           <div className="flex items-center space-x-4">
-            {/* TO DO: Modal y botón routes 
-            <button
-              onClick={() => setShowModalAssignment(true)}
-              className="flex items-center space-x-2 py-2 px-4 rounded-md bg-green text-white font-semibold"
-            >
-              <h1>Route assignments</h1>
-            </button> */}
           </div>
         </div>
+
         <div className={`flex ml-10 mt-4 mb-0 items-center space-x-2 `}>
           <div className="border border-gray-300 rounded-md py-3 px-2 flex items-center">
             <input
@@ -353,6 +355,18 @@ const DeliveryView = () => {
         show={showModalAssignment}
         onClose={onCloseModalAssignment}
       /> */}
+      <MenuDelivery
+        open={showMenuDelivery}
+        setOpen={setShowMenuDelivery}
+        reference={reference}
+        setIsLoading={setIsLoading}
+      />
+      <ModalOrderError
+        isvisible={showErrorCsv}
+        onClose={() => setShowErrorCsv(false)}
+        title={"Error downloading csv"}
+        message={errorMessage}
+      />
     </Layout>
   );
 };
