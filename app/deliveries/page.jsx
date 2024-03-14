@@ -170,7 +170,6 @@ const DeliveryView = () => {
     return adjustedDate;
   }
 
-
   const filterOrdersByDate = (order) => {
     if (showAllOrders) {
       return true;
@@ -283,19 +282,29 @@ const DeliveryView = () => {
         </div>
 
         <div className="flex flex-col mb-20 mt-4 p-2 px-10 text-dark-blue">
-
           {deliveries?.map((delivery, index) => {
             const filteredCustomers = delivery.customers.filter((customer) => {
-              const matchCustomerName = customer.accountName.toLowerCase().includes(searchQuery.trim().toLowerCase());
-              const matchRoute = delivery.route.toLowerCase().includes(searchQuery.trim().toLowerCase());
-              return searchQuery.trim() === "" || matchCustomerName || matchRoute;
+              const matchCustomerName = customer.accountName
+                .toLowerCase()
+                .includes(searchQuery.trim().toLowerCase());
+              const matchRoute = delivery.route
+                .toLowerCase()
+                .includes(searchQuery.trim().toLowerCase());
+              return (
+                searchQuery.trim() === "" || matchCustomerName || matchRoute
+              );
             });
-            console.log("🚀 ~ filteredCustomers ~ filteredCustomers:", filteredCustomers)
+            console.log(
+              "🚀 ~ filteredCustomers ~ filteredCustomers:",
+              filteredCustomers
+            );
 
             if (filteredCustomers.length > 0) {
               return (
                 <>
-                  <h1 className="text-left my-2 font-semibold">{delivery.route}</h1>
+                  <h1 className="text-left my-2 font-semibold">
+                    {delivery.route}
+                  </h1>
                   <div className="grid grid-cols-6 gap-2">
                     {filteredCustomers.map((customer, index) => (
                       <div
@@ -303,13 +312,18 @@ const DeliveryView = () => {
                         onClick={() => handleCLickModal(customer.reference)}
                         className="flex cursor-pointer hover:bg-gray-200 transition-all items-center py-4 px-5 rounded-xl mr-4 shadow-[0px_2px_3px_-1px_rgba(0,0,0,0.1),0px_1px_0px_0px_rgba(25,28,33,0.02),0px_0px_0px_1px_rgba(25,28,33,0.08)]"
                       >
-                        <TruckIcon className={`min-w-[30px] min-h-[30px] w-[30px] h-[30px] ${customer.state === "Delivered" ? 'text-green' : 'text-gray-500'}`} />
+                        <TruckIcon
+                          className={`min-w-[30px] min-h-[30px] w-[30px] h-[30px] ${
+                            customer.state === "Delivered"
+                              ? "text-green"
+                              : "text-gray-500"
+                          }`}
+                        />
                         <div className="overflow-hidden flex-grow">
                           <h1>{customer.accountName}</h1>
                         </div>
                       </div>
                     ))}
-
                   </div>
                 </>
               );

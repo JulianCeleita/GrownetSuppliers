@@ -4,6 +4,7 @@ import { Fragment, useState, useEffect } from "react";
 import { Dialog, Transition } from "@headlessui/react";
 import { fetchDeliveriesDetails } from "../api/deliveryRequest";
 import useTokenStore from "../store/useTokenStore";
+import Image from "next/image";
 
 const MenuDelivery = ({ open, setOpen, reference, setIsLoading }) => {
   const { token } = useTokenStore();
@@ -73,11 +74,17 @@ const MenuDelivery = ({ open, setOpen, reference, setIsLoading }) => {
                         </span>
                         {deliveryDetails.accountName}
                       </h1>
-                      <img
-                        className="rounded-lg h-[16.5em] custom:h-[310px]"
-                        src="https://images.pexels.com/photos/442969/pexels-photo-442969.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"
-                        alt="Grownet Logo"
-                      />
+                      {deliveryDetails.evidence ? (
+                        <Image
+                          className="rounded-lg h-[16.5em] custom:h-[310px]"
+                          src={deliveryDetails.evidence}
+                          alt="Grownet Logo"
+                          width={200}
+                          height={200}
+                        />
+                      ) : (
+                        <div>No hay foto</div>
+                      )}
                     </Dialog.Title>
                   </div>
                   <div className="grid grid-cols-2 gap-2 mt-6 mx-10 text-sm custom:text-base">
@@ -132,21 +139,21 @@ const MenuDelivery = ({ open, setOpen, reference, setIsLoading }) => {
                         <span className="mr-2 text-primary-blue">•</span>
                         Delivery time:
                       </strong>{" "}
-                      05:00:00
+                      {deliveryDetails?.delivery_time}
                     </p>
                     <p>
                       <strong>
                         <span className="mr-2 text-primary-blue">•</span>Post
                         Code:
                       </strong>{" "}
-                      Test
+                      {deliveryDetails?.postCode}
                     </p>
                     <p>
                       <strong>
                         <span className="mr-2 text-primary-blue">•</span>
                         Address:
                       </strong>{" "}
-                      Cl test avenue
+                      {deliveryDetails?.address}
                     </p>
                     <p>
                       <strong>
