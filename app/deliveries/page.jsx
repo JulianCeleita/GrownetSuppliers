@@ -169,46 +169,6 @@ const DeliveryView = () => {
     return adjustedDate;
   }
 
-  const filterOrdersByDate = (order) => {
-    if (showAllOrders) {
-      return true;
-    }
-
-    const deliveryDate = convertUTCtoTimeZone(
-      new Date(order.date_delivery),
-      "America/Bogota"
-    );
-
-    deliveryDate.setHours(0, 0, 0, 0);
-
-    if (dateFilter === "today") {
-      return order.date_delivery === workDate;
-    }
-    if (dateFilter === "range" && startDate && endDate) {
-      const start = new Date(startDate);
-      const startFormatted = subtractDays(start, 1);
-      startFormatted.setHours(0, 0, 0, 0);
-      const end = new Date(endDate);
-      const endFormatted = subtractDays(end, 1);
-      endFormatted.setHours(23, 59, 59, 999);
-      return deliveryDate >= startFormatted && deliveryDate <= endFormatted;
-    }
-    if (dateFilter === "date" && selectedDate) {
-      const selectDa = formatDateToTransform(selectedDate);
-      return order.date_delivery === selectDa;
-    }
-
-    return false;
-  };
-
-  const sortedOrders = orders
-    ?.filter((order) => filterOrdersByDate(order))
-    .sort((a, b) => {
-      const dateA = new Date(a.date_delivery);
-      const dateB = new Date(b.date_delivery);
-      return dateA - dateB;
-    });
-
   return (
     <Layout>
       <div className="-mt-24">
@@ -259,39 +219,54 @@ const DeliveryView = () => {
           >
             <option value="date">Filter by date</option>
           </select>
-              
-            <DatePicker
-              selected={selectedDate}
-              onChange={(date) => {
-                setSelectedDate(date);
-                setStartDateByNet(formatDateToTransform(date));
-                setEndDateByNet(formatDateToTransform(date));
-                setDateFilter("date");
-              }}
-              className="form-input px-4 py-3 w-[125px] rounded-md border border-gray-300 text-dark-blue placeholder-dark-blue"
-              dateFormat="dd/MM/yyyy"
-              placeholderText={formatDateToShow(workDate)}
-            />
+
+          <DatePicker
+            selected={selectedDate}
+            onChange={(date) => {
+              setSelectedDate(date);
+              setStartDateByNet(formatDateToTransform(date));
+              setEndDateByNet(formatDateToTransform(date));
+              setDateFilter("date");
+            }}
+            className="form-input px-4 py-3 w-[125px] rounded-md border border-gray-300 text-dark-blue placeholder-dark-blue"
+            dateFormat="dd/MM/yyyy"
+            placeholderText={formatDateToShow(workDate)}
+          />
         </div>
 
         <div className="flex flex-col mb-20 mt-4 p-2 px-10 text-dark-blue">
-          {deliveries?.map((delivery, index) => (
-            <>
-              <h1 className="text-left my-2 font-semibold">{delivery.route}</h1>
-              <div className="grid grid-cols-7 gap-2">
-                {delivery.customers.map((customer, index) => (
-                  <div
-                    key={index}
-                    onClick={() => setShowMenuDelivery(true)}
-                    className="flex cursor-pointer hover:bg-gray-200 transition-all items-center py-4 px-5 rounded-xl mr-4 shadow-[0px_2px_3px_-1px_rgba(0,0,0,0.1),0px_1px_0px_0px_rgba(25,28,33,0.02),0px_0px_0px_1px_rgba(25,28,33,0.08)]"
-                  >
-                    <TruckIcon className={`h-10 w-10 pr-2 ${delivery.state === "delivered" ? 'text-green' : 'text-gray-500'}`} />
-                    <h1>{customer.accountName}</h1>
+          {deliveries?.map((delivery, index) => {
+            const filteredCustomers = delivery.customers.filter((customer) => {
+              const matchCustomerName = customer.accountName.toLowerCase().includes(searchQuery.trim().toLowerCase());
+              const matchRoute = delivery.route.toLowerCase().includes(searchQuery.trim().toLowerCase());
+              return searchQuery.trim() === "" || matchCustomerName || matchRoute;
+            });
+            console.log("🚀 ~ filteredCustomers ~ filteredCustomers:", filteredCustomers)
+
+            if (filteredCustomers.length > 0) {
+              return (
+                <>
+                  <h1 className="text-left my-2 font-semibold">{delivery.route}</h1>
+                  <div className="grid grid-cols-6 gap-2">
+                    {filteredCustomers.map((customer, index) => (
+                      <div
+                        key={index}
+                        onClick={() => setShowMenuDelivery(true)}
+                        className="flex cursor-pointer hover:bg-gray-200 transition-all items-center py-4 px-5 rounded-xl mr-4 shadow-[0px_2px_3px_-1px_rgba(0,0,0,0.1),0px_1px_0px_0px_rgba(25,28,33,0.02),0px_0px_0px_1px_rgba(25,28,33,0.08)]"
+                      >
+                        <TruckIcon className={`min-w-[30px] min-h-[30px] w-[30px] h-[30px] ${customer.state === "Delivered" ? 'text-green' : 'text-gray-500'}`} />
+                        <div className="overflow-hidden flex-grow">
+                          <h1>{customer.accountName}</h1>
+                        </div>
+                      </div>
+                    ))}
                   </div>
-                ))}
-              </div>
-            </>
-          ))}
+                </>
+              );
+            } else {
+              return null;
+            }
+          })}
         </div>
         {isLoading && (
           <div className="flex justify-center items-center mb-20 -mt-20">
