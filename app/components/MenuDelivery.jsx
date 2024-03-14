@@ -6,6 +6,7 @@ import { Dialog, Transition } from "@headlessui/react";
 import { fetchDeliveriesDetails } from "../api/deliveryRequest";
 import useTokenStore from "../store/useTokenStore";
 import Image from "next/image";
+import Link from "next/link";
 
 const MenuDelivery = ({ open, setOpen, reference, setIsLoading }) => {
   const { token } = useTokenStore();
@@ -79,13 +80,19 @@ const MenuDelivery = ({ open, setOpen, reference, setIsLoading }) => {
                         {deliveryDetails.accountName}
                       </h1>
                       {deliveryDetails.evidence ? (
-                        <Image
-                          className="rounded-lg w-[400px] h-[300px] custom-w-[300px]"
-                          src={deliveryDetails.evidence}
-                          alt="Grownet Logo"
-                          width={300}
-                          height={300}
-                        />
+                        <Link
+                          href={deliveryDetails.evidence}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          <Image
+                            className="rounded-lg w-[400px] h-[300px] custom-w-[300px]"
+                            src={deliveryDetails.evidence}
+                            alt="Grownet Logo"
+                            width={300}
+                            height={300}
+                          />
+                        </Link>
                       ) : (
                         <div className="w-[500px] h-[300px] bg-dark-blue rounded-xl flex flex-col items-center justify-center">
                           <ExclamationCircleIcon className="h-20 w-20 mb-5 text-white" />
