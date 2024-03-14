@@ -81,6 +81,7 @@ const DeliveryView = () => {
   const [routeDetailsVisible, setRouteDetailsVisible] = useState({});
   const [showModalAssignment, setShowModalAssignment] = useState(false);
   const [deliveries, setDeliveries] = useState(null);
+  const [reference, setReference] = useState("");
 
   const onCloseModalAssignment = () => {
     setShowModalAssignment(false);
@@ -132,7 +133,7 @@ const DeliveryView = () => {
   useEffect(() => {
     // fetchOrdersDateByWorkDate(token, workDate, setOrdersWorkDate);
     fetchDeliveries(token, setDeliveries, setIsLoading, selectedDate);
-    console.log(deliveries)
+    console.log(deliveries);
   }, [selectedDate]);
 
   useEffect(() => {
@@ -168,6 +169,51 @@ const DeliveryView = () => {
     );
     return adjustedDate;
   }
+
+
+  const filterOrdersByDate = (order) => {
+    if (showAllOrders) {
+      return true;
+    }
+
+    const deliveryDate = convertUTCtoTimeZone(
+      new Date(order.date_delivery),
+      "America/Bogota"
+    );
+
+    deliveryDate.setHours(0, 0, 0, 0);
+
+    if (dateFilter === "today") {
+      return order.date_delivery === workDate;
+    }
+    if (dateFilter === "range" && startDate && endDate) {
+      const start = new Date(startDate);
+      const startFormatted = subtractDays(start, 1);
+      startFormatted.setHours(0, 0, 0, 0);
+      const end = new Date(endDate);
+      const endFormatted = subtractDays(end, 1);
+      endFormatted.setHours(23, 59, 59, 999);
+      return deliveryDate >= startFormatted && deliveryDate <= endFormatted;
+    }
+    if (dateFilter === "date" && selectedDate) {
+      const selectDa = formatDateToTransform(selectedDate);
+      return order.date_delivery === selectDa;
+    }
+
+    return false;
+  };
+
+  // const sortedOrders = orders
+  //   ?.filter((order) => filterOrdersByDate(order))
+  //   .sort((a, b) => {
+  //     const dateA = new Date(a.date_delivery);
+  //     const dateB = new Date(b.date_delivery);
+  //     return dateA - dateB;
+  //   });
+  const handleCLickModal = (customer) => {
+    setReference(customer);
+    setShowMenuDelivery(true);
+  };
 
   return (
     <Layout>
@@ -237,6 +283,7 @@ const DeliveryView = () => {
         </div>
 
         <div className="flex flex-col mb-20 mt-4 p-2 px-10 text-dark-blue">
+
           {deliveries?.map((delivery, index) => {
             const filteredCustomers = delivery.customers.filter((customer) => {
               const matchCustomerName = customer.accountName.toLowerCase().includes(searchQuery.trim().toLowerCase());
@@ -253,7 +300,7 @@ const DeliveryView = () => {
                     {filteredCustomers.map((customer, index) => (
                       <div
                         key={index}
-                        onClick={() => setShowMenuDelivery(true)}
+                        onClick={() => handleCLickModal(customer.reference)}
                         className="flex cursor-pointer hover:bg-gray-200 transition-all items-center py-4 px-5 rounded-xl mr-4 shadow-[0px_2px_3px_-1px_rgba(0,0,0,0.1),0px_1px_0px_0px_rgba(25,28,33,0.02),0px_0px_0px_1px_rgba(25,28,33,0.08)]"
                       >
                         <TruckIcon className={`min-w-[30px] min-h-[30px] w-[30px] h-[30px] ${customer.state === "Delivered" ? 'text-green' : 'text-gray-500'}`} />
@@ -262,6 +309,7 @@ const DeliveryView = () => {
                         </div>
                       </div>
                     ))}
+
                   </div>
                 </>
               );
@@ -277,7 +325,12 @@ const DeliveryView = () => {
         )}
       </div>
 
-      <MenuDelivery open={showMenuDelivery} setOpen={setShowMenuDelivery} />
+      <MenuDelivery
+        open={showMenuDelivery}
+        setOpen={setShowMenuDelivery}
+        reference={reference}
+        setIsLoading={setIsLoading}
+      />
       <ModalOrderError
         isvisible={showErrorCsv}
         onClose={() => setShowErrorCsv(false)}
