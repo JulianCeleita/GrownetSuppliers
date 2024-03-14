@@ -185,6 +185,7 @@ const DeliveryView = () => {
     setShowMenuDelivery(true);
   };
   console.log("reference:", reference);
+  let foundMatchingCustomer = false;
   return (
     <Layout>
       <div className="-mt-24">
@@ -255,6 +256,7 @@ const DeliveryView = () => {
                   );
 
                   if (filteredCustomers.length > 0) {
+                    foundMatchingCustomer = true;
                     return (
                       <>
                         <h1 className="text-left my-2 font-semibold">
@@ -284,15 +286,6 @@ const DeliveryView = () => {
                         </div>
                       </>
                     );
-                  } else {
-                    return (
-                      <div>
-                        <p className="flex items-center justify-center text-gray my-10">
-                          <ExclamationCircleIcon className="h-12 w-12 mr-5 text-gray" />
-                          No deliveries found, please search again.
-                        </p>
-                      </div>
-                    );
                   }
                 })
               ) : (
@@ -304,6 +297,14 @@ const DeliveryView = () => {
                       searching for deliveries on a different date.
                     </p>
                   )}
+                </div>
+              )}
+              {!foundMatchingCustomer && (
+                <div>
+                  <p className="flex items-center justify-center text-gray my-10">
+                    <ExclamationCircleIcon className="h-12 w-12 mr-5 text-gray" />
+                    No deliveries found, please search again.
+                  </p>
                 </div>
               )}
             </>
