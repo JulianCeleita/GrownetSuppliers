@@ -249,13 +249,6 @@ const DeliveryView = () => {
               </button>
             )}
           </div>
-          <select
-            value={filterType}
-            onChange={(e) => setFilterType(e.target.value)}
-            className="form-select px-4 py-3 rounded-md border border-gray-300"
-          >
-            <option value="date">Filter by date</option>
-          </select>
 
           <DatePicker
             selected={selectedDate}
