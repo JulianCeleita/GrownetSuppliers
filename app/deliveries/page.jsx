@@ -81,7 +81,6 @@ const DeliveryView = () => {
   const [showModalAssignment, setShowModalAssignment] = useState(false);
   const [deliveries, setDeliveries] = useState(null);
   const [reference, setReference] = useState("");
-
   const onCloseModalAssignment = () => {
     setShowModalAssignment(false);
   };
@@ -173,7 +172,6 @@ const DeliveryView = () => {
       setSelectedDate(new Date(year, month - 1, day));
     }
   }, [workDate]);
-
 
   const filterOrdersByDate = (order) => {
     if (showAllOrders) {
@@ -284,7 +282,12 @@ const DeliveryView = () => {
                 "🚀 ~ filteredCustomers ~ filteredCustomers:",
                 filteredCustomers
               );
-
+              console.log(
+                "filteredCustomers ",
+                filteredCustomers.length,
+                "deliveries: ",
+                deliveries.length
+              );
               if (filteredCustomers.length > 0) {
                 return (
                   <>
@@ -299,12 +302,13 @@ const DeliveryView = () => {
                           className="flex cursor-pointer items-center py-4 px-5 rounded-xl mr-3 shadow-[0px_2px_3px_-1px_rgba(0,0,0,0.1),0px_1px_0px_0px_rgba(25,28,33,0.02),0px_0px_0px_1px_rgba(25,28,33,0.08)] w-auto hover:scale-105 transition-all"
                         >
                           <TruckIcon
-                            className={`min-w-[30px] min-h-[30px] w-[30px] h-[30px] mr-2 ${customer.state === "Delivered"
+                            className={`min-w-[30px] min-h-[30px] w-[30px] h-[30px] mr-2 ${
+                              customer.state === "Delivered"
                                 ? "text-green"
                                 : "text-gray-500"
-                              }`}
+                            }`}
                           />
-                          <div className="">
+                          <div>
                             <h1>{customer.accountName}</h1>
                           </div>
                         </div>
@@ -313,13 +317,11 @@ const DeliveryView = () => {
                   </>
                 );
               } else {
-                console.log("estoy vacío")
-
                 return (
                   <div>
                     <p className="flex items-center justify-center text-gray my-10">
                       <ExclamationCircleIcon className="h-12 w-12 mr-5 text-gray" />
-                      No deliveries found please search again.
+                      No deliveries found, please search again.
                     </p>
                   </div>
                 );
@@ -327,11 +329,13 @@ const DeliveryView = () => {
             })
           ) : (
             <div>
-              <p className="flex items-center justify-center text-gray my-10">
-                <ExclamationCircleIcon className="h-12 w-12 mr-5 text-gray" />
-                No deliveries were found for this date. Please try searching for
-                deliveries on a different date.
-              </p>
+              {!isLoading && (
+                <p className="flex items-center justify-center text-gray my-10">
+                  <ExclamationCircleIcon className="h-12 w-12 mr-5 text-gray" />
+                  No deliveries were found for this date. Please try searching
+                  for deliveries on a different date.
+                </p>
+              )}
             </div>
           )}
         </div>
