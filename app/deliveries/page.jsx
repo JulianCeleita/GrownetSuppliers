@@ -118,14 +118,18 @@ const DeliveryView = () => {
 
   const calculateDeliveredPercentagePerDelivery = (delivery) => {
     const totalCustomers = delivery.customers.length;
-    const deliveredCustomers = delivery.customers.filter((customer) => customer.state === "Delivered").length;
+    const deliveredCustomers = delivery.customers.filter(
+      (customer) => customer.state === "Delivered"
+    ).length;
     return ((deliveredCustomers / totalCustomers) * 100).toFixed(2);
   };
 
   const countUndeliveredCustomersPerDelivery = (delivery) => {
-    return delivery.customers.filter((customer) => customer.state !== "Delivered").length;
+    return delivery.customers.filter(
+      (customer) => customer.state !== "Delivered"
+    ).length;
   };
-  
+
   let foundMatchingCustomer = false;
   return (
     <Layout>
@@ -218,7 +222,10 @@ const DeliveryView = () => {
                           <h1 className="text-left my-2 font-semibold">
                             {delivery.route}
                           </h1>
-                          <div title="Route information" className="flex gap-3 items-center py-4 px-5 mb-3 rounded-xl mr-3 bg-light-blue w-auto hover:scale-[1.02] transition-all">
+                          <div
+                            title="Route information"
+                            className="flex gap-3 items-center py-4 px-5 mb-3 rounded-xl mr-3 bg-light-blue w-auto hover:scale-[1.02] transition-all"
+                          >
                             <div className="flex">
                               <h3 className="font-medium mr-1">Driver: </h3>
                               <p className="text-gray-500">Test</p>
@@ -228,16 +235,31 @@ const DeliveryView = () => {
                               <p>Test</p>
                             </div>
                             <div className="flex">
-                              <h3 className="font-medium mr-1">Qty assigned: </h3>
-                              <p className="text-gray-500">{delivery.customers.length}</p>
+                              <h3 className="font-medium mr-1">
+                                Qty assigned:{" "}
+                              </h3>
+                              <p className="text-gray-500">
+                                {delivery.customers.length}
+                              </p>
                             </div>
                             <div className="flex">
-                              <h3 className="font-medium mr-1">Qty not completed: </h3>
-                              <p className="text-gray-500">{countUndeliveredCustomersPerDelivery(delivery)}</p>
+                              <h3 className="font-medium mr-1">
+                                Qty not completed:{" "}
+                              </h3>
+                              <p className="text-gray-500">
+                                {countUndeliveredCustomersPerDelivery(delivery)}
+                              </p>
                             </div>
                             <div className="flex">
-                              <h3 className="font-medium mr-1">Completition: </h3>
-                              <p className="text-gray-500">{calculateDeliveredPercentagePerDelivery(delivery)}%</p>
+                              <h3 className="font-medium mr-1">
+                                Completition:{" "}
+                              </h3>
+                              <p className="text-gray-500">
+                                {calculateDeliveredPercentagePerDelivery(
+                                  delivery
+                                )}
+                                %
+                              </p>
                             </div>
                           </div>
                         </div>
@@ -255,7 +277,7 @@ const DeliveryView = () => {
                                 onClick={() =>
                                   handleCLickModal(customer.reference)
                                 }
-                                className="flex cursor-pointer items-center py-4 px-5 mb-3 rounded-xl mr-3 shadow-[0px_2px_3px_-1px_rgba(0,0,0,0.1),0px_1px_0px_0px_rgba(25,28,33,0.02),0px_0px_0px_1px_rgba(25,28,33,0.08)] w-auto hover:scale-105 transition-all"
+                                className="flex cursor-pointer  items-center py-4 px-5 mb-3 rounded-xl mr-3 shadow-[0px_2px_3px_-1px_rgba(0,0,0,0.1),0px_1px_0px_0px_rgba(25,28,33,0.02),0px_0px_0px_1px_rgba(25,28,33,0.08)] w-[20em] h-[5em] hover:scale-105 transition-all"
                               >
                                 <TruckIcon
                                   className={`min-w-[30px] min-h-[30px] w-[30px] h-[30px] mr-2 ${
@@ -264,11 +286,11 @@ const DeliveryView = () => {
                                     customer.state === "Delivered"
                                       ? "text-green"
                                       : "text-gray-500"
-                                    }`}
+                                  }`}
                                 />
                                 <div>
                                   <h1>
-                                    {customer.accountName + customer.state}
+                                    {customer.accountName} {customer.state}
                                   </h1>
                                 </div>
                               </div>
