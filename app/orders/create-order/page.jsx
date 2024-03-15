@@ -240,6 +240,8 @@ const CreateOrderView = () => {
   };
   const resetStates = () => {
     setCustomers("");
+    setSelectedAccName("");
+    setSelectedAccNumber2("");
   };
   useEffect(() => {
     document.addEventListener("click", handleClickOutsideTotal);
