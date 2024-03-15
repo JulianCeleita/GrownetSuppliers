@@ -45,7 +45,6 @@ const DeliveryView = () => {
   const [deliveries, setDeliveries] = useState(null);
   const [reference, setReference] = useState("");
   const [dataLoaded, setDataLoaded] = useState(false);
-
   let noDeliveriesFound = false;
 
   const formatDateToShow = (dateString) => {
@@ -208,26 +207,38 @@ const DeliveryView = () => {
                           {delivery.route}
                         </h1>
                         <div className="flex flex-wrap">
-                          {filteredCustomers.map((customer, index) => (
-                            <div
-                              key={index}
-                              onClick={() =>
-                                handleCLickModal(customer.reference)
-                              }
-                              className="flex cursor-pointer items-center py-4 px-5 rounded-xl mr-3 shadow-[0px_2px_3px_-1px_rgba(0,0,0,0.1),0px_1px_0px_0px_rgba(25,28,33,0.02),0px_0px_0px_1px_rgba(25,28,33,0.08)] w-auto hover:scale-105 transition-all"
-                            >
-                              <TruckIcon
-                                className={`min-w-[30px] min-h-[30px] w-[30px] h-[30px] mr-2 ${
-                                  customer.state === "Delivered"
-                                    ? "text-green"
-                                    : "text-gray-500"
-                                }`}
-                              />
-                              <div>
-                                <h1>{customer.accountName}</h1>
+                          {filteredCustomers.map((customer, customerIndex) => {
+                            // const isNextToBeHighlighted =
+                            //   customerIndex < filteredCustomers.length - 1 &&
+                            //   customer.state !== "Delivered" &&
+                            //   customer.drop >= 0 &&
+                            //   filteredCustomers[customerIndex + 1].state !==
+                            //     "Delivered";
+                            return (
+                              <div
+                                key={customerIndex}
+                                onClick={() =>
+                                  handleCLickModal(customer.reference)
+                                }
+                                className="flex cursor-pointer items-center py-4 px-5 mb-3 rounded-xl mr-3 shadow-[0px_2px_3px_-1px_rgba(0,0,0,0.1),0px_1px_0px_0px_rgba(25,28,33,0.02),0px_0px_0px_1px_rgba(25,28,33,0.08)] w-auto hover:scale-105 transition-all"
+                              >
+                                <TruckIcon
+                                  className={`min-w-[30px] min-h-[30px] w-[30px] h-[30px] mr-2 ${
+                                    // isNextToBeHighlighted
+                                    // ? "text-primary-blue"
+                                    customer.state === "Delivered"
+                                      ? "text-green"
+                                      : "text-gray-500"
+                                  }`}
+                                />
+                                <div>
+                                  <h1>
+                                    {customer.accountName + customer.state}
+                                  </h1>
+                                </div>
                               </div>
-                            </div>
-                          ))}
+                            );
+                          })}
                         </div>
                       </>
                     );
