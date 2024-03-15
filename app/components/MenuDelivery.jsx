@@ -15,7 +15,6 @@ const MenuDelivery = ({ open, setOpen, reference, setIsLoading }) => {
   useEffect(() => {
     fetchDeliveriesDetails(token, setDeliveryDetails, setIsLoading, reference);
   }, [token, reference]);
-  console.log("deliveryDetails:", deliveryDetails);
 
   const handleClose = () => {
     setOpen(false);

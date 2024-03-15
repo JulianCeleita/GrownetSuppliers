@@ -106,7 +106,7 @@ function Users() {
                         <button
                           onClick={() => {
                             // setSelectedUser(user);
-                            setShowEditAccessUsers(true);
+                            // setShowEditAccessUsers(true);
                           }}
                           className="flex text-primary-blue font-medium transition-all hover:scale-110 hover:text-green hover:border-green"
                         >

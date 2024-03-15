@@ -29,6 +29,7 @@ function ProductState() {
   const [showAutomaticShorts, setShowAutomaticShorts] = useState(false);
   const [showEditPresentations, setShowEditPresentations] = useState(false);
   const [selectedPresentation, setSelectedPresentation] = useState(null);
+  const [descriptionData, setDescriptionData] = useState();
   const { user, setUser } = useUserStore();
 
   //Api
@@ -43,7 +44,7 @@ function ProductState() {
     if (user && user.rol_name === "AdminGrownet") {
       fetchPresentations(token, setProducts, setIsLoading);
     } else {
-      fetchPresentationsSupplier(token, user, setProducts, setIsLoading);
+      fetchPresentationsSupplier(token, user, setProducts, setIsLoading, setDescriptionData);
     }
   }, [user, token]);
 

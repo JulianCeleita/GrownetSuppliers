@@ -8,7 +8,6 @@ export const fetchSuppliers = async (token, setSuppliers, setIsLoading) => {
         Authorization: `Bearer ${token}`,
       },
     });
-    console.log("🚀 ~ fetchSuppliers ~ response:", response)
 
     const newSuppliers = Array.isArray(response.data.suppliers)
       ? response.data.suppliers
