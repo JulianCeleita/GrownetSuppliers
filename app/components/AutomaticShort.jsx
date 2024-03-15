@@ -26,6 +26,7 @@ import ModalSuccessfull from "./ModalSuccessfull";
 function AutomaticShort({ isvisible, onClose, setProducts, setIsLoading }) {
   const { token } = useTokenStore();
   const [uoms, setUoms] = useState([]);
+  const [productsSorted, setProductsSorted] = useState([]);
   const [products2, setProducts2] = useState([]);
   const [categories, setCategories] = useState([]);
   const [types, setTypes] = useState([]);
@@ -96,6 +97,18 @@ function AutomaticShort({ isvisible, onClose, setProducts, setIsLoading }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  useEffect(() => {
+    // Función para ordenar los productos por product_name
+    const sortProductsByName = () => {
+      const sortedProducts = [...products2].sort((a, b) =>
+        a.product_name.localeCompare(b.product_name)
+      );
+      setProductsSorted(sortedProducts);
+    };
+
+    // Llamar a la función de ordenación solo cuando products2 cambie
+    sortProductsByName();
+  }, [products2]);
 
   if (!isvisible) {
     return null;
@@ -214,7 +227,7 @@ function AutomaticShort({ isvisible, onClose, setProducts, setIsLoading }) {
               <option disabled selected>
                 Select product
               </option>
-              {products2.map((product) => (
+              {productsSorted.map((product) => (
                 <option key={product.id} value={product.id}>
                   {product.product_name} - {product.name}
                 </option>
