@@ -101,10 +101,10 @@ const DeliveryView = () => {
 
   const formattedDate = selectedDate
     ? new Date(selectedDate).toLocaleDateString("es-CO", {
-        day: "2-digit",
-        month: "2-digit",
-        year: "2-digit",
-      })
+      day: "2-digit",
+      month: "2-digit",
+      year: "2-digit",
+    })
     : formatDateToShow(workDate);
 
   const formatDateToTransform = (dateString) => {
@@ -185,6 +185,11 @@ const DeliveryView = () => {
     setReference(customer);
     setShowMenuDelivery(true);
   };
+  const sortedDeliveries = deliveries?.sort((a, b) => {
+    const routeA = parseInt(a.route.slice(1));
+    const routeB = parseInt(b.route.slice(1));
+    return routeA - routeB;
+  });
   console.log("reference:", reference);
   let foundMatchingCustomer = false;
   return (
@@ -238,8 +243,8 @@ const DeliveryView = () => {
             </div>
           ) : (
             <>
-              {deliveries?.length > 0 ? (
-                deliveries?.map((delivery, index) => {
+              {sortedDeliveries?.length > 0 ? (
+                sortedDeliveries?.map((delivery, index) => {
                   const filteredCustomers = delivery.customers.filter(
                     (customer) => {
                       const matchCustomerName = customer.accountName
@@ -273,11 +278,10 @@ const DeliveryView = () => {
                               className="flex cursor-pointer items-center py-4 px-5 rounded-xl mr-3 shadow-[0px_2px_3px_-1px_rgba(0,0,0,0.1),0px_1px_0px_0px_rgba(25,28,33,0.02),0px_0px_0px_1px_rgba(25,28,33,0.08)] w-auto hover:scale-105 transition-all"
                             >
                               <TruckIcon
-                                className={`min-w-[30px] min-h-[30px] w-[30px] h-[30px] mr-2 ${
-                                  customer.state === "Delivered"
+                                className={`min-w-[30px] min-h-[30px] w-[30px] h-[30px] mr-2 ${customer.state === "Delivered"
                                     ? "text-green"
                                     : "text-gray-500"
-                                }`}
+                                  }`}
                               />
                               <div>
                                 <h1>{customer.accountName}</h1>
