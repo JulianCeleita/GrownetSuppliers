@@ -68,7 +68,7 @@ const MenuDelivery = ({ open, setOpen, reference, setIsLoading }) => {
                     />
                   </button>
                 </div>
-                <div className="flex h-full flex-col bg-white py-6 font-poppins px-3 items-center">
+                <div className="flex custom:h-full flex-col bg-white py-6 font-poppins px-3 items-center z-10">
                   <div className="px-10">
                     <Dialog.Title className="text-base font-semibold leading-6">
                       <h1 className="mt-3 text-center text-xl mb-5 font-bold  flex items-center justify-center">
@@ -93,7 +93,7 @@ const MenuDelivery = ({ open, setOpen, reference, setIsLoading }) => {
                           />
                         </Link>
                       ) : (
-                        <div className="w-[500px] h-[300px] bg-dark-blue rounded-xl flex flex-col items-center justify-center">
+                        <div className="w-[450px] custom:w-[500px] h-[300px] bg-dark-blue rounded-xl flex flex-col items-center justify-center">
                           <ExclamationCircleIcon className="h-20 w-20 mb-5 text-white" />
                           <p className="text-white font-medium text-center">
                             Without evidence
