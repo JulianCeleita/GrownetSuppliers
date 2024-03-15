@@ -48,43 +48,24 @@ export const customStyles = {
 };
 
 const DeliveryView = () => {
-  const router = useRouter();
   const { token } = useTokenStore();
-  const { workDate, setFetchWorkDate } = useWorkDateStore();
-  const [ordersWorkDate, setOrdersWorkDate] = useState(0);
-  const { routePercentages, setFetchRoutePercentages } = usePercentageStore();
+  const { workDate } = useWorkDateStore();
   const [isLoading, setIsLoading] = useState(true);
-  const [orders, setOrders] = useState([]);
   const { user } = useUserStore();
   const [dateFilter, setDateFilter] = useState("today");
-  const [showAllOrders, setShowAllOrders] = useState(false);
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [selectedDate, setSelectedDate] = useState("");
-  const [startDate, setStartDate] = useState("");
-  const [endDate, setEndDate] = useState("");
   const [startDateByNet, setStartDateByNet] = useState("");
   const [endDateByNet, setEndDateByNet] = useState("");
-  const [selectedOrders, setSelectedOrders] = useState({ route: "" });
   const [selectedRoute, setSelectedRoute] = useState("");
-  const [selectedRouteId, setSelectedRouteId] = useState("");
-  const [filterType, setFilterType] = useState("date");
-  const [showPercentage, setShowPercentage] = useState(null);
-  const [totalNet, setTotalNet] = useState("");
-  const [routeId, setRouteId] = useState();
   const [searchQuery, setSearchQuery] = useState("");
-  const [selectedGroup, setSelectedGroup] = useState("");
-  const [selectedStatus, setSelectedStatus] = useState("");
   const [showErrorCsv, setShowErrorCsv] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
   const [showMenuDelivery, setShowMenuDelivery] = useState(false);
-  const [routeDetailsVisible, setRouteDetailsVisible] = useState({});
-  const [showModalAssignment, setShowModalAssignment] = useState(false);
   const [deliveries, setDeliveries] = useState(null);
   const [reference, setReference] = useState("");
   const [dataLoaded, setDataLoaded] = useState(false);
-  const onCloseModalAssignment = () => {
-    setShowModalAssignment(false);
-  };
+
   let noDeliveriesFound = false;
   console.log("aiuda", noDeliveriesFound);
   const formatDateToShow = (dateString) => {
@@ -98,14 +79,6 @@ const DeliveryView = () => {
     const year = String(utcDate.getUTCFullYear()).slice(-2);
     return `${day}/${month}/${year}`;
   };
-
-  const formattedDate = selectedDate
-    ? new Date(selectedDate).toLocaleDateString("es-CO", {
-      day: "2-digit",
-      month: "2-digit",
-      year: "2-digit",
-    })
-    : formatDateToShow(workDate);
 
   const formatDateToTransform = (dateString) => {
     const date = new Date(dateString);
@@ -141,40 +114,6 @@ const DeliveryView = () => {
   }, [selectedDate]);
 
   useEffect(() => {
-    if (routePercentages) {
-      const result = routePercentages.find(
-        (item) => item.nameRoute === selectedRoute
-      );
-
-      if (result) {
-        setShowPercentage(result.percentage_loading);
-      } else {
-        setShowPercentage(null);
-      }
-    }
-  }, [routePercentages]);
-
-  const subtractDays = (date, days) => {
-    const result = new Date(date);
-    result.setDate(result.getDate() - days);
-    return result;
-  };
-
-  function convertUTCtoTimeZone(dateUTC, timeZone) {
-    let offset = new Date().getTimezoneOffset();
-    let tzOffset = new Date(dateUTC).getTimezoneOffset();
-    if (timeZone === "America/Bogota") {
-      offset -= 300; // Bogotá está GMT-5
-    } else if (timeZone === "Europe/London") {
-      offset += 60; // Londres está GMT+0 o BST+1
-    }
-    const adjustedDate = new Date(
-      dateUTC.getTime() + (offset - tzOffset) * 60000
-    );
-    return adjustedDate;
-  }
-
-  useEffect(() => {
     if (workDate) {
       const [year, month, day] = workDate.split("-").map(Number);
       setSelectedDate(new Date(year, month - 1, day));
@@ -185,12 +124,19 @@ const DeliveryView = () => {
     setReference(customer);
     setShowMenuDelivery(true);
   };
-  const sortedDeliveries = deliveries?.sort((a, b) => {
+  const filteredDeliveries = selectedRoute
+    ? deliveries?.filter((delivery) => delivery.route === selectedRoute)
+    : deliveries;
+
+  const sortedDeliveries = filteredDeliveries?.sort((a, b) => {
     const routeA = parseInt(a.route.slice(1));
     const routeB = parseInt(b.route.slice(1));
     return routeA - routeB;
   });
-  console.log("reference:", reference);
+
+  const uniqueRoutes = [
+    ...new Set(deliveries?.map((delivery) => delivery.route)),
+  ];
   let foundMatchingCustomer = false;
   return (
     <Layout>
@@ -234,6 +180,20 @@ const DeliveryView = () => {
             dateFormat="dd/MM/yyyy"
             placeholderText={formatDateToShow(workDate)}
           />
+          <div className="border border-gray-300 rounded-md py-3 px-2 flex items-center">
+            <select
+              value={selectedRoute}
+              onChange={(e) => setSelectedRoute(e.target.value)}
+            >
+              <option value="">Filter by route</option>
+              <option value="">All</option>
+              {uniqueRoutes.map((route, index) => (
+                <option key={index} value={route}>
+                  {route}
+                </option>
+              ))}
+            </select>
+          </div>
         </div>
 
         <div className="flex flex-col mb-20 mt-4 p-2 px-10 text-dark-blue">
@@ -278,10 +238,11 @@ const DeliveryView = () => {
                               className="flex cursor-pointer items-center py-4 px-5 rounded-xl mr-3 shadow-[0px_2px_3px_-1px_rgba(0,0,0,0.1),0px_1px_0px_0px_rgba(25,28,33,0.02),0px_0px_0px_1px_rgba(25,28,33,0.08)] w-auto hover:scale-105 transition-all"
                             >
                               <TruckIcon
-                                className={`min-w-[30px] min-h-[30px] w-[30px] h-[30px] mr-2 ${customer.state === "Delivered"
+                                className={`min-w-[30px] min-h-[30px] w-[30px] h-[30px] mr-2 ${
+                                  customer.state === "Delivered"
                                     ? "text-green"
                                     : "text-gray-500"
-                                  }`}
+                                }`}
                               />
                               <div>
                                 <h1>{customer.accountName}</h1>
