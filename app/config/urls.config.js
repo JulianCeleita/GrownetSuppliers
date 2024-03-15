@@ -116,7 +116,7 @@ export const typesUrl = `${BASE_URL}types/all`;
 // Shorts
 export const productShort = `${BASE_URL}presentations/short/update/`;
 export const categoriesShort = `${BASE_URL}categories/short`;
-export const typeShort = `${BASE_URL}suppliers/short/create`;
+export const typeShort = `${BASE_URL}presentations/short-type/update`;
 
 // Assign route
 // Method: POST
