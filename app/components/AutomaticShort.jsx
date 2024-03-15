@@ -21,6 +21,7 @@ import {
   fetchTypes,
 } from "../api/presentationsRequest";
 import ModalOrderError from "./ModalOrderError";
+import ModalSuccessfull from "./ModalSuccessfull";
 
 function AutomaticShort({ isvisible, onClose, setProducts, setIsLoading }) {
   const { token } = useTokenStore();
@@ -40,6 +41,10 @@ function AutomaticShort({ isvisible, onClose, setProducts, setIsLoading }) {
   const [product, setProduct] = useState(true);
   const [selectedShort, setSelectedShort] = useState("");
   const [selectedShort2, setSelectedShort2] = useState("");
+  const [showModalSuccessfull, setShowModalSuccessfull] = useState(false);
+  const [showModalError, setShowModalError] = useState(false);
+  const [messageErrorType, setMessageErrorType] = useState("");
+  const [descriptionData, setDescriptionData] = useState();
 
   const toggleProduct = () => {
     setProduct((current) => !current);
@@ -67,26 +72,6 @@ function AutomaticShort({ isvisible, onClose, setProducts, setIsLoading }) {
         console.error("Error al obtener los productos:", error);
       }
     };
-    const fetchDataProducts = async () => {
-      try {
-        const response = await axios.get(productsUrl, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-
-        const sortedProducts = response.data.products.sort((a, b) =>
-          a.name.localeCompare(b.name)
-        );
-
-        const filteredProducts = sortedProducts.filter(
-          (product) => product.stateProduct_id !== 2
-        );
-        setProducts2(filteredProducts);
-      } catch (error) {
-        console.error("Error al obtener los productos:", error);
-      }
-    };
     const fetchDataTypes = async () => {
       try {
         const response = await axios.get(typesUrl, {
@@ -107,10 +92,10 @@ function AutomaticShort({ isvisible, onClose, setProducts, setIsLoading }) {
 
     fetchDataTypes()
     fetchDataCategories();
-    fetchDataProducts();
+    fetchPresentationsSupplier(token, user, setProducts2, setIsLoading, setDescriptionData);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-  
+
 
   if (!isvisible) {
     return null;
@@ -120,23 +105,29 @@ function AutomaticShort({ isvisible, onClose, setProducts, setIsLoading }) {
   const sendDataProduct = (e) => {
     e.preventDefault();
     const postDataProduct = {
-      id: selecteProductsStatus,
-      short: selectedShort
+      flagshort: selectedShort
     }
-    axios.post(productShort, postDataProduct, {
+    axios.post(`${productShort}${selecteProductsStatus}`, postDataProduct, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
     })
       .then((response) => {
+        if (response.data.status === 500) {
+          setMessageErrorType(response.data.message)
+          setShowModalError(true);
+        } else {
+          setShowModalSuccessfull(true);
+        }
         if (user.id_supplier) {
           fetchPresentationsSupplier(token, user, setProducts, setIsLoading);
         } else {
           fetchPresentations(token, setProducts, setIsLoading);
         }
-        onClose();
       })
       .catch((response, error) => {
+        setMessageErrorType(response.response.data.message);
+        setShowModalError(true);
         console.error("Error al parametrizar el producto: ", error);
       });
   };
@@ -153,14 +144,21 @@ function AutomaticShort({ isvisible, onClose, setProducts, setIsLoading }) {
       },
     })
       .then((response) => {
+        if (response.data.status === 500) {
+          setMessageErrorType(response.data.message)
+          setShowModalError(true);
+        } else {
+          setShowModalSuccessfull(true);
+        }
         if (user.id_supplier) {
           fetchPresentationsSupplier(token, user, setProducts, setIsLoading);
         } else {
           fetchPresentations(token, setProducts, setIsLoading);
         }
-        onClose();
       })
       .catch((response, error) => {
+        setMessageErrorType(error.msg)
+        setShowModalError(true);
         console.error("Error al parametrizar el type: ", error);
       });
   };
@@ -181,8 +179,8 @@ function AutomaticShort({ isvisible, onClose, setProducts, setIsLoading }) {
           <button
             onClick={toggleProduct}
             className={`${product
-                ? "bg-primary-blue hover:bg-dark-blue text-white"
-                : "bg-white text-dark-blue"
+              ? "bg-primary-blue hover:bg-dark-blue text-white"
+              : "bg-white text-dark-blue"
               }  font-bold py-2 px-4 rounded`}
           >
             Product
@@ -190,8 +188,8 @@ function AutomaticShort({ isvisible, onClose, setProducts, setIsLoading }) {
           <button
             onClick={toggleProduct}
             className={`${!product
-                ? "bg-primary-blue hover:bg-dark-blue text-white"
-                : "bg-white text-dark-blue"
+              ? "bg-primary-blue hover:bg-dark-blue text-white"
+              : "bg-white text-dark-blue"
               }  font-bold py-2 px-4 rounded`}
           >
             Type
@@ -215,7 +213,7 @@ function AutomaticShort({ isvisible, onClose, setProducts, setIsLoading }) {
               </option>
               {products2.map((product) => (
                 <option key={product.id} value={product.id}>
-                  {product.name}
+                  {product.product_name} - {product.name}
                 </option>
               ))}
             </select>
@@ -315,12 +313,23 @@ function AutomaticShort({ isvisible, onClose, setProducts, setIsLoading }) {
         )}
       </div>
       <ModalOrderError
-        isvisible={repeatedCode}
-        onClose={() => setRepeatedCode(false)}
-        title={"Existing code"}
-        message={
-          "The code you have entered already exists in the system. Please use a unique code to create a new product."
-        }
+        isvisible={showModalError}
+        onClose={() => setShowModalError(false)}
+        title={"Error declaring the short"}
+        message={messageErrorType}
+      />
+      <ModalSuccessfull
+        isvisible={showModalSuccessfull}
+        onClose={() => {
+          setShowModalSuccessfull(false)
+          if (showModalSuccessfull) {
+            onClose();
+          }
+        }}
+        title="Congratulations"
+        text="Short declared correctly!"
+        button=" Close"
+        confirmed={true}
       />
     </div>
   );

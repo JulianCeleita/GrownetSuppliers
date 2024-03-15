@@ -114,7 +114,7 @@ export const routesByDate = `${BASE_URL}deliveryRoutes/show`;
 export const typesUrl = `${BASE_URL}types/all`;
 
 // Shorts
-export const productShort = `${BASE_URL}products/short`;
+export const productShort = `${BASE_URL}presentations/short/update/`;
 export const categoriesShort = `${BASE_URL}categories/short`;
 export const typeShort = `${BASE_URL}suppliers/short/create`;
 
@@ -131,3 +131,11 @@ export const assignRoute = `${BASE_URL}logisticRoute/assignRoute`;
 
 // get Vehicles and Drivers
 export const vehiclesAndDrivers = `${BASE_URL}deliveryRoutes/vehiclesAndEmployees`;
+
+// Deliveries
+export const deliveriesUrl = `${BASE_URL}logisticRoute/transport?date=`;
+export const deliveriesCustomerDetail = `${BASE_URL}logisticRoute/transport/customers-by-reference/`;
+
+// get All Routes
+export const allRoutes = `${BASE_URL}deliveryRoutes/all`;
+

@@ -123,6 +123,11 @@ const SideBar = () => {
       setOpenMenu(true);
     }
   }, [pathname]);
+  useEffect(() => {
+    if (pathname === "/deliveries" || pathname === "/rounds") {
+      setOpenMenuTransport(true);
+    }
+  }, [pathname]);
 
   return (
     <div>
@@ -242,7 +247,7 @@ const SideBar = () => {
                       <div className="relative py-3">
                         <button
                           className={`flex justify-between w-full ${
-                            openMenu === true
+                            openMenuTransport === true
                               ? "text-light-green"
                               : "text-white"
                           } hover:text-light-green`}
@@ -266,12 +271,21 @@ const SideBar = () => {
                             <Link href="/deliveries" className="text-white">
                               <h3
                                 className={`hover:bg-[#046373] px-2 py-2 pl-4 rounded-xl w-[360px] mb-2 ${
-                                  pathname === "/products"
+                                  pathname === "/deliveries"
                                     ? "bg-[#046373]"
                                     : null
                                 }`}
                               >
-                                Deliveries
+                                Deliveries History
+                              </h3>
+                            </Link>
+                            <Link href="/rounds" className="text-white">
+                              <h3
+                                className={`hover:bg-[#046373] px-2 py-2 pl-4 rounded-xl w-[360px] mb-2 ${
+                                  pathname === "/rounds" ? "bg-[#046373]" : null
+                                }`}
+                              >
+                                Rounds Allocations
                               </h3>
                             </Link>
                           </div>

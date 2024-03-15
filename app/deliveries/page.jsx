@@ -30,7 +30,7 @@ import Image from "next/image";
 import ModalOrderError from "../components/ModalOrderError";
 import { saveAs } from "file-saver";
 import MenuDelivery from "../components/MenuDelivery";
-import { ModalRouteAssignment } from "../components/ModalRouteAssignment";
+import { fetchDeliveries } from "../api/deliveryRequest";
 
 export const customStyles = {
   placeholder: (provided) => ({
@@ -79,11 +79,14 @@ const DeliveryView = () => {
   const [showMenuDelivery, setShowMenuDelivery] = useState(false);
   const [routeDetailsVisible, setRouteDetailsVisible] = useState({});
   const [showModalAssignment, setShowModalAssignment] = useState(false);
-
+  const [deliveries, setDeliveries] = useState(null);
+  const [reference, setReference] = useState("");
+  const [dataLoaded, setDataLoaded] = useState(false);
   const onCloseModalAssignment = () => {
     setShowModalAssignment(false);
   };
-
+  let noDeliveriesFound = false;
+  console.log("aiuda", noDeliveriesFound);
   const formatDateToShow = (dateString) => {
     if (!dateString) return "Loading...";
 
@@ -103,6 +106,7 @@ const DeliveryView = () => {
       year: "2-digit",
     })
     : formatDateToShow(workDate);
+
   const formatDateToTransform = (dateString) => {
     const date = new Date(dateString);
     const day = String(date.getDate()).padStart(2, "0");
@@ -111,12 +115,6 @@ const DeliveryView = () => {
     return `${year}-${month}-${day}`;
   };
   useEffect(() => {
-    // if (user && user.rol_name === "AdminGrownet") {
-    //   fetchOrders(token, setOrders, setIsLoading);
-    // } else {
-    //   fetchOrdersSupplier(token, user, setOrders, setIsLoading);
-    // }
-
     const handleOutsideClick = (e) => {
       if (showDatePicker && !e.target.closest(".react-datepicker")) {
         setShowDatePicker(false);
@@ -131,37 +129,16 @@ const DeliveryView = () => {
   }, [user, token, showDatePicker]);
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        setFetchWorkDate(
-          token,
-          user.id_supplier,
-          setStartDateByNet,
-          setEndDateByNet
-        );
-      } catch (error) {
-        console.error("Error fetching data: ", error);
-      }
-    };
-
-    fetchData();
-  }, [user, token]);
-
-  useEffect(() => {
-    fetchOrdersDateByWorkDate(token, workDate, setOrdersWorkDate);
-  }, [workDate]);
-
-  useEffect(() => {
-    fetchOrdersDate(
+    // fetchOrdersDateByWorkDate(token, workDate, setOrdersWorkDate);
+    fetchDeliveries(
       token,
-      endDateByNet,
-      startDateByNet,
-      routeId,
-      setTotalNet,
-      setOrders,
-      setIsLoading
+      setDeliveries,
+      setIsLoading,
+      selectedDate,
+      setDataLoaded
     );
-  }, [endDateByNet, startDateByNet, routeId]);
+    console.log(deliveries);
+  }, [selectedDate]);
 
   useEffect(() => {
     if (routePercentages) {
@@ -197,97 +174,35 @@ const DeliveryView = () => {
     return adjustedDate;
   }
 
-  const filterOrdersByDate = (order) => {
-    if (showAllOrders) {
-      return true;
+  useEffect(() => {
+    if (workDate) {
+      const [year, month, day] = workDate.split("-").map(Number);
+      setSelectedDate(new Date(year, month - 1, day));
     }
+  }, [workDate]);
 
-    const deliveryDate = convertUTCtoTimeZone(
-      new Date(order.date_delivery),
-      "America/Bogota"
-    );
-
-    deliveryDate.setHours(0, 0, 0, 0);
-
-    if (dateFilter === "today") {
-      return order.date_delivery === workDate;
-    }
-    if (dateFilter === "range" && startDate && endDate) {
-      const start = new Date(startDate);
-      const startFormatted = subtractDays(start, 1);
-      startFormatted.setHours(0, 0, 0, 0);
-      const end = new Date(endDate);
-      const endFormatted = subtractDays(end, 1);
-      endFormatted.setHours(23, 59, 59, 999);
-      return deliveryDate >= startFormatted && deliveryDate <= endFormatted;
-    }
-    if (dateFilter === "date" && selectedDate) {
-      const selectDa = formatDateToTransform(selectedDate);
-      return order.date_delivery === selectDa;
-    }
-
-    return false;
+  const handleCLickModal = (customer) => {
+    setReference(customer);
+    setShowMenuDelivery(true);
   };
-
-  const objectToArray = (object) => {
-    return Object.entries(object)
-      .filter(([reference, checked]) => checked)
-      .map(([reference]) => reference);
-  };
-
-  const sortedOrders = orders
-    ?.filter((order) => filterOrdersByDate(order))
-    .sort((a, b) => {
-      const dateA = new Date(a.date_delivery);
-      const dateB = new Date(b.date_delivery);
-      return dateA - dateB;
-    });
-
-  const uniqueRoutesSet = new Set(
-    sortedOrders?.map((order) => order.route_id + "_" + order.route)
-  );
-
-  // Ahora convertimos el Set nuevamente en un array, pero esta vez, cada elemento será un objeto con route_id y route_name.
-  const uniqueRoutesArray = Array.from(uniqueRoutesSet).map((route) => {
-    const [routeId, routeName] = route.split("_");
-    return {
-      route_id: parseInt(routeId, 10), // Convertimos el route_id de string a número
-      route_name: routeName,
-    };
+  const sortedDeliveries = deliveries?.sort((a, b) => {
+    const routeA = parseInt(a.route.slice(1));
+    const routeB = parseInt(b.route.slice(1));
+    return routeA - routeB;
   });
-
-  const toggleRouteDetails = (routeId) => {
-    setRouteDetailsVisible((prevVisible) => ({
-      ...prevVisible,
-      [routeId]: !prevVisible[routeId],
-    }));
-  };
-
+  console.log("reference:", reference);
+  let foundMatchingCustomer = false;
   return (
     <Layout>
       <div className="-mt-24">
         <div className="flex gap-6 p-8">
           <h1 className="text-2xl text-light-green font-semibold mt-1 ml-24">
-            Deliveries <span className="text-white">list</span>
+            Deliveries <span className="text-white">history</span>
           </h1>
-          <div className="flex items-center space-x-4">
-            <button
-              onClick={() => setShowModalAssignment(true)}
-              className="flex items-center space-x-2 py-2 px-4 rounded-md bg-green text-white font-semibold"
-            >
-              <h1>Route assignments</h1>
-            </button>
-          </div>
+          <div className="flex items-center space-x-4"></div>
         </div>
-        <div
-          className={`flex ml-10 mt-4 mb-0 items-center space-x-2 mt-${filterType === "range" && window.innerWidth < 1500
-            ? "[45px]"
-            : filterType === "date" && window.innerWidth < 1300
-              ? "[50px]"
-              : "[20px]"
-            }
-          `}
-        >
+
+        <div className={`flex ml-10 mt-4 mb-0 items-center space-x-2 `}>
           <div className="border border-gray-300 rounded-md py-3 px-2 flex items-center">
             <input
               type="text"
@@ -306,171 +221,118 @@ const DeliveryView = () => {
               </button>
             )}
           </div>
-          <select
-            value={filterType}
-            onChange={(e) => setFilterType(e.target.value)}
-            className="form-select px-4 py-3 rounded-md border border-gray-300"
-          >
-            <option value="range">Filter by range</option>
-            <option value="date">Filter by date</option>
-          </select>
-          {filterType === "range" && (
-            <>
-              <DatePicker
-                selected={startDate}
-                onChange={(date) => {
-                  setStartDate(date);
-                  setStartDateByNet(formatDateToTransform(date));
-                  setEndDate((currentEndDate) => {
-                    if (date && currentEndDate) {
-                      setDateFilter("range");
-                    }
-                    return currentEndDate;
-                  });
-                }}
-                selectsStart
-                startDate={startDate}
-                endDate={endDate}
-                className="form-input px-4 py-3 rounded-md border border-gray-300 w-[150px]"
-                dateFormat="dd/MM/yyyy"
-                placeholderText="dd/mm/yyyy"
-              />
-              <DatePicker
-                selected={endDate}
-                onChange={(date) => {
-                  setEndDate(date);
-                  setEndDateByNet(formatDateToTransform(date));
-                  setStartDate((currentStartDate) => {
-                    if (currentStartDate && date) {
-                      setDateFilter("range");
-                    }
-                    return currentStartDate;
-                  });
-                }}
-                selectsEnd
-                startDate={startDate}
-                endDate={endDate}
-                minDate={startDate}
-                className="form-input px-4 py-3 w-[150px] rounded-md border border-gray-300"
-                dateFormat="dd/MM/yyyy"
-                placeholderText="dd/mm/yyyy"
-              />
-            </>
-          )}
 
-          {filterType === "date" && (
-            <DatePicker
-              selected={selectedDate}
-              onChange={(date) => {
-                setSelectedDate(date);
-                setStartDateByNet(formatDateToTransform(date));
-                setEndDateByNet(formatDateToTransform(date));
-                setDateFilter("date");
-              }}
-              className="form-input px-4 py-3 w-[125px] rounded-md border border-gray-300 text-dark-blue placeholder-dark-blue"
-              dateFormat="dd/MM/yyyy"
-              placeholderText={formatDateToShow(workDate)}
-            />
-          )}
+          <DatePicker
+            selected={selectedDate}
+            onChange={(date) => {
+              setSelectedDate(date);
+              setStartDateByNet(formatDateToTransform(date));
+              setEndDateByNet(formatDateToTransform(date));
+              setDateFilter("date");
+            }}
+            className="form-input px-4 py-3 w-[125px] rounded-md border border-gray-300 text-dark-blue placeholder-dark-blue"
+            dateFormat="dd/MM/yyyy"
+            placeholderText={formatDateToShow(workDate)}
+          />
         </div>
 
         <div className="flex flex-col mb-20 mt-4 p-2 px-10 text-dark-blue">
-          <h1 className="text-left mb-4 font-semibold">Route 0</h1>
-          <div className="grid grid-cols-7 gap-2">
-            <div
-              onClick={() => setShowMenuDelivery(true)}
-              className="flex cursor-pointer hover:bg-gray-200 transition-all items-center py-4 px-5 rounded-xl mr-4 shadow-[0px_2px_3px_-1px_rgba(0,0,0,0.1),0px_1px_0px_0px_rgba(25,28,33,0.02),0px_0px_0px_1px_rgba(25,28,33,0.08)]"
-            >
-              <TruckIcon className="h-10 w-10 pr-2 text-green" />
-              <h1>Field to fork</h1>
+          {isLoading || !dataLoaded ? (
+            <div className="flex justify-center items-center mb-20 -mt-20">
+              <div className="loader"></div>
             </div>
-            <div className="flex items-center bg-white py-4 px-5 rounded-xl mr-4 shadow-[0_0px_40px_rgba(4,_68,_79,_0.4)]">
-              <TruckIcon className="h-10 w-10 pr-2 text-gray-input" />
-              <h1>Field to fork</h1>
-            </div>
-            <div className="flex items-center py-4 px-5 rounded-xl mr-4 shadow-[0px_2px_3px_-1px_rgba(0,0,0,0.1),0px_1px_0px_0px_rgba(25,28,33,0.02),0px_0px_0px_1px_rgba(25,28,33,0.08)]">
-              <TruckIcon className="h-10 w-10 pr-2 text-gray-input" />
-              <h1>Field to fork</h1>
-            </div>
-            <div className="flex items-center py-4 px-5 rounded-xl mr-4 shadow-[0px_2px_3px_-1px_rgba(0,0,0,0.1),0px_1px_0px_0px_rgba(25,28,33,0.02),0px_0px_0px_1px_rgba(25,28,33,0.08)]">
-              <TruckIcon className="h-10 w-10 pr-2 text-green" />
-              <h1>Field to fork</h1>
-            </div>
-            <div className="flex items-center py-4 px-5 rounded-xl mr-4 shadow-[0px_2px_3px_-1px_rgba(0,0,0,0.1),0px_1px_0px_0px_rgba(25,28,33,0.02),0px_0px_0px_1px_rgba(25,28,33,0.08)]">
-              <TruckIcon className="h-10 w-10 pr-2 text-gray-input" />
-              <h1>Field to fork</h1>
-            </div>
-            <div className="flex items-center py-4 px-5 rounded-xl mr-4 shadow-[0px_2px_3px_-1px_rgba(0,0,0,0.1),0px_1px_0px_0px_rgba(25,28,33,0.02),0px_0px_0px_1px_rgba(25,28,33,0.08)]">
-              <TruckIcon className="h-10 w-10 pr-2 text-green" />
-              <h1>Field to fork</h1>
-            </div>
-            <div className="flex items-center py-4 px-5 rounded-xl mr-4 shadow-[0px_2px_3px_-1px_rgba(0,0,0,0.1),0px_1px_0px_0px_rgba(25,28,33,0.02),0px_0px_0px_1px_rgba(25,28,33,0.08)]">
-              <TruckIcon className="h-10 w-10 pr-2 text-gray-input" />
-              <h1>Field to fork</h1>
-            </div>
-            <div className="flex items-center py-4 px-5 rounded-xl mr-4 shadow-[0px_2px_3px_-1px_rgba(0,0,0,0.1),0px_1px_0px_0px_rgba(25,28,33,0.02),0px_0px_0px_1px_rgba(25,28,33,0.08)]">
-              <TruckIcon className="h-10 w-10 pr-2 text-green" />
-              <h1>Field to fork</h1>
-            </div>
-            <div className="flex items-center py-4 px-5 rounded-xl mr-4 shadow-[0px_2px_3px_-1px_rgba(0,0,0,0.1),0px_1px_0px_0px_rgba(25,28,33,0.02),0px_0px_0px_1px_rgba(25,28,33,0.08)]">
-              <TruckIcon className="h-10 w-10 pr-2 text-gray-input" />
-              <h1>Field to fork</h1>
-            </div>
-            <div className="flex items-center py-4 px-5 rounded-xl mr-4 shadow-[0px_2px_3px_-1px_rgba(0,0,0,0.1),0px_1px_0px_0px_rgba(25,28,33,0.02),0px_0px_0px_1px_rgba(25,28,33,0.08)]">
-              <TruckIcon className="h-10 w-10 pr-2 text-green" />
-              <h1>Field to fork</h1>
-            </div>
-            <div className="flex items-center py-4 px-5 rounded-xl mr-4 shadow-[0px_2px_3px_-1px_rgba(0,0,0,0.1),0px_1px_0px_0px_rgba(25,28,33,0.02),0px_0px_0px_1px_rgba(25,28,33,0.08)]">
-              <TruckIcon className="h-10 w-10 pr-2 text-gray-input" />
-              <h1>Field to fork</h1>
-            </div>
-            <div className="flex items-center py-4 px-5 rounded-xl mr-4 shadow-[0px_2px_3px_-1px_rgba(0,0,0,0.1),0px_1px_0px_0px_rgba(25,28,33,0.02),0px_0px_0px_1px_rgba(25,28,33,0.08)]">
-              <TruckIcon className="h-10 w-10 pr-2 text-green" />
-              <h1>Field to fork</h1>
-            </div>
-            <div className="flex items-center py-4 px-5 rounded-xl mr-4 shadow-[0px_2px_3px_-1px_rgba(0,0,0,0.1),0px_1px_0px_0px_rgba(25,28,33,0.02),0px_0px_0px_1px_rgba(25,28,33,0.08)]">
-              <TruckIcon className="h-10 w-10 pr-2 text-gray-input" />
-              <h1>Field to fork</h1>
-            </div>
-            <div className="flex items-center py-4 px-5 rounded-xl mr-4 shadow-[0px_2px_3px_-1px_rgba(0,0,0,0.1),0px_1px_0px_0px_rgba(25,28,33,0.02),0px_0px_0px_1px_rgba(25,28,33,0.08)]">
-              <TruckIcon className="h-10 w-10 pr-2 text-green" />
-              <h1>Field to fork</h1>
-            </div>
-            <div className="flex items-center py-4 px-5 rounded-xl mr-4 shadow-[0px_2px_3px_-1px_rgba(0,0,0,0.1),0px_1px_0px_0px_rgba(25,28,33,0.02),0px_0px_0px_1px_rgba(25,28,33,0.08)]">
-              <TruckIcon className="h-10 w-10 pr-2 text-gray-input" />
-              <h1>Field to fork</h1>
-            </div>
-            <div className="flex items-center py-4 px-5 rounded-xl mr-4 shadow-[0px_2px_3px_-1px_rgba(0,0,0,0.1),0px_1px_0px_0px_rgba(25,28,33,0.02),0px_0px_0px_1px_rgba(25,28,33,0.08)]">
-              <TruckIcon className="h-10 w-10 pr-2 text-green" />
-              <h1>Field to fork</h1>
-            </div>
-            <div className="flex items-center py-4 px-5 rounded-xl mr-4 shadow-[0px_2px_3px_-1px_rgba(0,0,0,0.1),0px_1px_0px_0px_rgba(25,28,33,0.02),0px_0px_0px_1px_rgba(25,28,33,0.08)]">
-              <TruckIcon className="h-10 w-10 pr-2 text-gray-input" />
-              <h1>Field to fork</h1>
-            </div>
-            <div className="flex items-center py-4 px-5 rounded-xl mr-4 shadow-[0px_2px_3px_-1px_rgba(0,0,0,0.1),0px_1px_0px_0px_rgba(25,28,33,0.02),0px_0px_0px_1px_rgba(25,28,33,0.08)]">
-              <TruckIcon className="h-10 w-10 pr-2 text-green" />
-              <h1>Field to fork</h1>
-            </div>
-          </div>
-        </div>
-        {isLoading && (
-          <div className="flex justify-center items-center mb-20 -mt-20">
-            <div className="loader"></div>
-          </div>
-        )}
-      </div>
+          ) : (
+            <>
+              {sortedDeliveries?.length > 0 ? (
+                sortedDeliveries?.map((delivery, index) => {
+                  const filteredCustomers = delivery.customers.filter(
+                    (customer) => {
+                      const matchCustomerName = customer.accountName
+                        .toLowerCase()
+                        .includes(searchQuery.trim().toLowerCase());
+                      const matchRoute = delivery.route
+                        .toLowerCase()
+                        .includes(searchQuery.trim().toLowerCase());
+                      return (
+                        searchQuery.trim() === "" ||
+                        matchCustomerName ||
+                        matchRoute
+                      );
+                    }
+                  );
 
-      <MenuDelivery open={showMenuDelivery} setOpen={setShowMenuDelivery} />
+                  if (filteredCustomers.length > 0) {
+                    foundMatchingCustomer = true;
+                    return (
+                      <>
+                        <h1 className="text-left my-2 font-semibold">
+                          {delivery.route}
+                        </h1>
+                        <div className="flex flex-wrap">
+                          {filteredCustomers.map((customer, index) => (
+                            <div
+                              key={index}
+                              onClick={() =>
+                                handleCLickModal(customer.reference)
+                              }
+                              className="flex cursor-pointer items-center py-4 px-5 rounded-xl mr-3 shadow-[0px_2px_3px_-1px_rgba(0,0,0,0.1),0px_1px_0px_0px_rgba(25,28,33,0.02),0px_0px_0px_1px_rgba(25,28,33,0.08)] w-auto hover:scale-105 transition-all"
+                            >
+                              <TruckIcon
+                                className={`min-w-[30px] min-h-[30px] w-[30px] h-[30px] mr-2 ${customer.state === "Delivered"
+                                    ? "text-green"
+                                    : "text-gray-500"
+                                  }`}
+                              />
+                              <div>
+                                <h1>{customer.accountName}</h1>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </>
+                    );
+                  }
+                })
+              ) : (
+                <div>
+                  {!isLoading && !dataLoaded && (
+                    <p className="flex items-center justify-center text-gray my-10">
+                      <ExclamationCircleIcon className="h-12 w-12 mr-5 text-gray" />
+                      No deliveries were found for this date. Please try
+                      searching for deliveries on a different date.
+                    </p>
+                  )}
+                </div>
+              )}
+              {!foundMatchingCustomer && (
+                <div>
+                  <p className="flex items-center justify-center text-gray my-10">
+                    <ExclamationCircleIcon className="h-12 w-12 mr-5 text-gray" />
+                    No deliveries found, please search again.
+                  </p>
+                </div>
+              )}
+            </>
+          )}
+        </div>
+      </div>
+      {noDeliveriesFound && (
+        <p className="flex items-center justify-center text-gray my-10">
+          <ExclamationCircleIcon className="h-12 w-12 mr-5 text-gray" />
+          No deliveries found, please search again.
+        </p>
+      )}
+      <MenuDelivery
+        open={showMenuDelivery}
+        setOpen={setShowMenuDelivery}
+        reference={reference}
+        setIsLoading={setIsLoading}
+      />
       <ModalOrderError
         isvisible={showErrorCsv}
         onClose={() => setShowErrorCsv(false)}
         title={"Error downloading csv"}
         message={errorMessage}
-      />
-      <ModalRouteAssignment
-        show={showModalAssignment}
-        onClose={onCloseModalAssignment}
       />
     </Layout>
   );

@@ -14,30 +14,28 @@ import useTokenStore from "../../app/store/useTokenStore";
 import ModalDelete from "../components/ModalDelete";
 import Layout from "../layoutS";
 import useUserStore from "../store/useUserStore";
+import Select, { menuPortalTarget } from 'react-select';
 import {
   fetchPresentations,
   fetchPresentationsSupplier,
 } from "../api/presentationsRequest";
 import CreateProduct from "../components/CreateProduct";
 import AutomaticShort from "../components/AutomaticShort";
+import { fetchSuppliers } from "../api/suppliersRequest";
 
 function Purchasing() {
   const { token } = useTokenStore();
-  const [uoms, setUoms] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [showNewPresentations, setShowNewPresentations] = useState(false);
   const [showAutomaticShorts, setShowAutomaticShorts] = useState(false);
   const [showEditPresentations, setShowEditPresentations] = useState(false);
   const [selectedPresentation, setSelectedPresentation] = useState(null);
+  const [selectedSupplierId, setSelectedSupplierId] = useState(null);
+  const [suppliers, setSuppliers] = useState([]);
   const { user, setUser } = useUserStore();
 
   //Api
   const [products, setProducts] = useState([]);
-
-  // useEffect(() => {
-  //   var localStorageUser = JSON.parse(localStorage.getItem("user"));
-  //   setUser(localStorageUser);
-  // }, [setUser]);
 
   useEffect(() => {
     if (user && user.rol_name === "AdminGrownet") {
@@ -45,6 +43,7 @@ function Purchasing() {
     } else {
       fetchPresentationsSupplier(token, user, setProducts, setIsLoading);
     }
+    fetchSuppliers(token, setSuppliers, setIsLoading);
   }, [user, token]);
 
   //Delete
@@ -87,14 +86,6 @@ function Purchasing() {
 
           <div className="flex gap-4">
             <button
-              className="flex bg-dark-blue py-3 px-4 rounded-lg text-white font-medium hover:bg-dark-blue hover:scale-110 transition-all"
-              type="button"
-              onClick={() => setShowAutomaticShorts(true)}
-            >
-              <NoSymbolIcon className="h-6 w-6 mr-2 font-bold" />
-              Automatic Shorts
-            </button>
-            <button
               className="flex bg-green py-3 px-4 rounded-lg text-white font-medium hover:scale-110 transition-all"
               type="button"
               onClick={() => setShowNewPresentations(true)}
@@ -109,22 +100,58 @@ function Purchasing() {
             <thead className="sticky top-0 bg-white shadow-[0px_11px_15px_-3px_#edf2f7] ">
               <tr className="border-b-2 border-stone-100 text-dark-blue">
                 <th className="p-4 rounded-tl-lg">Code</th>
-                <th className="p-4 rounded-tl-lg">Category</th>
+                <th className="p-4 rounded-tl-lg">Supplier</th>
                 <th className="p-4 rounded-tl-lg">Description</th>
-                <th className="p-4">Requisition</th>
-                <th className="p-4">Short</th>
-                <th className="p-4">Supplier</th>
                 <th className="p-4">SOH</th>
+                <th className="p-4">Requisition</th>
+                <th className="p-4">Future Requisition</th>
+                <th className="p-4">Shorts</th>
                 <th className="p-4">Ordered</th>
+                <th className="p-4">Quantity</th>
                 <th className="p-4">Cost</th>
-                <th className="p-4">Total cost</th>
-                <th className="p-4">New order</th>
+                <th className="p-4">Notes</th>
+                <th className="p-4">Total Cost</th>
                 <th className="p-4 rounded-tr-lg">Notes</th>
               </tr>
             </thead>
             <tbody>
               <tr className="text-dark-blue border-b-2 border-stone-100">
                 <td className="py-4 pl-3">Test</td>
+                <td className="py-4">
+                  <Select
+                    value={selectedSupplierId}
+                    onChange={(selectedOption) => setSelectedSupplierId(selectedOption)}
+                    options={suppliers.map(supplier => ({
+                      value: supplier.id,
+                      label: supplier.name
+                    }))}
+                    menuPortalTarget={document.body}
+                    styles={{
+                      control: (provided) => ({
+                        ...provided,
+                        border: "none",
+                        boxShadow: "none",
+                        backgroundColor: "transparent",
+                      }),
+                      menu: (provided) => ({
+                        ...provided,
+                        width: "33em",
+                      }),
+                      singleValue: (provided, state) => ({
+                        ...provided,
+                        color: "#04444F",
+                      }),
+                      dropdownIndicator: (provided) => ({
+                        ...provided,
+                        display: "none",
+                      }),
+                      indicatorSeparator: (provided) => ({
+                        ...provided,
+                        display: "none",
+                      }),
+                    }}
+                  />
+                </td>
                 <td className="py-4">Test</td>
                 <td className="py-4">Test</td>
                 <td className="py-4">Test</td>
