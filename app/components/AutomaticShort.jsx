@@ -26,6 +26,7 @@ import ModalSuccessfull from "./ModalSuccessfull";
 function AutomaticShort({ isvisible, onClose, setProducts, setIsLoading }) {
   const { token } = useTokenStore();
   const [uoms, setUoms] = useState([]);
+  const [productsSorted, setProductsSorted] = useState([]);
   const [products2, setProducts2] = useState([]);
   const [categories, setCategories] = useState([]);
   const [types, setTypes] = useState([]);
@@ -96,6 +97,18 @@ function AutomaticShort({ isvisible, onClose, setProducts, setIsLoading }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  useEffect(() => {
+    // Función para ordenar los productos por product_name
+    const sortProductsByName = () => {
+      const sortedProducts = [...products2].sort((a, b) =>
+        a.product_name.localeCompare(b.product_name)
+      );
+      setProductsSorted(sortedProducts);
+    };
+
+    // Llamar a la función de ordenación solo cuando products2 cambie
+    sortProductsByName();
+  }, [products2]);
 
   if (!isvisible) {
     return null;
@@ -107,6 +120,8 @@ function AutomaticShort({ isvisible, onClose, setProducts, setIsLoading }) {
     const postDataProduct = {
       flagshort: selectedShort
     }
+    console.log("🚀 ~ sendDataProduct ~ postDataProduct:", postDataProduct)
+    console.log("🚀 ~ sendDataProduct ~ selecteProductsStatus:", selecteProductsStatus)
     axios.post(`${productShort}${selecteProductsStatus}`, postDataProduct, {
       headers: {
         Authorization: `Bearer ${token}`,
@@ -138,6 +153,7 @@ function AutomaticShort({ isvisible, onClose, setProducts, setIsLoading }) {
       type_id: selectedTypeId,
       flagshort: selectedShort2
     }
+    console.log("🚀 ~ sendDataType ~ postDataType:", postDataType)
     axios.post(typeShort, postDataType, {
       headers: {
         Authorization: `Bearer ${token}`,
@@ -157,7 +173,7 @@ function AutomaticShort({ isvisible, onClose, setProducts, setIsLoading }) {
         }
       })
       .catch((response, error) => {
-        setMessageErrorType(error.msg)
+        setMessageErrorType(error?.msg)
         setShowModalError(true);
         console.error("Error al parametrizar el type: ", error);
       });
@@ -211,7 +227,7 @@ function AutomaticShort({ isvisible, onClose, setProducts, setIsLoading }) {
               <option disabled selected>
                 Select product
               </option>
-              {products2.map((product) => (
+              {productsSorted.map((product) => (
                 <option key={product.id} value={product.id}>
                   {product.product_name} - {product.name}
                 </option>

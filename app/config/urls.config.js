@@ -116,7 +116,7 @@ export const typesUrl = `${BASE_URL}types/all`;
 // Shorts
 export const productShort = `${BASE_URL}presentations/short/update/`;
 export const categoriesShort = `${BASE_URL}categories/short`;
-export const typeShort = `${BASE_URL}suppliers/short/create`;
+export const typeShort = `${BASE_URL}presentations/short-type/update`;
 
 // Assign route
 // Method: POST
@@ -133,7 +133,7 @@ export const assignRoute = `${BASE_URL}logisticRoute/assignRoute`;
 export const vehiclesAndDrivers = `${BASE_URL}deliveryRoutes/vehiclesAndEmployees`;
 
 // Deliveries
-export const deliveriesUrl = `${BASE_URL}logisticRoute/transport/?date=`;
+export const deliveriesUrl = `${BASE_URL}logisticRoute/transport?date=`;
 export const deliveriesCustomerDetail = `${BASE_URL}logisticRoute/transport/customers-by-reference/`;
 
 // get All Routes
