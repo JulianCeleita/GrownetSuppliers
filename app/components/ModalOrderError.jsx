@@ -11,7 +11,7 @@ function ModalOrderError({
   setCustomerDate = () => {},
   handleKeyPress = () => {},
   handleDateRef = () => {},
-  setAccept,
+  setAccept = () => {},
   errorList,
 }) {
   const modalRef = useRef();
