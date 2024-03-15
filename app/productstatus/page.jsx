@@ -8,9 +8,9 @@ import {
 } from "@heroicons/react/24/outline";
 import axios from "axios";
 import { useEffect, useState } from "react";
-import EditPresentation from "../../app/components/EditPresentation";
-import { deletePresentationUrl } from "../../app/config/urls.config";
-import useTokenStore from "../../app/store/useTokenStore";
+import EditPresentation from "../components/EditPresentation";
+import { deletePresentationUrl } from "../config/urls.config";
+import useTokenStore from "../store/useTokenStore";
 import ModalDelete from "../components/ModalDelete";
 import Layout from "../layoutS";
 import useUserStore from "../store/useUserStore";
@@ -29,6 +29,7 @@ function ProductState() {
   const [showAutomaticShorts, setShowAutomaticShorts] = useState(false);
   const [showEditPresentations, setShowEditPresentations] = useState(false);
   const [selectedPresentation, setSelectedPresentation] = useState(null);
+  const [descriptionData, setDescriptionData] = useState();
   const { user, setUser } = useUserStore();
 
   //Api
@@ -43,7 +44,7 @@ function ProductState() {
     if (user && user.rol_name === "AdminGrownet") {
       fetchPresentations(token, setProducts, setIsLoading);
     } else {
-      fetchPresentationsSupplier(token, user, setProducts, setIsLoading);
+      fetchPresentationsSupplier(token, user, setProducts, setIsLoading, setDescriptionData);
     }
   }, [user, token]);
 
@@ -82,7 +83,7 @@ function ProductState() {
       <div>
         <div className="flex justify-between p-8 -mt-24">
           <h1 className="text-2xl text-white font-semibold ml-20 mt-2">
-            <span className="text-light-green">Products </span>state
+            <span className="text-light-green">Products </span>status
           </h1>
 
           <div className="flex gap-4">

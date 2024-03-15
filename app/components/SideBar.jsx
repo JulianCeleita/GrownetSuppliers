@@ -195,7 +195,7 @@ const SideBar = () => {
                       </div>
                     </Dialog.Title>
                   </div>
-                  <div className="relative mt-6 flex-1 px-4 sm:px-6">
+                  <div className="relative mt-5 flex-1 px-4 sm:px-6 pb-[60px] overflow-y-auto h-full">
                     <div className="pl-4">
                       <Link
                         href="/users"
@@ -221,15 +221,15 @@ const SideBar = () => {
                         <h3>Orders</h3>
                       </Link>
                       <Link
-                        href="/productstate"
+                        href="/productstatus"
                         className={`flex gap-2 py-3 transition-all ${
-                          pathname === "/productstate"
+                          pathname === "/productstatus"
                             ? "text-light-green"
                             : "text-white"
                         } hover:text-light-green`}
                       >
                         <CubeIcon className="h-6 w-6" />
-                        <h3>Products State</h3>
+                        <h3>Products Status</h3>
                       </Link>
 
                       <Link
@@ -398,7 +398,7 @@ const SideBar = () => {
                           </Link>
                         )}
                     </div>
-                    <div className="flex items-center absolute bottom-0  gap 2 justify-between w-full right-0 px-5">
+                    <div className="flex items-center fixed bottom-3 gap-[143px] left-1 justify-between w-auto px-5 bg-dark-blue">
                       <button
                         className="flex bg-white p-3 text-dark-blue hover:scale-105 transition-all font-medium rounded-full"
                         onClick={handleLogout}

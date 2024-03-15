@@ -18,13 +18,13 @@ function ModalSuccessfull({
   confirmed,
 }) {
   const router = useRouter();
-  const modalRef = useRef()
+  const modalRef = useRef();
 
   useEffect(() => {
     if (isvisible) {
-      modalRef.current.focus()
+      modalRef.current.focus();
     }
-  }, [isvisible])
+  }, [isvisible]);
 
   const modalVariants = {
     hidden: { opacity: 0, scale: 1 },
@@ -37,16 +37,16 @@ function ModalSuccessfull({
   }
 
   const handleKeyCloseModal = (event) => {
-    if (event.key === 'Enter') {
+    if (event.key === "Enter") {
       if (!confirmed) {
-        sendOrder()
+        sendOrder();
       } else {
         onClose();
         // router.push('/orders');
       }
     }
 
-    if (event.key === 'Escape') {
+    if (event.key === "Escape") {
       onClose();
 
       // if (confirmed) {
@@ -57,7 +57,12 @@ function ModalSuccessfull({
 
   return (
     <AnimatePresence mode="wait">
-      <div ref={modalRef} tabIndex="0" onKeyDown={handleKeyCloseModal} className="fixed inset-0 bg-black bg-opacity-25 backdrop-blur-sm flex flex-col justify-center items-center">
+      <div
+        ref={modalRef}
+        tabIndex="0"
+        onKeyDown={handleKeyCloseModal}
+        className="fixed inset-0 bg-black bg-opacity-25 backdrop-blur-sm flex flex-col justify-center items-center"
+      >
         <motion.div
           initial="hidden"
           animate="visible"

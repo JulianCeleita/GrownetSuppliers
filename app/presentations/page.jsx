@@ -25,6 +25,7 @@ function Presentations() {
   const { token } = useTokenStore();
   const [uoms, setUoms] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [descriptionData, setDescriptionData] = useState(true);
   const [showNewPresentations, setShowNewPresentations] = useState(false);
   const [showAutomaticShorts, setShowAutomaticShorts] = useState(false);
   const [showEditPresentations, setShowEditPresentations] = useState(false);
@@ -43,7 +44,7 @@ function Presentations() {
     if (user && user.rol_name === "AdminGrownet") {
       fetchPresentations(token, setProducts, setIsLoading);
     } else {
-      fetchPresentationsSupplier(token, user, setProducts, setIsLoading);
+      fetchPresentationsSupplier(token, user, setProducts, setIsLoading, setDescriptionData);
     }
   }, [user, token]);
 

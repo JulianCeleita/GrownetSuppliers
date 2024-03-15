@@ -534,7 +534,7 @@ export default function Table({
         setRows(updatedRows);
         return;
       }
-      const response = await axios.get(`${presentationsCode}${code}`, {
+      const response = await axios.get(`${presentationsCode}${code}/${customers[0].accountNumber}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -553,6 +553,7 @@ export default function Table({
             Price: productData.price,
             "Unit Cost": productData.cost,
             "VAT %": productData.tax,
+            Net: productData.price
             //TODO: Si van agregar mas campos, agregarlos aqui
           };
         }

@@ -45,7 +45,6 @@ const DeliveryView = () => {
   const [deliveries, setDeliveries] = useState(null);
   const [reference, setReference] = useState("");
   const [dataLoaded, setDataLoaded] = useState(false);
-
   let noDeliveriesFound = false;
 
   const formatDateToShow = (dateString) => {
@@ -90,7 +89,6 @@ const DeliveryView = () => {
       selectedDate,
       setDataLoaded
     );
-    console.log(deliveries);
   }, [selectedDate]);
 
   useEffect(() => {
@@ -117,6 +115,21 @@ const DeliveryView = () => {
   const uniqueRoutes = [
     ...new Set(deliveries?.map((delivery) => delivery.route)),
   ];
+
+  const calculateDeliveredPercentagePerDelivery = (delivery) => {
+    const totalCustomers = delivery.customers.length;
+    const deliveredCustomers = delivery.customers.filter(
+      (customer) => customer.state === "Delivered"
+    ).length;
+    return ((deliveredCustomers / totalCustomers) * 100).toFixed(2);
+  };
+
+  const countUndeliveredCustomersPerDelivery = (delivery) => {
+    return delivery.customers.filter(
+      (customer) => customer.state !== "Delivered"
+    ).length;
+  };
+
   let foundMatchingCustomer = false;
   return (
     <Layout>
@@ -205,30 +218,84 @@ const DeliveryView = () => {
                     foundMatchingCustomer = true;
                     return (
                       <>
-                        <h1 className="text-left my-2 font-semibold">
-                          {delivery.route}
-                        </h1>
-                        <div className="flex flex-wrap">
-                          {filteredCustomers.map((customer, index) => (
+                        <div className="flex gap-6">
+                          <div className="flex items-center mb-3">
+                            <h1 className="text-left my-2 font-semibold">
+                              {delivery.route} - Driver:{" "}
+                              <span className="font-normal">Text</span> - Car
+                              plate:
+                              <span className="font-normal"> Test</span>
+                            </h1>
                             <div
-                              key={index}
-                              onClick={() =>
-                                handleCLickModal(customer.reference)
-                              }
-                              className="flex cursor-pointer items-center py-4 px-5 rounded-xl mr-3 shadow-[0px_2px_3px_-1px_rgba(0,0,0,0.1),0px_1px_0px_0px_rgba(25,28,33,0.02),0px_0px_0px_1px_rgba(25,28,33,0.08)] w-auto hover:scale-105 transition-all"
+                              title="Route information"
+                              className="flex gap-2 items-center py-2 px-2 rounded-xl ml-2 bg-light-blue w-auto"
                             >
-                              <TruckIcon
-                                className={`min-w-[30px] min-h-[30px] w-[30px] h-[30px] mr-2 ${
-                                  customer.state === "Delivered"
-                                    ? "text-green"
-                                    : "text-gray-500"
-                                }`}
-                              />
-                              <div>
-                                <h1>{customer.accountName}</h1>
+                              <div className="flex">
+                                <h3 className="font-medium mr-1">
+                                  Qty assigned:{" "}
+                                </h3>
+                                <p className="text-gray-500">
+                                  {delivery.customers.length}
+                                </p>
+                              </div>
+                              <div className="flex">
+                                <h3 className="font-medium mr-1">
+                                  Qty not completed:{" "}
+                                </h3>
+                                <p className="text-gray-500">
+                                  {countUndeliveredCustomersPerDelivery(
+                                    delivery
+                                  )}
+                                </p>
+                              </div>
+                              <div className="flex items-center gap-1">
+                                <h3 className="font-medium mr-1">
+                                  Completition:{" "}
+                                </h3>
+                                <div className="w-2 h-2 bg-danger rounded-full" />
+                                <p className="text-gray-500">
+                                  {calculateDeliveredPercentagePerDelivery(
+                                    delivery
+                                  )}
+                                  %
+                                </p>
                               </div>
                             </div>
-                          ))}
+                          </div>
+                        </div>
+                        <div className="flex flex-wrap">
+                          {filteredCustomers.map((customer, customerIndex) => {
+                            // const isNextToBeHighlighted =
+                            //   customerIndex < filteredCustomers.length - 1 &&
+                            //   customer.state !== "Delivered" &&
+                            //   customer.drop >= 0 &&
+                            //   filteredCustomers[customerIndex + 1].state !==
+                            //     "Delivered";
+                            return (
+                              <div
+                                key={customerIndex}
+                                onClick={() =>
+                                  handleCLickModal(customer.reference)
+                                }
+                                className="flex cursor-pointer  items-center py-4 px-5 mb-3 rounded-xl mr-3 shadow-[0px_2px_3px_-1px_rgba(0,0,0,0.1),0px_1px_0px_0px_rgba(25,28,33,0.02),0px_0px_0px_1px_rgba(25,28,33,0.08)] w-[20em] h-[5em] hover:scale-105 transition-all"
+                              >
+                                <TruckIcon
+                                  className={`min-w-[30px] min-h-[30px] w-[30px] h-[30px] mr-2 ${
+                                    // isNextToBeHighlighted
+                                    // ? "text-primary-blue"
+                                    customer.state === "Delivered"
+                                      ? "text-green"
+                                      : "text-gray-500"
+                                  }`}
+                                />
+                                <div>
+                                  <h1>
+                                    {customer.accountName} {customer.state}
+                                  </h1>
+                                </div>
+                              </div>
+                            );
+                          })}
                         </div>
                       </>
                     );
