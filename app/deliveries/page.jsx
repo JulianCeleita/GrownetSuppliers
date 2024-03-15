@@ -197,7 +197,7 @@ const DeliveryView = () => {
       <div className="-mt-24">
         <div className="flex gap-6 p-8">
           <h1 className="text-2xl text-light-green font-semibold mt-1 ml-24">
-            Deliveries <span className="text-white">list</span>
+            Deliveries <span className="text-white">history</span>
           </h1>
           <div className="flex items-center space-x-4"></div>
         </div>
