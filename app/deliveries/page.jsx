@@ -1,34 +1,14 @@
 "use client";
 import { TruckIcon } from "@heroicons/react/24/solid";
-import {
-  CalendarIcon,
-  ExclamationCircleIcon,
-  PlusCircleIcon,
-  PrinterIcon,
-  TableCellsIcon,
-  TrashIcon,
-} from "@heroicons/react/24/outline";
-import axios from "axios";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { ExclamationCircleIcon, TrashIcon } from "@heroicons/react/24/outline";
 import { useEffect, useState } from "react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import Select from "react-select";
-import {
-  fetchOrdersDate,
-  fetchOrdersDateByWorkDate,
-} from "../api/ordersRequest";
-import { CircleProgressBar } from "../components/CircleProgressBar";
-import { orderCSV, printInvoices } from "../config/urls.config";
 import Layout from "../layoutS";
-import usePercentageStore from "../store/usePercentageStore";
 import useTokenStore from "../store/useTokenStore";
 import useUserStore from "../store/useUserStore";
 import useWorkDateStore from "../store/useWorkDateStore";
-import Image from "next/image";
 import ModalOrderError from "../components/ModalOrderError";
-import { saveAs } from "file-saver";
 import MenuDelivery from "../components/MenuDelivery";
 import { fetchDeliveries } from "../api/deliveryRequest";
 
@@ -67,7 +47,7 @@ const DeliveryView = () => {
   const [dataLoaded, setDataLoaded] = useState(false);
 
   let noDeliveriesFound = false;
-  console.log("aiuda", noDeliveriesFound);
+
   const formatDateToShow = (dateString) => {
     if (!dateString) return "Loading...";
 
