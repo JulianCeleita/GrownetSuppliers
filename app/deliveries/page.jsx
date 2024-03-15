@@ -233,7 +233,9 @@ const DeliveryView = () => {
                                   }`}
                                 />
                                 <div>
-                                  <h1>{customer.accountName}</h1>
+                                  <h1>
+                                    {customer.accountName + customer.state}
+                                  </h1>
                                 </div>
                               </div>
                             );
