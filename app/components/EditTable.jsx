@@ -785,7 +785,7 @@ export default function EditTable({
       }, 1000);
     } catch (error) {
       setShowErrorOrderModal(true);
-      console.log(error);
+      console.error(error);
     }
   };
 

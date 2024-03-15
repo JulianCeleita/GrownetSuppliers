@@ -120,8 +120,6 @@ function AutomaticShort({ isvisible, onClose, setProducts, setIsLoading }) {
     const postDataProduct = {
       flagshort: selectedShort
     }
-    console.log("🚀 ~ sendDataProduct ~ postDataProduct:", postDataProduct)
-    console.log("🚀 ~ sendDataProduct ~ selecteProductsStatus:", selecteProductsStatus)
     axios.post(`${productShort}${selecteProductsStatus}`, postDataProduct, {
       headers: {
         Authorization: `Bearer ${token}`,
@@ -153,7 +151,6 @@ function AutomaticShort({ isvisible, onClose, setProducts, setIsLoading }) {
       type_id: selectedTypeId,
       flagshort: selectedShort2
     }
-    console.log("🚀 ~ sendDataType ~ postDataType:", postDataType)
     axios.post(typeShort, postDataType, {
       headers: {
         Authorization: `Bearer ${token}`,

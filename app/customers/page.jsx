@@ -65,11 +65,6 @@ const CustomersView = () => {
   }, [searchTerm, routes, updateCustomers]);
 
   useEffect(() => {
-    console.log(displayedCustomers)
-  }, [displayedCustomers])
-
-
-  useEffect(() => {
     let filteredBySearchTerm = customers.filter(
       (customer) =>
         customer.accountName.toLowerCase().includes(searchTerm.toLowerCase()) ||

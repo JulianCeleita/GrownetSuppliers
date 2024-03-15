@@ -14,8 +14,6 @@ export const fetchDeliveries = (
   } else {
     formattedDate = null;
   }
-  console.log("🚀 ~ fetchDeliveries ~ selectedDate:", formattedDate);
-
   axios
     .get(`${deliveriesUrl}${formattedDate}`, {
       headers: {
@@ -23,8 +21,6 @@ export const fetchDeliveries = (
       },
     })
     .then((response) => {
-      console.log("🚀 ~ fetchDeliveries ~ response:", response);
-
       const newOrder = Array.isArray(response.data) ? response.data : [];
       setDeliveries(response.data);
       setIsLoading(false);
@@ -41,6 +37,9 @@ export const fetchDeliveriesDetails = async (
   setIsLoading,
   reference
 ) => {
+  if(!reference) {
+    return
+  }
   try {
     const response = await axios.get(
       `${deliveriesCustomerDetail}${reference}`,
@@ -50,7 +49,6 @@ export const fetchDeliveriesDetails = async (
         },
       }
     );
-    // console.log("response.data:", response.data);
 
     setDeliveryDetails(response.data);
     setIsLoading(false);

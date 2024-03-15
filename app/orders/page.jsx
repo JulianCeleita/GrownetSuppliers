@@ -149,11 +149,7 @@ const OrderView = () => {
       setOrdersWorkDate,
       setOrdersLoadingToday
     );
-    console.log(ordersLoadingToday);
   }, [workDate]);
-  useEffect(() => {
-    console.log(ordersLoadingToday);
-  }, [ordersLoadingToday]);
 
   useEffect(() => {
     fetchOrdersDate(
@@ -350,12 +346,6 @@ const OrderView = () => {
     };
   });
 
-  const getPercentages = async (value) => {
-    if (value !== "" || value !== null || value !== undefined) {
-      await setFetchRoutePercentages(token, workDate);
-    }
-  };
-
   const handleRouteChange = (event) => {
     if (event.target.value) {
       const selectedOption = JSON?.parse(event.target.value);
@@ -491,7 +481,6 @@ const OrderView = () => {
     ...new Set(sortedOrders?.map((order) => order.status_order)),
   ];
 
-  console.log("filteredOrders", filteredOrders);
   const handleStatusChange = (e) => {
     const newSelectedStatus = e.target.value;
     setSelectedStatus(newSelectedStatus);

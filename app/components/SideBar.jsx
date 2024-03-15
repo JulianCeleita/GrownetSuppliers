@@ -221,15 +221,15 @@ const SideBar = () => {
                         <h3>Orders</h3>
                       </Link>
                       <Link
-                        href="/productstate"
+                        href="/productstatus"
                         className={`flex gap-2 py-3 transition-all ${
-                          pathname === "/productstate"
+                          pathname === "/productstatus"
                             ? "text-light-green"
                             : "text-white"
                         } hover:text-light-green`}
                       >
                         <CubeIcon className="h-6 w-6" />
-                        <h3>Products State</h3>
+                        <h3>Products Status</h3>
                       </Link>
 
                       <Link

@@ -89,7 +89,6 @@ const DeliveryView = () => {
       selectedDate,
       setDataLoaded
     );
-    console.log(deliveries);
   }, [selectedDate]);
 
   useEffect(() => {
