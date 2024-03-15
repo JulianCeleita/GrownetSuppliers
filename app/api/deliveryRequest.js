@@ -21,7 +21,7 @@ export const fetchDeliveries = (
       },
     })
     .then((response) => {
-      const newOrder = Array.isArray(response.data) ? response.data : [];
+      console.log("🚀 ~ .then ~ response:", response)
       setDeliveries(response.data);
       setIsLoading(false);
       setDataLoaded(true);
