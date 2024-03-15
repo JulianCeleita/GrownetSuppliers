@@ -18,13 +18,13 @@ function ModalSuccessfull({
   confirmed,
 }) {
   const router = useRouter();
-  const modalRef = useRef()
+  const modalRef = useRef();
 
   useEffect(() => {
     if (isvisible) {
-      modalRef.current.focus()
+      modalRef.current.focus();
     }
-  }, [isvisible])
+  }, [isvisible]);
 
   const modalVariants = {
     hidden: { opacity: 0, scale: 1 },
@@ -37,27 +37,32 @@ function ModalSuccessfull({
   }
 
   const handleKeyCloseModal = (event) => {
-    if (event.key === 'Enter') {
+    if (event.key === "Enter") {
       if (!confirmed) {
-        sendOrder()
+        sendOrder();
       } else {
         onClose();
-        router.push('/orders');
+        // router.push('/orders');
       }
     }
 
-    if (event.key === 'Escape') {
+    if (event.key === "Escape") {
       onClose();
 
-      if (confirmed) {
-        router.push('/orders');
-      }
+      // if (confirmed) {
+      //   router.push('/orders');
+      // }
     }
   };
 
   return (
     <AnimatePresence mode="wait">
-      <div ref={modalRef} tabIndex="0" onKeyDown={handleKeyCloseModal} className="fixed inset-0 bg-black bg-opacity-25 backdrop-blur-sm flex flex-col justify-center items-center">
+      <div
+        ref={modalRef}
+        tabIndex="0"
+        onKeyDown={handleKeyCloseModal}
+        className="fixed inset-0 bg-black bg-opacity-25 backdrop-blur-sm flex flex-col justify-center items-center"
+      >
         <motion.div
           initial="hidden"
           animate="visible"
@@ -69,7 +74,7 @@ function ModalSuccessfull({
               className="text-dark-blue place-self-end "
               onClick={() => {
                 onClose();
-                router.push('/orders');
+                // router.push('/orders');
               }}
             >
               {!sendOrder && <XMarkIcon className="h-6 w-6 text-gray-500" />}
@@ -95,7 +100,7 @@ function ModalSuccessfull({
                     sendOrder();
                   } else {
                     onClose();
-                    router.push('/orders');
+                    // router.push('/orders');
                   }
                 }}
                 className="bg-primary-blue py-3 px-4 rounded-lg text-white font-medium mr-3 hover:bg-green mt-5"

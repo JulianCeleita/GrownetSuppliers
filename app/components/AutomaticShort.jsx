@@ -9,6 +9,8 @@ import {
   productShort,
   productsUrl,
   taxexUrl,
+  typeShort,
+  typesUrl,
   uomUrl,
 } from "../config/urls.config";
 import useTokenStore from "../store/useTokenStore";
@@ -19,21 +21,31 @@ import {
   fetchTypes,
 } from "../api/presentationsRequest";
 import ModalOrderError from "./ModalOrderError";
+import ModalSuccessfull from "./ModalSuccessfull";
 
 function AutomaticShort({ isvisible, onClose, setProducts, setIsLoading }) {
   const { token } = useTokenStore();
   const [uoms, setUoms] = useState([]);
+  const [productsSorted, setProductsSorted] = useState([]);
   const [products2, setProducts2] = useState([]);
   const [categories, setCategories] = useState([]);
+  const [types, setTypes] = useState([]);
   const [selecteProductsStatus, setSelectedProductsStatus] =
     useState("");
   const [selectedCategoriesId, setSelectedCategoriesId] =
+    useState("");
+  const [selectedTypeId, setSelectedTypeId] =
     useState("");
   const [repeatedCode, setRepeatedCode] = useState(false);
   const [codePresentation, setCodePresentation] = useState("");
   const { user } = useUserStore();
   const [product, setProduct] = useState(true);
   const [selectedShort, setSelectedShort] = useState("");
+  const [selectedShort2, setSelectedShort2] = useState("");
+  const [showModalSuccessfull, setShowModalSuccessfull] = useState(false);
+  const [showModalError, setShowModalError] = useState(false);
+  const [messageErrorType, setMessageErrorType] = useState("");
+  const [descriptionData, setDescriptionData] = useState();
 
   const toggleProduct = () => {
     setProduct((current) => !current);
@@ -61,31 +73,42 @@ function AutomaticShort({ isvisible, onClose, setProducts, setIsLoading }) {
         console.error("Error al obtener los productos:", error);
       }
     };
-    const fetchDataProducts = async () => {
+    const fetchDataTypes = async () => {
       try {
-        const response = await axios.get(productsUrl, {
+        const response = await axios.get(typesUrl, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         });
 
-        const sortedProducts = response.data.products.sort((a, b) =>
+        const sortedTypes = response.data.type.sort((a, b) =>
           a.name.localeCompare(b.name)
         );
 
-        const filteredProducts = sortedProducts.filter(
-          (product) => product.stateProduct_id !== 2
-        );
-        setProducts2(filteredProducts);
+        setTypes(sortedTypes);
       } catch (error) {
         console.error("Error al obtener los productos:", error);
       }
     };
 
+    fetchDataTypes()
     fetchDataCategories();
-    fetchDataProducts();
+    fetchPresentationsSupplier(token, user, setProducts2, setIsLoading, setDescriptionData);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  useEffect(() => {
+    // Función para ordenar los productos por product_name
+    const sortProductsByName = () => {
+      const sortedProducts = [...products2].sort((a, b) =>
+        a.product_name.localeCompare(b.product_name)
+      );
+      setProductsSorted(sortedProducts);
+    };
+
+    // Llamar a la función de ordenación solo cuando products2 cambie
+    sortProductsByName();
+  }, [products2]);
 
   if (!isvisible) {
     return null;
@@ -95,47 +118,61 @@ function AutomaticShort({ isvisible, onClose, setProducts, setIsLoading }) {
   const sendDataProduct = (e) => {
     e.preventDefault();
     const postDataProduct = {
-      id: selecteProductsStatus,
-      short: selectedShort
+      flagshort: selectedShort
     }
-    axios.post(productShort, postDataProduct, {
+    axios.post(`${productShort}${selecteProductsStatus}`, postDataProduct, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
     })
       .then((response) => {
+        if (response.data.status === 500) {
+          setMessageErrorType(response.data.message)
+          setShowModalError(true);
+        } else {
+          setShowModalSuccessfull(true);
+        }
         if (user.id_supplier) {
           fetchPresentationsSupplier(token, user, setProducts, setIsLoading);
         } else {
           fetchPresentations(token, setProducts, setIsLoading);
         }
-        onClose();
       })
       .catch((response, error) => {
+        setMessageErrorType(response.response.data.message);
+        setShowModalError(true);
         console.error("Error al parametrizar el producto: ", error);
       });
   };
-  const sendDataCategories = (e) => {
+  const sendDataType = (e) => {
     e.preventDefault();
-    const postDataCategories = {
-      id: selectedCategoriesId,
-      short: selectedShort
+    const postDataType = {
+      supplier_id: user.id_supplier,
+      type_id: selectedTypeId,
+      flagshort: selectedShort2
     }
-    axios.post(categoriesShort, postDataCategories, {
+    axios.post(typeShort, postDataType, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
     })
       .then((response) => {
+        if (response.data.status === 500) {
+          setMessageErrorType(response.data.message)
+          setShowModalError(true);
+        } else {
+          setShowModalSuccessfull(true);
+        }
         if (user.id_supplier) {
           fetchPresentationsSupplier(token, user, setProducts, setIsLoading);
         } else {
           fetchPresentations(token, setProducts, setIsLoading);
         }
-        onClose();
       })
       .catch((response, error) => {
-        console.error("Error al parametrizar la categoria: ", error);
+        setMessageErrorType(error?.msg)
+        setShowModalError(true);
+        console.error("Error al parametrizar el type: ", error);
       });
   };
 
@@ -155,8 +192,8 @@ function AutomaticShort({ isvisible, onClose, setProducts, setIsLoading }) {
           <button
             onClick={toggleProduct}
             className={`${product
-                ? "bg-primary-blue hover:bg-dark-blue text-white"
-                : "bg-white text-dark-blue"
+              ? "bg-primary-blue hover:bg-dark-blue text-white"
+              : "bg-white text-dark-blue"
               }  font-bold py-2 px-4 rounded`}
           >
             Product
@@ -164,11 +201,11 @@ function AutomaticShort({ isvisible, onClose, setProducts, setIsLoading }) {
           <button
             onClick={toggleProduct}
             className={`${!product
-                ? "bg-primary-blue hover:bg-dark-blue text-white"
-                : "bg-white text-dark-blue"
+              ? "bg-primary-blue hover:bg-dark-blue text-white"
+              : "bg-white text-dark-blue"
               }  font-bold py-2 px-4 rounded`}
           >
-            Category
+            Type
           </button>
         </div>
 
@@ -187,9 +224,9 @@ function AutomaticShort({ isvisible, onClose, setProducts, setIsLoading }) {
               <option disabled selected>
                 Select product
               </option>
-              {products2.map((product) => (
+              {productsSorted.map((product) => (
                 <option key={product.id} value={product.id}>
-                  {product.name}
+                  {product.product_name} - {product.name}
                 </option>
               ))}
             </select>
@@ -210,7 +247,7 @@ function AutomaticShort({ isvisible, onClose, setProducts, setIsLoading }) {
                 Active
               </option>
               <option key={"0"} value="0">
-                Inactive
+                Disable
               </option>
             </select>
             <div className="mt-3 text-center">
@@ -230,23 +267,23 @@ function AutomaticShort({ isvisible, onClose, setProducts, setIsLoading }) {
             </div>
           </form>
         ) : (
-          <form className="text-left  flex flex-col" onSubmit={sendDataCategories}>
-            <label htmlFor="category" className="mt-3">
-              Category:
+          <form className="text-left  flex flex-col" onSubmit={sendDataType}>
+            <label htmlFor="type" className="mt-3">
+              Type:
             </label>
             <select
-              id="category"
-              name="category"
+              id="type"
+              name="type"
               className="border p-3 rounded-md mr-3 my-3"
-              onChange={(e) => setSelectedCategoriesId(e.target.value)}
+              onChange={(e) => setSelectedTypeId(e.target.value)}
               required
             >
               <option disabled selected>
-                Select category
+                Select type
               </option>
-              {categories.map((category) => (
-                <option key={category.id} value={category.id}>
-                  {category.name}
+              {types.map((type) => (
+                <option key={type.id} value={type.id}>
+                  {type.name}
                 </option>
               ))}
             </select>
@@ -257,7 +294,7 @@ function AutomaticShort({ isvisible, onClose, setProducts, setIsLoading }) {
               id="short"
               name="short"
               className="border p-3 rounded-md mr-3 my-3"
-              onChange={(e) => setSelectedShort(e.target.value)}
+              onChange={(e) => setSelectedShort2(e.target.value)}
               required
             >
               <option disabled selected>
@@ -267,7 +304,7 @@ function AutomaticShort({ isvisible, onClose, setProducts, setIsLoading }) {
                 Active
               </option>
               <option key={"0"} value="0">
-                Inactive
+                Disable
               </option>
             </select>
             <div className="mt-3 text-center">
@@ -289,12 +326,23 @@ function AutomaticShort({ isvisible, onClose, setProducts, setIsLoading }) {
         )}
       </div>
       <ModalOrderError
-        isvisible={repeatedCode}
-        onClose={() => setRepeatedCode(false)}
-        title={"Existing code"}
-        message={
-          "The code you have entered already exists in the system. Please use a unique code to create a new product."
-        }
+        isvisible={showModalError}
+        onClose={() => setShowModalError(false)}
+        title={"Error declaring the short"}
+        message={messageErrorType}
+      />
+      <ModalSuccessfull
+        isvisible={showModalSuccessfull}
+        onClose={() => {
+          setShowModalSuccessfull(false)
+          if (showModalSuccessfull) {
+            onClose();
+          }
+        }}
+        title="Congratulations"
+        text="Short declared correctly!"
+        button=" Close"
+        confirmed={true}
       />
     </div>
   );

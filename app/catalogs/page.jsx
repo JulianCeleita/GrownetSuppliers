@@ -204,7 +204,9 @@ const PricesView = () => {
     <Layout>
       <div>
         <div className="flex gap-5 p-8 -mt-24 ml-20 ">
-          <h1 className="text-2xl text-white font-semibold mt-2">Catalogue</h1>
+          <h1 className="text-2xl text-white font-semibold ml-20 mt-2">
+            Catalogue <span className="text-light-green">list</span>
+          </h1>
           <button
             className="flex bg-green mt-1 py-2 px-4 rounded-full text-white font-medium transition-all hover:bg-dark-blue hover:scale-110"
             type="button"

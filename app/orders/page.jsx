@@ -82,6 +82,8 @@ const OrderView = () => {
   const [showModalSuccessfull, setShowModalSuccessfull] = useState(false);
   const [showModalError, setShowModalError] = useState(false);
   const [errorCsvMessage, setErrorCsvMessage] = useState("");
+  const [sortList, setSortList] = useState("invoice");
+  const [sortType, setSortType] = useState(false);
 
   const formatDateToShow = (dateString) => {
     if (!dateString) return "Loading...";
@@ -141,12 +143,13 @@ const OrderView = () => {
   }, [user, token]);
 
   useEffect(() => {
-    fetchOrdersDateByWorkDate(token, workDate, setOrdersWorkDate, setOrdersLoadingToday);
-    console.log(ordersLoadingToday);
+    fetchOrdersDateByWorkDate(
+      token,
+      workDate,
+      setOrdersWorkDate,
+      setOrdersLoadingToday
+    );
   }, [workDate]);
-  useEffect(() => {
-    console.log(ordersLoadingToday);
-  }, [ordersLoadingToday]);
 
   useEffect(() => {
     fetchOrdersDate(
@@ -343,12 +346,6 @@ const OrderView = () => {
     };
   });
 
-  const getPercentages = async (value) => {
-    if (value !== "" || value !== null || value !== undefined) {
-      await setFetchRoutePercentages(token, workDate);
-    }
-  };
-
   const handleRouteChange = (event) => {
     if (event.target.value) {
       const selectedOption = JSON?.parse(event.target.value);
@@ -428,11 +425,62 @@ const OrderView = () => {
         isRouteMatch && isGroupMatch && isSearchQueryMatch && isStatusMatch
       );
     })
-    .sort((a, b) => b.reference - a.reference);
+    .sort((a, b) => {
+      if (sortList === "invoice") {
+        if (!sortType) {
+          return a.reference - b.reference;
+        } else {
+          return b.reference - a.reference;
+        }
+      } else if (sortList === "accNumber") {
+        if (!sortType) {
+          return a.accountNumber
+            .toLowerCase()
+            .localeCompare(b.accountNumber.toLowerCase());
+        } else {
+          return b.accountNumber
+            .toLowerCase()
+            .localeCompare(a.accountNumber.toLowerCase());
+        }
+      } else if (sortList === "customer") {
+        if (!sortType) {
+          return a.accountName
+            .toLowerCase()
+            .localeCompare(b.accountName.toLowerCase());
+        } else {
+          return b.accountName
+            .toLowerCase()
+            .localeCompare(a.accountName.toLowerCase());
+        }
+      } else if (sortList === "amount") {
+        if (!sortType) {
+          return a.net - b.net;
+        } else {
+          return b.net - a.net;
+        }
+      }
+    });
 
+  const handleClickInvoice = () => {
+    setSortList("invoice");
+    setSortType((prevSortType) => !prevSortType);
+  };
+  const handleClickCustomer = () => {
+    setSortList("customer");
+    setSortType((prevSortType) => !prevSortType);
+  };
+  const handleClickAmount = () => {
+    setSortList("amount");
+    setSortType((prevSortType) => !prevSortType);
+  };
+  const handleClickAccNumber = () => {
+    setSortList("accNumber");
+    setSortType((prevSortType) => !prevSortType);
+  };
   const uniqueStatuses = [
     ...new Set(sortedOrders?.map((order) => order.status_order)),
   ];
+
   const handleStatusChange = (e) => {
     const newSelectedStatus = e.target.value;
     setSelectedStatus(newSelectedStatus);
@@ -473,7 +521,7 @@ const OrderView = () => {
           >
             <PlusCircleIcon className="h-6 w-6 mr-1" /> New Order
           </Link>
-          <div className="flex items-center gap-2">
+          {/* <div className="flex items-center gap-2">
             <label className="bg-dark-blue p-5 text-sm text-white h-12 w-38 hover:scale-105 transition-all font-semibold rounded-full cursor-pointer flex flex-col items-center justify-center">
               <div className="flex">
                 <ArrowUpTrayIcon className="h-6 w-6 mr-1" /> Upload CSV
@@ -502,17 +550,14 @@ const OrderView = () => {
                 </button>
               </>
             )}
-          </div>
+          </div> */}
         </div>
         <div
-          className={`flex ml-10 mb-0 items-center space-x-2  mt-${
-            filterType === "range" && window.innerWidth < 1500
-              ? "[45px]"
-              : filterType === "date" && window.innerWidth < 1300
-              ? "[50px]"
-              : "[20px]"
-          }
-          `}
+          className={`flex ml-7 mb-0 items-center space-x-2 ${
+            window.innerWidth <= 1300 && filterType === "date"
+              ? "mt-[70px]"
+              : "mt-[8px]"
+          }`}
         >
           <div className="border border-gray-300  rounded-md py-3 px-2 flex items-center">
             <input
@@ -520,7 +565,7 @@ const OrderView = () => {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search"
-              className="placeholder-[#04444F] outline-none text-sm custom:text-base"
+              className="placeholder-[#04444F] outline-none text-sm custom:text-base w-[170px]"
             />
             {searchQuery != "" && (
               <button
@@ -537,7 +582,7 @@ const OrderView = () => {
           <select
             value={filterType}
             onChange={(e) => setFilterType(e.target.value)}
-            className="form-select px-4 py-3 rounded-md border border-gray-300 text-sm custom:text-base"
+            className="form-select px-2 py-3 rounded-md border border-gray-300 text-sm custom:text-base w-[155px]"
           >
             <option value="range">Filter by range</option>
             <option value="date">Filter by date</option>
@@ -559,7 +604,7 @@ const OrderView = () => {
                 selectsStart
                 startDate={startDate}
                 endDate={endDate}
-                className="form-input px-4 py-3 rounded-md border border-gray-300 w-[150px] text-sm custom:text-base"
+                className="form-input px-3 py-3 rounded-md border border-gray-300 w-[120px] text-sm custom:text-base"
                 dateFormat="dd/MM/yyyy"
                 placeholderText="dd/mm/yyyy"
               />
@@ -579,7 +624,7 @@ const OrderView = () => {
                 startDate={startDate}
                 endDate={endDate}
                 minDate={startDate}
-                className="form-input px-4 py-3 w-[150px] rounded-md border border-gray-300 text-sm custom:text-base"
+                className="form-input px-3 py-3 w-[120px] rounded-md border border-gray-300 text-sm custom:text-base"
                 dateFormat="dd/MM/yyyy"
                 placeholderText="dd/mm/yyyy"
               />
@@ -595,7 +640,7 @@ const OrderView = () => {
                 setEndDateByNet(formatDateToTransform(date));
                 setDateFilter("date");
               }}
-              className="form-input px-4 py-3 w-[125px] rounded-md border border-gray-300 text-dark-blue placeholder-dark-blue text-sm custom:text-base"
+              className="form-input px-3 py-3 w-[95px] rounded-md border border-gray-300 text-dark-blue placeholder-dark-blue text-sm custom:text-base"
               dateFormat="dd/MM/yyyy"
               placeholderText={formatDateToShow(workDate)}
             />
@@ -606,7 +651,7 @@ const OrderView = () => {
               route_name: selectedRoute,
             })}
             onChange={handleRouteChange}
-            className="form-select px-4 py-3 rounded-md border border-gray-300 text-sm custom:text-base"
+            className="form-select px-3 py-3 rounded-md border border-gray-300 text-sm custom:text-base"
           >
             <option value="">All routes</option>
             {uniqueRoutesArray.map((route) => (
@@ -624,7 +669,7 @@ const OrderView = () => {
           <select
             value={selectedGroup}
             onChange={handleGroupChange}
-            className="orm-select px-4 py-3 rounded-md border border-gray-300 text-sm custom:text-base"
+            className="orm-select px-3 py-3 rounded-md border border-gray-300 text-sm custom:text-base"
           >
             <option value="">All groups</option>
             {[
@@ -669,7 +714,7 @@ const OrderView = () => {
                     <div className="flex flex-col">
                       <div className="flex items-center justify-center text-center">
                         <div className="pr-1">
-                          <p className="text-4xl  2xl:text-5xl font-bold text-primary-blue">
+                          <p className="text-[35px]  2xl:text-5xl font-bold text-primary-blue">
                             {ordersWorkDate}
                           </p>
                         </div>
@@ -714,7 +759,7 @@ const OrderView = () => {
                 </div>
               )}
 
-            <div className="flex gap-3 px-4 py-4 items-center justify-center rounded-3xl bg-white shadow-[0_8px_30px_rgb(0,0,0,0.12)]">
+            <div className="flex gap-3 px-3 py-4 items-center justify-center rounded-3xl bg-white shadow-[0_8px_30px_rgb(0,0,0,0.12)]">
               <div>
                 <h1 className="flex text-lg 2xl:text-xl font-bold items-center justify-center">
                   Total net
@@ -760,10 +805,30 @@ const OrderView = () => {
                     />
                   </label>
                 </th>
-                <th className="py-4"># Invoice</th>
-                <th className="py-4">Acc number</th>
-                <th className="py-4">Customer</th>
-                <th className="py-4">Amount</th>
+                <th
+                  className="py-4 cursor-pointer hover:bg-gray-100 transition-all"
+                  onClick={handleClickInvoice}
+                >
+                  # Invoice
+                </th>
+                <th
+                  className="py-4 cursor-pointer hover:bg-gray-100 transition-all"
+                  onClick={handleClickAccNumber}
+                >
+                  Acc number
+                </th>
+                <th
+                  className="py-4 cursor-pointer hover:bg-gray-100 transition-all"
+                  onClick={handleClickCustomer}
+                >
+                  Customer
+                </th>
+                <th
+                  className="py-4 cursor-pointer hover:bg-gray-100 transition-all"
+                  onClick={handleClickAmount}
+                >
+                  Amount
+                </th>
                 <th className="py-4">Profit %</th>
                 <th className="py-4">Route</th>
                 <th className="py-4">Drop</th>
@@ -795,7 +860,7 @@ const OrderView = () => {
                       key={index}
                       className="text-dark-blue border-b-[1.5px] cursor-pointer hover:bg-[#F6F6F6]"
                     >
-                      <td className="py-4 pl-4 cursor-default">
+                      <td className="py-2 pl-4 cursor-default">
                         <label className="inline-flex items-center">
                           <input
                             type="checkbox"
@@ -811,62 +876,62 @@ const OrderView = () => {
                         </label>
                       </td>
                       <td
-                        className="py-4 pl-4"
+                        className="py-2 pl-4"
                         onClick={(e) => goToOrder(e, order)}
                       >
                         {order.reference}
                       </td>
                       <td
-                        className="py-4 pl-4"
+                        className="py-2 pl-4"
                         onClick={(e) => goToOrder(e, order)}
                       >
                         {order.accountNumber}
                       </td>
                       <td
-                        className="py-4 pl-4"
+                        className="py-2 pl-4"
                         onClick={(e) => goToOrder(e, order)}
                       >
                         {order.accountName}
                       </td>
                       <td
-                        className="py-4 pl-4"
+                        className="py-2 pl-4"
                         onClick={(e) => goToOrder(e, order)}
                       >
                         {order.net}
                       </td>
                       <td
-                        className="py-4 pl-4"
+                        className="py-2 pl-4"
                         onClick={(e) => goToOrder(e, order)}
                       >
                         {order.profitOrder ? order.profitOrder.toFixed(2) : ""}
                       </td>
                       <td
-                        className="py-4 pl-4"
+                        className="py-2 pl-4"
                         onClick={(e) => goToOrder(e, order)}
                       >
                         {order.route}
                       </td>
                       {/* <td className="py-4 pl-4">{order.created_by}</td> */}
                       <td
-                        className="py-4 pl-4"
+                        className="py-2 pl-4"
                         onClick={(e) => goToOrder(e, order)}
                       >
                         {order.drop}
                       </td>
                       <td
-                        className="py-4 pl-4"
+                        className="py-2 pl-4"
                         onClick={(e) => goToOrder(e, order)}
                       >
                         {order.quantity_products}
                       </td>
                       <td
-                        className="py-4 pl-4"
+                        className="py-2 pl-4"
                         onClick={(e) => goToOrder(e, order)}
                       >
                         {order.date_delivery}
                       </td>
                       <td
-                        className="py-4 pl-4 flex gap-2 justify-center"
+                        className="py-2 pl-4 flex gap-2 justify-center"
                         onClick={(e) => goToOrder(e, order)}
                       >
                         <div

@@ -14,30 +14,51 @@ import useTokenStore from "../../app/store/useTokenStore";
 import ModalDelete from "../components/ModalDelete";
 import Layout from "../layoutS";
 import useUserStore from "../store/useUserStore";
+import Select, { menuPortalTarget } from 'react-select';
 import {
   fetchPresentations,
   fetchPresentationsSupplier,
 } from "../api/presentationsRequest";
 import CreateProduct from "../components/CreateProduct";
 import AutomaticShort from "../components/AutomaticShort";
+import { fetchSuppliers } from "../api/suppliersRequest";
+import DatePicker from "react-datepicker";
+import useWorkDateStore from "../store/useWorkDateStore";
 
 function Purchasing() {
   const { token } = useTokenStore();
-  const [uoms, setUoms] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [showNewPresentations, setShowNewPresentations] = useState(false);
   const [showAutomaticShorts, setShowAutomaticShorts] = useState(false);
   const [showEditPresentations, setShowEditPresentations] = useState(false);
   const [selectedPresentation, setSelectedPresentation] = useState(null);
+  const [selectedSupplierId, setSelectedSupplierId] = useState(null);
+  const [selectedStatus, setSelectedStatus] = useState("");
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
+  const [suppliers, setSuppliers] = useState([]);
+  const [filterType, setFilterType] = useState("date");
+  const [selectedDate, setSelectedDate] = useState("");
   const { user, setUser } = useUserStore();
+  const { workDate, setFetchWorkDate } = useWorkDateStore();
+  const [sortColumn, setSortColumn] = useState(null);
+  const [sortDirection, setSortDirection] = useState("asc");
+  const [editableRows, setEditableRows] = useState({});
+
+  const formatDateToShow = (dateString) => {
+    if (!dateString) return "Loading...";
+
+    const parts = dateString.split("-").map((part) => parseInt(part, 10));
+    const utcDate = new Date(Date.UTC(parts[0], parts[1] - 1, parts[2]));
+
+    const day = String(utcDate.getUTCDate()).padStart(2, "0");
+    const month = String(utcDate.getUTCMonth() + 1).padStart(2, "0");
+    const year = String(utcDate.getUTCFullYear()).slice(-2);
+    return `${day}/${month}/${year}`;
+  };
 
   //Api
   const [products, setProducts] = useState([]);
-
-  // useEffect(() => {
-  //   var localStorageUser = JSON.parse(localStorage.getItem("user"));
-  //   setUser(localStorageUser);
-  // }, [setUser]);
 
   useEffect(() => {
     if (user && user.rol_name === "AdminGrownet") {
@@ -45,36 +66,124 @@ function Purchasing() {
     } else {
       fetchPresentationsSupplier(token, user, setProducts, setIsLoading);
     }
+    fetchSuppliers(token, setSuppliers, setIsLoading);
   }, [user, token]);
 
-  //Delete
-  const [showDeleteModal, setShowDeleteModal] = useState(false);
-
-  const handleDeletePresentation = (presentation) => {
-    const { id } = presentation;
-    axios
-      .delete(`${deletePresentationUrl}${id}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      })
-      .then((response) => {
-        setShowDeleteModal(false);
-        if (user && user.rol_name === "super") {
-          fetchPresentations(token, setProducts, setIsLoading);
-        } else {
-          fetchPresentationsSupplier(token, user, setProducts, setIsLoading);
-        }
-      })
-      .catch((error) => {
-        console.error("Error al eliminar la presentación:", error);
-      });
+  const handleEditField = (key, rowIndex, e) => {
+    const value = e.target.value;
+    const updatedRows = { ...editableRows };
+    if (!updatedRows[rowIndex]) {
+      updatedRows[rowIndex] = {};
+    }
+    updatedRows[rowIndex][key] = value;
+    setEditableRows(updatedRows);
   };
 
-  const sortedPresentations = products.slice().sort((a, b) => {
-    const presentationProductNameA = a.product_name || "";
-    const presentationProductNameB = b.product_name || "";
-    return presentationProductNameA.localeCompare(presentationProductNameB);
+  const handleSaveField = (rowIndex) => {
+    const updatedProducts = [...products];
+    const editedRow = editableRows[rowIndex];
+    if (editedRow) {
+      Object.keys(editedRow).forEach((key) => {
+        updatedProducts[rowIndex][key] = editedRow[key];
+      });
+      setProducts(updatedProducts);
+    }
+  };
+
+  const productsExample = [
+    {
+      code: "001",
+      supplier: "Supplier A",
+      description: "Product A",
+      soh: 100,
+      requisition: 20,
+      futureRequisition: 30,
+      shorts: 10,
+      ordered: 40,
+      quantity: 50,
+      cost: 10.5,
+      totalCost: 525,
+      notes: "Aorem ipsum dolor sit amet",
+    },
+    {
+      code: "002",
+      supplier: "Supplier B",
+      description: "Product B",
+      soh: 150,
+      requisition: 25,
+      futureRequisition: 35,
+      shorts: 15,
+      ordered: 45,
+      quantity: 55,
+      cost: 12.75,
+      totalCost: 701.25,
+      notes: "Borem ipsum dolor sit amet",
+    },
+    {
+      code: "003",
+      supplier: "Supplier C",
+      description: "Product C",
+      soh: 200,
+      requisition: 30,
+      futureRequisition: 40,
+      shorts: 20,
+      ordered: 50,
+      quantity: 60,
+      cost: 15.0,
+      totalCost: 900,
+      notes: "Corem ipsum dolor sit amet",
+    },
+    {
+      code: "004",
+      supplier: "Supplier D",
+      description: "Product D",
+      soh: 250,
+      requisition: 35,
+      futureRequisition: 45,
+      shorts: 25,
+      ordered: 55,
+      quantity: 65,
+      cost: 17.25,
+      totalCost: 1121.25,
+      notes: "Dorem ipsum dolor sit amet",
+    },
+    {
+      code: "005",
+      supplier: "Supplier E",
+      description: "Product E",
+      soh: 300,
+      requisition: 40,
+      futureRequisition: 50,
+      shorts: 30,
+      ordered: 60,
+      quantity: 70,
+      cost: 20.0,
+      totalCost: 1400,
+      notes: "Eorem ipsum dolor sit amet",
+    },
+  ];
+
+  const handleSort = (column) => {
+    if (sortColumn === column) {
+      setSortDirection(sortDirection === "asc" ? "desc" : "asc");
+    } else {
+      setSortColumn(column);
+      setSortDirection("asc");
+    }
+  };
+
+  const sortedPresentations = productsExample.slice().sort((a, b) => {
+    if (sortColumn) {
+      const valueA = typeof a[sortColumn] === 'number' ? a[sortColumn].toString() : a[sortColumn];
+      const valueB = typeof b[sortColumn] === 'number' ? b[sortColumn].toString() : b[sortColumn];
+      if (sortDirection === "asc") {
+        return valueA.localeCompare(valueB);
+      } else {
+        return valueB.localeCompare(valueA);
+      }
+    } else {
+      return 0;
+    }
   });
 
   return (
@@ -82,18 +191,10 @@ function Purchasing() {
       <div>
         <div className="flex justify-between p-8 -mt-24 overflow">
           <h1 className="text-2xl text-white font-semibold ml-20 mt-2">
-            Purchasing
+            <span className="text-light-green">Purchasing </span> list
           </h1>
 
           <div className="flex gap-4">
-            <button
-              className="flex bg-dark-blue py-3 px-4 rounded-lg text-white font-medium hover:bg-dark-blue hover:scale-110 transition-all"
-              type="button"
-              onClick={() => setShowAutomaticShorts(true)}
-            >
-              <NoSymbolIcon className="h-6 w-6 mr-2 font-bold" />
-              Automatic Shorts
-            </button>
             <button
               className="flex bg-green py-3 px-4 rounded-lg text-white font-medium hover:scale-110 transition-all"
               type="button"
@@ -104,71 +205,208 @@ function Purchasing() {
             </button>
           </div>
         </div>
+        <div className="flex ml-5 mb-4 gap-2">
+          <select
+            value={filterType}
+            onChange={(e) => setFilterType(e.target.value)}
+            className="form-select px-2 py-3 rounded-md border border-gray-300 text-sm custom:text-base w-[155px]"
+          >
+            <option value="range">Filter by range</option>
+            <option value="date">Filter by date</option>
+          </select>
+          {filterType === "range" && (
+            <>
+              <DatePicker
+                selected={startDate}
+                onChange={(date) => {
+                  setStartDate(date);
+                  setEndDate((currentEndDate) => {
+                    if (date && currentEndDate) {
+                      setDateFilter("range");
+                    }
+                    return currentEndDate;
+                  });
+                }}
+                selectsStart
+                startDate={startDate}
+                endDate={endDate}
+                className="form-input px-3 py-3 rounded-md border border-gray-300 w-[120px] text-sm custom:text-base"
+                dateFormat="dd/MM/yyyy"
+                placeholderText="dd/mm/yyyy"
+              />
+              <DatePicker
+                selected={endDate}
+                onChange={(date) => {
+                  setEndDate(date);
+                  setStartDate((currentStartDate) => {
+                    if (currentStartDate && date) {
+                      setDateFilter("range");
+                    }
+                    return currentStartDate;
+                  });
+                }}
+                selectsEnd
+                startDate={startDate}
+                endDate={endDate}
+                minDate={startDate}
+                className="form-input px-3 py-3 w-[120px] rounded-md border border-gray-300 text-sm custom:text-base"
+                dateFormat="dd/MM/yyyy"
+                placeholderText="dd/mm/yyyy"
+              />
+            </>
+          )}
+
+          {filterType === "date" && (
+            <DatePicker
+              selected={selectedDate}
+              onChange={(date) => {
+                setSelectedDate(date);
+                setDateFilter("date");
+              }}
+              className="form-input px-3 py-3 w-[95px] rounded-md border border-gray-300 text-dark-blue placeholder-dark-blue text-sm custom:text-base"
+              dateFormat="dd/MM/yyyy"
+              placeholderText={formatDateToShow(workDate)}
+            />
+          )}
+
+          <select
+            value={selectedStatus}
+            onChange={(e) => setSelectedStatus(e.target.value)}
+            className="form-select px-2 py-3 rounded-md border border-gray-300 text-sm custom:text-base w-[155px]"
+          >
+            <option value="" disabled selected>Select status:</option>
+            <option value="all">All</option>
+            <option value="short">Short</option>
+            <option value="available">Availables</option>
+          </select>
+        </div>
         <div className="flex items-center justify-center mb-20 overflow-x-auto">
-          <table className="w-[95%] bg-white rounded-2xl text-center shadow-[0_8px_30px_rgb(0,0,0,0.12)]">
+          <table className="w-[95%] bg-white first-line:bg-white rounded-2xl text-left shadow-[rgba(17,_17,_26,_0.1)_0px_0px_16px]">
             <thead className="sticky top-0 bg-white shadow-[0px_11px_15px_-3px_#edf2f7] ">
               <tr className="border-b-2 border-stone-100 text-dark-blue">
-                <th className="p-4 rounded-tl-lg">Code</th>
-                <th className="p-4">Requisition</th>
-                <th className="p-4">Short</th>
-                <th className="p-4">Supplier</th>
-                <th className="p-4 min-w-[120px]">Product</th>
-                <th className="p-4">Unit of measurement</th>
-                <th className="p-4">Packsize</th>
-                <th className="p-4">Type</th>
-                <th className="p-4">Cost</th>
-                <th className="p-4">Qty</th>
-                <th className="p-4 min-w-[100px] rounded-tr-lg">Operate</th>
+                <th className="p-4 rounded-tl-lg cursor-pointer hover:bg-gray-100 transition-all" onClick={() => handleSort("code")}>Code</th>
+                <th className="p-4 cursor-pointer hover:bg-gray-100 transition-all"
+                  onClick={() => handleSort("supplier")}>
+                  Supplier
+                </th>
+                <th className="p-4 cursor-pointer hover:bg-gray-100 transition-all"
+                  onClick={() => handleSort("description")}>
+                  Description
+                </th>
+                <th className="p-4 cursor-pointer hover:bg-gray-100 transition-all"
+                  onClick={() => handleSort("soh")}>
+                  SOH
+                </th>
+                <th className="p-4 cursor-pointer hover:bg-gray-100 transition-all"
+                  onClick={() => handleSort("requisition")}>
+                  Requisition
+                </th>
+                <th className="p-4 cursor-pointer hover:bg-gray-100 transition-all"
+                  onClick={() => handleSort("futureRequisition")}>
+                  Future Requisition
+                </th>
+                <th className="p-4 cursor-pointer hover:bg-gray-100 transition-all"
+                  onClick={() => handleSort("shorts")}>
+                  Shorts
+                </th>
+                <th className="p-4 cursor-pointer hover:bg-gray-100 transition-all"
+                  onClick={() => handleSort("ordered")}>
+                  Ordered
+                </th>
+                <th className="p-4 cursor-pointer hover:bg-gray-100 transition-all"
+                  onClick={() => handleSort("quantity")}>
+                  Quantity
+                </th>
+                <th className="p-4 cursor-pointer hover:bg-gray-100 transition-all"
+                  onClick={() => handleSort("cost")}>
+                  Cost
+                </th>
+                <th className="p-4 cursor-pointer hover:bg-gray-100 transition-all"
+                  onClick={() => handleSort("totalCost")}>
+                  Total Cost
+                </th>
+                <th className="p-4 rounded-tr-lg cursor-pointer hover:bg-gray-100 transition-all"
+                  onClick={() => handleSort("notes")}>
+                  Notes
+                </th>
               </tr>
             </thead>
             <tbody>
-              {sortedPresentations.map((presentation) => (
-                <tr
-                  key={presentation.id}
-                  className="text-dark-blue border-b-2 border-stone-100 "
-                >
-                  <td className="py-4">{presentation.code}</td>
-                  <td className="py-4">Req</td>
-                  <td className="py-4">Yes</td>
-                  <td className="py-4">Boba</td>
-                  <td className="py-4">{presentation.product_name}</td>
-                  <td className="py-4">{presentation.uom}</td>
-                  <td className="py-4">{presentation.name}</td>
-                  <td className="py-4">{presentation.type}</td>
-                  <td className="py-4">£ {presentation.cost}</td>
-                  <td className="py-4">{presentation.quantity}</td>
-                  <td className="py-4 flex justify-center">
-                    <button
-                      onClick={() => {
-                        setSelectedPresentation(presentation);
-                        setShowEditPresentations(true);
+              {sortedPresentations.map((presentation, index) => (
+                <tr className="text-dark-blue border-b-2 border-stone-100">
+                  <td className="py-4 pl-3">{presentation.code}</td>
+                  <td className="py-4">
+                    <Select
+                      value={selectedSupplierId}
+                      onChange={(selectedOption) => setSelectedSupplierId(selectedOption)}
+                      options={suppliers.map(supplier => ({
+                        value: supplier.id,
+                        label: supplier.name
+                      }))}
+                      menuPortalTarget={document.body}
+                      styles={{
+                        control: (provided) => ({
+                          ...provided,
+                          border: "none",
+                          boxShadow: "none",
+                          backgroundColor: "transparent",
+                        }),
+                        menu: (provided) => ({
+                          ...provided,
+                          width: "33em",
+                        }),
+                        singleValue: (provided, state) => ({
+                          ...provided,
+                          color: "#04444F",
+                        }),
+                        dropdownIndicator: (provided) => ({
+                          ...provided,
+                          display: "none",
+                        }),
+                        indicatorSeparator: (provided) => ({
+                          ...provided,
+                          display: "none",
+                        }),
                       }}
-                      className="flex text-primary-blue mr-6 font-medium hover:scale-110 hover:text-green hover:border-green"
-                    >
-                      <PencilSquareIcon className="h-6 w-6 mr-1" />
-                      Edit
-                    </button>
-                    <button
-                      onClick={() => {
-                        setSelectedPresentation(presentation);
-                        setShowDeleteModal(true);
-                      }}
-                      className="flex text-primary-blue font-medium hover:scale-110 hover:text-danger hover:border-danger"
-                    >
-                      <TrashIcon className="h-6 w-6 mr-1" />
-                      Delete
-                    </button>
+                    />
+                  </td>
+                  <td className="py-4">{presentation.description}</td>
+                  <td className="py-4">{presentation.soh}</td>
+                  <td className="py-4">{presentation.requisition}</td>
+                  <td className="py-4">{presentation.futureRequisition}</td>
+                  <td className="py-4">{presentation.shorts}</td>
+                  <td className="py-4">{presentation.ordered}</td>
+                  <td className="py-4">
+                    <input
+                      type="number"
+                      value={editableRows[index]?.quantity || presentation.quantity}
+                      onChange={(e) => handleEditField("quantity", index, e)}
+                      className="w-16 px-2 py-1 rounded-md border border-gray-300 text-sm"
+                    />
+                  </td>
+                  <td className="py-4">
+                    <input
+                      type="number"
+                      step="0.01"
+                      value={editableRows[index]?.cost || presentation.cost}
+                      onChange={(e) => handleEditField("cost", index, e)}
+                      className="w-16 px-2 py-1 rounded-md border border-gray-300 text-sm"
+                    />
+                  </td>
+                  <td className="py-4">{presentation.totalCost}</td>
+                  <td className="py-4">
+                    <input
+                      type="text"
+                      value={editableRows[index]?.notes || presentation.notes}
+                      onChange={(e) => handleEditField("notes", index, e)}
+                      className="w-32 px-2 py-1 rounded-md border border-gray-300 text-sm"
+                    />
                   </td>
                 </tr>
               ))}
             </tbody>
           </table>
         </div>
-        <ModalDelete
-          isvisible={showDeleteModal}
-          onClose={() => setShowDeleteModal(false)}
-          onConfirm={() => handleDeletePresentation(selectedPresentation)}
-        />
         <EditPresentation
           isvisible={showEditPresentations}
           onClose={() => setShowEditPresentations(false)}

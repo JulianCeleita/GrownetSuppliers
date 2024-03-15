@@ -97,8 +97,16 @@ const CustomersView = () => {
       return routeForDay ? routeForDay.drop : 0;
     };
 
-    if (sortConfig.key === "drops" && selectedDay) {
-      filteredByDay.sort((a, b) => {
+    filteredByDay.sort((a, b) => {
+      if (sortConfig.key === "last_order_date") {
+        const dateA = new Date(a.last_order_date);
+        const dateB = new Date(b.last_order_date);
+        if (sortConfig.direction === "ascending") {
+          return dateA - dateB;
+        } else {
+          return dateB - dateA;
+        }
+      } else if (sortConfig.key === "drops" && selectedDay) {
         const dropA = getDropForDay(a, selectedDay);
         const dropB = getDropForDay(b, selectedDay);
 
@@ -110,9 +118,7 @@ const CustomersView = () => {
         } else {
           return numDropB - numDropA;
         }
-      });
-    } else if (sortConfig.key) {
-      filteredByDay.sort((a, b) => {
+      } else {
         if (a[sortConfig.key] < b[sortConfig.key]) {
           return sortConfig.direction === "ascending" ? -1 : 1;
         }
@@ -120,17 +126,11 @@ const CustomersView = () => {
           return sortConfig.direction === "ascending" ? 1 : -1;
         }
         return 0;
-      });
-    }
+      }
+    });
+
     setDisplayedCustomers(filteredByDay);
-  }, [
-    customers,
-    sortConfig,
-    searchTerm,
-    selectedGroup,
-    selectedRoute,
-    selectedDay,
-  ]);
+  }, [customers, sortConfig, searchTerm, selectedGroup, selectedRoute, selectedDay]);
 
   const [showDeleteModal, setShowDeleteModal] = useState(false);
 
@@ -170,6 +170,7 @@ const CustomersView = () => {
     setSelectedGroup(e.target.value);
   };
 
+
   const requestSort = (key) => {
     let direction = "ascending";
     if (sortConfig.key === key && sortConfig.direction === "ascending") {
@@ -178,6 +179,14 @@ const CustomersView = () => {
       direction = "ascending";
     }
     setSortConfig({ key, direction });
+  };
+
+  const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    const year = date.getFullYear();
+    const month = (date.getMonth() + 1).toString().padStart(2, "0");
+    const day = date.getDate().toString().padStart(2, "0");
+    return `${year}-${month}-${day}`;
   };
 
   const statusColorClass = (status) => {
@@ -335,6 +344,12 @@ const CustomersView = () => {
                 >
                   Post Code
                 </th>
+                <th
+                  className="py-4 rounded-tr-xl cursor-pointer hover:bg-gray-100 transition-all"
+                  onClick={() => requestSort("last_order_date")}
+                >
+                  Last Order
+                </th>
                 {/* <th className="py-4">Status</th> */}
               </tr>
             </thead>
@@ -444,18 +459,9 @@ const CustomersView = () => {
                         <td className="py-4 pl-8 w-[120px]">
                           {customer.postCode}
                         </td>
-                        {/* <td className="py-4 flex gap-2 justify-center">
-                          <div
-                            className={`inline-block mt-1 rounded-full text-white ${statusColorClass(
-                              customer.stateCustomer_id
-                            )} w-3 h-3 flex items-center justify-center`}
-                          ></div>
-                          {customer.stateCustomer_id === 1 ? (
-                            <span>Active</span>
-                          ) : (
-                            <span>Inactive</span>
-                          )}
-                        </td> */}
+                        <td className="py-4  w-[120px]">
+                          {formatDate(customer.last_order_date)}
+                        </td>
                       </tr>
                     );
                   }

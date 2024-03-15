@@ -50,6 +50,7 @@ function EditPresentation({
   const [editedQuantity, setEditedQuantity] = useState(
     presentation ? presentation.quantity : ""
   );
+  const [selectedShort, setSelectedShort] = useState("");
   const [selectedUomsStatus, setSelectedUomsStatus] = useState(
     presentation ? presentation.uoms_id : ""
   );
@@ -169,6 +170,7 @@ function EditPresentation({
       tax: selectedTax,
       type: selectedTypeId,
       supplier_id: user ? user.id_supplier : null,
+      flagshort: selectedShort
     };
 
     try {
@@ -272,7 +274,7 @@ function EditPresentation({
               {tax.map((tax) =>
                 tax.countries_indicative === 44 ? (
                   <option key={tax.id} value={tax.id}>
-                    {`${tax.worth*100}%`}
+                    {`${tax.worth * 100}%`}
                   </option>
                 ) : null
               )}
@@ -355,6 +357,28 @@ function EditPresentation({
               onChange={(e) => setEditedQuantity(e.target.value)}
               required
             ></input>
+          </div>
+          <div>
+            <label htmlFor="short" className="mt-2 mr-2">
+              Automatic short:
+            </label>
+            <select
+              id="short"
+              name="short"
+              className="border p-3 rounded-md mr-3 my-3"
+              onChange={(e) => setSelectedShort(e.target.value)}
+              required
+            >
+              <option disabled selected>
+                Select option
+              </option>
+              <option key={"1"} value="1">
+                Active
+              </option>
+              <option key={"0"} value="0">
+                Disable
+              </option>
+            </select>
           </div>
 
           <div className="mt-3 text-center">

@@ -95,8 +95,6 @@ export const routesUrl = `${BASE_URL}deliveryRoutes/all`;
 // Groups
 export const groupsUrl = `${BASE_URL}group/all`;
 
-export const printOrdersUrl = `${BASE_URL}`;
-
 // peticion post
 // data
 // const postData = {
@@ -116,5 +114,28 @@ export const routesByDate = `${BASE_URL}deliveryRoutes/show`;
 export const typesUrl = `${BASE_URL}types/all`;
 
 // Shorts
-export const productShort = `${BASE_URL}products/short`;
+export const productShort = `${BASE_URL}presentations/short/update/`;
 export const categoriesShort = `${BASE_URL}categories/short`;
+export const typeShort = `${BASE_URL}presentations/short-type/update`;
+
+// Assign route
+// Method: POST
+// URL: logisticRoute/assignRoute
+// body: {
+//     driver_id
+//     vehicle_id
+//     date
+//     route_id
+// }
+export const assignRoute = `${BASE_URL}logisticRoute/assignRoute`;
+
+// get Vehicles and Drivers
+export const vehiclesAndDrivers = `${BASE_URL}deliveryRoutes/vehiclesAndEmployees`;
+
+// Deliveries
+export const deliveriesUrl = `${BASE_URL}logisticRoute/transport?date=`;
+export const deliveriesCustomerDetail = `${BASE_URL}logisticRoute/transport/customers-by-reference/`;
+
+// get All Routes
+export const allRoutes = `${BASE_URL}deliveryRoutes/all`;
+
