@@ -277,7 +277,7 @@ const DeliveryView = () => {
                                 onClick={() =>
                                   handleCLickModal(customer.reference)
                                 }
-                                className="flex cursor-pointer items-center py-4 px-5 mb-3 rounded-xl mr-3 shadow-[0px_2px_3px_-1px_rgba(0,0,0,0.1),0px_1px_0px_0px_rgba(25,28,33,0.02),0px_0px_0px_1px_rgba(25,28,33,0.08)] w-auto hover:scale-105 transition-all"
+                                className="flex cursor-pointer  items-center py-4 px-5 mb-3 rounded-xl mr-3 shadow-[0px_2px_3px_-1px_rgba(0,0,0,0.1),0px_1px_0px_0px_rgba(25,28,33,0.02),0px_0px_0px_1px_rgba(25,28,33,0.08)] w-[20em] h-[5em] hover:scale-105 transition-all"
                               >
                                 <TruckIcon
                                   className={`min-w-[30px] min-h-[30px] w-[30px] h-[30px] mr-2 ${
@@ -290,7 +290,7 @@ const DeliveryView = () => {
                                 />
                                 <div>
                                   <h1>
-                                    {customer.accountName + customer.state}
+                                    {customer.accountName} {customer.state}
                                   </h1>
                                 </div>
                               </div>
