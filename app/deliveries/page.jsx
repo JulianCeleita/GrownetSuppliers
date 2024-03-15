@@ -118,14 +118,18 @@ const DeliveryView = () => {
 
   const calculateDeliveredPercentagePerDelivery = (delivery) => {
     const totalCustomers = delivery.customers.length;
-    const deliveredCustomers = delivery.customers.filter((customer) => customer.state === "Delivered").length;
+    const deliveredCustomers = delivery.customers.filter(
+      (customer) => customer.state === "Delivered"
+    ).length;
     return ((deliveredCustomers / totalCustomers) * 100).toFixed(2);
   };
 
   const countUndeliveredCustomersPerDelivery = (delivery) => {
-    return delivery.customers.filter((customer) => customer.state !== "Delivered").length;
+    return delivery.customers.filter(
+      (customer) => customer.state !== "Delivered"
+    ).length;
   };
-  
+
   let foundMatchingCustomer = false;
   return (
     <Layout>
@@ -215,29 +219,47 @@ const DeliveryView = () => {
                     return (
                       <>
                         <div className="flex gap-6">
-                          <h1 className="text-left my-2 font-semibold">
-                            {delivery.route}
-                          </h1>
-                          <div title="Route information" className="flex gap-3 items-center py-4 px-5 mb-3 rounded-xl mr-3 bg-light-blue w-auto hover:scale-[1.02] transition-all">
-                            <div className="flex">
-                              <h3 className="font-medium mr-1">Driver: </h3>
-                              <p className="text-gray-500">Test</p>
-                            </div>
-                            <div className="flex">
-                              <h3 className="font-medium mr-1">Car plate: </h3>
-                              <p>Test</p>
-                            </div>
-                            <div className="flex">
-                              <h3 className="font-medium mr-1">Qty assigned: </h3>
-                              <p className="text-gray-500">{delivery.customers.length}</p>
-                            </div>
-                            <div className="flex">
-                              <h3 className="font-medium mr-1">Qty not completed: </h3>
-                              <p className="text-gray-500">{countUndeliveredCustomersPerDelivery(delivery)}</p>
-                            </div>
-                            <div className="flex">
-                              <h3 className="font-medium mr-1">Completition: </h3>
-                              <p className="text-gray-500">{calculateDeliveredPercentagePerDelivery(delivery)}%</p>
+                          <div className="flex items-center mb-3">
+                            <h1 className="text-left my-2 font-semibold">
+                              {delivery.route} - Driver:{" "}
+                              <span className="font-normal">Text</span> - Car
+                              plate:
+                              <span className="font-normal"> Test</span>
+                            </h1>
+                            <div
+                              title="Route information"
+                              className="flex gap-2 items-center py-2 px-2 rounded-xl ml-2 bg-light-blue w-auto"
+                            >
+                              <div className="flex">
+                                <h3 className="font-medium mr-1">
+                                  Qty assigned:{" "}
+                                </h3>
+                                <p className="text-gray-500">
+                                  {delivery.customers.length}
+                                </p>
+                              </div>
+                              <div className="flex">
+                                <h3 className="font-medium mr-1">
+                                  Qty not completed:{" "}
+                                </h3>
+                                <p className="text-gray-500">
+                                  {countUndeliveredCustomersPerDelivery(
+                                    delivery
+                                  )}
+                                </p>
+                              </div>
+                              <div className="flex items-center gap-1">
+                                <h3 className="font-medium mr-1">
+                                  Completition:{" "}
+                                </h3>
+                                <div className="w-2 h-2 bg-danger rounded-full" />
+                                <p className="text-gray-500">
+                                  {calculateDeliveredPercentagePerDelivery(
+                                    delivery
+                                  )}
+                                  %
+                                </p>
+                              </div>
                             </div>
                           </div>
                         </div>
@@ -264,7 +286,7 @@ const DeliveryView = () => {
                                     customer.state === "Delivered"
                                       ? "text-green"
                                       : "text-gray-500"
-                                    }`}
+                                  }`}
                                 />
                                 <div>
                                   <h1>
