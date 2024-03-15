@@ -115,6 +115,17 @@ const DeliveryView = () => {
   const uniqueRoutes = [
     ...new Set(deliveries?.map((delivery) => delivery.route)),
   ];
+
+  const calculateDeliveredPercentagePerDelivery = (delivery) => {
+    const totalCustomers = delivery.customers.length;
+    const deliveredCustomers = delivery.customers.filter((customer) => customer.state === "Delivered").length;
+    return ((deliveredCustomers / totalCustomers) * 100).toFixed(2);
+  };
+
+  const countUndeliveredCustomersPerDelivery = (delivery) => {
+    return delivery.customers.filter((customer) => customer.state !== "Delivered").length;
+  };
+  
   let foundMatchingCustomer = false;
   return (
     <Layout>
@@ -203,9 +214,33 @@ const DeliveryView = () => {
                     foundMatchingCustomer = true;
                     return (
                       <>
-                        <h1 className="text-left my-2 font-semibold">
-                          {delivery.route}
-                        </h1>
+                        <div className="flex gap-6">
+                          <h1 className="text-left my-2 font-semibold">
+                            {delivery.route}
+                          </h1>
+                          <div title="Route information" className="flex gap-3 items-center py-4 px-5 mb-3 rounded-xl mr-3 bg-light-blue w-auto hover:scale-[1.02] transition-all">
+                            <div className="flex">
+                              <h3 className="font-medium mr-1">Driver: </h3>
+                              <p className="text-gray-500">Test</p>
+                            </div>
+                            <div className="flex">
+                              <h3 className="font-medium mr-1">Car plate: </h3>
+                              <p>Test</p>
+                            </div>
+                            <div className="flex">
+                              <h3 className="font-medium mr-1">Qty assigned: </h3>
+                              <p className="text-gray-500">{delivery.customers.length}</p>
+                            </div>
+                            <div className="flex">
+                              <h3 className="font-medium mr-1">Qty not completed: </h3>
+                              <p className="text-gray-500">{countUndeliveredCustomersPerDelivery(delivery)}</p>
+                            </div>
+                            <div className="flex">
+                              <h3 className="font-medium mr-1">Completition: </h3>
+                              <p className="text-gray-500">{calculateDeliveredPercentagePerDelivery(delivery)}%</p>
+                            </div>
+                          </div>
+                        </div>
                         <div className="flex flex-wrap">
                           {filteredCustomers.map((customer, customerIndex) => {
                             // const isNextToBeHighlighted =
@@ -229,7 +264,7 @@ const DeliveryView = () => {
                                     customer.state === "Delivered"
                                       ? "text-green"
                                       : "text-gray-500"
-                                  }`}
+                                    }`}
                                 />
                                 <div>
                                   <h1>
