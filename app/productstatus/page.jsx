@@ -20,6 +20,7 @@ import {
 } from "../api/presentationsRequest";
 import CreateProduct from "../components/CreateProduct";
 import AutomaticShort from "../components/AutomaticShort";
+import DatePicker from "react-datepicker";
 
 function ProductState() {
   const { token } = useTokenStore();
@@ -31,6 +32,18 @@ function ProductState() {
   const [selectedPresentation, setSelectedPresentation] = useState(null);
   const [descriptionData, setDescriptionData] = useState();
   const { user, setUser } = useUserStore();
+  const [searchQuery, setSearchQuery] = useState("");
+  const [selectedDate, setSelectedDate] = useState("");
+  const [dateFilter, setDateFilter] = useState("today");
+  const [selectedResponsible, setSelectedResponsible] = useState("");
+  const [selectedState, setSelectedState] = useState("");
+
+  const handleResponsibleChange = (e) => {
+    setSelectedResponsible(e.target.value);
+  };
+  const handleStateChange = (e) => {
+    setSelectedState(e.target.value);
+  };
 
   //Api
   const [products, setProducts] = useState([]);
@@ -44,7 +57,13 @@ function ProductState() {
     if (user && user.rol_name === "AdminGrownet") {
       fetchPresentations(token, setProducts, setIsLoading);
     } else {
-      fetchPresentationsSupplier(token, user, setProducts, setIsLoading, setDescriptionData);
+      fetchPresentationsSupplier(
+        token,
+        user,
+        setProducts,
+        setIsLoading,
+        setDescriptionData
+      );
     }
   }, [user, token]);
 
@@ -97,18 +116,73 @@ function ProductState() {
             </button> */}
           </div>
         </div>
-        <div className="flex items-center justify-center mb-20 mt-6">
+        <div className="mx-10 flex gap-2">
+          <div className="border border-gray-300  rounded-md py-3 px-2 flex items-center mb-3">
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Search"
+              className="placeholder-[#04444F] outline-none text-sm custom:text-base w-[170px]"
+            />
+            {searchQuery != "" && (
+              <button
+                onClick={() => {
+                  setSearchQuery("");
+                }}
+              >
+                <TrashIcon className="h-6 w-6 text-danger" />
+              </button>
+            )}
+          </div>
+          <DatePicker
+            selected={selectedDate}
+            onChange={(date) => {
+              setSelectedDate(date);
+              // setStartDateByNet(formatDateToTransform(date));
+              // setEndDateByNet(formatDateToTransform(date));
+              setDateFilter("date");
+            }}
+            className="form-input px-4 py-3 w-[140px] rounded-md border border-gray-300 text-dark-blue placeholder-dark-blue"
+            dateFormat="dd/MM/yyyy"
+            placeholderText={"dd/mm/yyyy"}
+          />
+          <select
+            value={selectedState}
+            onChange={handleStateChange}
+            className="form-select py-3 px-2 rounded-md border border-gray-300 text-sm custom:text-base h-[50px]"
+          >
+            <option value="">All states</option>
+
+            <option key="loaded">Loaded</option>
+            <option key="packed">Packed</option>
+            <option key="short">Shorts</option>
+          </select>
+          <select
+            value={selectedResponsible}
+            onChange={handleResponsibleChange}
+            className="form-select py-3 px-2 rounded-md border border-gray-300 text-sm custom:text-base h-[50px]"
+          >
+            <option value="">All responsible</option>
+            <option key="diego">Diego</option>
+            <option key="julian">Julian</option>
+            <option key="heiner">Heiner</option>
+          </select>
+        </div>
+
+        <div className="flex flex-col items-center justify-center mb-20 mt-2">
           <table className="w-[95%] bg-white rounded-2xl  shadow-[0_8px_30px_rgb(0,0,0,0.12)]">
             <thead className="sticky top-0 bg-white shadow-[0px_11px_15px_-3px_#edf2f7] ">
               <tr className="border-b-2 border-stone-100 text-dark-blue">
-                <th className="py-4 rounded-tl-lg">Code</th>
+                <th className="py-4 rounded-tl-lg">Account number</th>
+                <th className="py-4">Sitename</th>
+                <th className="py-4">Inv. number</th>
                 <th className="py-4">Product</th>
-                <th className="py-4">Unit of measurement</th>
-                <th className="py-4">Packsize</th>
-                <th className="py-4">Type</th>
-                <th className="py-4">Cost</th>
                 <th className="py-4">Qty</th>
-                <th className="py-4">Status</th>
+                <th className="py-4">Amendments</th>
+                <th className="py-4">Packed</th>
+                <th className="py-4">Loaded</th>
+                <th className="py-4">Checked</th>
                 {/* <th className="py-4 rounded-tr-lg">Operate</th> */}
               </tr>
             </thead>
@@ -124,6 +198,7 @@ function ProductState() {
                   <td className="py-4">{presentation.name}</td>
                   <td className="py-4">{presentation.type}</td>
                   <td className="py-4">£ {presentation.cost}</td>
+                  <td className="py-4">{presentation.quantity}</td>
                   <td className="py-4">{presentation.quantity}</td>
                   <td className="py-4 px-3">
                     <div className="flex items-center">
