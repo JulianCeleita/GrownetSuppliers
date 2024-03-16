@@ -15,6 +15,10 @@ import {
   CubeIcon,
   TruckIcon,
   CurrencyEuroIcon,
+  ShoppingBagIcon,
+  ArchiveBoxIcon,
+  CurrencyPoundIcon,
+  InboxStackIcon,
 } from "@heroicons/react/24/outline";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -35,7 +39,12 @@ import ModalOrderError from "./ModalOrderError";
 const SideBar = () => {
   const { removeToken, setToken } = useTokenStore();
   const [openMenu, setOpenMenu] = useState(false);
+  const [openMenuCustomers, setOpenMenuCustomers] = useState(false);
   const [openMenuTransport, setOpenMenuTransport] = useState(false);
+  const [openMenuWholesale, setOpenMenuWholesale] = useState(false);
+  const [openMenuInventory, setOpenMenuInventory] = useState(false);
+  const [openSubMenuPlaceOrders, setOpenSubMenuPlaceOrders] = useState(false);
+  const [openSubMenuOrderHistory, setOpenSubMenuOrderHistory] = useState(false);
   const router = useRouter();
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
@@ -128,6 +137,22 @@ const SideBar = () => {
       setOpenMenuTransport(true);
     }
   }, [pathname]);
+  useEffect(() => {
+    if (pathname === "/customers" || pathname === "/orders/create-order") {
+      setOpenMenuCustomers(true);
+    }
+  }, [pathname]);
+  useEffect(() => {
+    if (pathname === "/purchasing") {
+      setOpenMenuWholesale(true);
+      setOpenSubMenuPlaceOrders(true);
+    }
+  }, [pathname]);
+  useEffect(() => {
+    if (pathname === "/presentations") {
+      setOpenMenuInventory(true);
+    }
+  }, [pathname]);
 
   return (
     <div>
@@ -198,18 +223,6 @@ const SideBar = () => {
                   <div className="relative mt-5 flex-1 px-4 sm:px-6 pb-[60px] overflow-y-auto h-full">
                     <div className="pl-4">
                       <Link
-                        href="/users"
-                        className={`flex gap-2 py-3 transition-all ${
-                          pathname === "/users"
-                            ? "text-light-green"
-                            : "text-white"
-                        } hover:text-light-green`}
-                      >
-                        <UserIcon className="h-6 w-6" />
-                        <h3>Users</h3>
-                      </Link>
-
-                      <Link
                         href="/orders"
                         className={`flex gap-2 py-3 transition-all ${
                           pathname === "/orders"
@@ -220,6 +233,7 @@ const SideBar = () => {
                         <ShoppingCartIcon className="h-6 w-6" />
                         <h3>Orders</h3>
                       </Link>
+
                       <Link
                         href="/productstatus"
                         className={`flex gap-2 py-3 transition-all ${
@@ -231,19 +245,210 @@ const SideBar = () => {
                         <CubeIcon className="h-6 w-6" />
                         <h3>Products Status</h3>
                       </Link>
+                      {/*Customer*/}
+                      <div className="relative py-3">
+                        <button
+                          className={`flex justify-between w-full ${
+                            openMenuCustomers === true
+                              ? "text-light-green"
+                              : "text-white"
+                          } hover:text-light-green`}
+                          onClick={() =>
+                            setOpenMenuCustomers(!openMenuCustomers)
+                          }
+                        >
+                          <div className="flex gap-2">
+                            <BuildingStorefrontIcon className="h-6 w-6" />
+                            <h3>Customers</h3>
+                          </div>
+                          {openMenuCustomers === false ? (
+                            <ChevronDownIcon className="h-6 w-6" />
+                          ) : (
+                            <ChevronUpIcon className="h-6 w-6" />
+                          )}
+                        </button>
 
-                      <Link
-                        href="/calendar"
-                        className={`flex gap-2 py-3 transition-all ${
-                          pathname === "/calendar"
-                            ? "text-light-green"
-                            : "text-white"
-                        } hover:text-light-green`}
-                      >
-                        <CalendarIcon className="h-6 w-6" />
-                        <div>Calendar</div>
-                      </Link>
+                        {openMenuCustomers && (
+                          <div className="mt-3 border-l-[1px] border-light-green pl-5">
+                            <Link
+                              href="/orders/create-order"
+                              className="text-white"
+                            >
+                              <h3
+                                className={`hover:bg-[#046373] px-2 py-2 pl-4 rounded-xl w-[360px] mb-2 ${
+                                  pathname === "/orders/create-order"
+                                    ? "bg-[#046373]"
+                                    : null
+                                }`}
+                              >
+                                New order
+                              </h3>
+                            </Link>
+                            <Link href="" className="text-white">
+                              <h3
+                                className={`hover:bg-[#046373] px-2 py-2 pl-4 rounded-xl w-[360px] mb-2 ${
+                                  pathname === "" ? "bg-[#046373]" : null
+                                }`}
+                              >
+                                Standing orders
+                              </h3>
+                            </Link>
+                            <Link href="" className="text-white">
+                              <h3
+                                className={`hover:bg-[#046373] px-2 py-2 pl-4 rounded-xl w-[360px] mb-2 ${
+                                  pathname === "" ? "bg-[#046373]" : null
+                                }`}
+                              >
+                                Credit notes
+                              </h3>
+                            </Link>
+                            <Link href="" className="text-white">
+                              <h3
+                                className={`hover:bg-[#046373] px-2 py-2 pl-4 rounded-xl w-[360px] mb-2 ${
+                                  pathname === "" ? "bg-[#046373]" : null
+                                }`}
+                              >
+                                FOC
+                              </h3>
+                            </Link>
+                            <Link href="/customers" className="text-white">
+                              <h3
+                                className={`hover:bg-[#046373] px-2 py-2 pl-4 rounded-xl w-[360px] mb-2 ${
+                                  pathname === "/customers"
+                                    ? "bg-[#046373]"
+                                    : null
+                                }`}
+                              >
+                                Customers list
+                              </h3>
+                            </Link>
+                          </div>
+                        )}
+                      </div>
 
+                      {/*Wholesale*/}
+                      <div className="relative py-3">
+                        <button
+                          className={`flex justify-between w-full ${
+                            openMenuWholesale === true
+                              ? "text-light-green"
+                              : "text-white"
+                          } hover:text-light-green`}
+                          onClick={() =>
+                            setOpenMenuWholesale(!openMenuWholesale)
+                          }
+                        >
+                          <div className="flex gap-2">
+                            <CurrencyPoundIcon className="h-6 w-6" />
+                            <h3>Wholesale</h3>
+                          </div>
+                          {openMenuWholesale === false ? (
+                            <ChevronDownIcon className="h-6 w-6" />
+                          ) : (
+                            <ChevronUpIcon className="h-6 w-6" />
+                          )}
+                        </button>
+
+                        {openMenuWholesale && (
+                          <div className="mt-3 border-l-[1px] border-light-green pl-5">
+                            <Link href="/purchasing" className="text-white">
+                              <h3
+                                className={`hover:bg-[#046373] px-2 py-2 pl-4 rounded-xl w-[360px] mb-2 ${
+                                  pathname === "/purchasing"
+                                    ? "bg-[#046373]"
+                                    : null
+                                }`}
+                              >
+                                Purchasing
+                              </h3>
+                            </Link>
+                            <Link href="" className="text-white">
+                              <h3
+                                className={`hover:bg-[#046373] px-2 py-2 pl-4 rounded-xl w-[360px] mb-2 ${
+                                  pathname === "" ? "bg-[#046373]" : null
+                                }`}
+                              >
+                                Order history
+                              </h3>
+                            </Link>
+                          </div>
+                        )}
+                      </div>
+                      {/*Inventory*/}
+                      <div className="relative py-3">
+                        <button
+                          className={`flex justify-between w-full ${
+                            openMenuInventory === true
+                              ? "text-light-green"
+                              : "text-white"
+                          } hover:text-light-green`}
+                          onClick={() =>
+                            setOpenMenuInventory(!openMenuInventory)
+                          }
+                        >
+                          <div className="flex gap-2">
+                            <InboxStackIcon className="h-6 w-6" />
+                            <h3>Inventory</h3>
+                          </div>
+                          {openMenuInventory === false ? (
+                            <ChevronDownIcon className="h-6 w-6" />
+                          ) : (
+                            <ChevronUpIcon className="h-6 w-6" />
+                          )}
+                        </button>
+
+                        {openMenuInventory && (
+                          <div className="mt-3 border-l-[1px] border-light-green pl-5">
+                            <Link href="/presentations" className="text-white">
+                              <h3
+                                className={`hover:bg-[#046373] px-2 py-2 pl-4 rounded-xl w-[360px] mb-2 ${
+                                  pathname === "/presentations"
+                                    ? "bg-[#046373]"
+                                    : null
+                                }`}
+                              >
+                                Catalogue
+                              </h3>
+                            </Link>
+                            <Link href="" className="text-white">
+                              <h3
+                                className={`hover:bg-[#046373] px-2 py-2 pl-4 rounded-xl w-[360px] mb-2 ${
+                                  pathname === "" ? "bg-[#046373]" : null
+                                }`}
+                              >
+                                Inventory counts
+                              </h3>
+                            </Link>
+                            <Link href="" className="text-white">
+                              <h3
+                                className={`hover:bg-[#046373] px-2 py-2 pl-4 rounded-xl w-[360px] mb-2 ${
+                                  pathname === "" ? "bg-[#046373]" : null
+                                }`}
+                              >
+                                Waste events
+                              </h3>
+                            </Link>
+                            <Link href="" className="text-white">
+                              <h3
+                                className={`hover:bg-[#046373] px-2 py-2 pl-4 rounded-xl w-[360px] mb-2 ${
+                                  pathname === "" ? "bg-[#046373]" : null
+                                }`}
+                              >
+                                Sales summary
+                              </h3>
+                            </Link>
+                            <Link href="" className="text-white">
+                              <h3
+                                className={`hover:bg-[#046373] px-2 py-2 pl-4 rounded-xl w-[360px] mb-2 ${
+                                  pathname === "" ? "bg-[#046373]" : null
+                                }`}
+                              >
+                                Actual vs theoretical
+                              </h3>
+                            </Link>
+                          </div>
+                        )}
+                      </div>
                       <div className="relative py-3">
                         <button
                           className={`flex justify-between w-full ${
@@ -266,6 +471,7 @@ const SideBar = () => {
                             <ChevronUpIcon className="h-6 w-6" />
                           )}
                         </button>
+
                         {openMenuTransport && (
                           <div className="mt-3 border-l-[1px] border-light-green pl-5">
                             <Link href="/deliveries" className="text-white">
@@ -288,6 +494,24 @@ const SideBar = () => {
                                 Rounds Allocations
                               </h3>
                             </Link>
+                            <Link href="" className="text-white">
+                              <h3
+                                className={`hover:bg-[#046373] px-2 py-2 pl-4 rounded-xl w-[360px] mb-2 ${
+                                  pathname === "" ? "bg-[#046373]" : null
+                                }`}
+                              >
+                                Fleet
+                              </h3>
+                            </Link>
+                            <Link href="" className="text-white">
+                              <h3
+                                className={`hover:bg-[#046373] px-2 py-2 pl-4 rounded-xl w-[360px] mb-2 ${
+                                  pathname === "" ? "bg-[#046373]" : null
+                                }`}
+                              >
+                                Tracker (Wialon)
+                              </h3>
+                            </Link>
                           </div>
                         )}
                       </div>
@@ -304,7 +528,7 @@ const SideBar = () => {
                           >
                             <div className="flex gap-2">
                               <CircleStackIcon className="h-6 w-6" />
-                              <h3>Database</h3>
+                              <h3>Admin</h3>
                             </div>
 
                             {openMenu === false ? (
@@ -315,6 +539,17 @@ const SideBar = () => {
                           </button>
                           {openMenu && (
                             <div className="mt-3 border-l-[1px] border-light-green pl-5">
+                              <Link href="/users" className="text-white">
+                                <h3
+                                  className={`hover:bg-[#046373] px-2 py-2 pl-4 rounded-xl w-[360px] mb-2 ${
+                                    pathname === "/users"
+                                      ? "bg-[#046373]"
+                                      : null
+                                  }`}
+                                >
+                                  Users
+                                </h3>
+                              </Link>
                               <Link href="/suppliers" className="text-white">
                                 <h3
                                   className={`hover:bg-[#046373] px-2 py-2 pl-4 rounded-xl w-[360px] mb-2 ${
@@ -352,51 +587,18 @@ const SideBar = () => {
                           )}
                         </div>
                       )}
-                      {user &&
-                        (user.rol_name === "Administrador" ||
-                          user.rol_name === "AdminGrownet") && (
-                          <Link
-                            href="/customers"
-                            className={`flex gap-2 py-3 transition-all ${
-                              pathname === "/customers"
-                                ? "text-light-green"
-                                : "text-white"
-                            } hover:text-light-green`}
-                          >
-                            <BuildingStorefrontIcon className="h-6 w-6" />
-                            <h3>Customers</h3>
-                          </Link>
-                        )}
-                      {user &&
-                        (user.rol_name === "Administrador" ||
-                          user.rol_name === "AdminGrownet") && (
-                          <Link
-                            href="/presentations"
-                            className={`flex gap-2 py-3 transition-all ${
-                              pathname === "/presentations"
-                                ? "text-light-green"
-                                : "text-white"
-                            } hover:text-light-green`}
-                          >
-                            <ClipboardIcon className="h-6 w-6" />
-                            <h3>Catalogue</h3>
-                          </Link>
-                        )}
-                      {user &&
-                        (user.rol_name === "Administrador" ||
-                          user.rol_name === "AdminGrownet") && (
-                          <Link
-                            href="/purchasing"
-                            className={`flex gap-2 py-3 transition-all ${
-                              pathname === "/purchasing"
-                                ? "text-light-green"
-                                : "text-white"
-                            } hover:text-light-green`}
-                          >
-                            <CurrencyEuroIcon className="h-6 w-6" />
-                            <h3>Purchasing</h3>
-                          </Link>
-                        )}
+
+                      <Link
+                        href="/calendar"
+                        className={`flex gap-2 py-3 transition-all ${
+                          pathname === "/calendar"
+                            ? "text-light-green"
+                            : "text-white"
+                        } hover:text-light-green`}
+                      >
+                        <CalendarIcon className="h-6 w-6" />
+                        <div>Calendar</div>
+                      </Link>
                     </div>
                     <div className="flex items-center fixed bottom-3 gap-[143px] left-1 justify-between w-auto px-5 bg-dark-blue">
                       <button
