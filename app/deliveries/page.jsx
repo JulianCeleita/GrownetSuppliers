@@ -1,5 +1,5 @@
 "use client";
-import { TruckIcon } from "@heroicons/react/24/solid";
+import { TruckIcon, ReceiptPercentIcon } from "@heroicons/react/24/solid";
 import { ExclamationCircleIcon, TrashIcon } from "@heroicons/react/24/outline";
 import { useEffect, useState } from "react";
 import DatePicker from "react-datepicker";
@@ -234,26 +234,21 @@ const DeliveryView = () => {
                                 <h3 className="font-medium mr-1">
                                   Qty assigned:{" "}
                                 </h3>
-                                <p className="text-gray-500">
+                                <p className="text-gray-grownet">
                                   {delivery.customers.length}
                                 </p>
                               </div>
-                              <div className="flex">
-                                <h3 className="font-medium mr-1">
-                                  Qty not completed:{" "}
-                                </h3>
-                                <p className="text-gray-500">
+                              <div className="flex items-center gap-2">
+                                <div className="w-2 h-2 bg-danger rounded-full" />
+                                <p className="text-gray-grownet">
                                   {countUndeliveredCustomersPerDelivery(
                                     delivery
                                   )}
                                 </p>
                               </div>
                               <div className="flex items-center gap-1">
-                                <h3 className="font-medium mr-1">
-                                  Completition:{" "}
-                                </h3>
-                                <div className="w-2 h-2 bg-danger rounded-full" />
-                                <p className="text-gray-500">
+                                <ReceiptPercentIcon className="h-6 w-6 text-primary-blue" />
+                                <p className="text-gray-grownet">
                                   {calculateDeliveredPercentagePerDelivery(
                                     delivery
                                   )}
@@ -285,7 +280,7 @@ const DeliveryView = () => {
                                     // ? "text-primary-blue"
                                     customer.state === "Delivered"
                                       ? "text-green"
-                                      : "text-gray-500"
+                                      : "text-gray-grownet"
                                   }`}
                                 />
                                 <div>
