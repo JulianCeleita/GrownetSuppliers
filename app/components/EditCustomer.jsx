@@ -18,6 +18,7 @@ import { useEffect, useState } from "react";
 import Swal from "sweetalert2";
 import { TrashIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import ModalDelete from "./ModalDelete";
+import ModalSuccessfull from "./ModalSuccessfull";
 
 const CustomerDetailPage = ({
   isvisible,
@@ -60,6 +61,7 @@ const CustomerDetailPage = ({
   const [error, setError] = useState("");
   const [selectedRoutes, setSelectedRoutes] = useState({});
   const [showDeleteModal, setShowDeleteModal] = useState("");
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
 
   const customerId = customer?.accountNumber;
 
@@ -291,17 +293,8 @@ const CustomerDetailPage = ({
           })
           .then((assignResponse) => {
             setUpdateCustomers(true);
-            Swal.fire({
-              customClass: {
-                container: "fixed inset-0 flex items-center justify-center",
-              },
-              icon: "success",
-              title: "Client edited successfully",
-              showConfirmButton: false,
-              timer: 1500,
-            });
+            setShowSuccessModal(true);
             clearStates();
-            onClose();
           })
           .catch((assignError) => {
             console.error("Error en la asignación del cliente: ", assignError);
@@ -739,6 +732,19 @@ const CustomerDetailPage = ({
             isvisible={showDeleteModal}
             onClose={() => setShowDeleteModal(false)}
             onConfirm={() => handleDeleteCustomer(customerId)}
+          />
+          <ModalSuccessfull
+            isvisible={showSuccessModal}
+            onClose={() => {
+              setShowSuccessModal(false)
+              if (showSuccessModal) {
+                onClose();
+              }
+            }}
+            title="Congratulations"
+            text="Short declared correctly!"
+            button=" Close"
+            confirmed={true}
           />
         </div>
       ) : (
