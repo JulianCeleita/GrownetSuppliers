@@ -139,3 +139,6 @@ export const deliveriesCustomerDetail = `${BASE_URL}logisticRoute/transport/cust
 
 // get All Routes
 export const allRoutes = `${BASE_URL}deliveryRoutes/all`;
+
+// Purchasing
+export const purchasingUrl = `${BASE_URL}orders-wholesalers/all`
