@@ -131,6 +131,8 @@ const DeliveryView = () => {
   };
 
   let foundMatchingCustomer = false;
+
+  console.log("sortedDeliveries:", sortedDeliveries);
   return (
     <Layout>
       <div className="-mt-24">
@@ -216,6 +218,16 @@ const DeliveryView = () => {
 
                   if (filteredCustomers.length > 0) {
                     foundMatchingCustomer = true;
+                    const percentage =
+                      calculateDeliveredPercentagePerDelivery(delivery);
+
+                    let iconClass = "bg-danger";
+                    if (percentage >= 10 && percentage < 100) {
+                      iconClass = "bg-orange-grownet";
+                    } else if (percentage == 100) {
+                      iconClass = "bg-green";
+                    }
+
                     return (
                       <>
                         <div className="flex gap-6">
@@ -239,7 +251,9 @@ const DeliveryView = () => {
                                 </p>
                               </div>
                               <div className="flex items-center gap-2">
-                                <div className="w-2 h-2 bg-danger rounded-full" />
+                                <div
+                                  className={`w-2 h-2 ${iconClass} rounded-full`}
+                                />
                                 <p className="text-gray-grownet">
                                   {countUndeliveredCustomersPerDelivery(
                                     delivery
@@ -249,10 +263,7 @@ const DeliveryView = () => {
                               <div className="flex items-center gap-1">
                                 <ReceiptPercentIcon className="h-6 w-6 text-primary-blue" />
                                 <p className="text-gray-grownet">
-                                  {calculateDeliveredPercentagePerDelivery(
-                                    delivery
-                                  )}
-                                  %
+                                  {percentage}%
                                 </p>
                               </div>
                             </div>
@@ -260,12 +271,6 @@ const DeliveryView = () => {
                         </div>
                         <div className="flex flex-wrap">
                           {filteredCustomers.map((customer, customerIndex) => {
-                            // const isNextToBeHighlighted =
-                            //   customerIndex < filteredCustomers.length - 1 &&
-                            //   customer.state !== "Delivered" &&
-                            //   customer.drop >= 0 &&
-                            //   filteredCustomers[customerIndex + 1].state !==
-                            //     "Delivered";
                             return (
                               <div
                                 key={customerIndex}
@@ -276,17 +281,13 @@ const DeliveryView = () => {
                               >
                                 <TruckIcon
                                   className={`min-w-[30px] min-h-[30px] w-[30px] h-[30px] mr-2 ${
-                                    // isNextToBeHighlighted
-                                    // ? "text-primary-blue"
                                     customer.state === "Delivered"
                                       ? "text-green"
                                       : "text-gray-grownet"
                                   }`}
                                 />
                                 <div>
-                                  <h1>
-                                    {customer.accountName} {customer.state}
-                                  </h1>
+                                  <h1>{customer.accountName}</h1>
                                 </div>
                               </div>
                             );

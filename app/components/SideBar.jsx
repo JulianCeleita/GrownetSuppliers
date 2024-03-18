@@ -516,7 +516,8 @@ const SideBar = () => {
                         )}
                       </div>
 
-                      {user && user.rol_name === "AdminGrownet" && (
+                      {
+                        //user && user.rol_name === "AdminGrownet" && (
                         <div className="relative py-3">
                           <button
                             className={`flex justify-between w-full ${
@@ -586,7 +587,8 @@ const SideBar = () => {
                             </div>
                           )}
                         </div>
-                      )}
+                        //)
+                      }
 
                       <Link
                         href="/calendar"
