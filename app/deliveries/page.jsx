@@ -234,9 +234,14 @@ const DeliveryView = () => {
                           <div className="flex items-center mb-3">
                             <h1 className="text-left my-2 font-semibold">
                               {delivery.route} - Driver:{" "}
-                              <span className="font-normal">Text</span> - Car
-                              plate:
-                              <span className="font-normal"> Test</span>
+                              <span className="font-normal mr-5">
+                                {delivery.driver ? delivery.driver : "Not assigned"}
+                              </span>{" "}
+                              - Car plate:
+                              <span className="font-normal">
+                                {" "}
+                                {delivery.plaque ? delivery.plaque : "Not assigned"}
+                              </span>
                             </h1>
                             <div
                               title="Route information"

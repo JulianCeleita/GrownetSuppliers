@@ -4,10 +4,7 @@ import axios from "axios";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import Swal from "sweetalert2";
-import {
-  fetchGroups,
-  fetchRoutes,
-} from "../api/customerRequest";
+import { fetchGroups, fetchRoutes } from "../api/customerRequest";
 import { assignCustomer, createCustomer } from "../config/urls.config";
 import useTokenStore from "../store/useTokenStore";
 
@@ -20,6 +17,7 @@ function NewCustomer({ isvisible, onClose, setUpdateCustomers }) {
   const [marketingEmail, setMarketingEmail] = useState("");
   const [addressCustomer, setAddressCustomer] = useState("");
   const [telephoneCustomer, setTelephoneCustomer] = useState("");
+  const [referenceCustomer, setReferenceCustomer] = useState("");
   const [postCode, setPostCode] = useState("");
   const [specialInstructions, setSpecialInstructions] = useState("");
   const [mainContact, setMainContact] = useState("");
@@ -46,7 +44,7 @@ function NewCustomer({ isvisible, onClose, setUpdateCustomers }) {
 
   useEffect(() => {
     if (groups.length > 0) {
-      const directGroup = groups.find(group => group.group === 'Direct');
+      const directGroup = groups.find((group) => group.group === "Direct");
       if (directGroup) {
         setSelectedGroup(directGroup.id);
       }
@@ -60,13 +58,13 @@ function NewCustomer({ isvisible, onClose, setUpdateCustomers }) {
   const prepareDataForBackend = () => {
     const allDays = ["Mon", "Tues", "Wed", "Thur", "Fri", "Sat"];
 
-    const daysRoutesArray = allDays.map(day => {
+    const daysRoutesArray = allDays.map((day) => {
       const routeInfo = selectedRoutes[day];
 
       const routeData = {
         route_id: routeInfo?.routeId || "12",
         drop: routeInfo?.drop || 0,
-        days_id: getDayNumber(day.toLowerCase())
+        days_id: getDayNumber(day.toLowerCase()),
       };
 
       return routeData;
@@ -76,23 +74,28 @@ function NewCustomer({ isvisible, onClose, setUpdateCustomers }) {
   };
 
   const handleRouteAndDropSelection = (day, routeId, dropValue) => {
-    if (dropValue === '') {
-      setSelectedRoutes(prevRoutes => ({
+    if (dropValue === "") {
+      setSelectedRoutes((prevRoutes) => ({
         ...prevRoutes,
         [day]: {
           routeId: routeId || "12",
-          drop: ""
-        }
+          drop: "",
+        },
       }));
       return;
     }
 
     const numericDropValue = parseInt(dropValue, 10);
-    const validatedDropValue = !isNaN(numericDropValue) ? Math.max(-1, Math.min(100, numericDropValue)) : "";
+    const validatedDropValue = !isNaN(numericDropValue)
+      ? Math.max(-1, Math.min(100, numericDropValue))
+      : "";
 
-    setSelectedRoutes(prevRoutes => ({
+    setSelectedRoutes((prevRoutes) => ({
       ...prevRoutes,
-      [day]: { routeId: routeId || "12", drop: validatedDropValue.toString() || prevRoutes[day]?.drop || "" }
+      [day]: {
+        routeId: routeId || "12",
+        drop: validatedDropValue.toString() || prevRoutes[day]?.drop || "",
+      },
     }));
   };
 
@@ -165,8 +168,11 @@ function NewCustomer({ isvisible, onClose, setUpdateCustomers }) {
       account_email: accountEmail,
       drop: safeDropValue,
       crates: safeCratesValue,
+      ext_account_ref: referenceCustomer,
       vip: safeVipValue,
-      delivery_window: `${startHour.hour + ':' + startHour.minute} - ${endHour.hour + ':' + endHour.minute}`,
+      delivery_window: `${startHour.hour + ":" + startHour.minute} - ${
+        endHour.hour + ":" + endHour.minute
+      }`,
       group_id: selectedGroup,
       countries_indicative: user?.country_indicative,
     };
@@ -213,17 +219,17 @@ function NewCustomer({ isvisible, onClose, setUpdateCustomers }) {
 
   const handleHour = (event, start) => {
     if (start) {
-      setStartHour(prev => ({ ...prev, hour: event.target.value }));
+      setStartHour((prev) => ({ ...prev, hour: event.target.value }));
     } else {
-      setEndHour(prev => ({ ...prev, hour: event.target.value }));
+      setEndHour((prev) => ({ ...prev, hour: event.target.value }));
     }
   };
 
   const handleMinute = (event, start) => {
     if (start) {
-      setStartHour(prev => ({ ...prev, minute: event.target.value }));
+      setStartHour((prev) => ({ ...prev, minute: event.target.value }));
     } else {
-      setEndHour(prev => ({ ...prev, minute: event.target.value }));
+      setEndHour((prev) => ({ ...prev, minute: event.target.value }));
     }
   };
 
@@ -393,6 +399,14 @@ function NewCustomer({ isvisible, onClose, setUpdateCustomers }) {
                   />
                 </div>
                 <div className="flex items-center mb-3">
+                  <label className="mr-2">External customer reference: </label>
+                  <input
+                    type="text"
+                    className="border p-3 rounded-md w-full hide-number-arrows"
+                    placeholder="Reference"
+                    value={referenceCustomer}
+                    onChange={(e) => setReferenceCustomer(e.target.value)}
+                  />
                   <label className="mx-2">Crates:</label>
                   <select
                     value={crates}
@@ -423,31 +437,47 @@ function NewCustomer({ isvisible, onClose, setUpdateCustomers }) {
                     <span className="text-primary-blue">*</span>
                   </label>
                   <div className="flex items-center w-full">
-                    <div className="border p-3 rounded-md w-full flex justify-center gap-3" >
-                      <select value={startHour.hour} onChange={(value) => handleHour(value, true)} required>
+                    <div className="border p-3 rounded-md w-full flex justify-center gap-3">
+                      <select
+                        value={startHour.hour}
+                        onChange={(value) => handleHour(value, true)}
+                        required
+                      >
                         {Array.from({ length: 24 }, (_, i) => i).map((i) => (
                           <option key={i} value={i}>
-                            {i.toString().padStart(2, '0')}
+                            {i.toString().padStart(2, "0")}
                           </option>
                         ))}
                       </select>
                       :
-                      <select value={startHour.minute} onChange={(value) => handleMinute(value, true)} required>
+                      <select
+                        value={startHour.minute}
+                        onChange={(value) => handleMinute(value, true)}
+                        required
+                      >
                         <option value="00">00</option>
                         <option value="30">30</option>
                       </select>
                     </div>
                     <span className="mx-3">-</span>
-                    <div className="border p-3 rounded-md w-full flex justify-center gap-3" >
-                      <select value={endHour.hour} onChange={(value) => handleHour(value, false)} required>
+                    <div className="border p-3 rounded-md w-full flex justify-center gap-3">
+                      <select
+                        value={endHour.hour}
+                        onChange={(value) => handleHour(value, false)}
+                        required
+                      >
                         {Array.from({ length: 24 }, (_, i) => i).map((i) => (
                           <option key={i} value={i}>
-                            {i.toString().padStart(2, '0')}
+                            {i.toString().padStart(2, "0")}
                           </option>
                         ))}
                       </select>
                       :
-                      <select value={endHour.minute} onChange={(value) => handleMinute(value, false)} required>
+                      <select
+                        value={endHour.minute}
+                        onChange={(value) => handleMinute(value, false)}
+                        required
+                      >
                         <option value="00">00</option>
                         <option value="30">30</option>
                       </select>
@@ -460,9 +490,10 @@ function NewCustomer({ isvisible, onClose, setUpdateCustomers }) {
                   </label>
                   <div className="grid grid-cols-2 border p-2 w-full rounded-lg">
                     {["Mon", "Tues", "Wed", "Thur", "Fri", "Sat"].map((day) => (
-
-                      <div key={day} className="flex flex-col my-1 items-center">
-
+                      <div
+                        key={day}
+                        className="flex flex-col my-1 items-center"
+                      >
                         <div className="flex items-center w-full">
                           <label className="mx-2 w-[90px]">{day}:</label>
                           <select
@@ -471,7 +502,11 @@ function NewCustomer({ isvisible, onClose, setUpdateCustomers }) {
                             onChange={(e) => {
                               const selectedRouteId = e.target.value;
                               const dropValue = selectedRoutes[day]?.drop || "";
-                              handleRouteAndDropSelection(day, selectedRouteId, dropValue);
+                              handleRouteAndDropSelection(
+                                day,
+                                selectedRouteId,
+                                dropValue
+                              );
                             }}
                           >
                             <option value="">R100</option>
@@ -485,7 +520,13 @@ function NewCustomer({ isvisible, onClose, setUpdateCustomers }) {
                             placeholder="# Drop"
                             className="border rounded-md bg-white border-gray-200 p-1 text-dark-blue w-full ml-2"
                             value={selectedRoutes[day]?.drop || ""}
-                            onChange={(e) => handleRouteAndDropSelection(day, selectedRoutes[day]?.routeId, e.target.value)}
+                            onChange={(e) =>
+                              handleRouteAndDropSelection(
+                                day,
+                                selectedRoutes[day]?.routeId,
+                                e.target.value
+                              )
+                            }
                           />
                         </div>
                       </div>
@@ -498,8 +539,9 @@ function NewCustomer({ isvisible, onClose, setUpdateCustomers }) {
               <button
                 type="submit"
                 value="Submit"
-                className={`bg-primary-blue py-3 px-4 rounded-lg text-white font-medium mr-3 ${isLoading === true ? "bg-gray-500/50" : ""
-                  }`}
+                className={`bg-primary-blue py-3 px-4 rounded-lg text-white font-medium mr-3 ${
+                  isLoading === true ? "bg-gray-500/50" : ""
+                }`}
                 disabled={isLoading}
               >
                 Add customer
