@@ -37,6 +37,7 @@ const CustomerDetailPage = ({
   const [marketingEmail, setMarketingEmail] = useState("");
   const [addressCustomer, setAddressCustomer] = useState("");
   const [telephoneCustomer, setTelephoneCustomer] = useState("");
+  const [referenceCustomer, setReferenceCustomer] = useState("");
   const [postCode, setPostCode] = useState("");
   const [specialInstructions, setSpecialInstructions] = useState("");
   const [mainContact, setMainContact] = useState("");
@@ -78,7 +79,7 @@ const CustomerDetailPage = ({
       setAccountName("");
     }
   }, [isvisible]);
-
+  console.log(detailCustomer);
   useEffect(() => {
     if (detailCustomer && detailCustomer.length > 0) {
       setAccountNumber(detailCustomer[0]?.accountNumber);
@@ -97,6 +98,7 @@ const CustomerDetailPage = ({
       setCrates(detailCustomer[0]?.crates === 1 ? "yes" : "no");
       setVip(detailCustomer[0]?.vip === 1 ? "yes" : "no");
       setCratesSelected(detailCustomer[0]?.crates);
+      setReferenceCustomer(detailCustomer[0]?.ext_account_ref);
       setVipSelected(detailCustomer[0]?.vip);
       setSelectedGroup(detailCustomer[0]?.group_id);
       setRouteName(detailCustomer[0]?.route);
@@ -109,8 +111,14 @@ const CustomerDetailPage = ({
       if (start !== "" && end !== "") {
         const sHour = start.split(":");
         const eHour = end.split(":");
-        setStartHour({ hour: sHour[0], minute: Number(sHour[1]) < 30 ? "00" : "30" });
-        setEndHour({ hour: eHour[0], minute: Number(eHour[1]) < 30 ? "00" : "30" });
+        setStartHour({
+          hour: sHour[0],
+          minute: Number(sHour[1]) < 30 ? "00" : "30",
+        });
+        setEndHour({
+          hour: eHour[0],
+          minute: Number(eHour[1]) < 30 ? "00" : "30",
+        });
       }
 
       const selectedRoutesData = {};
@@ -161,13 +169,13 @@ const CustomerDetailPage = ({
   const prepareDataForBackend = () => {
     const allDays = ["Mon", "Tues", "Wed", "Thur", "Fri", "Sat"];
 
-    const daysRoutesArray = allDays.map(day => {
+    const daysRoutesArray = allDays.map((day) => {
       const routeInfo = selectedRoutes[day];
 
       const routeData = {
         route_id: routeInfo?.routeId || "12",
         drop: routeInfo?.drop || 0,
-        days_id: getDayNumber(day.toLowerCase())
+        days_id: getDayNumber(day.toLowerCase()),
       };
 
       return routeData;
@@ -177,23 +185,29 @@ const CustomerDetailPage = ({
   };
 
   const handleRouteAndDropSelection = (day, routeId, dropValue, routeName) => {
-    if (dropValue === '') {
-      setSelectedRoutes(prevRoutes => ({
+    if (dropValue === "") {
+      setSelectedRoutes((prevRoutes) => ({
         ...prevRoutes,
         [day]: {
           routeId: routeId || "12",
-          drop: ""
-        }
+          drop: "",
+        },
       }));
       return;
     }
 
     const numericDropValue = parseInt(dropValue, 10);
-    const validatedDropValue = !isNaN(numericDropValue) ? Math.max(-1, Math.min(100, numericDropValue)) : "";
+    const validatedDropValue = !isNaN(numericDropValue)
+      ? Math.max(-1, Math.min(100, numericDropValue))
+      : "";
 
-    setSelectedRoutes(prevRoutes => ({
+    setSelectedRoutes((prevRoutes) => ({
       ...prevRoutes,
-      [day]: { routeId: routeId || "12", drop: validatedDropValue.toString() || prevRoutes[day]?.drop || "", routeName: routeName || "R100" }
+      [day]: {
+        routeId: routeId || "12",
+        drop: validatedDropValue.toString() || prevRoutes[day]?.drop || "",
+        routeName: routeName || "R100",
+      },
     }));
   };
 
@@ -252,7 +266,9 @@ const CustomerDetailPage = ({
       drop: safeDropValue,
       crates: safeCratesValue,
       vip: safeVipValue,
-      delivery_window: `${startHour.hour + ':' + startHour.minute} - ${endHour.hour + ':' + endHour.minute}`,
+      delivery_window: `${startHour.hour + ":" + startHour.minute} - ${
+        endHour.hour + ":" + endHour.minute
+      }`,
       group_id: selectedGroup,
     };
 
@@ -318,17 +334,17 @@ const CustomerDetailPage = ({
 
   const handleHour = (event, start) => {
     if (start) {
-      setStartHour(prev => ({ ...prev, hour: event.target.value }));
+      setStartHour((prev) => ({ ...prev, hour: event.target.value }));
     } else {
-      setEndHour(prev => ({ ...prev, hour: event.target.value }));
+      setEndHour((prev) => ({ ...prev, hour: event.target.value }));
     }
   };
 
   const handleMinute = (event, start) => {
     if (start) {
-      setStartHour(prev => ({ ...prev, minute: event.target.value }));
+      setStartHour((prev) => ({ ...prev, minute: event.target.value }));
     } else {
-      setEndHour(prev => ({ ...prev, minute: event.target.value }));
+      setEndHour((prev) => ({ ...prev, minute: event.target.value }));
     }
   };
 
@@ -514,6 +530,16 @@ const CustomerDetailPage = ({
                         />
                       </div>
                       <div className="flex items-center mb-3">
+                        <label className="mr-2">
+                          External customer reference:{" "}
+                        </label>
+                        <input
+                          type="text"
+                          className="border p-3 rounded-md w-full hide-number-arrows"
+                          placeholder="Reference"
+                          value={referenceCustomer}
+                          onChange={(e) => setReferenceCustomer(e.target.value)}
+                        />
                         <label className="mx-2">Crates:</label>
                         <select
                           value={crates}
@@ -544,31 +570,51 @@ const CustomerDetailPage = ({
                           <span className="text-primary-blue">*</span>
                         </label>
                         <div className="flex items-center w-full">
-                          <div className="border p-3 rounded-md w-full flex justify-center gap-3" >
-                            <select value={startHour.hour} onChange={(value) => handleHour(value, true)} required>
-                              {Array.from({ length: 24 }, (_, i) => i).map((i) => (
-                                <option key={i} value={i}>
-                                  {i.toString().padStart(2, '0')}
-                                </option>
-                              ))}
+                          <div className="border p-3 rounded-md w-full flex justify-center gap-3">
+                            <select
+                              value={startHour.hour}
+                              onChange={(value) => handleHour(value, true)}
+                              required
+                            >
+                              {Array.from({ length: 24 }, (_, i) => i).map(
+                                (i) => (
+                                  <option key={i} value={i}>
+                                    {i.toString().padStart(2, "0")}
+                                  </option>
+                                )
+                              )}
                             </select>
                             :
-                            <select value={startHour.minute} onChange={(value) => handleMinute(value, true)} required>
+                            <select
+                              value={startHour.minute}
+                              onChange={(value) => handleMinute(value, true)}
+                              required
+                            >
                               <option value="00">00</option>
                               <option value="30">30</option>
                             </select>
                           </div>
                           <span className="mx-3">-</span>
-                          <div className="border p-3 rounded-md w-full flex justify-center gap-3" >
-                            <select value={endHour.hour} onChange={(value) => handleHour(value, false)} required>
-                              {Array.from({ length: 24 }, (_, i) => i).map((i) => (
-                                <option key={i} value={i}>
-                                  {i.toString().padStart(2, '0')}
-                                </option>
-                              ))}
+                          <div className="border p-3 rounded-md w-full flex justify-center gap-3">
+                            <select
+                              value={endHour.hour}
+                              onChange={(value) => handleHour(value, false)}
+                              required
+                            >
+                              {Array.from({ length: 24 }, (_, i) => i).map(
+                                (i) => (
+                                  <option key={i} value={i}>
+                                    {i.toString().padStart(2, "0")}
+                                  </option>
+                                )
+                              )}
                             </select>
                             :
-                            <select value={endHour.minute} onChange={(value) => handleMinute(value, false)} required>
+                            <select
+                              value={endHour.minute}
+                              onChange={(value) => handleMinute(value, false)}
+                              required
+                            >
                               <option value="00">00</option>
                               <option value="30">30</option>
                             </select>
@@ -580,38 +626,75 @@ const CustomerDetailPage = ({
                           Route: <span className="text-primary-blue">*</span>
                         </label>
                         <div className="grid grid-cols-2 border p-2 w-full rounded-lg">
-                          {["Mon", "Tues", "Wed", "Thur", "Fri", "Sat"].map((day) => (
-
-                            <div key={day} className="flex flex-col my-1 items-center">
-
-                              <div className="flex items-center w-full">
-                                <label className="mx-2 w-[90px]">{day}:</label>
-                                <select
-                                  className="border rounded-md bg-white bg-clip-padding bg-no-repeat border-gray-200 p-1 leading-tight focus:outline-none text-dark-blue hover:border-gray-300 duration-150 ease-in-out w-[100px]"
-                                  value={selectedRoutes[day] ? selectedRoutes[day].routeId : '12'}
-                                  onChange={(e) => {
-                                    const selectedRouteId = e.target.value;
-                                    const selectedRouteName = e.target.options[e.target.selectedIndex].text;
-                                    const dropValue = selectedRoutes[day]?.drop || "";
-                                    handleRouteAndDropSelection(day, selectedRouteId, dropValue, selectedRouteName);
-                                  }}
-                                >
-                                  <option value={selectedRoutes[day] ? selectedRoutes[day].routeName : '12'}>{selectedRoutes[day] ? selectedRoutes[day].routeName : 'R100'}</option>
-                                  {routes.map((route) => (
-                                    <option key={route.id} value={route.id.toString()}>
-                                      {route.name}
+                          {["Mon", "Tues", "Wed", "Thur", "Fri", "Sat"].map(
+                            (day) => (
+                              <div
+                                key={day}
+                                className="flex flex-col my-1 items-center"
+                              >
+                                <div className="flex items-center w-full">
+                                  <label className="mx-2 w-[90px]">
+                                    {day}:
+                                  </label>
+                                  <select
+                                    className="border rounded-md bg-white bg-clip-padding bg-no-repeat border-gray-200 p-1 leading-tight focus:outline-none text-dark-blue hover:border-gray-300 duration-150 ease-in-out w-[100px]"
+                                    value={
+                                      selectedRoutes[day]
+                                        ? selectedRoutes[day].routeId
+                                        : "12"
+                                    }
+                                    onChange={(e) => {
+                                      const selectedRouteId = e.target.value;
+                                      const selectedRouteName =
+                                        e.target.options[e.target.selectedIndex]
+                                          .text;
+                                      const dropValue =
+                                        selectedRoutes[day]?.drop || "";
+                                      handleRouteAndDropSelection(
+                                        day,
+                                        selectedRouteId,
+                                        dropValue,
+                                        selectedRouteName
+                                      );
+                                    }}
+                                  >
+                                    <option
+                                      value={
+                                        selectedRoutes[day]
+                                          ? selectedRoutes[day].routeName
+                                          : "12"
+                                      }
+                                    >
+                                      {selectedRoutes[day]
+                                        ? selectedRoutes[day].routeName
+                                        : "R100"}
                                     </option>
-                                  ))}
-                                </select>
-                                <input
-                                  placeholder="# Drop"
-                                  className="border rounded-md bg-white border-gray-200 p-1 text-dark-blue w-full ml-2"
-                                  value={selectedRoutes[day]?.drop || ""}
-                                  onChange={(e) => handleRouteAndDropSelection(day, selectedRoutes[day].routeId, e.target.value, selectedRoutes[day].routeName)}
-                                />
+                                    {routes.map((route) => (
+                                      <option
+                                        key={route.id}
+                                        value={route.id.toString()}
+                                      >
+                                        {route.name}
+                                      </option>
+                                    ))}
+                                  </select>
+                                  <input
+                                    placeholder="# Drop"
+                                    className="border rounded-md bg-white border-gray-200 p-1 text-dark-blue w-full ml-2"
+                                    value={selectedRoutes[day]?.drop || ""}
+                                    onChange={(e) =>
+                                      handleRouteAndDropSelection(
+                                        day,
+                                        selectedRoutes[day].routeId,
+                                        e.target.value,
+                                        selectedRoutes[day].routeName
+                                      )
+                                    }
+                                  />
+                                </div>
                               </div>
-                            </div>
-                          ))}
+                            )
+                          )}
                         </div>
                       </div>
                     </div>
@@ -631,8 +714,9 @@ const CustomerDetailPage = ({
                     <button
                       type="submit"
                       value="Submit"
-                      className={`bg-primary-blue py-3 px-4 rounded-lg text-white font-medium mr-3 ${isLoading === true ? "bg-gray-500/50" : ""
-                        }`}
+                      className={`bg-primary-blue py-3 px-4 rounded-lg text-white font-medium mr-3 ${
+                        isLoading === true ? "bg-gray-500/50" : ""
+                      }`}
                       disabled={isLoading}
                     >
                       Save changes
