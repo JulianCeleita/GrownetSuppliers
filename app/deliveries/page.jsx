@@ -235,12 +235,12 @@ const DeliveryView = () => {
                             <h1 className="text-left my-2 font-semibold">
                               {delivery.route} - Driver:{" "}
                               <span className="font-normal mr-5">
-                                {delivery.driver ? delivery.driver : "¿?"}
+                                {delivery.driver ? delivery.driver : "Not assigned"}
                               </span>{" "}
                               - Car plate:
                               <span className="font-normal">
                                 {" "}
-                                {delivery.plaque ? delivery.plaque : "¿?"}
+                                {delivery.plaque ? delivery.plaque : "Not assigned"}
                               </span>
                             </h1>
                             <div
