@@ -21,6 +21,7 @@ import {
 import CreateProduct from "../components/CreateProduct";
 import AutomaticShort from "../components/AutomaticShort";
 import DatePicker from "react-datepicker";
+import useWorkDateStore from "../store/useWorkDateStore";
 
 function ProductState() {
   const { token } = useTokenStore();
@@ -37,6 +38,29 @@ function ProductState() {
   const [dateFilter, setDateFilter] = useState("today");
   const [selectedResponsible, setSelectedResponsible] = useState("");
   const [selectedState, setSelectedState] = useState("");
+  const [filterType, setFilterType] = useState("date")
+  const { workDate, setFetchWorkDate } = useWorkDateStore();
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
+
+  const formatDateToShow = (dateString) => {
+    if (!dateString) return "Loading...";
+
+    const parts = dateString.split("-").map((part) => parseInt(part, 10));
+    const utcDate = new Date(Date.UTC(parts[0], parts[1] - 1, parts[2]));
+
+    const day = String(utcDate.getUTCDate()).padStart(2, "0");
+    const month = String(utcDate.getUTCMonth() + 1).padStart(2, "0");
+    const year = String(utcDate.getUTCFullYear()).slice(-2);
+    return `${day}/${month}/${year}`;
+  };
+  const formatDateToTransform = (dateString) => {
+    const date = new Date(dateString);
+    const day = String(date.getDate()).padStart(2, "0");
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const year = date.getFullYear();
+    return `${year}-${month}-${day}`;
+  };
 
   const handleResponsibleChange = (e) => {
     setSelectedResponsible(e.target.value);
@@ -135,18 +159,72 @@ function ProductState() {
               </button>
             )}
           </div>
-          <DatePicker
-            selected={selectedDate}
-            onChange={(date) => {
-              setSelectedDate(date);
-              // setStartDateByNet(formatDateToTransform(date));
-              // setEndDateByNet(formatDateToTransform(date));
-              setDateFilter("date");
-            }}
-            className="form-input px-4 py-3 w-[140px] rounded-md border border-gray-300 text-dark-blue placeholder-dark-blue"
-            dateFormat="dd/MM/yyyy"
-            placeholderText={"dd/mm/yyyy"}
-          />
+          <select
+            value={filterType}
+            onChange={(e) => setFilterType(e.target.value)}
+            className="form-select px-2 rounded-md border border-gray-300 text-sm custom:text-base w-[155px] h-[3.2rem]"
+          >
+            <option value="range">Filter by range</option>
+            <option value="date">Filter by date</option>
+          </select>
+          {filterType === "range" && (
+            <>
+              <DatePicker
+                selected={startDate}
+                onChange={(date) => {
+                  setStartDate(date);
+                  setStartDateByNet(formatDateToTransform(date));
+                  setEndDate((currentEndDate) => {
+                    if (date && currentEndDate) {
+                      setDateFilter("range");
+                    }
+                    return currentEndDate;
+                  });
+                }}
+                selectsStart
+                startDate={startDate}
+                endDate={endDate}
+                className="form-input px-3 py-3 rounded-md border border-gray-300 w-[120px] text-sm custom:text-base"
+                dateFormat="dd/MM/yyyy"
+                placeholderText="dd/mm/yyyy"
+              />
+              <DatePicker
+                selected={endDate}
+                onChange={(date) => {
+                  setEndDate(date);
+                  setEndDateByNet(formatDateToTransform(date));
+                  setStartDate((currentStartDate) => {
+                    if (currentStartDate && date) {
+                      setDateFilter("range");
+                    }
+                    return currentStartDate;
+                  });
+                }}
+                selectsEnd
+                startDate={startDate}
+                endDate={endDate}
+                minDate={startDate}
+                className="form-input px-3 py-3 w-[120px] rounded-md border border-gray-300 text-sm custom:text-base"
+                dateFormat="dd/MM/yyyy"
+                placeholderText="dd/mm/yyyy"
+              />
+            </>
+          )}
+
+          {filterType === "date" && (
+            <DatePicker
+              selected={selectedDate}
+              onChange={(date) => {
+                setSelectedDate(date);
+                setStartDateByNet(formatDateToTransform(date));
+                setEndDateByNet(formatDateToTransform(date));
+                setDateFilter("date");
+              }}
+              className="form-input px-3 py-3 w-[95px] rounded-md border border-gray-300 text-dark-blue placeholder-dark-blue text-sm custom:text-base"
+              dateFormat="dd/MM/yyyy"
+              placeholderText={formatDateToShow(workDate)}
+            />
+          )}
           <select
             value={selectedState}
             onChange={handleStateChange}
