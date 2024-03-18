@@ -271,12 +271,6 @@ const DeliveryView = () => {
                         </div>
                         <div className="flex flex-wrap">
                           {filteredCustomers.map((customer, customerIndex) => {
-                            // const isNextToBeHighlighted =
-                            //   customerIndex < filteredCustomers.length - 1 &&
-                            //   customer.state !== "Delivered" &&
-                            //   customer.drop >= 0 &&
-                            //   filteredCustomers[customerIndex + 1].state !==
-                            //     "Delivered";
                             return (
                               <div
                                 key={customerIndex}
@@ -287,8 +281,6 @@ const DeliveryView = () => {
                               >
                                 <TruckIcon
                                   className={`min-w-[30px] min-h-[30px] w-[30px] h-[30px] mr-2 ${
-                                    // isNextToBeHighlighted
-                                    // ? "text-primary-blue"
                                     customer.state === "Delivered"
                                       ? "text-green"
                                       : "text-gray-grownet"
