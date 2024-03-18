@@ -9,41 +9,68 @@ import {
 import axios from "axios";
 import { useEffect, useState } from "react";
 import EditPresentation from "../../app/components/EditPresentation";
-import { deletePresentationUrl } from "../../app/config/urls.config";
+import { deletePresentationUrl, purchasingUrl } from "../../app/config/urls.config";
 import useTokenStore from "../../app/store/useTokenStore";
 import ModalDelete from "../components/ModalDelete";
 import Layout from "../layoutS";
 import useUserStore from "../store/useUserStore";
 import Select, { menuPortalTarget } from 'react-select';
-import {
-  fetchPresentations,
-  fetchPresentationsSupplier,
-} from "../api/presentationsRequest";
 import CreateProduct from "../components/CreateProduct";
 import AutomaticShort from "../components/AutomaticShort";
-import { fetchSuppliers } from "../api/suppliersRequest";
 import DatePicker from "react-datepicker";
 import useWorkDateStore from "../store/useWorkDateStore";
 
+export const fetchOrderWholesaler = (start, end, token, setOrdersWholeseler) => {
+  if (!end || !start) {
+    return;
+  }
+
+  const formattedStartDate = start?.toISOString().substring(0, 10);
+  const formattedEndDate = end?.toISOString().substring(0, 10);
+
+
+  const postData = {
+    date: {
+      start: formattedStartDate,
+      end: formattedEndDate,
+    },
+  };
+  console.log("🚀 ~ postData:", postData);
+  axios
+    .get(purchasingUrl, {
+      params: postData,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
+    .then((response) => {
+      console.log("🚀 ~ .then ~ response:", response);
+      setOrdersWholeseler(response.data.data);
+    })
+    .catch((error) => {
+      console.log("🚀 ~ error:", error);
+    });
+};
+
 function Purchasing() {
   const { token } = useTokenStore();
+  const { workDate, setFetchWorkDate } = useWorkDateStore();
   const [isLoading, setIsLoading] = useState(true);
-  const [showNewPresentations, setShowNewPresentations] = useState(false);
-  const [showAutomaticShorts, setShowAutomaticShorts] = useState(false);
-  const [showEditPresentations, setShowEditPresentations] = useState(false);
-  const [selectedPresentation, setSelectedPresentation] = useState(null);
   const [selectedSupplierId, setSelectedSupplierId] = useState(null);
   const [selectedStatus, setSelectedStatus] = useState("");
-  const [startDate, setStartDate] = useState("");
-  const [endDate, setEndDate] = useState("");
   const [suppliers, setSuppliers] = useState([]);
   const [filterType, setFilterType] = useState("date");
   const [selectedDate, setSelectedDate] = useState("");
   const { user, setUser } = useUserStore();
-  const { workDate, setFetchWorkDate } = useWorkDateStore();
   const [sortColumn, setSortColumn] = useState(null);
   const [sortDirection, setSortDirection] = useState("asc");
   const [editableRows, setEditableRows] = useState({});
+  const [dateFilter, setDateFilter] = useState("today");
+
+  const defaultDate = new Date();
+
+  const [startDate, setStartDate] = useState(workDate || defaultDate);
+  const [endDate, setEndDate] = useState(workDate || defaultDate);
 
   const formatDateToShow = (dateString) => {
     if (!dateString) return "Loading...";
@@ -58,16 +85,11 @@ function Purchasing() {
   };
 
   //Api
-  const [products, setProducts] = useState([]);
+  const [ordersWholeseler, setOrdersWholeseler] = useState([]);
 
   useEffect(() => {
-    if (user && user.rol_name === "AdminGrownet") {
-      fetchPresentations(token, setProducts, setIsLoading);
-    } else {
-      fetchPresentationsSupplier(token, user, setProducts, setIsLoading);
-    }
-    fetchSuppliers(token, setSuppliers, setIsLoading);
-  }, [user, token]);
+    fetchOrderWholesaler(startDate, endDate, token, setOrdersWholeseler)
+  }, [workDate, token, endDate, startDate]);
 
   const handleEditField = (key, rowIndex, e) => {
     const value = e.target.value;
@@ -79,90 +101,6 @@ function Purchasing() {
     setEditableRows(updatedRows);
   };
 
-  const handleSaveField = (rowIndex) => {
-    const updatedProducts = [...products];
-    const editedRow = editableRows[rowIndex];
-    if (editedRow) {
-      Object.keys(editedRow).forEach((key) => {
-        updatedProducts[rowIndex][key] = editedRow[key];
-      });
-      setProducts(updatedProducts);
-    }
-  };
-
-  const productsExample = [
-    {
-      code: "001",
-      supplier: "Supplier A",
-      description: "Product A",
-      soh: 100,
-      requisition: 20,
-      futureRequisition: 30,
-      shorts: 10,
-      ordered: 40,
-      quantity: 50,
-      cost: 10.5,
-      totalCost: 525,
-      notes: "Aorem ipsum dolor sit amet",
-    },
-    {
-      code: "002",
-      supplier: "Supplier B",
-      description: "Product B",
-      soh: 150,
-      requisition: 25,
-      futureRequisition: 35,
-      shorts: 15,
-      ordered: 45,
-      quantity: 55,
-      cost: 12.75,
-      totalCost: 701.25,
-      notes: "Borem ipsum dolor sit amet",
-    },
-    {
-      code: "003",
-      supplier: "Supplier C",
-      description: "Product C",
-      soh: 200,
-      requisition: 30,
-      futureRequisition: 40,
-      shorts: 20,
-      ordered: 50,
-      quantity: 60,
-      cost: 15.0,
-      totalCost: 900,
-      notes: "Corem ipsum dolor sit amet",
-    },
-    {
-      code: "004",
-      supplier: "Supplier D",
-      description: "Product D",
-      soh: 250,
-      requisition: 35,
-      futureRequisition: 45,
-      shorts: 25,
-      ordered: 55,
-      quantity: 65,
-      cost: 17.25,
-      totalCost: 1121.25,
-      notes: "Dorem ipsum dolor sit amet",
-    },
-    {
-      code: "005",
-      supplier: "Supplier E",
-      description: "Product E",
-      soh: 300,
-      requisition: 40,
-      futureRequisition: 50,
-      shorts: 30,
-      ordered: 60,
-      quantity: 70,
-      cost: 20.0,
-      totalCost: 1400,
-      notes: "Eorem ipsum dolor sit amet",
-    },
-  ];
-
   const handleSort = (column) => {
     if (sortColumn === column) {
       setSortDirection(sortDirection === "asc" ? "desc" : "asc");
@@ -172,14 +110,14 @@ function Purchasing() {
     }
   };
 
-  const sortedPresentations = productsExample.slice().sort((a, b) => {
+  const sortedOrdersWholeseler = ordersWholeseler?.slice().sort((a, b) => {
     if (sortColumn) {
       const valueA = typeof a[sortColumn] === 'number' ? a[sortColumn].toString() : a[sortColumn];
       const valueB = typeof b[sortColumn] === 'number' ? b[sortColumn].toString() : b[sortColumn];
       if (sortDirection === "asc") {
-        return valueA.localeCompare(valueB);
+        return valueA?.localeCompare(valueB);
       } else {
-        return valueB.localeCompare(valueA);
+        return valueB?.localeCompare(valueA);
       }
     } else {
       return 0;
@@ -332,9 +270,9 @@ function Purchasing() {
               </tr>
             </thead>
             <tbody>
-              {sortedPresentations.map((presentation, index) => (
+              {sortedOrdersWholeseler.map((order, index) => (
                 <tr className="text-dark-blue border-b-2 border-stone-100">
-                  <td className="py-4 pl-3">{presentation.code}</td>
+                  <td className="py-4 pl-3">{order.presentation_code}</td>
                   <td className="py-4">
                     <Select
                       value={selectedSupplierId}
@@ -370,16 +308,16 @@ function Purchasing() {
                       }}
                     />
                   </td>
-                  <td className="py-4">{presentation.description}</td>
-                  <td className="py-4">{presentation.soh}</td>
-                  <td className="py-4">{presentation.requisition}</td>
-                  <td className="py-4">{presentation.futureRequisition}</td>
-                  <td className="py-4">{presentation.shorts}</td>
-                  <td className="py-4">{presentation.ordered}</td>
+                  <td className="py-4">{order.product_name} - ${order.presentation_name}</td>
+                  <td className="py-4">{order.soh}</td>
+                  <td className="py-4">{order.requisitions}</td>
+                  <td className="py-4">{order.future_requisitions}</td>
+                  <td className="py-4">{order.short}</td>
+                  <td className="py-4">{order.ordered}</td>
                   <td className="py-4">
                     <input
                       type="number"
-                      value={editableRows[index]?.quantity || presentation.quantity}
+                      value={editableRows[index]?.quantity || order.quantity}
                       onChange={(e) => handleEditField("quantity", index, e)}
                       className="w-16 px-2 py-1 rounded-md border border-gray-300 text-sm"
                     />
@@ -388,16 +326,16 @@ function Purchasing() {
                     <input
                       type="number"
                       step="0.01"
-                      value={editableRows[index]?.cost || presentation.cost}
+                      value={editableRows[index]?.cost || order.cost}
                       onChange={(e) => handleEditField("cost", index, e)}
                       className="w-16 px-2 py-1 rounded-md border border-gray-300 text-sm"
                     />
                   </td>
-                  <td className="py-4">{presentation.totalCost}</td>
+                  <td className="py-4">{order.totalCost}</td>
                   <td className="py-4">
                     <input
                       type="text"
-                      value={editableRows[index]?.notes || presentation.notes}
+                      value={editableRows[index]?.note || order.note}
                       onChange={(e) => handleEditField("notes", index, e)}
                       className="w-32 px-2 py-1 rounded-md border border-gray-300 text-sm"
                     />
@@ -407,25 +345,6 @@ function Purchasing() {
             </tbody>
           </table>
         </div>
-        <EditPresentation
-          isvisible={showEditPresentations}
-          onClose={() => setShowEditPresentations(false)}
-          presentation={selectedPresentation}
-          setPresentations={setProducts}
-          setIsLoading={setIsLoading}
-        />
-        <CreateProduct
-          isvisible={showNewPresentations}
-          onClose={() => setShowNewPresentations(false)}
-          setProducts={setProducts}
-          setIsLoading={setIsLoading}
-        />
-        <AutomaticShort
-          isvisible={showAutomaticShorts}
-          onClose={() => setShowAutomaticShorts(false)}
-          setProducts={setProducts}
-          setIsLoading={setIsLoading}
-        />
         {isLoading && (
           <div className="flex justify-center items-center mb-20">
             <div className="loader"></div>
