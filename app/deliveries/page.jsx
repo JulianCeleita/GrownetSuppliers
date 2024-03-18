@@ -220,7 +220,7 @@ const DeliveryView = () => {
                     foundMatchingCustomer = true;
                     const percentage =
                       calculateDeliveredPercentagePerDelivery(delivery);
-                    console.log("percentage", percentage);
+
                     let iconClass = "bg-danger";
                     if (percentage >= 10 && percentage < 100) {
                       iconClass = "bg-orange-grownet";
