@@ -131,6 +131,8 @@ const DeliveryView = () => {
   };
 
   let foundMatchingCustomer = false;
+
+  console.log("sortedDeliveries:", sortedDeliveries);
   return (
     <Layout>
       <div className="-mt-24">
@@ -284,9 +286,7 @@ const DeliveryView = () => {
                                   }`}
                                 />
                                 <div>
-                                  <h1>
-                                    {customer.accountName} {customer.state}
-                                  </h1>
+                                  <h1>{customer.accountName}</h1>
                                 </div>
                               </div>
                             );
