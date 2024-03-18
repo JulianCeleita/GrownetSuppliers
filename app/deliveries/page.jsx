@@ -218,6 +218,16 @@ const DeliveryView = () => {
 
                   if (filteredCustomers.length > 0) {
                     foundMatchingCustomer = true;
+                    const percentage =
+                      calculateDeliveredPercentagePerDelivery(delivery);
+                    console.log("percentage", percentage);
+                    let iconClass = "bg-danger";
+                    if (percentage >= 10 && percentage < 100) {
+                      iconClass = "bg-orange-grownet";
+                    } else if (percentage == 100) {
+                      iconClass = "bg-green";
+                    }
+
                     return (
                       <>
                         <div className="flex gap-6">
@@ -241,7 +251,9 @@ const DeliveryView = () => {
                                 </p>
                               </div>
                               <div className="flex items-center gap-2">
-                                <div className="w-2 h-2 bg-danger rounded-full" />
+                                <div
+                                  className={`w-2 h-2 ${iconClass} rounded-full`}
+                                />
                                 <p className="text-gray-grownet">
                                   {countUndeliveredCustomersPerDelivery(
                                     delivery
@@ -251,10 +263,7 @@ const DeliveryView = () => {
                               <div className="flex items-center gap-1">
                                 <ReceiptPercentIcon className="h-6 w-6 text-primary-blue" />
                                 <p className="text-gray-grownet">
-                                  {calculateDeliveredPercentagePerDelivery(
-                                    delivery
-                                  )}
-                                  %
+                                  {percentage}%
                                 </p>
                               </div>
                             </div>
