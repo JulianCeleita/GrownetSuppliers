@@ -56,6 +56,12 @@ const CreateOrderView = () => {
   const [showErrorRoutes, setShowErrorRoutes] = useState(false);
   const [arrows, setArrows] = useState(false);
   const [accept, setAccept] = useState(false);
+
+  useEffect(() => {
+    setCustomers([])
+  }, [])
+  
+  
   //Fecha input
   function getCurrentDate() {
     const today = new Date();
@@ -292,7 +298,7 @@ const CreateOrderView = () => {
               value={{
                 value: selectedAccNumber,
                 label:
-                  customers && customers[0].accountName
+                  customers && customers[0]?.accountName
                     ? customers[0].accountName
                     : "Search...",
               }}
@@ -316,7 +322,7 @@ const CreateOrderView = () => {
               value={{
                 value: selectedAccNumber,
                 label:
-                  customers && customers[0].accountNumber
+                  customers && customers[0]?.accountNumber
                     ? customers[0].accountNumber
                     : "Search...",
               }}

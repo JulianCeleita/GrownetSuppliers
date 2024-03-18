@@ -306,6 +306,7 @@ const OrderView = () => {
     const postDataPrint = {
       references: ordersToPrint,
     };
+    console.log("🚀 ~ printOrders ~ postDataPrint:", postDataPrint)
 
     axios
       .post(printInvoices, postDataPrint, {
@@ -315,6 +316,7 @@ const OrderView = () => {
         responseType: "blob",
       })
       .then((response) => {
+        console.log("🚀 ~ .then ~ response:", response)
         const blob = new Blob([response.data], { type: "application/pdf" });
 
         // Para abrir automáticamente el archivo
