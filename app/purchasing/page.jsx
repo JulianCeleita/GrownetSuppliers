@@ -99,17 +99,17 @@ function Purchasing() {
     // Filter by search
     const filteredOrdersBySearch = searchQuery
       ? ordersWholesaler.filter(
-          (order) =>
-            order.product_name
-              .toLowerCase()
-              .includes(searchQuery.toLowerCase()) ||
-            order.presentation_name
-              .toLowerCase()
-              .includes(searchQuery.toLowerCase()) ||
-            order.presentation_code
-              .toLowerCase()
-              .includes(searchQuery.toLowerCase())
-        )
+        (order) =>
+          order.product_name
+            .toLowerCase()
+            .includes(searchQuery.toLowerCase()) ||
+          order.presentation_name
+            .toLowerCase()
+            .includes(searchQuery.toLowerCase()) ||
+          order.presentation_code
+            .toLowerCase()
+            .includes(searchQuery.toLowerCase())
+      )
       : ordersWholesaler;
 
     // Filter by state
@@ -117,16 +117,16 @@ function Purchasing() {
       selectedStatus === "short"
         ? filteredOrdersBySearch.filter((order) => order.short > 0)
         : selectedStatus === "available"
-        ? filteredOrdersBySearch.filter((order) => order.short === 0)
-        : filteredOrdersBySearch;
+          ? filteredOrdersBySearch.filter((order) => order.short === 0)
+          : filteredOrdersBySearch;
 
     // Filter by category
     const filteredOrdersByCategory =
       selectedCategory === ""
         ? filteredOrdersByShort
         : filteredOrdersByShort.filter(
-            (order) => order.category_name === selectedCategory
-          );
+          (order) => order.category_name === selectedCategory
+        );
 
     setFilteredOrdersWholesaler(filteredOrdersByCategory);
   }, [ordersWholesaler, selectedStatus, selectedCategory, searchQuery]);
@@ -160,7 +160,6 @@ function Purchasing() {
     }
     updatedRows[rowIndex][key] = value;
     setEditableRows(updatedRows);
-    console.log("Editable Rows:", updatedRows);
   };
 
   const handleSort = (column) => {
@@ -171,6 +170,20 @@ function Purchasing() {
       setSortDirection("asc");
     }
   };
+
+  const sortedOrders = filteredOrdersWholesaler.slice().sort((a, b) => {
+    if (sortColumn) {
+      const valueA = typeof a[sortColumn] === 'number' ? a[sortColumn] : a[sortColumn]?.toLowerCase?.();
+      const valueB = typeof b[sortColumn] === 'number' ? b[sortColumn] : b[sortColumn]?.toLowerCase?.();
+      if (sortDirection === "asc") {
+        return valueA < valueB ? -1 : valueA > valueB ? 1 : 0;
+      } else {
+        return valueA > valueB ? -1 : valueA < valueB ? 1 : 0;
+      }
+    } else {
+      return 0;
+    }
+  });
 
   const uniqueCategories = [...new Set(ordersWholesaler.map(order => order.category_name))];
 
@@ -346,20 +359,20 @@ function Purchasing() {
             <thead className="sticky top-0 bg-white shadow-[0px_11px_15px_-3px_#edf2f7] ">
               <tr className="border-b-2 border-stone-100 text-dark-blue">
                 <th
-                  className="p-4 rounded-tl-lg cursor-pointer hover:bg-gray-100 transition-all"
-                  onClick={() => handleSort("code")}
+                  className="p-4 rounded-tl-lg cursor-pointer hover:bg-gray-100 transition-all select-none"
+                  onClick={() => handleSort("presentation_code")}
                 >
                   Code
                 </th>
                 <th
-                  className="p-4 cursor-pointer hover:bg-gray-100 transition-all"
+                  className="p-4 cursor-pointer hover:bg-gray-100 transition-all select-none"
                   onClick={() => handleSort("supplier")}
                 >
                   Supplier
                 </th>
                 <th
-                  className="p-4 cursor-pointer hover:bg-gray-100 transition-all"
-                  onClick={() => handleSort("description")}
+                  className="p-4 cursor-pointer hover:bg-gray-100 transition-all select-none"
+                  onClick={() => handleSort("product_name")}
                 >
                   Description
                 </th>
@@ -367,56 +380,56 @@ function Purchasing() {
                   onClick={() => handleSort("soh")}>
                   SOH
                 </th> */}
-                <th className="p-4 cursor-pointer hover:bg-gray-100 transition-all"
-                  onClick={() => handleSort("requisition")}>
+                <th className="p-4 cursor-pointer hover:bg-gray-100 transition-all select-none"
+                  onClick={() => handleSort("requisitions")}>
                   Requisition
                 </th>
                 <th
-                  className="p-4 cursor-pointer hover:bg-gray-100 transition-all"
-                  onClick={() => handleSort("futureRequisition")}
+                  className="p-4 cursor-pointer hover:bg-gray-100 transition-all select-none"
+                  onClick={() => handleSort("future_requisitions")}
                 >
                   Future Requisition
                 </th>
                 <th
-                  className="p-4 cursor-pointer hover:bg-gray-100 transition-all"
-                  onClick={() => handleSort("shorts")}
+                  className="p-4 cursor-pointer hover:bg-gray-100 transition-all select-none"
+                  onClick={() => handleSort("short")}
                 >
                   Shorts
                 </th>
                 <th
-                  className="p-4 cursor-pointer hover:bg-gray-100 transition-all"
+                  className="p-4 cursor-pointer hover:bg-gray-100 transition-all select-none"
                   onClick={() => handleSort("ordered")}
                 >
                   Ordered
                 </th>
                 <th
-                  className="p-4 cursor-pointer hover:bg-gray-100 transition-all"
+                  className="p-4 cursor-pointer hover:bg-gray-100 transition-all select-none"
                   onClick={() => handleSort("quantity")}
                 >
                   Quantity
                 </th>
                 <th
-                  className="p-4 cursor-pointer hover:bg-gray-100 transition-all"
+                  className="p-4 cursor-pointer hover:bg-gray-100 transition-all select-none"
                   onClick={() => handleSort("cost")}
                 >
                   Cost
                 </th>
                 <th
-                  className="p-4 cursor-pointer hover:bg-gray-100 transition-all"
+                  className="p-4 cursor-pointer hover:bg-gray-100 transition-all select-none"
                   onClick={() => handleSort("totalCost")}
                 >
                   Total Cost
                 </th>
                 <th
-                  className="p-4 rounded-tr-lg cursor-pointer hover:bg-gray-100 transition-all"
-                  onClick={() => handleSort("notes")}
+                  className="p-4 rounded-tr-lg cursor-pointer hover:bg-gray-100 transition-all select-none"
+                  onClick={() => handleSort("note")}
                 >
                   Notes
                 </th>
               </tr>
             </thead>
             <tbody>
-              {filteredOrdersWholesaler?.map((order, index) => {
+              {sortedOrders?.map((order, index) => {
                 const quantity = editableRows[index]?.quantity || order.quantity;
                 const cost = editableRows[index]?.cost || order.cost;
                 const totalCost = isNaN(quantity * cost) ? 0 : quantity * cost;
