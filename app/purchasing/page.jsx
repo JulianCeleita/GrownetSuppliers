@@ -58,9 +58,10 @@ function Purchasing() {
   const [isSendOrderDisabled, setIsSendOrderDisabled] = useState(true);
 
   const defaultDate = new Date();
-  const [startDate, setStartDate] = useState(workDate || defaultDate);
-  const [endDate, setEndDate] = useState(workDate || defaultDate);
+  const [startDate, setStartDate] = useState(new Date(workDate));
+  const [endDate, setEndDate] = useState(new Date(workDate));
   const [searchQuery, setSearchQuery] = useState("");
+  const [editableProductData, setEditableProductData] = useState({});
 
   const formatDateToShow = (dateString) => {
     if (!dateString) return "Loading...";
@@ -85,11 +86,18 @@ function Purchasing() {
       setOrdersWholesaler,
       setIsLoading
     );
+    console.log(startDate)
+    console.log(endDate)
+    console.log(selectedDate);
   }, [workDate, token, endDate, startDate]);
 
   useEffect(() => {
-    setStartDate(workDate);
-    setEndDate(workDate);
+    fetchOrderWholesaler(startDate, endDate, token, setOrdersWholesaler, setIsLoading);
+  }, [startDate, endDate]);
+
+  useEffect(() => {
+    setStartDate(new Date(workDate));
+    setEndDate(new Date(workDate));
   }, [workDate]);
 
   useEffect(() => {
@@ -129,23 +137,17 @@ function Purchasing() {
             (order) => order.category_name === selectedCategory
           );
 
-    // Update orders with editableRows
-    const updatedOrders = filteredOrdersByCategory.map((order, index) => ({
+  useEffect(() => {
+    const updatedOrders = ordersWholesaler.map(order => ({
       ...order,
-      wholesaler_id: selectedWholesalers[index]?.value || order.wholesaler_id,
-      quantity: editableRows[index]?.quantity || order.quantity,
-      cost: editableRows[index]?.cost || order.cost,
-      note: editableRows[index]?.notes || order.note,
+      wholesaler_id: editableProductData[order.presentation_code]?.wholesaler_id || order.wholesaler_id,
+      quantity: editableProductData[order.presentation_code]?.quantity || order.quantity,
+      cost: editableProductData[order.presentation_code]?.cost || order.cost,
+      note: editableProductData[order.presentation_code]?.notes || order.note,
     }));
 
     setFilteredOrdersWholesaler(updatedOrders);
-  }, [
-    ordersWholesaler,
-    selectedStatus,
-    selectedCategory,
-    searchQuery,
-    editableRows,
-  ]);
+  }, [ordersWholesaler, editableProductData]);
 
   const checkIfAnyProductHasQuantity = () => {
     return filteredOrdersWholesaler.some((order) => order.quantity > 0);
@@ -155,14 +157,16 @@ function Purchasing() {
     setIsSendOrderDisabled(!checkIfAnyProductHasQuantity());
   }, [filteredOrdersWholesaler]);
 
-  const handleEditField = (key, rowIndex, e) => {
+
+  const handleEditField = (key, presentationCode, e) => {
     const value = e.target.value;
-    const updatedRows = { ...editableRows };
-    if (!updatedRows[rowIndex]) {
-      updatedRows[rowIndex] = {};
-    }
-    updatedRows[rowIndex][key] = value;
-    setEditableRows(updatedRows);
+    setEditableProductData(prevState => ({
+      ...prevState,
+      [presentationCode]: {
+        ...prevState[presentationCode],
+        [key]: value
+      }
+    }));
   };
 
   const handleSort = (column) => {
@@ -345,6 +349,8 @@ function Purchasing() {
               onChange={(date) => {
                 setSelectedDate(date);
                 setDateFilter("date");
+                setStartDate(date);
+                setEndDate(date);
               }}
               className="form-input px-3 py-3 w-[95px] rounded-md border border-gray-300 text-dark-blue placeholder-dark-blue text-sm custom:text-base"
               dateFormat="dd/MM/yyyy"
@@ -388,7 +394,7 @@ function Purchasing() {
                   Code
                 </th>
                 <th
-                  className="p-4 cursor-pointer hover:bg-gray-100 transition-all select-none"
+                  className="p-4 cursor-pointer hover:bg-gray-100 transition-all w-[240px] select-none"
                   onClick={() => handleSort("supplier")}
                 >
                   Supplier
@@ -428,25 +434,25 @@ function Purchasing() {
                   Ordered
                 </th>
                 <th
-                  className="p-4 cursor-pointer hover:bg-gray-100 transition-all select-none"
+                  className="p-4 cursor-pointer hover:bg-gray-100 transition-all w-[100px] select-none"
                   onClick={() => handleSort("quantity")}
                 >
                   Quantity
                 </th>
                 <th
-                  className="p-4 cursor-pointer hover:bg-gray-100 transition-all select-none"
+                  className="p-4 cursor-pointer hover:bg-gray-100 transition-all w-[75px] select-none"
                   onClick={() => handleSort("cost")}
                 >
                   Cost
                 </th>
                 <th
-                  className="p-4 cursor-pointer hover:bg-gray-100 transition-all select-none"
+                  className="p-4 cursor-pointer hover:bg-gray-100 transition-all w-[100px] select-none"
                   onClick={() => handleSort("totalCost")}
                 >
                   Total Cost
                 </th>
                 <th
-                  className="p-4 rounded-tr-lg cursor-pointer hover:bg-gray-100 transition-all select-none"
+                  className="p-4 rounded-tr-lg cursor-pointer hover:bg-gray-100 transition-all w-[200px] select-none"
                   onClick={() => handleSort("note")}
                 >
                   Notes
@@ -507,7 +513,7 @@ function Purchasing() {
                       {order.product_name} - {order.presentation_name}
                     </td>
                     {/* <td className="py-4">{order.soh}</td> */}
-                    <td className="py-4">{order.requisitions}</td>
+                    <td className="py-4 pl-4">{order.requisitions}</td>
                     <td className="py-4">{order.future_requisitions}</td>
                     <td className="py-4">{order.short}</td>
                     <td className="py-4">{order.ordered}</td>
