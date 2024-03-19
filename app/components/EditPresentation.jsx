@@ -80,7 +80,7 @@ function EditPresentation({
     setSelectedProductsStatus(presentation ? presentation.products_id : "");
     setCodePresentation(presentation ? presentation.code : "");
     setSelectedTax(presentation ? presentation.taxes_id : "");
-    setSelectedType(presentation ? presentation.type : "")
+    setSelectedType(presentation ? presentation.type : "");
     setSelectedTypeId(presentation ? presentation.type_id : "");
   }, [presentation]);
 
@@ -170,7 +170,7 @@ function EditPresentation({
       tax: selectedTax,
       type: selectedTypeId,
       supplier_id: user ? user.id_supplier : null,
-      flagshort: selectedShort
+      flagshort: selectedShort,
     };
 
     try {
@@ -203,6 +203,7 @@ function EditPresentation({
   if (!isvisible) {
     return null;
   }
+  console.log(presentation);
   return (
     <div className="fixed inset-0 bg-black bg-opacity-25 backdrop-blur-sm flex flex-col justify-center items-center">
       <div className="bg-white p-8 rounded-2xl w-[800px] flex flex-col items-center">
@@ -293,11 +294,11 @@ function EditPresentation({
               <option value="" disabled selected>
                 Type product
               </option>
-              {types.map((type) =>
+              {types.map((type) => (
                 <option key={type.id} value={type.id}>
                   {type.name}
                 </option>
-              )}
+              ))}
             </select>
           </div>
           <div>

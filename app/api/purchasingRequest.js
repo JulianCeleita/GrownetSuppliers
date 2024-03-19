@@ -43,7 +43,7 @@ export const fetchWholesalerList = (token, setWholesalerList) => {
     })
     .then((response) => {
       console.log("🚀 ~ .then ~ response:", response, wholesalersUrl);
-      setWholesalerList(response.data.data);
+      setWholesalerList(response.data.wholesalers);
     })
     .catch((error) => {
       console.log("🚀 ~ error:", error);
