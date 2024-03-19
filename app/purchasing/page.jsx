@@ -486,7 +486,7 @@ function Purchasing() {
                         type="number"
                         value={editableRows[index]?.quantity || order.quantity}
                         onChange={(e) => handleEditField("quantity", index, e)}
-                        className="w-16 px-2 py-1 rounded-md border-none text-sm"
+                        className="pl-2 h-[30px] outline-none w-full hide-number-arrows"
                         style={{ WebkitAppearance: "none", MozAppearance: "textfield" }}
                       />
                     </td>
@@ -496,7 +496,7 @@ function Purchasing() {
                         step="0.01"
                         value={editableRows[index]?.cost || order.cost}
                         onChange={(e) => handleEditField("cost", index, e)}
-                        className="w-16 px-2 py-1 rounded-md border-none text-sm"
+                        className="pl-2 h-[30px] outline-none w-full hide-number-arrows"
                         style={{ WebkitAppearance: "none", MozAppearance: "textfield" }}
                       />
                     </td>
@@ -506,7 +506,7 @@ function Purchasing() {
                         type="text"
                         value={editableRows[index]?.notes || order.note}
                         onChange={(e) => handleEditField("notes", index, e)}
-                        className="w-32 px-2 py-1 rounded-md border-none text-sm"
+                        className="pl-2 h-[30px] outline-none w-full hide-number-arrows"
                       />
                     </td>
                   </tr>
