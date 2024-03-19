@@ -86,13 +86,19 @@ function Purchasing() {
       setOrdersWholesaler,
       setIsLoading
     );
-    console.log(startDate)
-    console.log(endDate)
+    console.log(startDate);
+    console.log(endDate);
     console.log(selectedDate);
   }, [workDate, token, endDate, startDate]);
 
   useEffect(() => {
-    fetchOrderWholesaler(startDate, endDate, token, setOrdersWholesaler, setIsLoading);
+    fetchOrderWholesaler(
+      startDate,
+      endDate,
+      token,
+      setOrdersWholesaler,
+      setIsLoading
+    );
   }, [startDate, endDate]);
 
   useEffect(() => {
@@ -137,17 +143,23 @@ function Purchasing() {
             (order) => order.category_name === selectedCategory
           );
 
-  useEffect(() => {
-    const updatedOrders = ordersWholesaler.map(order => ({
+    // Update orders with editableRows
+    const updatedOrders = filteredOrdersByCategory.map((order, index) => ({
       ...order,
-      wholesaler_id: editableProductData[order.presentation_code]?.wholesaler_id || order.wholesaler_id,
-      quantity: editableProductData[order.presentation_code]?.quantity || order.quantity,
-      cost: editableProductData[order.presentation_code]?.cost || order.cost,
-      note: editableProductData[order.presentation_code]?.notes || order.note,
+      wholesaler_id: selectedWholesalers[index]?.value || order.wholesaler_id,
+      quantity: editableRows[index]?.quantity || order.quantity,
+      cost: editableRows[index]?.cost || order.cost,
+      note: editableRows[index]?.notes || order.note,
     }));
 
     setFilteredOrdersWholesaler(updatedOrders);
-  }, [ordersWholesaler, editableProductData]);
+  }, [
+    ordersWholesaler,
+    selectedStatus,
+    selectedCategory,
+    searchQuery,
+    editableRows,
+  ]);
 
   const checkIfAnyProductHasQuantity = () => {
     return filteredOrdersWholesaler.some((order) => order.quantity > 0);
@@ -157,15 +169,14 @@ function Purchasing() {
     setIsSendOrderDisabled(!checkIfAnyProductHasQuantity());
   }, [filteredOrdersWholesaler]);
 
-
   const handleEditField = (key, presentationCode, e) => {
     const value = e.target.value;
-    setEditableProductData(prevState => ({
+    setEditableProductData((prevState) => ({
       ...prevState,
       [presentationCode]: {
         ...prevState[presentationCode],
-        [key]: value
-      }
+        [key]: value,
+      },
     }));
   };
 
