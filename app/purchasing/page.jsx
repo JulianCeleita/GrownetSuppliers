@@ -48,11 +48,10 @@ function Purchasing() {
     Array(filteredOrdersWholesaler.length).fill(null)
   );
   const [selectedCategory, setSelectedCategory] = useState("");
-
   const defaultDate = new Date();
-
   const [startDate, setStartDate] = useState(workDate || defaultDate);
   const [endDate, setEndDate] = useState(workDate || defaultDate);
+  const [searchQuery, setSearchQuery] = useState("");
 
   const formatDateToShow = (dateString) => {
     if (!dateString) return "Loading...";
@@ -109,13 +108,31 @@ function Purchasing() {
   });
 
   useEffect(() => {
+    // Filter by search
+    const filteredOrdersBySearch = searchQuery
+      ? ordersWholesaler.filter(
+          (order) =>
+            order.product_name
+              .toLowerCase()
+              .includes(searchQuery.toLowerCase()) ||
+            order.presentation_name
+              .toLowerCase()
+              .includes(searchQuery.toLowerCase()) ||
+            order.presentation_code
+              .toLowerCase()
+              .includes(searchQuery.toLowerCase())
+        )
+      : ordersWholesaler;
+
+    // Filter by state
     const filteredOrdersByShort =
       selectedStatus === "short"
-        ? ordersWholesaler.filter((order) => order.short > 0)
+        ? filteredOrdersBySearch.filter((order) => order.short > 0)
         : selectedStatus === "available"
-        ? ordersWholesaler.filter((order) => order.short === 0)
-        : ordersWholesaler;
+        ? filteredOrdersBySearch.filter((order) => order.short === 0)
+        : filteredOrdersBySearch;
 
+    // Filter by category
     const filteredOrdersByCategory =
       selectedCategory === ""
         ? filteredOrdersByShort
@@ -124,7 +141,7 @@ function Purchasing() {
           );
 
     setFilteredOrdersWholesaler(filteredOrdersByCategory);
-  }, [ordersWholesaler, selectedStatus, selectedCategory]);
+  }, [ordersWholesaler, selectedStatus, selectedCategory, searchQuery]);
 
   const handleEditField = (key, rowIndex, e) => {
     const value = e.target.value;
@@ -148,7 +165,7 @@ function Purchasing() {
   const uniqueCategories = [
     ...new Set(ordersWholesaler.map((order) => order.category_name)),
   ];
-
+  // console.log("filteredOrdersWholesaler:", filteredOrdersWholesaler);
   return (
     <Layout>
       <div>
@@ -169,6 +186,24 @@ function Purchasing() {
           </div>
         </div>
         <div className="flex ml-5 mb-4 gap-2">
+          <div className="border border-gray-300  rounded-md py-3 px-2 flex items-center">
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Search"
+              className="placeholder-[#04444F] outline-none text-sm custom:text-base w-[170px]"
+            />
+            {searchQuery != "" && (
+              <button
+                onClick={() => {
+                  setSearchQuery("");
+                }}
+              >
+                <TrashIcon className="h-6 w-6 text-danger" />
+              </button>
+            )}
+          </div>
           <select
             value={filterType}
             onChange={(e) => setFilterType(e.target.value)}
