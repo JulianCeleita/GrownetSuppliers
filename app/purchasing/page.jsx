@@ -9,62 +9,24 @@ import {
 import axios from "axios";
 import { useEffect, useState } from "react";
 import EditPresentation from "../../app/components/EditPresentation";
-import { deletePresentationUrl, purchasingUrl, wholesalersUrl } from "../../app/config/urls.config";
+import {
+  deletePresentationUrl,
+  purchasingUrl,
+  wholesalersUrl,
+} from "../../app/config/urls.config";
 import useTokenStore from "../../app/store/useTokenStore";
 import ModalDelete from "../components/ModalDelete";
 import Layout from "../layoutS";
 import useUserStore from "../store/useUserStore";
-import Select, { menuPortalTarget } from 'react-select';
+import Select, { menuPortalTarget } from "react-select";
 import CreateProduct from "../components/CreateProduct";
 import AutomaticShort from "../components/AutomaticShort";
 import DatePicker from "react-datepicker";
 import useWorkDateStore from "../store/useWorkDateStore";
-
-export const fetchOrderWholesaler = (start, end, token, setOrdersWholeseler) => {
-  if (!end || !start || start === new Date()) {
-    return;
-  }
-
-  const postData = {
-    date: {
-      start: start,
-      end: end,
-    },
-  };
-  console.log("🚀 ~ postData:", postData);
-  axios
-    .get(purchasingUrl, {
-      params: postData,
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    })
-    .then((response) => {
-      console.log("🚀 ~ .then ~ response:", response);
-      setOrdersWholeseler(response.data.data);
-    })
-    .catch((error) => {
-      console.log("🚀 ~ error:", error);
-    });
-};
-
-export const fetchWholesalerList = (token, setWholesalerList) => {
-  axios
-    .get(wholesalersUrl, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    })
-    .then((response) => {
-      console.log("🚀 ~ .then ~ response:", response);
-      setWholesalerList(response.data.data);
-    })
-    .catch((error) => {
-      console.log("🚀 ~ error:", error);
-    });
-};
-
-
+import {
+  fetchOrderWholesaler,
+  fetchWholesalerList,
+} from "../api/purchasingRequest";
 
 function Purchasing() {
   const { token } = useTokenStore();
@@ -104,19 +66,25 @@ function Purchasing() {
   const [ordersWholeseler, setOrdersWholeseler] = useState([]);
 
   useEffect(() => {
-    fetchOrderWholesaler(startDate, endDate, token, setOrdersWholeseler)
+    fetchOrderWholesaler(startDate, endDate, token, setOrdersWholeseler);
   }, [workDate, token, endDate, startDate]);
 
   useEffect(() => {
     fetchWholesalerList(token, setWholesalerList);
     setStartDate(workDate);
     setEndDate(workDate);
-  }, [workDate])
+  }, [workDate]);
 
   const sortedOrdersWholeseler = ordersWholeseler?.slice().sort((a, b) => {
     if (sortColumn) {
-      const valueA = typeof a[sortColumn] === 'number' ? a[sortColumn].toString() : a[sortColumn];
-      const valueB = typeof b[sortColumn] === 'number' ? b[sortColumn].toString() : b[sortColumn];
+      const valueA =
+        typeof a[sortColumn] === "number"
+          ? a[sortColumn].toString()
+          : a[sortColumn];
+      const valueB =
+        typeof b[sortColumn] === "number"
+          ? b[sortColumn].toString()
+          : b[sortColumn];
       if (sortDirection === "asc") {
         return valueA?.localeCompare(valueB);
       } else {
@@ -129,14 +97,17 @@ function Purchasing() {
 
   useEffect(() => {
     if (selectedStatus === "short") {
-      setFilteredOrdersWholeseler(sortedOrdersWholeseler.filter(order => order.short > 0));
+      setFilteredOrdersWholeseler(
+        sortedOrdersWholeseler.filter((order) => order.short > 0)
+      );
     } else if (selectedStatus === "available") {
-      setFilteredOrdersWholeseler(sortedOrdersWholeseler.filter(order => order.short === 0));
+      setFilteredOrdersWholeseler(
+        sortedOrdersWholeseler.filter((order) => order.short === 0)
+      );
     } else {
       setFilteredOrdersWholeseler(sortedOrdersWholeseler);
     }
   }, [sortedOrdersWholeseler, selectedStatus]);
-
 
   const handleEditField = (key, rowIndex, e) => {
     const value = e.target.value;
@@ -156,8 +127,6 @@ function Purchasing() {
       setSortDirection("asc");
     }
   };
-
-
 
   return (
     <Layout>
@@ -247,7 +216,9 @@ function Purchasing() {
             onChange={(e) => setSelectedStatus(e.target.value)}
             className="form-select px-2 py-3 rounded-md border border-gray-300 text-sm custom:text-base w-[155px]"
           >
-            <option value="" disabled selected>Select status:</option>
+            <option value="" disabled selected>
+              Select status:
+            </option>
             <option value="all">All</option>
             <option value="short">Short</option>
             <option value="available">Availables</option>
@@ -257,49 +228,76 @@ function Purchasing() {
           <table className="w-[95%] bg-white first-line:bg-white rounded-2xl text-left shadow-[rgba(17,_17,_26,_0.1)_0px_0px_16px]">
             <thead className="sticky top-0 bg-white shadow-[0px_11px_15px_-3px_#edf2f7] ">
               <tr className="border-b-2 border-stone-100 text-dark-blue">
-                <th className="p-4 rounded-tl-lg cursor-pointer hover:bg-gray-100 transition-all" onClick={() => handleSort("code")}>Code</th>
-                <th className="p-4 cursor-pointer hover:bg-gray-100 transition-all"
-                  onClick={() => handleSort("supplier")}>
+                <th
+                  className="p-4 rounded-tl-lg cursor-pointer hover:bg-gray-100 transition-all"
+                  onClick={() => handleSort("code")}
+                >
+                  Code
+                </th>
+                <th
+                  className="p-4 cursor-pointer hover:bg-gray-100 transition-all"
+                  onClick={() => handleSort("supplier")}
+                >
                   Supplier
                 </th>
-                <th className="p-4 cursor-pointer hover:bg-gray-100 transition-all"
-                  onClick={() => handleSort("description")}>
+                <th
+                  className="p-4 cursor-pointer hover:bg-gray-100 transition-all"
+                  onClick={() => handleSort("description")}
+                >
                   Description
                 </th>
-                <th className="p-4 cursor-pointer hover:bg-gray-100 transition-all"
-                  onClick={() => handleSort("soh")}>
+                <th
+                  className="p-4 cursor-pointer hover:bg-gray-100 transition-all"
+                  onClick={() => handleSort("soh")}
+                >
                   SOH
                 </th>
-                <th className="p-4 cursor-pointer hover:bg-gray-100 transition-all"
-                  onClick={() => handleSort("requisition")}>
+                <th
+                  className="p-4 cursor-pointer hover:bg-gray-100 transition-all"
+                  onClick={() => handleSort("requisition")}
+                >
                   Requisition
                 </th>
-                <th className="p-4 cursor-pointer hover:bg-gray-100 transition-all"
-                  onClick={() => handleSort("futureRequisition")}>
+                <th
+                  className="p-4 cursor-pointer hover:bg-gray-100 transition-all"
+                  onClick={() => handleSort("futureRequisition")}
+                >
                   Future Requisition
                 </th>
-                <th className="p-4 cursor-pointer hover:bg-gray-100 transition-all"
-                  onClick={() => handleSort("shorts")}>
+                <th
+                  className="p-4 cursor-pointer hover:bg-gray-100 transition-all"
+                  onClick={() => handleSort("shorts")}
+                >
                   Shorts
                 </th>
-                <th className="p-4 cursor-pointer hover:bg-gray-100 transition-all"
-                  onClick={() => handleSort("ordered")}>
+                <th
+                  className="p-4 cursor-pointer hover:bg-gray-100 transition-all"
+                  onClick={() => handleSort("ordered")}
+                >
                   Ordered
                 </th>
-                <th className="p-4 cursor-pointer hover:bg-gray-100 transition-all"
-                  onClick={() => handleSort("quantity")}>
+                <th
+                  className="p-4 cursor-pointer hover:bg-gray-100 transition-all"
+                  onClick={() => handleSort("quantity")}
+                >
                   Quantity
                 </th>
-                <th className="p-4 cursor-pointer hover:bg-gray-100 transition-all"
-                  onClick={() => handleSort("cost")}>
+                <th
+                  className="p-4 cursor-pointer hover:bg-gray-100 transition-all"
+                  onClick={() => handleSort("cost")}
+                >
                   Cost
                 </th>
-                <th className="p-4 cursor-pointer hover:bg-gray-100 transition-all"
-                  onClick={() => handleSort("totalCost")}>
+                <th
+                  className="p-4 cursor-pointer hover:bg-gray-100 transition-all"
+                  onClick={() => handleSort("totalCost")}
+                >
                   Total Cost
                 </th>
-                <th className="p-4 rounded-tr-lg cursor-pointer hover:bg-gray-100 transition-all"
-                  onClick={() => handleSort("notes")}>
+                <th
+                  className="p-4 rounded-tr-lg cursor-pointer hover:bg-gray-100 transition-all"
+                  onClick={() => handleSort("notes")}
+                >
                   Notes
                 </th>
               </tr>
@@ -311,10 +309,12 @@ function Purchasing() {
                   <td className="py-4">
                     <Select
                       value={selectedSupplierId}
-                      onChange={(selectedOption) => setSelectedSupplierId(selectedOption)}
-                      options={suppliers.map(supplier => ({
+                      onChange={(selectedOption) =>
+                        setSelectedSupplierId(selectedOption)
+                      }
+                      options={suppliers.map((supplier) => ({
                         value: supplier.id,
-                        label: supplier.name
+                        label: supplier.name,
                       }))}
                       menuPortalTarget={document.body}
                       styles={{
@@ -343,7 +343,9 @@ function Purchasing() {
                       }}
                     />
                   </td>
-                  <td className="py-4">{order.product_name} - {order.presentation_name}</td>
+                  <td className="py-4">
+                    {order.product_name} - {order.presentation_name}
+                  </td>
                   <td className="py-4">{order.soh}</td>
                   <td className="py-4">{order.requisitions}</td>
                   <td className="py-4">{order.future_requisitions}</td>
