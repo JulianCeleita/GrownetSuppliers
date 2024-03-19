@@ -88,8 +88,8 @@ function Purchasing() {
     );
     console.log(startDate);
     console.log(endDate);
-    console.log(selectedDate);
-  }, [workDate, token, endDate, startDate]);
+    console.log(workDate);
+  }, [endDate, startDate]);
 
   useEffect(() => {
     fetchOrderWholesaler(
@@ -102,8 +102,13 @@ function Purchasing() {
   }, [startDate, endDate]);
 
   useEffect(() => {
-    setStartDate(new Date(workDate));
-    setEndDate(new Date(workDate));
+    const newStartDate = new Date(workDate);
+    newStartDate.setDate(newStartDate.getDate() + 1);
+    setStartDate(newStartDate);
+
+    const newEndDate = new Date(workDate);
+    newEndDate.setDate(newEndDate.getDate() + 1);
+    setEndDate(newEndDate);
   }, [workDate]);
 
   useEffect(() => {
@@ -114,17 +119,17 @@ function Purchasing() {
     // Filter by search
     const filteredOrdersBySearch = searchQuery
       ? ordersWholesaler.filter(
-          (order) =>
-            order.product_name
-              .toLowerCase()
-              .includes(searchQuery.toLowerCase()) ||
-            order.presentation_name
-              .toLowerCase()
-              .includes(searchQuery.toLowerCase()) ||
-            order.presentation_code
-              .toLowerCase()
-              .includes(searchQuery.toLowerCase())
-        )
+        (order) =>
+          order.product_name
+            .toLowerCase()
+            .includes(searchQuery.toLowerCase()) ||
+          order.presentation_name
+            .toLowerCase()
+            .includes(searchQuery.toLowerCase()) ||
+          order.presentation_code
+            .toLowerCase()
+            .includes(searchQuery.toLowerCase())
+      )
       : ordersWholesaler;
 
     // Filter by state
@@ -132,53 +137,49 @@ function Purchasing() {
       selectedStatus === "short"
         ? filteredOrdersBySearch.filter((order) => order.short > 0)
         : selectedStatus === "available"
-        ? filteredOrdersBySearch.filter((order) => order.short === 0)
-        : filteredOrdersBySearch;
+          ? filteredOrdersBySearch.filter((order) => order.short === 0)
+          : filteredOrdersBySearch;
 
     // Filter by category
     const filteredOrdersByCategory =
       selectedCategory === ""
         ? filteredOrdersByShort
         : filteredOrdersByShort.filter(
-            (order) => order.category_name === selectedCategory
-          );
+          (order) => order.category_name === selectedCategory
+        );
 
-    // Update orders with editableRows
-    const updatedOrders = filteredOrdersByCategory.map((order, index) => ({
+    setFilteredOrdersWholesaler(filteredOrdersByCategory);
+  }, [ordersWholesaler, selectedStatus, selectedCategory, searchQuery]);
+
+  useEffect(() => {
+    const updatedOrders = ordersWholesaler.map((order, index) => ({
       ...order,
       wholesaler_id: selectedWholesalers[index]?.value || order.wholesaler_id,
       quantity: editableRows[index]?.quantity || order.quantity,
       cost: editableRows[index]?.cost || order.cost,
       note: editableRows[index]?.notes || order.note,
     }));
-
     setFilteredOrdersWholesaler(updatedOrders);
-  }, [
-    ordersWholesaler,
-    selectedStatus,
-    selectedCategory,
-    searchQuery,
-    editableRows,
-  ]);
+  }, [ordersWholesaler, editableRows]);
 
   const checkIfAnyProductHasQuantity = () => {
-    return filteredOrdersWholesaler.some((order) => order.quantity > 0);
+    return filteredOrdersWholesaler.some(order => order.quantity > 0);
   };
 
   useEffect(() => {
     setIsSendOrderDisabled(!checkIfAnyProductHasQuantity());
   }, [filteredOrdersWholesaler]);
 
-  const handleEditField = (key, presentationCode, e) => {
+  const handleEditField = (key, rowIndex, e) => {
     const value = e.target.value;
-    setEditableProductData((prevState) => ({
-      ...prevState,
-      [presentationCode]: {
-        ...prevState[presentationCode],
-        [key]: value,
-      },
-    }));
+    const updatedRows = { ...editableRows };
+    if (!updatedRows[rowIndex]) {
+      updatedRows[rowIndex] = {};
+    }
+    updatedRows[rowIndex][key] = value;
+    setEditableRows(updatedRows);
   };
+
 
   const handleSort = (column) => {
     if (sortColumn === column) {
@@ -214,48 +215,38 @@ function Purchasing() {
   ];
 
   const sendOrder = async () => {
+    console.log(selectedWholesalers)
     try {
-      const ordersToSend = filteredOrdersWholesaler.filter(
-        (order) => order.quantity > 0
-      );
-      console.log("🚀 ~ sendOrder ~ ordersToSend:", ordersToSend);
+      const ordersToSend = filteredOrdersWholesaler.filter(order => order.quantity > 0);
+      console.log("🚀 ~ sendOrder ~ ordersToSend:", ordersToSend)
 
       const sendData = {
         orders_wholesaler: ordersToSend.map((order, index) => ({
           presentation_code: order.presentation_code,
-          wholesaler_id: selectedWholesalers[index]
-            ? selectedWholesalers[index].value
-            : null,
+          wholesaler_id: order.wholesaler_id,
           date_delivery: workDate,
           note: order.note,
           cost: order.cost,
-          purchasing_qty: order.quantity,
-        })),
+          purchasing_qty: order.quantity
+        }))
       };
-      console.log("🚀 ~ sendOrder ~ sendData:", sendData);
+      console.log("🚀 ~ sendOrder ~ sendData:", sendData)
 
       const response = await axios.post(purchasingCreate, sendData, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
-      console.log(response);
+      console.log(response)
 
       if (response.status === 200) {
-        fetchOrderWholesaler(
-          startDate,
-          endDate,
-          token,
-          setOrdersWholesaler,
-          setIsLoading
-        );
-        setSelectedWholesalers(
-          Array(filteredOrdersWholesaler.length).fill(null)
-        );
+        fetchOrderWholesaler(startDate, endDate, token, setOrdersWholesaler, setIsLoading)
+        setSelectedWholesalers(Array(filteredOrdersWholesaler.length).fill(null));
         setEditableRows({});
         setFilteredOrdersWholesaler([]);
-        setShowSuccessModal(true);
+        setShowSuccessModal(true)
       }
+
     } catch (error) {
       setMessageError(error.response.data.message);
       setShowErrorModal(true);
@@ -273,9 +264,8 @@ function Purchasing() {
 
           <div className="flex gap-4">
             <button
-              className={`flex bg-green py-3 px-4 rounded-lg text-white font-medium hover:scale-110 transition-all ${
-                isSendOrderDisabled ? "bg-gray-400 cursor-not-allowed" : ""
-              }`}
+              className={`flex bg-green py-3 px-4 rounded-lg text-white font-medium hover:scale-110 transition-all ${isSendOrderDisabled ? "bg-gray-400 cursor-not-allowed" : ""
+                }`}
               type="button"
               onClick={sendOrder}
               disabled={isSendOrderDisabled}
@@ -534,10 +524,7 @@ function Purchasing() {
                         value={editableRows[index]?.quantity || order.quantity}
                         onChange={(e) => handleEditField("quantity", index, e)}
                         className="pl-2 h-[30px] outline-none w-full hide-number-arrows"
-                        style={{
-                          WebkitAppearance: "none",
-                          MozAppearance: "textfield",
-                        }}
+                        style={{ WebkitAppearance: "none", MozAppearance: "textfield" }}
                       />
                     </td>
                     <td className="py-4">
@@ -547,10 +534,7 @@ function Purchasing() {
                         value={editableRows[index]?.cost || order.cost}
                         onChange={(e) => handleEditField("cost", index, e)}
                         className="pl-2 h-[30px] outline-none w-full hide-number-arrows"
-                        style={{
-                          WebkitAppearance: "none",
-                          MozAppearance: "textfield",
-                        }}
+                        style={{ WebkitAppearance: "none", MozAppearance: "textfield" }}
                       />
                     </td>
                     <td className="py-4">{totalCost}</td>
