@@ -166,6 +166,7 @@ function Purchasing() {
     ...new Set(ordersWholesaler.map((order) => order.category_name)),
   ];
   // console.log("filteredOrdersWholesaler:", filteredOrdersWholesaler);
+  console.log("editableRows:", editableRows);
   return (
     <Layout>
       <div>
@@ -442,7 +443,7 @@ function Purchasing() {
                   <td className="py-4">
                     <input
                       type="text"
-                      value={editableRows[index]?.note || order.note}
+                      value={editableRows[index]?.notes}
                       onChange={(e) => handleEditField("notes", index, e)}
                       className="w-32 px-2 py-1 rounded-md border border-gray-300 text-sm"
                     />
