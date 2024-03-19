@@ -23,16 +23,63 @@ import CreateProduct from "../components/CreateProduct";
 import AutomaticShort from "../components/AutomaticShort";
 import DatePicker from "react-datepicker";
 import useWorkDateStore from "../store/useWorkDateStore";
-import {
-  fetchOrderWholesaler,
-  fetchWholesalerList,
-} from "../api/purchasingRequest";
+
+export const fetchOrderWholesaler = (
+  start,
+  end,
+  token,
+  setOrdersWholesaler,
+  setIsLoading
+) => {
+  if (!end || !start || start === new Date()) {
+    return;
+  }
+
+  const postData = {
+    date: {
+      start: start,
+      end: end,
+    },
+  };
+  console.log("🚀 ~ postData:", postData);
+  axios
+    .get(purchasingUrl, {
+      params: postData,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
+    .then((response) => {
+      console.log("🚀 ~ .then ~ response:", response);
+      setOrdersWholesaler(response.data.data);
+      setIsLoading(false);
+    })
+    .catch((error) => {
+      console.log("🚀 ~ error:", error);
+    });
+};
+
+export const fetchWholesalerList = (token, setWholesalerList) => {
+  axios
+    .get(wholesalersUrl, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
+    .then((response) => {
+      console.log("🚀 ~ .then ~ response:", response);
+      setWholesalerList(response.data.wholesalers);
+    })
+    .catch((error) => {
+      console.log("🚀 ~ error:", error);
+    });
+};
 
 function Purchasing() {
   const { token } = useTokenStore();
   const { workDate, setFetchWorkDate } = useWorkDateStore();
   const [isLoading, setIsLoading] = useState(true);
-  const [selectedSupplierId, setSelectedSupplierId] = useState(null);
+  const [selectedWholesaler, setSelectedWholesaler] = useState(null);
   const [selectedStatus, setSelectedStatus] = useState("");
   const [suppliers, setSuppliers] = useState([]);
   const [filterType, setFilterType] = useState("date");
@@ -42,8 +89,12 @@ function Purchasing() {
   const [sortDirection, setSortDirection] = useState("asc");
   const [editableRows, setEditableRows] = useState({});
   const [dateFilter, setDateFilter] = useState("today");
-  const [filteredOrdersWholeseler, setFilteredOrdersWholeseler] = useState([]);
+  const [filteredOrdersWholesaler, setFilteredOrdersWholesaler] = useState([]);
   const [wholesalerList, setWholesalerList] = useState([]);
+  const [selectedWholesalers, setSelectedWholesalers] = useState(
+    Array(filteredOrdersWholesaler.length).fill(null)
+  );
+  const [selectedCategory, setSelectedCategory] = useState("");
 
   const defaultDate = new Date();
 
@@ -63,19 +114,28 @@ function Purchasing() {
   };
 
   //Api
-  const [ordersWholeseler, setOrdersWholeseler] = useState([]);
+  const [ordersWholesaler, setOrdersWholesaler] = useState([]);
 
   useEffect(() => {
-    fetchOrderWholesaler(startDate, endDate, token, setOrdersWholeseler);
+    fetchOrderWholesaler(
+      startDate,
+      endDate,
+      token,
+      setOrdersWholesaler,
+      setIsLoading
+    );
   }, [workDate, token, endDate, startDate]);
 
   useEffect(() => {
-    fetchWholesalerList(token, setWholesalerList);
     setStartDate(workDate);
     setEndDate(workDate);
   }, [workDate]);
 
-  const sortedOrdersWholeseler = ordersWholeseler?.slice().sort((a, b) => {
+  useEffect(() => {
+    fetchWholesalerList(token, setWholesalerList);
+  }, []);
+
+  const sortedOrdersWholesaler = ordersWholesaler?.slice().sort((a, b) => {
     if (sortColumn) {
       const valueA =
         typeof a[sortColumn] === "number"
@@ -96,18 +156,22 @@ function Purchasing() {
   });
 
   useEffect(() => {
-    if (selectedStatus === "short") {
-      setFilteredOrdersWholeseler(
-        sortedOrdersWholeseler.filter((order) => order.short > 0)
-      );
-    } else if (selectedStatus === "available") {
-      setFilteredOrdersWholeseler(
-        sortedOrdersWholeseler.filter((order) => order.short === 0)
-      );
-    } else {
-      setFilteredOrdersWholeseler(sortedOrdersWholeseler);
-    }
-  }, [sortedOrdersWholeseler, selectedStatus]);
+    const filteredOrdersByShort =
+      selectedStatus === "short"
+        ? ordersWholesaler.filter((order) => order.short > 0)
+        : selectedStatus === "available"
+        ? ordersWholesaler.filter((order) => order.short === 0)
+        : ordersWholesaler;
+
+    const filteredOrdersByCategory =
+      selectedCategory === ""
+        ? filteredOrdersByShort
+        : filteredOrdersByShort.filter(
+            (order) => order.category_name === selectedCategory
+          );
+
+    setFilteredOrdersWholesaler(filteredOrdersByCategory);
+  }, [ordersWholesaler, selectedStatus, selectedCategory]);
 
   const handleEditField = (key, rowIndex, e) => {
     const value = e.target.value;
@@ -127,6 +191,10 @@ function Purchasing() {
       setSortDirection("asc");
     }
   };
+
+  const uniqueCategories = [
+    ...new Set(ordersWholesaler.map((order) => order.category_name)),
+  ];
 
   return (
     <Layout>
@@ -223,6 +291,18 @@ function Purchasing() {
             <option value="short">Short</option>
             <option value="available">Availables</option>
           </select>
+          <select
+            value={selectedCategory}
+            onChange={(e) => setSelectedCategory(e.target.value)}
+            className="form-select px-2 py-3 rounded-md border border-gray-300 text-sm custom:text-base w-[155px]"
+          >
+            <option value="">All Categories</option>
+            {uniqueCategories.map((category) => (
+              <option key={category} value={category}>
+                {category}
+              </option>
+            ))}
+          </select>
         </div>
         <div className="flex items-center justify-center mb-20 overflow-x-auto">
           <table className="w-[95%] bg-white first-line:bg-white rounded-2xl text-left shadow-[rgba(17,_17,_26,_0.1)_0px_0px_16px]">
@@ -303,18 +383,20 @@ function Purchasing() {
               </tr>
             </thead>
             <tbody>
-              {filteredOrdersWholeseler?.map((order, index) => (
+              {filteredOrdersWholesaler?.map((order, index) => (
                 <tr className="text-dark-blue border-b-2 border-stone-100">
                   <td className="py-4 pl-3">{order.presentation_code}</td>
                   <td className="py-4">
                     <Select
-                      value={selectedSupplierId}
-                      onChange={(selectedOption) =>
-                        setSelectedSupplierId(selectedOption)
-                      }
-                      options={suppliers.map((supplier) => ({
-                        value: supplier.id,
-                        label: supplier.name,
+                      value={selectedWholesalers[index]}
+                      onChange={(selectedOption) => {
+                        const newSelectedWholesalers = [...selectedWholesalers];
+                        newSelectedWholesalers[index] = selectedOption;
+                        setSelectedWholesalers(newSelectedWholesalers);
+                      }}
+                      options={wholesalerList.map((wholesaler) => ({
+                        value: wholesaler.id,
+                        label: wholesaler.name,
                       }))}
                       menuPortalTarget={document.body}
                       styles={{
