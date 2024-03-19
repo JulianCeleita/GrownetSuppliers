@@ -11,7 +11,8 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import EditPresentation from "../../app/components/EditPresentation";
 import {
-  deletePresentationUrl, purchasingCreate,
+  deletePresentationUrl,
+  purchasingCreate,
   purchasingUrl,
   wholesalersUrl,
 } from "../../app/config/urls.config";
@@ -107,17 +108,17 @@ function Purchasing() {
     // Filter by search
     const filteredOrdersBySearch = searchQuery
       ? ordersWholesaler.filter(
-        (order) =>
-          order.product_name
-            .toLowerCase()
-            .includes(searchQuery.toLowerCase()) ||
-          order.presentation_name
-            .toLowerCase()
-            .includes(searchQuery.toLowerCase()) ||
-          order.presentation_code
-            .toLowerCase()
-            .includes(searchQuery.toLowerCase())
-      )
+          (order) =>
+            order.product_name
+              .toLowerCase()
+              .includes(searchQuery.toLowerCase()) ||
+            order.presentation_name
+              .toLowerCase()
+              .includes(searchQuery.toLowerCase()) ||
+            order.presentation_code
+              .toLowerCase()
+              .includes(searchQuery.toLowerCase())
+        )
       : ordersWholesaler;
 
     // Filter by state
@@ -125,19 +126,16 @@ function Purchasing() {
       selectedStatus === "short"
         ? filteredOrdersBySearch.filter((order) => order.short > 0)
         : selectedStatus === "available"
-          ? filteredOrdersBySearch.filter((order) => order.short === 0)
-          : filteredOrdersBySearch;
+        ? filteredOrdersBySearch.filter((order) => order.short === 0)
+        : filteredOrdersBySearch;
 
     // Filter by category
     const filteredOrdersByCategory =
       selectedCategory === ""
         ? filteredOrdersByShort
         : filteredOrdersByShort.filter(
-          (order) => order.category_name === selectedCategory
-        );
-
-    setFilteredOrdersWholesaler(filteredOrdersByCategory);
-  }, [ordersWholesaler, selectedStatus, selectedCategory, searchQuery]);
+            (order) => order.category_name === selectedCategory
+          );
 
   useEffect(() => {
     const updatedOrders = ordersWholesaler.map(order => ({
@@ -147,17 +145,17 @@ function Purchasing() {
       cost: editableProductData[order.presentation_code]?.cost || order.cost,
       note: editableProductData[order.presentation_code]?.notes || order.note,
     }));
+
     setFilteredOrdersWholesaler(updatedOrders);
   }, [ordersWholesaler, editableProductData]);
 
   const checkIfAnyProductHasQuantity = () => {
-    return filteredOrdersWholesaler.some(order => order.quantity > 0);
+    return filteredOrdersWholesaler.some((order) => order.quantity > 0);
   };
 
   useEffect(() => {
     setIsSendOrderDisabled(!checkIfAnyProductHasQuantity());
   }, [filteredOrdersWholesaler]);
-
 
 
   const handleEditField = (key, presentationCode, e) => {
@@ -182,8 +180,14 @@ function Purchasing() {
 
   const sortedOrders = filteredOrdersWholesaler.slice().sort((a, b) => {
     if (sortColumn) {
-      const valueA = typeof a[sortColumn] === 'number' ? a[sortColumn] : a[sortColumn]?.toLowerCase?.();
-      const valueB = typeof b[sortColumn] === 'number' ? b[sortColumn] : b[sortColumn]?.toLowerCase?.();
+      const valueA =
+        typeof a[sortColumn] === "number"
+          ? a[sortColumn]
+          : a[sortColumn]?.toLowerCase?.();
+      const valueB =
+        typeof b[sortColumn] === "number"
+          ? b[sortColumn]
+          : b[sortColumn]?.toLowerCase?.();
       if (sortDirection === "asc") {
         return valueA < valueB ? -1 : valueA > valueB ? 1 : 0;
       } else {
@@ -194,47 +198,59 @@ function Purchasing() {
     }
   });
 
-  const uniqueCategories = [...new Set(ordersWholesaler.map(order => order.category_name))];
+  const uniqueCategories = [
+    ...new Set(ordersWholesaler.map((order) => order.category_name)),
+  ];
 
   const sendOrder = async () => {
     try {
-      const ordersToSend = filteredOrdersWholesaler.filter(order => order.quantity > 0);
-      console.log("🚀 ~ sendOrder ~ ordersToSend:", ordersToSend)
+      const ordersToSend = filteredOrdersWholesaler.filter(
+        (order) => order.quantity > 0
+      );
+      console.log("🚀 ~ sendOrder ~ ordersToSend:", ordersToSend);
 
       const sendData = {
         orders_wholesaler: ordersToSend.map((order, index) => ({
           presentation_code: order.presentation_code,
-          wholesaler_id: selectedWholesalers[index] ? selectedWholesalers[index].value : null,
+          wholesaler_id: selectedWholesalers[index]
+            ? selectedWholesalers[index].value
+            : null,
           date_delivery: workDate,
           note: order.note,
           cost: order.cost,
-          purchasing_qty: order.quantity
-        }))
+          purchasing_qty: order.quantity,
+        })),
       };
-      console.log("🚀 ~ sendOrder ~ sendData:", sendData)
+      console.log("🚀 ~ sendOrder ~ sendData:", sendData);
 
       const response = await axios.post(purchasingCreate, sendData, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
-      console.log(response)
+      console.log(response);
 
       if (response.status === 200) {
-        fetchOrderWholesaler(startDate, endDate, token, setOrdersWholesaler, setIsLoading)
-        setSelectedWholesalers(Array(filteredOrdersWholesaler.length).fill(null));
+        fetchOrderWholesaler(
+          startDate,
+          endDate,
+          token,
+          setOrdersWholesaler,
+          setIsLoading
+        );
+        setSelectedWholesalers(
+          Array(filteredOrdersWholesaler.length).fill(null)
+        );
         setEditableRows({});
         setFilteredOrdersWholesaler([]);
-        setShowSuccessModal(true)
+        setShowSuccessModal(true);
       }
-
     } catch (error) {
       setMessageError(error.response.data.message);
       setShowErrorModal(true);
       console.error(error);
     }
   };
-
 
   return (
     <Layout>
@@ -246,7 +262,9 @@ function Purchasing() {
 
           <div className="flex gap-4">
             <button
-              className={`flex bg-green py-3 px-4 rounded-lg text-white font-medium hover:scale-110 transition-all ${isSendOrderDisabled ? 'bg-gray-400 cursor-not-allowed' : ''}`}
+              className={`flex bg-green py-3 px-4 rounded-lg text-white font-medium hover:scale-110 transition-all ${
+                isSendOrderDisabled ? "bg-gray-400 cursor-not-allowed" : ""
+              }`}
               type="button"
               onClick={sendOrder}
               disabled={isSendOrderDisabled}
@@ -391,8 +409,10 @@ function Purchasing() {
                   onClick={() => handleSort("soh")}>
                   SOH
                 </th> */}
-                <th className="p-4 cursor-pointer hover:bg-gray-100 transition-all select-none"
-                  onClick={() => handleSort("requisitions")}>
+                <th
+                  className="p-4 cursor-pointer hover:bg-gray-100 transition-all select-none"
+                  onClick={() => handleSort("requisitions")}
+                >
                   Requisition
                 </th>
                 <th
@@ -441,7 +461,8 @@ function Purchasing() {
             </thead>
             <tbody>
               {sortedOrders?.map((order, index) => {
-                const quantity = editableRows[index]?.quantity || order.quantity;
+                const quantity =
+                  editableRows[index]?.quantity || order.quantity;
                 const cost = editableRows[index]?.cost || order.cost;
                 const totalCost = isNaN(quantity * cost) ? 0 : quantity * cost;
                 return (
@@ -451,13 +472,15 @@ function Purchasing() {
                       <Select
                         value={selectedWholesalers[index]}
                         onChange={(selectedOption) => {
-                          const newSelectedWholesalers = [...selectedWholesalers];
+                          const newSelectedWholesalers = [
+                            ...selectedWholesalers,
+                          ];
                           newSelectedWholesalers[index] = selectedOption;
                           setSelectedWholesalers(newSelectedWholesalers);
                         }}
-                        options={wholesalerList?.map(wholesaler => ({
+                        options={wholesalerList?.map((wholesaler) => ({
                           value: wholesaler.id,
-                          label: wholesaler.name
+                          label: wholesaler.name,
                         }))}
                         menuPortalTarget={document.body}
                         styles={{
@@ -486,7 +509,9 @@ function Purchasing() {
                         }}
                       />
                     </td>
-                    <td className="py-4">{order.product_name} - {order.presentation_name}</td>
+                    <td className="py-4">
+                      {order.product_name} - {order.presentation_name}
+                    </td>
                     {/* <td className="py-4">{order.soh}</td> */}
                     <td className="py-4 pl-4">{order.requisitions}</td>
                     <td className="py-4">{order.future_requisitions}</td>
@@ -498,7 +523,10 @@ function Purchasing() {
                         value={editableRows[index]?.quantity || order.quantity}
                         onChange={(e) => handleEditField("quantity", index, e)}
                         className="pl-2 h-[30px] outline-none w-full hide-number-arrows"
-                        style={{ WebkitAppearance: "none", MozAppearance: "textfield" }}
+                        style={{
+                          WebkitAppearance: "none",
+                          MozAppearance: "textfield",
+                        }}
                       />
                     </td>
                     <td className="py-4">
@@ -508,7 +536,10 @@ function Purchasing() {
                         value={editableRows[index]?.cost || order.cost}
                         onChange={(e) => handleEditField("cost", index, e)}
                         className="pl-2 h-[30px] outline-none w-full hide-number-arrows"
-                        style={{ WebkitAppearance: "none", MozAppearance: "textfield" }}
+                        style={{
+                          WebkitAppearance: "none",
+                          MozAppearance: "textfield",
+                        }}
                       />
                     </td>
                     <td className="py-4">{totalCost}</td>
@@ -521,7 +552,7 @@ function Purchasing() {
                       />
                     </td>
                   </tr>
-                )
+                );
               })}
             </tbody>
           </table>

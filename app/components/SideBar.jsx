@@ -126,6 +126,8 @@ const SideBar = () => {
   useEffect(() => {
     if (
       pathname === "/products" ||
+      pathname === "/users" ||
+      pathname === "/wholesalers" ||
       pathname === "/suppliers" ||
       pathname === "/categories"
     ) {
@@ -529,7 +531,7 @@ const SideBar = () => {
                           >
                             <div className="flex gap-2">
                               <CircleStackIcon className="h-6 w-6" />
-                              <h3>Admin</h3>
+                              <h3>Database</h3>
                             </div>
 
                             {openMenu === false ? (
@@ -540,6 +542,17 @@ const SideBar = () => {
                           </button>
                           {openMenu && (
                             <div className="mt-3 border-l-[1px] border-light-green pl-5">
+                              <Link href="/wholesalers" className="text-white">
+                                <h3
+                                  className={`hover:bg-[#046373] px-2 py-2 pl-4 rounded-xl w-[360px] mb-2 ${
+                                    pathname === "/wholesalers"
+                                      ? "bg-[#046373]"
+                                      : null
+                                  }`}
+                                >
+                                  Wholesalers
+                                </h3>
+                              </Link>
                               <Link href="/users" className="text-white">
                                 <h3
                                   className={`hover:bg-[#046373] px-2 py-2 pl-4 rounded-xl w-[360px] mb-2 ${
