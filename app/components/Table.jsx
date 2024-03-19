@@ -534,11 +534,14 @@ export default function Table({
         setRows(updatedRows);
         return;
       }
-      const response = await axios.get(`${presentationsCode}${code}/${customers[0].accountNumber}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const response = await axios.get(
+        `${presentationsCode}${code}/${customers[0].accountNumber}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
       const productData = response.data.data[0];
 
       // Actualiza las filas con los datos del producto
@@ -553,7 +556,7 @@ export default function Table({
             Price: productData.price,
             "Unit Cost": productData.cost,
             "VAT %": productData.tax,
-            Net: productData.price
+            Net: productData.price,
             //TODO: Si van agregar mas campos, agregarlos aqui
           };
         }
@@ -1038,8 +1041,9 @@ export default function Table({
           isvisible={confirmCreateOrder}
           onClose={() => setConfirmCreateOrder(false)}
           title="Confirmation!"
-          text="Are you sure about creating this order?"
-          textGrownet=""
+          text={`Are you sure to create this order for`}
+          textGrownet={`${customers[0]?.accountName}`}
+          ask="?"
           button="Confirm"
           sendOrder={createOrder}
         />
