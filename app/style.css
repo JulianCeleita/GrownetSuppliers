@@ -5,61 +5,73 @@
 .hide-number-arrows::-webkit-inner-spin-button,
 .hide-number-arrows::-webkit-outer-spin-button {
   -webkit-appearance: none;
-  margin: 0;
+  margin            : 0;
 }
 
 /* Loader */
 .loader {
-  width: 180px;
-  height: 24px;
+  width     : 180px;
+  height    : 24px;
   margin-top: 300px;
   box-shadow: 0 6px 0 #026cd2;
-  position: relative;
-  clip-path: inset(-80px 0 -10px);
+  position  : relative;
+  clip-path : inset(-80px 0 -10px);
 }
+
 .loader:before {
-  content: "";
-  position: absolute;
-  inset: auto calc(50% - 34px) 0;
-  height: 100px;
-  --g: no-repeat linear-gradient(#62c471 0 0);
-  background: var(--g), var(--g), var(--g), var(--g);
+  content        : "";
+  position       : absolute;
+  inset          : auto calc(50% - 34px) 0;
+  height         : 100px;
+  --g            : no-repeat linear-gradient(#62c471 0 0);
+  background     : var(--g), var(--g), var(--g), var(--g);
   background-size: 32px 28px;
-  animation: l7-1 1.5s infinite linear, l7-2 1.5s infinite linear;
+  animation      : l7-1 1.5s infinite linear, l7-2 1.5s infinite linear;
 }
+
 @keyframes l7-1 {
+
   0%,
   100% {
     background-position: 0 -50px, 100% -50px;
   }
+
   17.5% {
     background-position: 0 100%, 100% -50px, 0 -50px, 100% -50px;
   }
+
   35% {
     background-position: 0 100%, 100% 100%, 0 -50px, 100% -50px;
   }
+
   52.5% {
     background-position: 0 100%, 100% 100%, 0 calc(100% - 32px), 100% -50px;
   }
+
   70%,
   98% {
     background-position: 0 100%, 100% 100%, 0 calc(100% - 32px),
       100% calc(100% - 32px);
   }
 }
+
 @keyframes l7-2 {
+
   0%,
   70% {
     transform: translate(0);
   }
+
   100% {
     transform: translate(200%);
   }
 }
+
 @keyframes animate-loader {
   0% {
     background-position: 0 0, 0 100%;
   }
+
   100% {
     background-position: 120px 0, 120px 100%;
   }
@@ -74,7 +86,7 @@
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #A7A7A7;
+  background   : #A7A7A7;
   border-radius: 5px;
 }
 
@@ -82,3 +94,13 @@
   background: #555;
 }
 
+/* Ocultar las flechas de incremento y decremento en los input de tipo número */
+input[type=number]::-webkit-inner-spin-button,
+input[type=number]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin            : 0;
+}
+
+input[type=number] {
+  -moz-appearance: textfield;
+}
