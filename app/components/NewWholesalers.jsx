@@ -27,6 +27,7 @@ function NewWholesalers({ isvisible, onClose, setWholesalerList }) {
       phone: phone,
       account_number: accountNumber,
       email: email,
+      prefix: prefix,
     };
 
     axios
@@ -38,6 +39,12 @@ function NewWholesalers({ isvisible, onClose, setWholesalerList }) {
       .then((response) => {
         fetchWholesalerList(token, setWholesalerList);
         onClose();
+        setAccountNumber("");
+        setPrefix("");
+        setPhone("");
+        setName("");
+        setContact("");
+        setEmail("");
       })
       .catch(function (error) {
         console.error("Error al agregar el nuevo mayorista:", error);
