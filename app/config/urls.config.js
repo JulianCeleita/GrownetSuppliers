@@ -141,4 +141,5 @@ export const allRoutes = `${BASE_URL}deliveryRoutes/all`;
 
 // Purchasing
 export const purchasingUrl = `${BASE_URL}orders-wholesalers/all`
+export const purchasingCreate = `${BASE_URL}orders-wholesalers/create`
 export const wholesalersUrl = `${BASE_URL}wholesalers/all`
