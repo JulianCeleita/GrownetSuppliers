@@ -23,57 +23,10 @@ import CreateProduct from "../components/CreateProduct";
 import AutomaticShort from "../components/AutomaticShort";
 import DatePicker from "react-datepicker";
 import useWorkDateStore from "../store/useWorkDateStore";
-
-export const fetchOrderWholesaler = (
-  start,
-  end,
-  token,
-  setOrdersWholesaler,
-  setIsLoading
-) => {
-  if (!end || !start || start === new Date()) {
-    return;
-  }
-
-  const postData = {
-    date: {
-      start: start,
-      end: end,
-    },
-  };
-  console.log("🚀 ~ postData:", postData);
-  axios
-    .get(purchasingUrl, {
-      params: postData,
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    })
-    .then((response) => {
-      console.log("🚀 ~ .then ~ response:", response);
-      setOrdersWholesaler(response.data.data);
-      setIsLoading(false);
-    })
-    .catch((error) => {
-      console.log("🚀 ~ error:", error);
-    });
-};
-
-export const fetchWholesalerList = (token, setWholesalerList) => {
-  axios
-    .get(wholesalersUrl, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    })
-    .then((response) => {
-      console.log("🚀 ~ .then ~ response:", response);
-      setWholesalerList(response.data.wholesalers);
-    })
-    .catch((error) => {
-      console.log("🚀 ~ error:", error);
-    });
-};
+import {
+  fetchOrderWholesaler,
+  fetchWholesalerList,
+} from "../api/purchasingRequest";
 
 function Purchasing() {
   const { token } = useTokenStore();
@@ -394,7 +347,7 @@ function Purchasing() {
                         newSelectedWholesalers[index] = selectedOption;
                         setSelectedWholesalers(newSelectedWholesalers);
                       }}
-                      options={wholesalerList.map((wholesaler) => ({
+                      options={wholesalerList?.map((wholesaler) => ({
                         value: wholesaler.id,
                         label: wholesaler.name,
                       }))}

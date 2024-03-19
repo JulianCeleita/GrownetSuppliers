@@ -1,3 +1,6 @@
+import axios from "axios";
+import { purchasingUrl, wholesalersUrl } from "../config/urls.config";
+
 export const fetchOrderWholesaler = (
   start,
   end,
