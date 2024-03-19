@@ -16,6 +16,7 @@ function ModalSuccessfull({
   button,
   sendOrder,
   confirmed,
+  ask,
 }) {
   const router = useRouter();
   const modalRef = useRef();
@@ -88,10 +89,10 @@ function ModalSuccessfull({
             <h1 className="text-2xl font-medium text-green mb-2">{title}</h1>
             <p className="text-dark-blue text-lg text-center">
               {text}
-
               <span className="text-primary-blue font-medium">
                 &nbsp;{textGrownet}{" "}
               </span>
+              {ask}
             </p>
             <div className="flex">
               <button
