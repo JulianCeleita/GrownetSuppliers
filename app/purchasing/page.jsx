@@ -9,7 +9,7 @@ import {
 import axios from "axios";
 import { useEffect, useState } from "react";
 import EditPresentation from "../../app/components/EditPresentation";
-import { deletePresentationUrl, purchasingUrl } from "../../app/config/urls.config";
+import { deletePresentationUrl, purchasingUrl, wholesalersUrl } from "../../app/config/urls.config";
 import useTokenStore from "../../app/store/useTokenStore";
 import ModalDelete from "../components/ModalDelete";
 import Layout from "../layoutS";
@@ -21,18 +21,14 @@ import DatePicker from "react-datepicker";
 import useWorkDateStore from "../store/useWorkDateStore";
 
 export const fetchOrderWholesaler = (start, end, token, setOrdersWholeseler) => {
-  if (!end || !start) {
+  if (!end || !start || start === new Date()) {
     return;
   }
 
-  const formattedStartDate = start?.toISOString().substring(0, 10);
-  const formattedEndDate = end?.toISOString().substring(0, 10);
-
-
   const postData = {
     date: {
-      start: formattedStartDate,
-      end: formattedEndDate,
+      start: start,
+      end: end,
     },
   };
   console.log("🚀 ~ postData:", postData);
@@ -52,6 +48,24 @@ export const fetchOrderWholesaler = (start, end, token, setOrdersWholeseler) => 
     });
 };
 
+export const fetchWholesalerList = (token, setWholesalerList) => {
+  axios
+    .get(wholesalersUrl, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
+    .then((response) => {
+      console.log("🚀 ~ .then ~ response:", response);
+      setWholesalerList(response.data.data);
+    })
+    .catch((error) => {
+      console.log("🚀 ~ error:", error);
+    });
+};
+
+
+
 function Purchasing() {
   const { token } = useTokenStore();
   const { workDate, setFetchWorkDate } = useWorkDateStore();
@@ -66,6 +80,8 @@ function Purchasing() {
   const [sortDirection, setSortDirection] = useState("asc");
   const [editableRows, setEditableRows] = useState({});
   const [dateFilter, setDateFilter] = useState("today");
+  const [filteredOrdersWholeseler, setFilteredOrdersWholeseler] = useState([]);
+  const [wholesalerList, setWholesalerList] = useState([]);
 
   const defaultDate = new Date();
 
@@ -91,6 +107,37 @@ function Purchasing() {
     fetchOrderWholesaler(startDate, endDate, token, setOrdersWholeseler)
   }, [workDate, token, endDate, startDate]);
 
+  useEffect(() => {
+    fetchWholesalerList(token, setWholesalerList);
+    setStartDate(workDate);
+    setEndDate(workDate);
+  }, [workDate])
+
+  const sortedOrdersWholeseler = ordersWholeseler?.slice().sort((a, b) => {
+    if (sortColumn) {
+      const valueA = typeof a[sortColumn] === 'number' ? a[sortColumn].toString() : a[sortColumn];
+      const valueB = typeof b[sortColumn] === 'number' ? b[sortColumn].toString() : b[sortColumn];
+      if (sortDirection === "asc") {
+        return valueA?.localeCompare(valueB);
+      } else {
+        return valueB?.localeCompare(valueA);
+      }
+    } else {
+      return 0;
+    }
+  });
+
+  useEffect(() => {
+    if (selectedStatus === "short") {
+      setFilteredOrdersWholeseler(sortedOrdersWholeseler.filter(order => order.short > 0));
+    } else if (selectedStatus === "available") {
+      setFilteredOrdersWholeseler(sortedOrdersWholeseler.filter(order => order.short === 0));
+    } else {
+      setFilteredOrdersWholeseler(sortedOrdersWholeseler);
+    }
+  }, [sortedOrdersWholeseler, selectedStatus]);
+
+
   const handleEditField = (key, rowIndex, e) => {
     const value = e.target.value;
     const updatedRows = { ...editableRows };
@@ -110,19 +157,7 @@ function Purchasing() {
     }
   };
 
-  const sortedOrdersWholeseler = ordersWholeseler?.slice().sort((a, b) => {
-    if (sortColumn) {
-      const valueA = typeof a[sortColumn] === 'number' ? a[sortColumn].toString() : a[sortColumn];
-      const valueB = typeof b[sortColumn] === 'number' ? b[sortColumn].toString() : b[sortColumn];
-      if (sortDirection === "asc") {
-        return valueA?.localeCompare(valueB);
-      } else {
-        return valueB?.localeCompare(valueA);
-      }
-    } else {
-      return 0;
-    }
-  });
+
 
   return (
     <Layout>
@@ -270,7 +305,7 @@ function Purchasing() {
               </tr>
             </thead>
             <tbody>
-              {sortedOrdersWholeseler.map((order, index) => (
+              {filteredOrdersWholeseler?.map((order, index) => (
                 <tr className="text-dark-blue border-b-2 border-stone-100">
                   <td className="py-4 pl-3">{order.presentation_code}</td>
                   <td className="py-4">
@@ -308,7 +343,7 @@ function Purchasing() {
                       }}
                     />
                   </td>
-                  <td className="py-4">{order.product_name} - ${order.presentation_name}</td>
+                  <td className="py-4">{order.product_name} - {order.presentation_name}</td>
                   <td className="py-4">{order.soh}</td>
                   <td className="py-4">{order.requisitions}</td>
                   <td className="py-4">{order.future_requisitions}</td>
