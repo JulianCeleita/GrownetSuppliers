@@ -1,5 +1,6 @@
 "use client";
 import {
+  ArrowRightCircleIcon,
   MinusCircleIcon,
   NoSymbolIcon,
   PencilSquareIcon,
@@ -10,7 +11,7 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import EditPresentation from "../../app/components/EditPresentation";
 import {
-  deletePresentationUrl,
+  deletePresentationUrl, purchasingCreate,
   purchasingUrl,
   wholesalersUrl,
 } from "../../app/config/urls.config";
@@ -23,6 +24,8 @@ import CreateProduct from "../components/CreateProduct";
 import AutomaticShort from "../components/AutomaticShort";
 import DatePicker from "react-datepicker";
 import useWorkDateStore from "../store/useWorkDateStore";
+import ModalSuccessfull from "../components/ModalSuccessfull";
+import ModalOrderError from "../components/ModalOrderError";
 import {
   fetchOrderWholesaler,
   fetchWholesalerList,
@@ -48,11 +51,15 @@ function Purchasing() {
     Array(filteredOrdersWholesaler.length).fill(null)
   );
   const [selectedCategory, setSelectedCategory] = useState("");
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [showErrorModal, setShowErrorModal] = useState(false);
+  const [messageError, setMessageError] = useState("");
+  const [isSendOrderDisabled, setIsSendOrderDisabled] = useState(true);
 
   const defaultDate = new Date();
-
   const [startDate, setStartDate] = useState(workDate || defaultDate);
   const [endDate, setEndDate] = useState(workDate || defaultDate);
+  const [searchQuery, setSearchQuery] = useState("");
 
   const formatDateToShow = (dateString) => {
     if (!dateString) return "Loading...";
@@ -88,43 +95,62 @@ function Purchasing() {
     fetchWholesalerList(token, setWholesalerList);
   }, []);
 
-  const sortedOrdersWholesaler = ordersWholesaler?.slice().sort((a, b) => {
-    if (sortColumn) {
-      const valueA =
-        typeof a[sortColumn] === "number"
-          ? a[sortColumn].toString()
-          : a[sortColumn];
-      const valueB =
-        typeof b[sortColumn] === "number"
-          ? b[sortColumn].toString()
-          : b[sortColumn];
-      if (sortDirection === "asc") {
-        return valueA?.localeCompare(valueB);
-      } else {
-        return valueB?.localeCompare(valueA);
-      }
-    } else {
-      return 0;
-    }
-  });
-
   useEffect(() => {
+    // Filter by search
+    const filteredOrdersBySearch = searchQuery
+      ? ordersWholesaler.filter(
+        (order) =>
+          order.product_name
+            .toLowerCase()
+            .includes(searchQuery.toLowerCase()) ||
+          order.presentation_name
+            .toLowerCase()
+            .includes(searchQuery.toLowerCase()) ||
+          order.presentation_code
+            .toLowerCase()
+            .includes(searchQuery.toLowerCase())
+      )
+      : ordersWholesaler;
+
+    // Filter by state
     const filteredOrdersByShort =
       selectedStatus === "short"
-        ? ordersWholesaler.filter((order) => order.short > 0)
+        ? filteredOrdersBySearch.filter((order) => order.short > 0)
         : selectedStatus === "available"
-        ? ordersWholesaler.filter((order) => order.short === 0)
-        : ordersWholesaler;
+          ? filteredOrdersBySearch.filter((order) => order.short === 0)
+          : filteredOrdersBySearch;
 
+    // Filter by category
     const filteredOrdersByCategory =
       selectedCategory === ""
         ? filteredOrdersByShort
         : filteredOrdersByShort.filter(
-            (order) => order.category_name === selectedCategory
-          );
+          (order) => order.category_name === selectedCategory
+        );
 
     setFilteredOrdersWholesaler(filteredOrdersByCategory);
-  }, [ordersWholesaler, selectedStatus, selectedCategory]);
+  }, [ordersWholesaler, selectedStatus, selectedCategory, searchQuery]);
+
+  useEffect(() => {
+    const updatedOrders = ordersWholesaler.map((order, index) => ({
+      ...order,
+      wholesaler_id: selectedWholesalers[index]?.value || order.wholesaler_id,
+      quantity: editableRows[index]?.quantity || order.quantity,
+      cost: editableRows[index]?.cost || order.cost,
+      note: editableRows[index]?.notes || order.note,
+    }));
+    setFilteredOrdersWholesaler(updatedOrders);
+  }, [ordersWholesaler, editableRows]);
+
+  const checkIfAnyProductHasQuantity = () => {
+    return filteredOrdersWholesaler.some(order => order.quantity > 0);
+  };
+
+  useEffect(() => {
+    setIsSendOrderDisabled(!checkIfAnyProductHasQuantity());
+  }, [filteredOrdersWholesaler]);
+
+
 
   const handleEditField = (key, rowIndex, e) => {
     const value = e.target.value;
@@ -145,9 +171,61 @@ function Purchasing() {
     }
   };
 
-  const uniqueCategories = [
-    ...new Set(ordersWholesaler.map((order) => order.category_name)),
-  ];
+  const sortedOrders = filteredOrdersWholesaler.slice().sort((a, b) => {
+    if (sortColumn) {
+      const valueA = typeof a[sortColumn] === 'number' ? a[sortColumn] : a[sortColumn]?.toLowerCase?.();
+      const valueB = typeof b[sortColumn] === 'number' ? b[sortColumn] : b[sortColumn]?.toLowerCase?.();
+      if (sortDirection === "asc") {
+        return valueA < valueB ? -1 : valueA > valueB ? 1 : 0;
+      } else {
+        return valueA > valueB ? -1 : valueA < valueB ? 1 : 0;
+      }
+    } else {
+      return 0;
+    }
+  });
+
+  const uniqueCategories = [...new Set(ordersWholesaler.map(order => order.category_name))];
+
+  const sendOrder = async () => {
+    try {
+      const ordersToSend = filteredOrdersWholesaler.filter(order => order.quantity > 0);
+      console.log("🚀 ~ sendOrder ~ ordersToSend:", ordersToSend)
+
+      const sendData = {
+        orders_wholesaler: ordersToSend.map((order, index) => ({
+          presentation_code: order.presentation_code,
+          wholesaler_id: selectedWholesalers[index] ? selectedWholesalers[index].value : null,
+          date_delivery: workDate,
+          note: order.note,
+          cost: order.cost,
+          purchasing_qty: order.quantity
+        }))
+      };
+      console.log("🚀 ~ sendOrder ~ sendData:", sendData)
+
+      const response = await axios.post(purchasingCreate, sendData, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      console.log(response)
+
+      if (response.status === 200) {
+        fetchOrderWholesaler(startDate, endDate, token, setOrdersWholesaler, setIsLoading)
+        setSelectedWholesalers(Array(filteredOrdersWholesaler.length).fill(null));
+        setEditableRows({});
+        setFilteredOrdersWholesaler([]);
+        setShowSuccessModal(true)
+      }
+
+    } catch (error) {
+      setMessageError(error.response.data.message);
+      setShowErrorModal(true);
+      console.error(error);
+    }
+  };
+
 
   return (
     <Layout>
@@ -159,16 +237,35 @@ function Purchasing() {
 
           <div className="flex gap-4">
             <button
-              className="flex bg-green py-3 px-4 rounded-lg text-white font-medium hover:scale-110 transition-all"
+              className={`flex bg-green py-3 px-4 rounded-lg text-white font-medium hover:scale-110 transition-all ${isSendOrderDisabled ? 'bg-gray-400 cursor-not-allowed' : ''}`}
               type="button"
-              onClick={() => setShowNewPresentations(true)}
+              onClick={sendOrder}
+              disabled={isSendOrderDisabled}
             >
-              <PlusCircleIcon className="h-6 w-6 mr-2 font-bold" />
-              New Purchasing
+              <ArrowRightCircleIcon className="h-6 w-6 mr-2 font-bold" />
+              Send Purchasing
             </button>
           </div>
         </div>
         <div className="flex ml-5 mb-4 gap-2">
+          <div className="border border-gray-300  rounded-md py-3 px-2 flex items-center">
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Search"
+              className="placeholder-[#04444F] outline-none text-sm custom:text-base w-[170px]"
+            />
+            {searchQuery != "" && (
+              <button
+                onClick={() => {
+                  setSearchQuery("");
+                }}
+              >
+                <TrashIcon className="h-6 w-6 text-danger" />
+              </button>
+            )}
+          </div>
           <select
             value={filterType}
             onChange={(e) => setFilterType(e.target.value)}
@@ -262,158 +359,159 @@ function Purchasing() {
             <thead className="sticky top-0 bg-white shadow-[0px_11px_15px_-3px_#edf2f7] ">
               <tr className="border-b-2 border-stone-100 text-dark-blue">
                 <th
-                  className="p-4 rounded-tl-lg cursor-pointer hover:bg-gray-100 transition-all"
-                  onClick={() => handleSort("code")}
+                  className="p-4 rounded-tl-lg cursor-pointer hover:bg-gray-100 transition-all select-none"
+                  onClick={() => handleSort("presentation_code")}
                 >
                   Code
                 </th>
                 <th
-                  className="p-4 cursor-pointer hover:bg-gray-100 transition-all"
+                  className="p-4 cursor-pointer hover:bg-gray-100 transition-all select-none"
                   onClick={() => handleSort("supplier")}
                 >
                   Supplier
                 </th>
                 <th
-                  className="p-4 cursor-pointer hover:bg-gray-100 transition-all"
-                  onClick={() => handleSort("description")}
+                  className="p-4 cursor-pointer hover:bg-gray-100 transition-all select-none"
+                  onClick={() => handleSort("product_name")}
                 >
                   Description
                 </th>
-                <th
-                  className="p-4 cursor-pointer hover:bg-gray-100 transition-all"
-                  onClick={() => handleSort("soh")}
-                >
+                {/* <th className="p-4 cursor-pointer hover:bg-gray-100 transition-all"
+                  onClick={() => handleSort("soh")}>
                   SOH
-                </th>
-                <th
-                  className="p-4 cursor-pointer hover:bg-gray-100 transition-all"
-                  onClick={() => handleSort("requisition")}
-                >
+                </th> */}
+                <th className="p-4 cursor-pointer hover:bg-gray-100 transition-all select-none"
+                  onClick={() => handleSort("requisitions")}>
                   Requisition
                 </th>
                 <th
-                  className="p-4 cursor-pointer hover:bg-gray-100 transition-all"
-                  onClick={() => handleSort("futureRequisition")}
+                  className="p-4 cursor-pointer hover:bg-gray-100 transition-all select-none"
+                  onClick={() => handleSort("future_requisitions")}
                 >
                   Future Requisition
                 </th>
                 <th
-                  className="p-4 cursor-pointer hover:bg-gray-100 transition-all"
-                  onClick={() => handleSort("shorts")}
+                  className="p-4 cursor-pointer hover:bg-gray-100 transition-all select-none"
+                  onClick={() => handleSort("short")}
                 >
                   Shorts
                 </th>
                 <th
-                  className="p-4 cursor-pointer hover:bg-gray-100 transition-all"
+                  className="p-4 cursor-pointer hover:bg-gray-100 transition-all select-none"
                   onClick={() => handleSort("ordered")}
                 >
                   Ordered
                 </th>
                 <th
-                  className="p-4 cursor-pointer hover:bg-gray-100 transition-all"
+                  className="p-4 cursor-pointer hover:bg-gray-100 transition-all select-none"
                   onClick={() => handleSort("quantity")}
                 >
                   Quantity
                 </th>
                 <th
-                  className="p-4 cursor-pointer hover:bg-gray-100 transition-all"
+                  className="p-4 cursor-pointer hover:bg-gray-100 transition-all select-none"
                   onClick={() => handleSort("cost")}
                 >
                   Cost
                 </th>
                 <th
-                  className="p-4 cursor-pointer hover:bg-gray-100 transition-all"
+                  className="p-4 cursor-pointer hover:bg-gray-100 transition-all select-none"
                   onClick={() => handleSort("totalCost")}
                 >
                   Total Cost
                 </th>
                 <th
-                  className="p-4 rounded-tr-lg cursor-pointer hover:bg-gray-100 transition-all"
-                  onClick={() => handleSort("notes")}
+                  className="p-4 rounded-tr-lg cursor-pointer hover:bg-gray-100 transition-all select-none"
+                  onClick={() => handleSort("note")}
                 >
                   Notes
                 </th>
               </tr>
             </thead>
             <tbody>
-              {filteredOrdersWholesaler?.map((order, index) => (
-                <tr className="text-dark-blue border-b-2 border-stone-100">
-                  <td className="py-4 pl-3">{order.presentation_code}</td>
-                  <td className="py-4">
-                    <Select
-                      value={selectedWholesalers[index]}
-                      onChange={(selectedOption) => {
-                        const newSelectedWholesalers = [...selectedWholesalers];
-                        newSelectedWholesalers[index] = selectedOption;
-                        setSelectedWholesalers(newSelectedWholesalers);
-                      }}
-                      options={wholesalerList?.map((wholesaler) => ({
-                        value: wholesaler.id,
-                        label: wholesaler.name,
-                      }))}
-                      menuPortalTarget={document.body}
-                      styles={{
-                        control: (provided) => ({
-                          ...provided,
-                          border: "none",
-                          boxShadow: "none",
-                          backgroundColor: "transparent",
-                        }),
-                        menu: (provided) => ({
-                          ...provided,
-                          width: "33em",
-                        }),
-                        singleValue: (provided, state) => ({
-                          ...provided,
-                          color: "#04444F",
-                        }),
-                        dropdownIndicator: (provided) => ({
-                          ...provided,
-                          display: "none",
-                        }),
-                        indicatorSeparator: (provided) => ({
-                          ...provided,
-                          display: "none",
-                        }),
-                      }}
-                    />
-                  </td>
-                  <td className="py-4">
-                    {order.product_name} - {order.presentation_name}
-                  </td>
-                  <td className="py-4">{order.soh}</td>
-                  <td className="py-4">{order.requisitions}</td>
-                  <td className="py-4">{order.future_requisitions}</td>
-                  <td className="py-4">{order.short}</td>
-                  <td className="py-4">{order.ordered}</td>
-                  <td className="py-4">
-                    <input
-                      type="number"
-                      value={editableRows[index]?.quantity || order.quantity}
-                      onChange={(e) => handleEditField("quantity", index, e)}
-                      className="w-16 px-2 py-1 rounded-md border border-gray-300 text-sm"
-                    />
-                  </td>
-                  <td className="py-4">
-                    <input
-                      type="number"
-                      step="0.01"
-                      value={editableRows[index]?.cost || order.cost}
-                      onChange={(e) => handleEditField("cost", index, e)}
-                      className="w-16 px-2 py-1 rounded-md border border-gray-300 text-sm"
-                    />
-                  </td>
-                  <td className="py-4">{order.totalCost}</td>
-                  <td className="py-4">
-                    <input
-                      type="text"
-                      value={editableRows[index]?.note || order.note}
-                      onChange={(e) => handleEditField("notes", index, e)}
-                      className="w-32 px-2 py-1 rounded-md border border-gray-300 text-sm"
-                    />
-                  </td>
-                </tr>
-              ))}
+              {sortedOrders?.map((order, index) => {
+                const quantity = editableRows[index]?.quantity || order.quantity;
+                const cost = editableRows[index]?.cost || order.cost;
+                const totalCost = isNaN(quantity * cost) ? 0 : quantity * cost;
+                return (
+                  <tr className="text-dark-blue border-b-2 border-stone-100">
+                    <td className="py-4 pl-3">{order.presentation_code}</td>
+                    <td className="py-4">
+                      <Select
+                        value={selectedWholesalers[index]}
+                        onChange={(selectedOption) => {
+                          const newSelectedWholesalers = [...selectedWholesalers];
+                          newSelectedWholesalers[index] = selectedOption;
+                          setSelectedWholesalers(newSelectedWholesalers);
+                        }}
+                        options={wholesalerList?.map(wholesaler => ({
+                          value: wholesaler.id,
+                          label: wholesaler.name
+                        }))}
+                        menuPortalTarget={document.body}
+                        styles={{
+                          control: (provided) => ({
+                            ...provided,
+                            border: "none",
+                            boxShadow: "none",
+                            backgroundColor: "transparent",
+                          }),
+                          menu: (provided) => ({
+                            ...provided,
+                            width: "33em",
+                          }),
+                          singleValue: (provided, state) => ({
+                            ...provided,
+                            color: "#04444F",
+                          }),
+                          dropdownIndicator: (provided) => ({
+                            ...provided,
+                            display: "none",
+                          }),
+                          indicatorSeparator: (provided) => ({
+                            ...provided,
+                            display: "none",
+                          }),
+                        }}
+                      />
+                    </td>
+                    <td className="py-4">{order.product_name} - {order.presentation_name}</td>
+                    {/* <td className="py-4">{order.soh}</td> */}
+                    <td className="py-4">{order.requisitions}</td>
+                    <td className="py-4">{order.future_requisitions}</td>
+                    <td className="py-4">{order.short}</td>
+                    <td className="py-4">{order.ordered}</td>
+                    <td className="py-4">
+                      <input
+                        type="number"
+                        value={editableRows[index]?.quantity || order.quantity}
+                        onChange={(e) => handleEditField("quantity", index, e)}
+                        className="pl-2 h-[30px] outline-none w-full hide-number-arrows"
+                        style={{ WebkitAppearance: "none", MozAppearance: "textfield" }}
+                      />
+                    </td>
+                    <td className="py-4">
+                      <input
+                        type="number"
+                        step="0.01"
+                        value={editableRows[index]?.cost || order.cost}
+                        onChange={(e) => handleEditField("cost", index, e)}
+                        className="pl-2 h-[30px] outline-none w-full hide-number-arrows"
+                        style={{ WebkitAppearance: "none", MozAppearance: "textfield" }}
+                      />
+                    </td>
+                    <td className="py-4">{totalCost}</td>
+                    <td className="py-4">
+                      <input
+                        type="text"
+                        value={editableRows[index]?.notes || order.note}
+                        onChange={(e) => handleEditField("notes", index, e)}
+                        className="pl-2 h-[30px] outline-none w-full hide-number-arrows"
+                      />
+                    </td>
+                  </tr>
+                )
+              })}
             </tbody>
           </table>
         </div>
@@ -422,6 +520,19 @@ function Purchasing() {
             <div className="loader"></div>
           </div>
         )}
+        <ModalSuccessfull
+          isvisible={showSuccessModal}
+          onClose={() => setShowSuccessModal(false)}
+          title="Congratulations"
+          text="Order sended successfully"
+          button=" Close"
+        />
+        <ModalOrderError
+          isvisible={showErrorModal}
+          onClose={() => setShowErrorModal(false)}
+          error={messageError}
+          title={"Error sending order"}
+        />
       </div>
     </Layout>
   );

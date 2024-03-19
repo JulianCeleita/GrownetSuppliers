@@ -5,7 +5,8 @@ export const fetchOrderWholesaler = (
   start,
   end,
   token,
-  setOrdersWholeseler
+  setOrdersWholeseler,
+  setIsLoading
 ) => {
   if (!end || !start || start === new Date()) {
     return;
@@ -28,6 +29,7 @@ export const fetchOrderWholesaler = (
     .then((response) => {
       console.log("🚀 ~ .then ~ response:", response);
       setOrdersWholeseler(response.data.data);
+      setIsLoading(false);
     })
     .catch((error) => {
       console.log("🚀 ~ error:", error);
@@ -42,7 +44,7 @@ export const fetchWholesalerList = (token, setWholesalerList) => {
       },
     })
     .then((response) => {
-      console.log("🚀 ~ .then ~ response:", response, wholesalersUrl);
+      console.log("🚀 ~ .then ~ response:", response);
       setWholesalerList(response.data.wholesalers);
     })
     .catch((error) => {
