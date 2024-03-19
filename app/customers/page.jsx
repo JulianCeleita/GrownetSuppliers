@@ -130,7 +130,14 @@ const CustomersView = () => {
     });
 
     setDisplayedCustomers(filteredByDay);
-  }, [customers, sortConfig, searchTerm, selectedGroup, selectedRoute, selectedDay]);
+  }, [
+    customers,
+    sortConfig,
+    searchTerm,
+    selectedGroup,
+    selectedRoute,
+    selectedDay,
+  ]);
 
   const [showDeleteModal, setShowDeleteModal] = useState(false);
 
@@ -169,7 +176,6 @@ const CustomersView = () => {
   const handleGroupChange = (e) => {
     setSelectedGroup(e.target.value);
   };
-
 
   const requestSort = (key) => {
     let direction = "ascending";
@@ -211,7 +217,7 @@ const CustomersView = () => {
       <div className="-mt-16">
         <div className="flex gap-4 mt-2">
           <h1 className="text-2xl text-white font-semibold ml-28 mr-2">
-            Customers <span className="text-light-green">list</span>
+            <span className="text-light-green">Customers </span>list
           </h1>
           <button
             className="flex bg-green mb-4 py-2 px-4 rounded-full text-white font-medium transition-all hover:bg-dark-blue hover:scale-110"

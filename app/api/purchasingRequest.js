@@ -1,3 +1,6 @@
+import axios from "axios";
+import { wholesalersUrl } from "../config/urls.config";
+
 export const fetchOrderWholesaler = (
   start,
   end,
@@ -39,7 +42,7 @@ export const fetchWholesalerList = (token, setWholesalerList) => {
       },
     })
     .then((response) => {
-      console.log("🚀 ~ .then ~ response:", response);
+      console.log("🚀 ~ .then ~ response:", response, wholesalersUrl);
       setWholesalerList(response.data.data);
     })
     .catch((error) => {
