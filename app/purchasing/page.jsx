@@ -192,12 +192,8 @@ function Purchasing() {
     setIsSendOrderDisabled(!checkIfAnyProductHasQuantity());
   }, [products]);
 
-  const handleEditField = (key, productCode, e) => {
-    if (e?.target?.value) {
-      var value = e?.target?.value;
-    } else {
-      var value = e.value;
-    }
+
+  const handleEditField = (key, productCode, value) => {
 
     if (key === "quantity" && isNaN(value)) {
       return;
@@ -594,11 +590,12 @@ function Purchasing() {
                             }
                             : null
                         }
-                        onChange={(e) => {
-                          handleEditField(order.presentation_code, {
-                            wholesaler_id: e.value,
-                            label: e.label,
-                          });
+                        onChange={(selectedOption) => {
+                          handleEditField(
+                            "Description",
+                            order.presentation_code,
+                            selectedOption.label
+                          );
                         }}
                         options={wholesalerList?.map((wholesaler) => ({
                           value: wholesaler.id,
@@ -648,9 +645,11 @@ function Purchasing() {
                           ""
                         }
                         onChange={(e) =>
-                          handleEditField(order.presentation_code, {
-                            quantity: e.target.value,
-                          })
+                          handleEditField(
+                            "quantity",
+                            order.presentation_code,
+                            e.target.value
+                          )
                         }
                         className="pl-2 h-[30px] outline-none w-full hide-number-arrows"
                         style={{
@@ -669,7 +668,11 @@ function Purchasing() {
                           ""
                         }
                         onChange={(e) =>
-                          handleEditField("cost", order.presentation_code, e)
+                          handleEditField(
+                            "cost",
+                            order.presentation_code,
+                            e.target.value
+                          )
                         }
                         className="pl-2 h-[30px] outline-none w-full hide-number-arrows"
                         style={{
@@ -688,9 +691,11 @@ function Purchasing() {
                           ""
                         }
                         onChange={(e) =>
-                          handleEditField(order.presentation_code, {
-                            note: e.target.value,
-                          })
+                          handleEditField(
+                            "notes",
+                            order.presentation_code,
+                            e.target.value
+                          )
                         }
                         className="pl-2 h-[30px] outline-none w-full hide-number-arrows"
                       />
