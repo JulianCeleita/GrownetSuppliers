@@ -1,5 +1,6 @@
 import axios from "axios";
 import { purchasingUrl, wholesalersUrl } from "../config/urls.config";
+import { formatISO } from "date-fns";
 
 export const fetchOrderWholesaler = (
   start,
@@ -12,10 +13,13 @@ export const fetchOrderWholesaler = (
     return;
   }
 
+  const formattedStartDate = formatISO(start, { representation: "date" });
+  const formattedEndDate = formatISO(end, { representation: "date" });
+
   const postData = {
     date: {
-      start: start,
-      end: end,
+      start: formattedStartDate,
+      end: formattedEndDate,
     },
   };
   console.log("🚀 ~ postData:", postData);

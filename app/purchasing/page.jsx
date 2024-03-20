@@ -11,7 +11,8 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import EditPresentation from "../../app/components/EditPresentation";
 import {
-  deletePresentationUrl, purchasingCreate,
+  deletePresentationUrl,
+  purchasingCreate,
   purchasingUrl,
   wholesalersUrl,
 } from "../../app/config/urls.config";
@@ -57,9 +58,10 @@ function Purchasing() {
   const [isSendOrderDisabled, setIsSendOrderDisabled] = useState(true);
 
   const defaultDate = new Date();
-  const [startDate, setStartDate] = useState(workDate || defaultDate);
-  const [endDate, setEndDate] = useState(workDate || defaultDate);
+  const [startDate, setStartDate] = useState(new Date(workDate));
+  const [endDate, setEndDate] = useState(new Date(workDate));
   const [searchQuery, setSearchQuery] = useState("");
+  const [editableProductData, setEditableProductData] = useState({});
 
   const formatDateToShow = (dateString) => {
     if (!dateString) return "Loading...";
@@ -84,11 +86,29 @@ function Purchasing() {
       setOrdersWholesaler,
       setIsLoading
     );
-  }, [workDate, token, endDate, startDate]);
+    console.log(startDate);
+    console.log(endDate);
+    console.log(workDate);
+  }, [endDate, startDate]);
 
   useEffect(() => {
-    setStartDate(workDate);
-    setEndDate(workDate);
+    fetchOrderWholesaler(
+      startDate,
+      endDate,
+      token,
+      setOrdersWholesaler,
+      setIsLoading
+    );
+  }, [startDate, endDate]);
+
+  useEffect(() => {
+    const newStartDate = new Date(workDate);
+    newStartDate.setDate(newStartDate.getDate() + 1);
+    setStartDate(newStartDate);
+
+    const newEndDate = new Date(workDate);
+    newEndDate.setDate(newEndDate.getDate() + 1);
+    setEndDate(newEndDate);
   }, [workDate]);
 
   useEffect(() => {
@@ -150,8 +170,6 @@ function Purchasing() {
     setIsSendOrderDisabled(!checkIfAnyProductHasQuantity());
   }, [filteredOrdersWholesaler]);
 
-
-
   const handleEditField = (key, rowIndex, e) => {
     const value = e.target.value;
     const updatedRows = { ...editableRows };
@@ -161,6 +179,7 @@ function Purchasing() {
     updatedRows[rowIndex][key] = value;
     setEditableRows(updatedRows);
   };
+
 
   const handleSort = (column) => {
     if (sortColumn === column) {
@@ -173,8 +192,14 @@ function Purchasing() {
 
   const sortedOrders = filteredOrdersWholesaler.slice().sort((a, b) => {
     if (sortColumn) {
-      const valueA = typeof a[sortColumn] === 'number' ? a[sortColumn] : a[sortColumn]?.toLowerCase?.();
-      const valueB = typeof b[sortColumn] === 'number' ? b[sortColumn] : b[sortColumn]?.toLowerCase?.();
+      const valueA =
+        typeof a[sortColumn] === "number"
+          ? a[sortColumn]
+          : a[sortColumn]?.toLowerCase?.();
+      const valueB =
+        typeof b[sortColumn] === "number"
+          ? b[sortColumn]
+          : b[sortColumn]?.toLowerCase?.();
       if (sortDirection === "asc") {
         return valueA < valueB ? -1 : valueA > valueB ? 1 : 0;
       } else {
@@ -185,9 +210,12 @@ function Purchasing() {
     }
   });
 
-  const uniqueCategories = [...new Set(ordersWholesaler.map(order => order.category_name))];
+  const uniqueCategories = [
+    ...new Set(ordersWholesaler.map((order) => order.category_name)),
+  ];
 
   const sendOrder = async () => {
+    console.log(selectedWholesalers)
     try {
       const ordersToSend = filteredOrdersWholesaler.filter(order => order.quantity > 0);
       console.log("🚀 ~ sendOrder ~ ordersToSend:", ordersToSend)
@@ -195,7 +223,7 @@ function Purchasing() {
       const sendData = {
         orders_wholesaler: ordersToSend.map((order, index) => ({
           presentation_code: order.presentation_code,
-          wholesaler_id: selectedWholesalers[index] ? selectedWholesalers[index].value : null,
+          wholesaler_id: order.wholesaler_id,
           date_delivery: workDate,
           note: order.note,
           cost: order.cost,
@@ -226,7 +254,6 @@ function Purchasing() {
     }
   };
 
-
   return (
     <Layout>
       <div>
@@ -237,7 +264,8 @@ function Purchasing() {
 
           <div className="flex gap-4">
             <button
-              className={`flex bg-green py-3 px-4 rounded-lg text-white font-medium hover:scale-110 transition-all ${isSendOrderDisabled ? 'bg-gray-400 cursor-not-allowed' : ''}`}
+              className={`flex bg-green py-3 px-4 rounded-lg text-white font-medium hover:scale-110 transition-all ${isSendOrderDisabled ? "bg-gray-400 cursor-not-allowed" : ""
+                }`}
               type="button"
               onClick={sendOrder}
               disabled={isSendOrderDisabled}
@@ -322,6 +350,8 @@ function Purchasing() {
               onChange={(date) => {
                 setSelectedDate(date);
                 setDateFilter("date");
+                setStartDate(date);
+                setEndDate(date);
               }}
               className="form-input px-3 py-3 w-[95px] rounded-md border border-gray-300 text-dark-blue placeholder-dark-blue text-sm custom:text-base"
               dateFormat="dd/MM/yyyy"
@@ -365,7 +395,7 @@ function Purchasing() {
                   Code
                 </th>
                 <th
-                  className="p-4 cursor-pointer hover:bg-gray-100 transition-all select-none"
+                  className="p-4 cursor-pointer hover:bg-gray-100 transition-all w-[240px] select-none"
                   onClick={() => handleSort("supplier")}
                 >
                   Supplier
@@ -380,8 +410,10 @@ function Purchasing() {
                   onClick={() => handleSort("soh")}>
                   SOH
                 </th> */}
-                <th className="p-4 cursor-pointer hover:bg-gray-100 transition-all select-none"
-                  onClick={() => handleSort("requisitions")}>
+                <th
+                  className="p-4 cursor-pointer hover:bg-gray-100 transition-all select-none"
+                  onClick={() => handleSort("requisitions")}
+                >
                   Requisition
                 </th>
                 <th
@@ -403,25 +435,25 @@ function Purchasing() {
                   Ordered
                 </th>
                 <th
-                  className="p-4 cursor-pointer hover:bg-gray-100 transition-all select-none"
+                  className="p-4 cursor-pointer hover:bg-gray-100 transition-all w-[100px] select-none"
                   onClick={() => handleSort("quantity")}
                 >
                   Quantity
                 </th>
                 <th
-                  className="p-4 cursor-pointer hover:bg-gray-100 transition-all select-none"
+                  className="p-4 cursor-pointer hover:bg-gray-100 transition-all w-[75px] select-none"
                   onClick={() => handleSort("cost")}
                 >
                   Cost
                 </th>
                 <th
-                  className="p-4 cursor-pointer hover:bg-gray-100 transition-all select-none"
+                  className="p-4 cursor-pointer hover:bg-gray-100 transition-all w-[100px] select-none"
                   onClick={() => handleSort("totalCost")}
                 >
                   Total Cost
                 </th>
                 <th
-                  className="p-4 rounded-tr-lg cursor-pointer hover:bg-gray-100 transition-all select-none"
+                  className="p-4 rounded-tr-lg cursor-pointer hover:bg-gray-100 transition-all w-[200px] select-none"
                   onClick={() => handleSort("note")}
                 >
                   Notes
@@ -430,7 +462,8 @@ function Purchasing() {
             </thead>
             <tbody>
               {sortedOrders?.map((order, index) => {
-                const quantity = editableRows[index]?.quantity || order.quantity;
+                const quantity =
+                  editableRows[index]?.quantity || order.quantity;
                 const cost = editableRows[index]?.cost || order.cost;
                 const totalCost = isNaN(quantity * cost) ? 0 : quantity * cost;
                 return (
@@ -440,13 +473,15 @@ function Purchasing() {
                       <Select
                         value={selectedWholesalers[index]}
                         onChange={(selectedOption) => {
-                          const newSelectedWholesalers = [...selectedWholesalers];
+                          const newSelectedWholesalers = [
+                            ...selectedWholesalers,
+                          ];
                           newSelectedWholesalers[index] = selectedOption;
                           setSelectedWholesalers(newSelectedWholesalers);
                         }}
-                        options={wholesalerList?.map(wholesaler => ({
+                        options={wholesalerList?.map((wholesaler) => ({
                           value: wholesaler.id,
-                          label: wholesaler.name
+                          label: wholesaler.name,
                         }))}
                         menuPortalTarget={document.body}
                         styles={{
@@ -475,9 +510,11 @@ function Purchasing() {
                         }}
                       />
                     </td>
-                    <td className="py-4">{order.product_name} - {order.presentation_name}</td>
+                    <td className="py-4">
+                      {order.product_name} - {order.presentation_name}
+                    </td>
                     {/* <td className="py-4">{order.soh}</td> */}
-                    <td className="py-4">{order.requisitions}</td>
+                    <td className="py-4 pl-4">{order.requisitions}</td>
                     <td className="py-4">{order.future_requisitions}</td>
                     <td className="py-4">{order.short}</td>
                     <td className="py-4">{order.ordered}</td>
@@ -510,7 +547,7 @@ function Purchasing() {
                       />
                     </td>
                   </tr>
-                )
+                );
               })}
             </tbody>
           </table>
