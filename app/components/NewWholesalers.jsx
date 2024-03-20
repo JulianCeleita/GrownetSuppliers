@@ -48,15 +48,16 @@ function NewWholesalers({ isvisible, onClose, setWholesalerList }) {
   //Api
   const enviarData = (e) => {
     e.preventDefault();
+    const formattedEmails = emails.join(";");
     const postData = {
       name: name,
       contact: contact,
       phone: phone,
       account_number: accountNumber,
-      email: emails,
+      email: formattedEmails,
       prefix: prefix,
     };
-
+    console.log(postData);
     axios
       .post(wholesalersCreateUrl, postData, {
         headers: {
