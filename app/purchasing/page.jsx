@@ -98,9 +98,6 @@ function Purchasing() {
       setOrdersWholesaler,
       setIsLoading
     );
-    console.log(startDate);
-    console.log(endDate);
-    console.log(workDate);
   }, [endDate, startDate]);
 
   useEffect(() => {
@@ -131,17 +128,17 @@ function Purchasing() {
     // Filter by search
     const filteredOrdersBySearch = searchQuery
       ? ordersWholesaler.filter(
-          (order) =>
-            order.product_name
-              .toLowerCase()
-              .includes(searchQuery.toLowerCase()) ||
-            order.presentation_name
-              .toLowerCase()
-              .includes(searchQuery.toLowerCase()) ||
-            order.presentation_code
-              .toLowerCase()
-              .includes(searchQuery.toLowerCase())
-        )
+        (order) =>
+          order.product_name
+            .toLowerCase()
+            .includes(searchQuery.toLowerCase()) ||
+          order.presentation_name
+            .toLowerCase()
+            .includes(searchQuery.toLowerCase()) ||
+          order.presentation_code
+            .toLowerCase()
+            .includes(searchQuery.toLowerCase())
+      )
       : ordersWholesaler;
 
     // Filter by state
@@ -149,19 +146,23 @@ function Purchasing() {
       selectedStatus === "short"
         ? filteredOrdersBySearch.filter((order) => order.short > 0)
         : selectedStatus === "available"
-        ? filteredOrdersBySearch.filter((order) => order.short === 0)
-        : filteredOrdersBySearch;
+          ? filteredOrdersBySearch.filter((order) => order.short === 0)
+          : filteredOrdersBySearch;
 
-    // Filter by category
-    const filteredOrdersByCategory =
-      selectedCategory === ""
-        ? filteredOrdersByShort
-        : filteredOrdersByShort.filter(
-            (order) => order.category_name === selectedCategory
-          );
-
+    let filteredOrdersBySelectedCategories = filteredOrdersByShort;
+    if (isCheckedCategories.length > 0) {
+      filteredOrdersBySelectedCategories = filteredOrdersByShort.filter((order) =>
+        isCheckedCategories.includes(order.category_name)
+      );
+    }
+    let filteredOrdersBySelectedWholesalers = filteredOrdersBySelectedCategories;
+    if (isCheckedWholesalert.length > 0) {
+      filteredOrdersBySelectedWholesalers = filteredOrdersBySelectedCategories.filter((order) =>
+        isCheckedWholesalert.includes(order.wholesaler_name)
+      );
+    }
     // Update orders with editableRows
-    const updatedOrders = filteredOrdersByCategory.map((order, index) => ({
+    const updatedOrders = filteredOrdersBySelectedWholesalers.map((order, index) => ({
       ...order,
       wholesaler_id:
         editableRows[order.presentation_code]?.wholesaler_id ||
@@ -171,14 +172,11 @@ function Purchasing() {
       cost: editableRows[order.presentation_code]?.cost || order.cost,
       note: editableRows[order.presentation_code]?.notes || order.note,
     }));
-    console.log(
-      "🚀 ~ updatedOrders ~ filteredOrdersByCategory:",
-      filteredOrdersByCategory
-    );
 
-    console.log("🚀 ~ updatedOrders ~ editableRows:", editableRows);
     setFilteredOrdersWholesaler(updatedOrders);
   }, [
+    isCheckedWholesalert,
+    isCheckedCategories,
     ordersWholesaler,
     selectedStatus,
     selectedCategory,
@@ -195,7 +193,7 @@ function Purchasing() {
   }, [products]);
 
   const handleEditField = (key, productCode, e) => {
-    if (e.target.value) {
+    if (e?.target?.value) {
       var value = e?.target?.value;
     } else {
       var value = e.value;
@@ -234,7 +232,6 @@ function Purchasing() {
     }
   };
 
-  console.log("editableRows:", editableRows);
 
   const handleSort = (column) => {
     if (sortColumn === column) {
@@ -270,7 +267,6 @@ function Purchasing() {
   ];
 
   const sendOrder = async () => {
-    //console.log(selectedWholesalers);
     try {
       const sendData = {
         orders_wholesaler: products.map((order) => ({
@@ -430,25 +426,12 @@ function Purchasing() {
               <option value="short">Short</option>
               <option value="available">Availables</option>
             </select>
-            <select
-              value={selectedCategory}
-              onChange={(e) => setSelectedCategory(e.target.value)}
-              className="form-select px-2 py-3 rounded-md border border-gray-300 text-sm custom:text-base w-[155px]"
-            >
-              <option value="">All Categories</option>
-              {uniqueCategories.map((category) => (
-                <option key={category} value={category}>
-                  {category}
-                </option>
-              ))}
-            </select>
           </div>
           <div className="flex gap-5">
             <div className="relative ">
               <button
-                className={`${
-                  !showCategories ? "text-gray-grownet" : "text-primary-blue"
-                } hover:scale-110 hover:text-primary-blue transition-all`}
+                className={`${!showCategories ? "text-gray-grownet" : "text-primary-blue"
+                  } hover:scale-110 hover:text-primary-blue transition-all`}
                 onClick={() => {
                   setShowCategories(!showCategories);
                   setShowWholesalerFilter(false);
@@ -478,11 +461,10 @@ function Purchasing() {
             </div>
             <div className="relative ">
               <button
-                className={`${
-                  !showWholesalerFilter
-                    ? "text-gray-grownet"
-                    : "text-primary-blue"
-                } hover:scale-110 hover:text-primary-blue transition-all`}
+                className={`${!showWholesalerFilter
+                  ? "text-gray-grownet"
+                  : "text-primary-blue"
+                  } hover:scale-110 hover:text-primary-blue transition-all`}
                 onClick={() => {
                   setShowWholesalerFilter(!showWholesalerFilter);
                   setShowCategories(false);
@@ -496,9 +478,9 @@ function Purchasing() {
                     <div className="flex gap-2">
                       <input
                         type="checkbox"
-                        checked={isCheckedWholesalert.includes(wholesalert)}
+                        checked={isCheckedWholesalert.includes(wholesalert.name)}
                         onChange={(event) =>
-                          handleCheckboxWholesalertChange(event, wholesalert)
+                          handleCheckboxWholesalertChange(event, wholesalert.name)
                         }
                         className="form-checkbox h-4 w-4 text-primary-blue cursor-pointer"
                       />
@@ -603,13 +585,13 @@ function Purchasing() {
                           editableRows[order.presentation_code]
                             ?.wholesaler_id || order.wholesaler_id
                             ? {
-                                value:
-                                  editableRows[order.presentation_code]
-                                    ?.wholesaler_id || order.wholesaler_id,
-                                label:
-                                  editableRows[order.presentation_code]
-                                    ?.label || order.wholesaler_name,
-                              }
+                              value:
+                                editableRows[order.presentation_code]
+                                  ?.wholesaler_id || order.wholesaler_id,
+                              label:
+                                editableRows[order.presentation_code]
+                                  ?.label || order.wholesaler_name,
+                            }
                             : null
                         }
                         onChange={(e) => {
