@@ -17,6 +17,7 @@ import {
   fetchOrderWholesaler,
   fetchWholesalerList,
 } from "../api/purchasingRequest";
+import ModalSendPurchasing from "../components/ModalSendPurchasing";
 
 function Purchasing() {
   const { token } = useTokenStore();
@@ -39,6 +40,7 @@ function Purchasing() {
   const [showErrorModal, setShowErrorModal] = useState(false);
   const [messageError, setMessageError] = useState("");
   const [isSendOrderDisabled, setIsSendOrderDisabled] = useState(true);
+  const [modalSendPurchasing, setModalSendPurchasing] = useState(false);
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
@@ -200,7 +202,7 @@ function Purchasing() {
   ];
 
   const sendOrder = async () => {
-    console.log(selectedWholesalers);
+    console.log("selectd: ", selectedWholesalers);
     try {
       const ordersToSend = filteredOrdersWholesaler.filter(
         (order) => order.quantity > 0
@@ -258,10 +260,11 @@ function Purchasing() {
 
           <div className="flex gap-4">
             <button
-              className={`flex bg-green py-3 px-4 rounded-lg text-white font-medium hover:scale-110 transition-all ${
+              className={`flex bg-green py-3 px-4 rounded-full text-white font-medium hover:scale-110 transition-all ${
                 isSendOrderDisabled ? "bg-gray-400 cursor-not-allowed" : ""
               }`}
               type="button"
+              //onClick={() => setModalSendPurchasing(true)}
               onClick={sendOrder}
               disabled={isSendOrderDisabled}
             >
@@ -579,6 +582,12 @@ function Purchasing() {
             <div className="loader"></div>
           </div>
         )}
+        {/* <ModalSendPurchasing
+          isvisible={modalSendPurchasing}
+          onClose={() => setModalSendPurchasing(false)}
+          sendOrder={sendOrder}
+          selectedWholesalers={selectedWholesalers}
+        /> */}
         <ModalSuccessfull
           isvisible={showSuccessModal}
           onClose={() => setShowSuccessModal(false)}
