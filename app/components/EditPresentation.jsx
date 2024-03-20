@@ -353,6 +353,7 @@ function EditPresentation({
                   value={selectedDivisible}
                   onChange={(e) => setSelectedDivisible(e.target.value)}
                   className="border p-2 rounded-md w-full"
+                  required
                 >
                   <option key="no" value={0}>
                     No

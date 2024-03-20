@@ -39,7 +39,7 @@ function CreateProduct({ isvisible, onClose, setProducts, setIsLoading }) {
   const [types, setTypes] = useState([]);
   const [divisible, setDivisible] = useState(1);
   const [divisibleSelected, setDivisibleSelected] = useState("");
-  console.log(divisible);
+
   const toggleBulk = () => {
     setBulk((current) => !current);
   };
@@ -347,6 +347,7 @@ function CreateProduct({ isvisible, onClose, setProducts, setIsLoading }) {
                     value={divisible}
                     onChange={handleDivisibleChange}
                     className="border p-2 rounded-md w-full"
+                    required
                   >
                     <option key="no" value={0}>
                       No
