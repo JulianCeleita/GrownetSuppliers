@@ -44,7 +44,13 @@ function Presentations() {
     if (user && user.rol_name === "AdminGrownet") {
       fetchPresentations(token, setProducts, setIsLoading);
     } else {
-      fetchPresentationsSupplier(token, user, setProducts, setIsLoading, setDescriptionData);
+      fetchPresentationsSupplier(
+        token,
+        user,
+        setProducts,
+        setIsLoading,
+        setDescriptionData
+      );
     }
   }, [user, token]);
 
