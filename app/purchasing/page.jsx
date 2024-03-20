@@ -58,8 +58,8 @@ function Purchasing() {
   const [isSendOrderDisabled, setIsSendOrderDisabled] = useState(true);
 
   const defaultDate = new Date();
-  const [startDate, setStartDate] = useState(new Date(workDate));
-  const [endDate, setEndDate] = useState(new Date(workDate));
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
   const [editableProductData, setEditableProductData] = useState({});
 
@@ -148,19 +148,34 @@ function Purchasing() {
           (order) => order.category_name === selectedCategory
         );
 
-    setFilteredOrdersWholesaler(filteredOrdersByCategory);
-  }, [ordersWholesaler, selectedStatus, selectedCategory, searchQuery]);
-
-  useEffect(() => {
-    const updatedOrders = ordersWholesaler.map((order, index) => ({
+    // Update orders with editableRows
+    const updatedOrders = filteredOrdersByCategory.map((order, index) => ({
       ...order,
       wholesaler_id: selectedWholesalers[index]?.value || order.wholesaler_id,
       quantity: editableRows[index]?.quantity || order.quantity,
       cost: editableRows[index]?.cost || order.cost,
       note: editableRows[index]?.notes || order.note,
     }));
+
     setFilteredOrdersWholesaler(updatedOrders);
-  }, [ordersWholesaler, editableRows]);
+  }, [
+    ordersWholesaler,
+    selectedStatus,
+    selectedCategory,
+    searchQuery,
+    editableRows,
+  ]);
+
+  // useEffect(() => {
+  //   const updatedOrders = ordersWholesaler.map((order, index) => ({
+  //     ...order,
+  //     wholesaler_id: selectedWholesalers[index]?.value || order.wholesaler_id,
+  //     quantity: editableRows[index]?.quantity || order.quantity,
+  //     cost: editableRows[index]?.cost || order.cost,
+  //     note: editableRows[index]?.notes || order.note,
+  //   }));
+  //   setFilteredOrdersWholesaler(updatedOrders);
+  // }, [ordersWholesaler, editableRows]);
 
   const checkIfAnyProductHasQuantity = () => {
     return filteredOrdersWholesaler.some(order => order.quantity > 0);
