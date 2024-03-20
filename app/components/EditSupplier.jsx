@@ -64,8 +64,9 @@ function EditSupplier({
         >
           <XMarkIcon className="h-6 w-6 text-gray-500" />
         </button>
-        <ExclamationCircleIcon className="h-8 w-8 text-green mb-2" />
-        <h1 className="text-2xl font-bold text-green mb-2">Edit Supplier</h1>
+        <h1 className="text-2xl font-bold text-dark-blue">
+          Edit <span className="text-primary-blue">supplier</span>
+        </h1>
         <form className="text-left" onSubmit={handleEditSupplier}>
           <div>
             <label htmlFor="name">Name: </label>

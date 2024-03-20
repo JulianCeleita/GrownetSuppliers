@@ -64,6 +64,9 @@ function EditPresentation({
   const [selectedTax, setSelectedTax] = useState(
     presentation ? presentation.tax : ""
   );
+  const [selectedDivisible, setSelectedDivisible] = useState(
+    presentation ? presentation.is_divisible : ""
+  );
 
   useEffect(() => {
     if (presentation && presentation.name) {
@@ -82,6 +85,7 @@ function EditPresentation({
     setSelectedTax(presentation ? presentation.taxes_id : "");
     setSelectedType(presentation ? presentation.type : "");
     setSelectedTypeId(presentation ? presentation.type_id : "");
+    setSelectedDivisible(presentation ? presentation.is_divisible : "");
   }, [presentation]);
 
   // Api products
@@ -213,160 +217,206 @@ function EditPresentation({
         >
           <XMarkIcon className="h-6 w-6 text-gray-500" />
         </button>
-        <ExclamationCircleIcon className="h-8 w-8 text-green mb-2" />
-        <h1 className="text-2xl font-bold text-green mb-2">
-          Edit presentation
+        <h1 className="text-2xl font-bold text-dark-blue">
+          Edit <span className="text-primary-blue">product</span>
         </h1>
         <form
-          className="text-left  flex flex-col"
+          className="text-left  flex flex-col mt-2"
           onSubmit={handleEditPresentation}
         >
-          <label htmlFor="produvt" className="mt-2">
-            Product:
-          </label>
-          <select
-            id="produvt"
-            name="produvt"
-            className="border p-3 rounded-md mr-3 my-3"
-            onChange={(e) => setSelectedProductsStatus(e.target.value)}
-            value={selectedProductsStatus}
-            required
-          >
-            <option value="" disabled>
-              Select product
-            </option>
-            {products?.map((product) => (
-              <option key={product.id} value={product.id}>
-                {product.name}
-              </option>
-            ))}
-          </select>
-          <div>
-            <label>Unit of measurement: </label>
+          <div className="flex items-center gap-2 ">
+            <label htmlFor="produvt" className="mt-2">
+              Product:
+            </label>
             <select
-              id="uom"
-              name="uom"
-              className="border p-3 rounded-md mr-3 mt-3"
+              id="produvt"
+              name="produvt"
+              className="border p-3 rounded-md w-full"
+              onChange={(e) => setSelectedProductsStatus(e.target.value)}
+              value={selectedProductsStatus}
               required
-              onChange={(e) => setSelectedUomsStatus(e.target.value)}
-              value={selectedUomsStatus}
             >
               <option value="" disabled>
-                Select uom
+                Select product
               </option>
-              {uoms?.map((uom) => (
-                <option key={uom.id} value={uom.id}>
-                  {uom.name}
+              {products?.map((product) => (
+                <option key={product.id} value={product.id}>
+                  {product.name}
                 </option>
               ))}
             </select>
-            <label htmlFor="taxes">Product taxes: </label>
-            <select
-              id="taxes"
-              name="taxes"
-              className="border p-3 rounded-md mr-3 mt-3"
-              required
-              onChange={(e) => setSelectedTax(e.target.value)}
-              value={selectedTax}
-            >
-              <option value="" disabled>
-                Select tax
-              </option>
-              {tax.map((tax) =>
-                tax.countries_indicative === 44 ? (
-                  <option key={tax.id} value={tax.id}>
-                    {`${tax.worth * 100}%`}
+          </div>
+          <div className="flex gap-2">
+            <div className="flex flex-col gap-2 mt-2 w-[50%]">
+              <div className="flex items-center gap-2">
+                <label className="w-[240px]">
+                  Unit of measurement:{" "}
+                  <span className="text-primary-blue">*</span>{" "}
+                </label>
+                <select
+                  id="uom"
+                  name="uom"
+                  className="border p-3 rounded-md w-full"
+                  required
+                  onChange={(e) => setSelectedUomsStatus(e.target.value)}
+                  value={selectedUomsStatus}
+                >
+                  <option value="" disabled>
+                    Select uom
                   </option>
-                ) : null
-              )}
-            </select>
+                  {uoms?.map((uom) => (
+                    <option key={uom.id} value={uom.id}>
+                      {uom.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div className="flex items-center gap-2">
+                <label htmlFor="taxes" className="">
+                  Type product: <span className="text-primary-blue">*</span>
+                </label>
+                <select
+                  id="type"
+                  name="type"
+                  className="border p-3 rounded-md w-full"
+                  required
+                  onChange={(e) => setSelectedTypeId(e.target.value)}
+                  value={selectedTypeId}
+                >
+                  <option value="" disabled selected>
+                    Type product
+                  </option>
+                  {types.map((type) => (
+                    <option key={type.id} value={type.id}>
+                      {type.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div className="flex items-center gap-2">
+                <label className="w-[80px]">
+                  Code: <span className="text-primary-blue">*</span>{" "}
+                </label>
+                <input
+                  className="border p-3 rounded-md w-full"
+                  placeholder="50"
+                  onChange={(e) => setCodePresentation(e.target.value)}
+                  type="text"
+                  value={codePresentation}
+                ></input>
+              </div>
+              <div className="flex items-center gap-2">
+                <label className="w-[80px]">
+                  Cost: <span className="text-primary-blue">*</span>{" "}
+                </label>
+                <input
+                  className="border p-3 rounded-md w-full"
+                  placeholder="50"
+                  type="number"
+                  step="0.01"
+                  value={editedCost}
+                  onChange={(e) => setEditedCost(e.target.value)}
+                  required
+                ></input>
+              </div>
+            </div>
+            <div className="flex flex-col gap-2 mt-2 w-[50%]">
+              <div className="flex items-center gap-2">
+                <label htmlFor="taxes" className="w-[130px]">
+                  Product taxes: <span className="text-primary-blue">*</span>{" "}
+                </label>
+                <select
+                  id="taxes"
+                  name="taxes"
+                  className="border p-3 rounded-md w-full"
+                  required
+                  onChange={(e) => setSelectedTax(e.target.value)}
+                  value={selectedTax}
+                >
+                  <option value="" disabled>
+                    Select tax
+                  </option>
+                  {tax.map((tax) =>
+                    tax.countries_indicative === 44 ? (
+                      <option key={tax.id} value={tax.id}>
+                        {`${tax.worth * 100}%`}
+                      </option>
+                    ) : null
+                  )}
+                </select>
+              </div>
+              <div className="flex items-center gap-2">
+                <label htmlFor="taxes" className="w-[150px]">
+                  Is divisible: <span className="text-primary-blue">*</span>
+                </label>
+                <select
+                  value={selectedDivisible}
+                  onChange={(e) => setSelectedDivisible(e.target.value)}
+                  className="border p-2 rounded-md w-full"
+                  required
+                >
+                  <option key="no" value={0}>
+                    No
+                  </option>
+                  <option key="yes" value={1}>
+                    Yes
+                  </option>
+                </select>
+              </div>
+              <div className="flex items-center gap-2">
+                <label className="w-[350px]">
+                  Packsize: <span className="text-primary-blue">*</span>
+                </label>
+                <input
+                  className="border p-3 rounded-md  w-full"
+                  placeholder="UOM"
+                  type="text"
+                  required
+                  value={editedName}
+                  onChange={(e) => setEditedName(e.target.value)}
+                ></input>
+                <select
+                  id="uom"
+                  name="uom"
+                  className="border p-3 rounded-md w-full"
+                  required
+                  value={editedName2}
+                  onChange={(e) => setEditedName2(e.target.value)}
+                >
+                  <option value="" disabled>
+                    UOM
+                  </option>
+                  {uoms?.map((uom) => (
+                    <option key={uom.id} value={uom.name}>
+                      {uom.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div className="flex items-center gap-2">
+                <label className="w-[160px]">
+                  Conversion: <span className="text-primary-blue">*</span>{" "}
+                </label>
+                <input
+                  className="border p-3 rounded-md w-full"
+                  placeholder="50"
+                  type="text"
+                  value={editedQuantity}
+                  onChange={(e) => setEditedQuantity(e.target.value)}
+                  required
+                ></input>
+              </div>
+            </div>
           </div>
-          <div>
-            <label htmlFor="taxes">Type product: </label>
-            <select
-              id="type"
-              name="type"
-              className="border p-3 rounded-md mr-3 mt-3"
-              required
-              onChange={(e) => setSelectedTypeId(e.target.value)}
-              value={selectedTypeId}
-            >
-              <option value="" disabled selected>
-                Type product
-              </option>
-              {types.map((type) => (
-                <option key={type.id} value={type.id}>
-                  {type.name}
-                </option>
-              ))}
-            </select>
-          </div>
-          <div>
-            <label>Code: </label>
-            <input
-              className="border p-3 rounded-md mr-3 mt-3"
-              placeholder="50"
-              onChange={(e) => setCodePresentation(e.target.value)}
-              type="text"
-              value={codePresentation}
-            ></input>
-            <label>Packsize: </label>
-            <input
-              className="border p-3 rounded-md mr-3 mt-3 w-[12%]"
-              placeholder="UOM"
-              type="text"
-              required
-              value={editedName}
-              onChange={(e) => setEditedName(e.target.value)}
-            ></input>
-            <select
-              id="uom"
-              name="uom"
-              className="border p-3 rounded-md mr-3 mt-3"
-              required
-              value={editedName2}
-              onChange={(e) => setEditedName2(e.target.value)}
-            >
-              <option value="" disabled>
-                UOM
-              </option>
-              {uoms?.map((uom) => (
-                <option key={uom.id} value={uom.name}>
-                  {uom.name}
-                </option>
-              ))}
-            </select>
-          </div>
-          <div>
-            <label>Cost: </label>
-            <input
-              className="border p-3 rounded-md mr-3 mt-3  w-[35.5%]"
-              placeholder="50"
-              type="number"
-              step="0.01"
-              value={editedCost}
-              onChange={(e) => setEditedCost(e.target.value)}
-              required
-            ></input>
 
-            <label>Quantity: </label>
-            <input
-              className="border p-3 rounded-md mr-3 mt-3"
-              placeholder="50"
-              type="text"
-              value={editedQuantity}
-              onChange={(e) => setEditedQuantity(e.target.value)}
-              required
-            ></input>
-          </div>
-          <div>
-            <label htmlFor="short" className="mt-2 mr-2">
+          <div className="flex items-center gap-2 mt-2">
+            <label htmlFor="short" className="w-[180px]">
               Automatic short:
             </label>
             <select
               id="short"
               name="short"
-              className="border p-3 rounded-md mr-3 my-3"
+              className="border p-3 rounded-md w-full"
               onChange={(e) => setSelectedShort(e.target.value)}
               required
             >

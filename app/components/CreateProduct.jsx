@@ -37,7 +37,7 @@ function CreateProduct({ isvisible, onClose, setProducts, setIsLoading }) {
   const { user, setUser } = useUserStore();
   const [bulk, setBulk] = useState(true);
   const [types, setTypes] = useState([]);
-  const [divisible, setDivisible] = useState(false);
+  const [divisible, setDivisible] = useState(1);
   const [divisibleSelected, setDivisibleSelected] = useState("");
 
   const toggleBulk = () => {
@@ -137,6 +137,7 @@ function CreateProduct({ isvisible, onClose, setProducts, setIsLoading }) {
           type: selectedType,
           supplier_id: user.id_supplier,
           flagshort: selectedShort,
+          is_divisible: divisible,
         }
       : {
           uoms_id: selecteUomsStatus,
@@ -223,8 +224,8 @@ function CreateProduct({ isvisible, onClose, setProducts, setIsLoading }) {
         {bulk ? (
           <form className="text-left flex flex-col" onSubmit={sendData}>
             <div className="flex items-center gap-2 mt-2">
-              <label htmlFor="produvt" className="mt-2">
-                Product:
+              <label htmlFor="produvt" className="mt-2 w-[100px]">
+                Product: <span className="text-primary-blue">*</span>
               </label>
               <select
                 id="produvt"
@@ -246,7 +247,10 @@ function CreateProduct({ isvisible, onClose, setProducts, setIsLoading }) {
             <div className="flex gap-2 mt-2">
               <div className="flex flex-col w-[50%] gap-2">
                 <div className="flex items-center gap-2">
-                  <label>Unit of measurement: </label>
+                  <label className="w-[250px]">
+                    Unit of measurement:{" "}
+                    <span className="text-primary-blue">*</span>{" "}
+                  </label>
                   <select
                     id="uom"
                     name="uom"
@@ -266,7 +270,7 @@ function CreateProduct({ isvisible, onClose, setProducts, setIsLoading }) {
                 </div>
                 <div className="flex items-center gap-2">
                   <label htmlFor="taxes" className="">
-                    Type product:{" "}
+                    Type product: <span className="text-primary-blue">*</span>
                   </label>
                   <select
                     id="type"
@@ -286,7 +290,9 @@ function CreateProduct({ isvisible, onClose, setProducts, setIsLoading }) {
                   </select>
                 </div>
                 <div className="flex items-center gap-2">
-                  <label>Code: </label>
+                  <label className="w-[80px]">
+                    Code: <span className="text-primary-blue">*</span>{" "}
+                  </label>
                   <input
                     className="border p-3 rounded-md w-full"
                     placeholder="50"
@@ -296,7 +302,9 @@ function CreateProduct({ isvisible, onClose, setProducts, setIsLoading }) {
                   ></input>
                 </div>
                 <div className="flex items-center gap-2">
-                  <label>Cost: </label>
+                  <label className="w-[80px]">
+                    Cost: <span className="text-primary-blue">*</span>{" "}
+                  </label>
                   <input
                     className="border p-3 rounded-md w-full"
                     placeholder="50"
@@ -309,7 +317,9 @@ function CreateProduct({ isvisible, onClose, setProducts, setIsLoading }) {
               </div>
               <div className="flex flex-col w-[50%] gap-2">
                 <div className="flex items-center gap-2">
-                  <label htmlFor="taxes">Product taxes: </label>
+                  <label htmlFor="taxes" className="w-[220px]">
+                    Product taxes: <span className="text-primary-blue">*</span>{" "}
+                  </label>
                   <select
                     id="taxes"
                     name="taxes"
@@ -330,13 +340,14 @@ function CreateProduct({ isvisible, onClose, setProducts, setIsLoading }) {
                   </select>
                 </div>
                 <div className="flex items-center gap-2">
-                  <label htmlFor="taxes" className="">
-                    Is divisible:{" "}
+                  <label htmlFor="taxes" className="w-[150px]">
+                    Is divisible: <span className="text-primary-blue">*</span>
                   </label>
                   <select
                     value={divisible}
                     onChange={handleDivisibleChange}
                     className="border p-2 rounded-md w-full"
+                    required
                   >
                     <option key="no" value={0}>
                       No
@@ -347,7 +358,9 @@ function CreateProduct({ isvisible, onClose, setProducts, setIsLoading }) {
                   </select>
                 </div>
                 <div className="flex items-center gap-2">
-                  <label>Packsize: </label>
+                  <label className="w-[350px]">
+                    Packsize: <span className="text-primary-blue">*</span>
+                  </label>
                   <input
                     className="border p-3 rounded-md w-full"
                     placeholder="6"
@@ -373,7 +386,9 @@ function CreateProduct({ isvisible, onClose, setProducts, setIsLoading }) {
                   </select>
                 </div>
                 <div className="flex items-center gap-2">
-                  <label>Conversion: </label>
+                  <label className="w-[160px]">
+                    Conversion: <span className="text-primary-blue">*</span>{" "}
+                  </label>
                   <input
                     className="border p-3 rounded-md w-full"
                     placeholder="50"
@@ -387,7 +402,7 @@ function CreateProduct({ isvisible, onClose, setProducts, setIsLoading }) {
 
             <div className="flex items-center">
               <label htmlFor="short" className="mt-2 mr-2 w-[200px]">
-                Automatic short:
+                Automatic short: <span className="text-primary-blue">*</span>
               </label>
               <select
                 id="short"

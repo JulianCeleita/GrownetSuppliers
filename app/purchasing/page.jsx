@@ -1,28 +1,14 @@
 "use client";
-import {
-  ArrowRightCircleIcon,
-  MinusCircleIcon,
-  NoSymbolIcon,
-  PencilSquareIcon,
-  PlusCircleIcon,
-  TrashIcon,
-} from "@heroicons/react/24/outline";
+import { ArrowRightCircleIcon, TrashIcon } from "@heroicons/react/24/outline";
 import axios from "axios";
 import { useEffect, useState } from "react";
-import EditPresentation from "../../app/components/EditPresentation";
-import {
-  deletePresentationUrl,
-  purchasingCreate,
-  purchasingUrl,
-  wholesalersUrl,
-} from "../../app/config/urls.config";
+
+import { purchasingCreate } from "../../app/config/urls.config";
 import useTokenStore from "../../app/store/useTokenStore";
-import ModalDelete from "../components/ModalDelete";
+
 import Layout from "../layoutS";
 import useUserStore from "../store/useUserStore";
-import Select, { menuPortalTarget } from "react-select";
-import CreateProduct from "../components/CreateProduct";
-import AutomaticShort from "../components/AutomaticShort";
+import Select from "react-select";
 import DatePicker from "react-datepicker";
 import useWorkDateStore from "../store/useWorkDateStore";
 import ModalSuccessfull from "../components/ModalSuccessfull";
@@ -36,12 +22,9 @@ function Purchasing() {
   const { token } = useTokenStore();
   const { workDate, setFetchWorkDate } = useWorkDateStore();
   const [isLoading, setIsLoading] = useState(true);
-  const [selectedWholesaler, setSelectedWholesaler] = useState(null);
   const [selectedStatus, setSelectedStatus] = useState("");
-  const [suppliers, setSuppliers] = useState([]);
   const [filterType, setFilterType] = useState("date");
   const [selectedDate, setSelectedDate] = useState("");
-  const { user, setUser } = useUserStore();
   const [sortColumn, setSortColumn] = useState(null);
   const [sortDirection, setSortDirection] = useState("asc");
   const [editableRows, setEditableRows] = useState({});
@@ -56,12 +39,9 @@ function Purchasing() {
   const [showErrorModal, setShowErrorModal] = useState(false);
   const [messageError, setMessageError] = useState("");
   const [isSendOrderDisabled, setIsSendOrderDisabled] = useState(true);
-
-  const defaultDate = new Date();
-  const [startDate, setStartDate] = useState(new Date(workDate));
-  const [endDate, setEndDate] = useState(new Date(workDate));
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
-  const [editableProductData, setEditableProductData] = useState({});
 
   const formatDateToShow = (dateString) => {
     if (!dateString) return "Loading...";
@@ -119,17 +99,17 @@ function Purchasing() {
     // Filter by search
     const filteredOrdersBySearch = searchQuery
       ? ordersWholesaler.filter(
-        (order) =>
-          order.product_name
-            .toLowerCase()
-            .includes(searchQuery.toLowerCase()) ||
-          order.presentation_name
-            .toLowerCase()
-            .includes(searchQuery.toLowerCase()) ||
-          order.presentation_code
-            .toLowerCase()
-            .includes(searchQuery.toLowerCase())
-      )
+          (order) =>
+            order.product_name
+              .toLowerCase()
+              .includes(searchQuery.toLowerCase()) ||
+            order.presentation_name
+              .toLowerCase()
+              .includes(searchQuery.toLowerCase()) ||
+            order.presentation_code
+              .toLowerCase()
+              .includes(searchQuery.toLowerCase())
+        )
       : ordersWholesaler;
 
     // Filter by state
@@ -137,50 +117,55 @@ function Purchasing() {
       selectedStatus === "short"
         ? filteredOrdersBySearch.filter((order) => order.short > 0)
         : selectedStatus === "available"
-          ? filteredOrdersBySearch.filter((order) => order.short === 0)
-          : filteredOrdersBySearch;
+        ? filteredOrdersBySearch.filter((order) => order.short === 0)
+        : filteredOrdersBySearch;
 
     // Filter by category
     const filteredOrdersByCategory =
       selectedCategory === ""
         ? filteredOrdersByShort
         : filteredOrdersByShort.filter(
-          (order) => order.category_name === selectedCategory
-        );
+            (order) => order.category_name === selectedCategory
+          );
 
-    setFilteredOrdersWholesaler(filteredOrdersByCategory);
-  }, [ordersWholesaler, selectedStatus, selectedCategory, searchQuery]);
-
-  useEffect(() => {
-    const updatedOrders = ordersWholesaler.map((order, index) => ({
+    // Update orders with editableRows
+    const updatedOrders = filteredOrdersByCategory.map((order, index) => ({
       ...order,
       wholesaler_id: selectedWholesalers[index]?.value || order.wholesaler_id,
-      quantity: editableRows[index]?.quantity || order.quantity,
-      cost: editableRows[index]?.cost || order.cost,
-      note: editableRows[index]?.notes || order.note,
+      quantity:
+        editableRows[order.presentation_code]?.quantity || order.quantity,
+      cost: editableRows[order.presentation_code]?.cost || order.cost,
+      note: editableRows[order.presentation_code]?.notes || order.note,
     }));
+
     setFilteredOrdersWholesaler(updatedOrders);
-  }, [ordersWholesaler, editableRows]);
+  }, [
+    ordersWholesaler,
+    selectedStatus,
+    selectedCategory,
+    searchQuery,
+    editableRows,
+  ]);
 
   const checkIfAnyProductHasQuantity = () => {
-    return filteredOrdersWholesaler.some(order => order.quantity > 0);
+    return filteredOrdersWholesaler.some((order) => order.quantity > 0);
   };
 
   useEffect(() => {
     setIsSendOrderDisabled(!checkIfAnyProductHasQuantity());
   }, [filteredOrdersWholesaler]);
 
-  const handleEditField = (key, rowIndex, e) => {
+  const handleEditField = (key, productCode, e) => {
     const value = e.target.value;
-    const updatedRows = { ...editableRows };
-    if (!updatedRows[rowIndex]) {
-      updatedRows[rowIndex] = {};
-    }
-    updatedRows[rowIndex][key] = value;
-    setEditableRows(updatedRows);
+    setEditableRows((prevEditableRows) => ({
+      ...prevEditableRows,
+      [productCode]: {
+        ...prevEditableRows[productCode],
+        [key]: value,
+      },
+    }));
   };
-
-
+  console.log("editableRows:", editableRows);
   const handleSort = (column) => {
     if (sortColumn === column) {
       setSortDirection(sortDirection === "asc" ? "desc" : "asc");
@@ -209,16 +194,18 @@ function Purchasing() {
       return 0;
     }
   });
-
+  console.log("sortedOrders:", sortedOrders);
   const uniqueCategories = [
     ...new Set(ordersWholesaler.map((order) => order.category_name)),
   ];
 
   const sendOrder = async () => {
-    console.log(selectedWholesalers)
+    console.log(selectedWholesalers);
     try {
-      const ordersToSend = filteredOrdersWholesaler.filter(order => order.quantity > 0);
-      console.log("🚀 ~ sendOrder ~ ordersToSend:", ordersToSend)
+      const ordersToSend = filteredOrdersWholesaler.filter(
+        (order) => order.quantity > 0
+      );
+      console.log("🚀 ~ sendOrder ~ ordersToSend:", ordersToSend);
 
       const sendData = {
         orders_wholesaler: ordersToSend.map((order, index) => ({
@@ -227,26 +214,33 @@ function Purchasing() {
           date_delivery: workDate,
           note: order.note,
           cost: order.cost,
-          purchasing_qty: order.quantity
-        }))
+          purchasing_qty: order.quantity,
+        })),
       };
-      console.log("🚀 ~ sendOrder ~ sendData:", sendData)
+      console.log("🚀 ~ sendOrder ~ sendData:", sendData);
 
       const response = await axios.post(purchasingCreate, sendData, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
-      console.log(response)
+      console.log(response);
 
       if (response.status === 200) {
-        fetchOrderWholesaler(startDate, endDate, token, setOrdersWholesaler, setIsLoading)
-        setSelectedWholesalers(Array(filteredOrdersWholesaler.length).fill(null));
+        fetchOrderWholesaler(
+          startDate,
+          endDate,
+          token,
+          setOrdersWholesaler,
+          setIsLoading
+        );
+        setSelectedWholesalers(
+          Array(filteredOrdersWholesaler.length).fill(null)
+        );
         setEditableRows({});
         setFilteredOrdersWholesaler([]);
-        setShowSuccessModal(true)
+        setShowSuccessModal(true);
       }
-
     } catch (error) {
       setMessageError(error.response.data.message);
       setShowErrorModal(true);
@@ -264,8 +258,9 @@ function Purchasing() {
 
           <div className="flex gap-4">
             <button
-              className={`flex bg-green py-3 px-4 rounded-lg text-white font-medium hover:scale-110 transition-all ${isSendOrderDisabled ? "bg-gray-400 cursor-not-allowed" : ""
-                }`}
+              className={`flex bg-green py-3 px-4 rounded-lg text-white font-medium hover:scale-110 transition-all ${
+                isSendOrderDisabled ? "bg-gray-400 cursor-not-allowed" : ""
+              }`}
               type="button"
               onClick={sendOrder}
               disabled={isSendOrderDisabled}
@@ -463,8 +458,10 @@ function Purchasing() {
             <tbody>
               {sortedOrders?.map((order, index) => {
                 const quantity =
-                  editableRows[index]?.quantity || order.quantity;
-                const cost = editableRows[index]?.cost || order.cost;
+                  editableRows[order.presentation_code]?.quantity ||
+                  order.quantity;
+                const cost =
+                  editableRows[order.presentation_code]?.cost || order.cost;
                 const totalCost = isNaN(quantity * cost) ? 0 : quantity * cost;
                 return (
                   <tr className="text-dark-blue border-b-2 border-stone-100">
@@ -521,28 +518,53 @@ function Purchasing() {
                     <td className="py-4">
                       <input
                         type="number"
-                        value={editableRows[index]?.quantity || order.quantity}
-                        onChange={(e) => handleEditField("quantity", index, e)}
+                        value={
+                          editableRows[order.presentation_code]?.quantity ||
+                          order.quantity ||
+                          ""
+                        }
+                        onChange={(e) =>
+                          handleEditField(
+                            "quantity",
+                            order.presentation_code,
+                            e
+                          )
+                        }
                         className="pl-2 h-[30px] outline-none w-full hide-number-arrows"
-                        style={{ WebkitAppearance: "none", MozAppearance: "textfield" }}
+                        style={{
+                          WebkitAppearance: "none",
+                          MozAppearance: "textfield",
+                        }}
                       />
                     </td>
                     <td className="py-4">
                       <input
                         type="number"
                         step="0.01"
-                        value={editableRows[index]?.cost || order.cost}
+                        value={
+                          editableRows[order.presentation_code]?.cost ||
+                          order.cost
+                        }
                         onChange={(e) => handleEditField("cost", index, e)}
                         className="pl-2 h-[30px] outline-none w-full hide-number-arrows"
-                        style={{ WebkitAppearance: "none", MozAppearance: "textfield" }}
+                        style={{
+                          WebkitAppearance: "none",
+                          MozAppearance: "textfield",
+                        }}
                       />
                     </td>
                     <td className="py-4">{totalCost}</td>
                     <td className="py-4">
                       <input
                         type="text"
-                        value={editableRows[index]?.notes || order.note}
-                        onChange={(e) => handleEditField("notes", index, e)}
+                        value={
+                          editableRows[order.presentation_code]?.notes ||
+                          order.note ||
+                          ""
+                        }
+                        onChange={(e) =>
+                          handleEditField("notes", order.presentation_code, e)
+                        }
                         className="pl-2 h-[30px] outline-none w-full hide-number-arrows"
                       />
                     </td>
