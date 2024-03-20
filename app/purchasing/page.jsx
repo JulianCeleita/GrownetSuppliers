@@ -49,10 +49,28 @@ function Purchasing() {
   const [searchQuery, setSearchQuery] = useState("");
   const [showCategories, setShowCategories] = useState(false);
   const [showWholesalerFilter, setShowWholesalerFilter] = useState(false);
-  const [isCheckedCategory, setIsCheckedCategory] = useState(false);
+  const [isCheckedCategories, setIsCheckedCategories] = useState([]);
+  const [isCheckedWholesalert, setIsCheckedWholesalert] = useState([]);
 
-  const handleCheckboxChange = (event) => {
-    setIsCheckedCategory(event.target.checked);
+  const handleCheckboxChange = (event, category) => {
+    const { checked } = event.target;
+    setIsCheckedCategories((prevCheckedCategories) => {
+      if (checked) {
+        return [...prevCheckedCategories, category];
+      } else {
+        return prevCheckedCategories.filter((item) => item !== category);
+      }
+    });
+  };
+  const handleCheckboxWholesalertChange = (event, wholesalert) => {
+    const { checked } = event.target;
+    setIsCheckedWholesalert((prevCheckedWholesalert) => {
+      if (checked) {
+        return [...prevCheckedWholesalert, wholesalert];
+      } else {
+        return prevCheckedWholesalert.filter((item) => item !== wholesalert);
+      }
+    });
   };
 
   const { products, setProducts } = usePerchasingStore();
@@ -423,7 +441,10 @@ function Purchasing() {
                 className={`${
                   !showCategories ? "text-gray-grownet" : "text-primary-blue"
                 } hover:scale-110 hover:text-primary-blue transition-all`}
-                onClick={() => setShowCategories(!showCategories)}
+                onClick={() => {
+                  setShowCategories(!showCategories);
+                  setShowWholesalerFilter(false);
+                }}
               >
                 <FunnelIcon className="h-8 w-8" />
               </button>
@@ -433,9 +454,11 @@ function Purchasing() {
                     <div className="flex gap-2">
                       <input
                         type="checkbox"
-                        checked={isCheckedCategory}
-                        onChange={handleCheckboxChange}
-                        className="form-checkbox h-4 w-4 text-blue-500 cursor-pointer"
+                        checked={isCheckedCategories.includes(category)}
+                        onChange={(event) =>
+                          handleCheckboxChange(event, category)
+                        }
+                        className="form-checkbox h-4 w-4 text-primary-blue cursor-pointer"
                       />
                       <p key={category} value={category}>
                         {category}
@@ -452,23 +475,26 @@ function Purchasing() {
                     ? "text-gray-grownet"
                     : "text-primary-blue"
                 } hover:scale-110 hover:text-primary-blue transition-all`}
-                onClick={() => setShowWholesalerFilter(!showWholesalerFilter)}
+                onClick={() => {
+                  setShowWholesalerFilter(!showWholesalerFilter);
+                  setShowCategories(false);
+                }}
               >
                 <Bars3BottomRightIcon className="h-8 w-8" />
               </button>
               {showWholesalerFilter && (
                 <div className="bg-white p-3 rounded-lg shadow-[0_3px_10px_rgb(0,0,0,0.2)] absolute z-10 -right-[15px]">
-                  {uniqueCategories.map((category) => (
+                  {wholesalerList.map((wholesalert) => (
                     <div className="flex gap-2">
                       <input
                         type="checkbox"
-                        checked={isCheckedCategory}
-                        onChange={handleCheckboxChange}
-                        className="form-checkbox h-4 w-4 text-blue-500 cursor-pointer"
+                        checked={isCheckedWholesalert.includes(wholesalert)}
+                        onChange={(event) =>
+                          handleCheckboxWholesalertChange(event, wholesalert)
+                        }
+                        className="form-checkbox h-4 w-4 text-primary-blue cursor-pointer"
                       />
-                      <p key={category} value={category}>
-                        {category}
-                      </p>
+                      <p key={wholesalert.id}>{wholesalert.name}</p>
                     </div>
                   ))}
                 </div>
@@ -477,8 +503,8 @@ function Purchasing() {
           </div>
         </div>
         <div className="flex items-center justify-center mb-20 overflow-x-auto">
-          <table className="w-[95%] bg-white first-line:bg-white rounded-2xl text-left shadow-[rgba(17,_17,_26,_0.1)_0px_0px_16px]">
-            <thead className="sticky top-0 bg-white shadow-[0px_11px_15px_-3px_#edf2f7] ">
+          <table className="w-[95%] bg-white first-line:bg-white rounded-2xl shadow-[rgba(17,_17,_26,_0.1)_0px_0px_16px]">
+            <thead className="sticky top-0 bg-white text-center shadow-[0px_11px_15px_-3px_#edf2f7] ">
               <tr className="border-b-2 border-stone-100 text-dark-blue">
                 <th
                   className="p-4 rounded-tl-lg cursor-pointer hover:bg-gray-100 transition-all select-none"
