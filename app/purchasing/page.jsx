@@ -6,7 +6,7 @@ import {
   Bars3BottomRightIcon,
 } from "@heroicons/react/24/outline";
 import axios from "axios";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { purchasingCreate } from "../../app/config/urls.config";
 import useTokenStore from "../../app/store/useTokenStore";
 import Layout from "../layoutS";
@@ -72,7 +72,28 @@ function Purchasing() {
       }
     });
   };
+  //Cerrar filtros al oprimir afuera de la pantalla
+  const categoriesRef = useRef(null);
+  const wholesalerRef = useRef(null);
 
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (
+        categoriesRef.current &&
+        !categoriesRef.current.contains(event.target) &&
+        wholesalerRef.current &&
+        !wholesalerRef.current.contains(event.target)
+      ) {
+        setShowCategories(false);
+        setShowWholesalerFilter(false);
+      }
+    }
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
   const { products, setProducts } = usePerchasingStore();
 
   const formatDateToShow = (dateString) => {
@@ -128,17 +149,17 @@ function Purchasing() {
     // Filter by search
     const filteredOrdersBySearch = searchQuery
       ? ordersWholesaler.filter(
-        (order) =>
-          order.product_name
-            .toLowerCase()
-            .includes(searchQuery.toLowerCase()) ||
-          order.presentation_name
-            .toLowerCase()
-            .includes(searchQuery.toLowerCase()) ||
-          order.presentation_code
-            .toLowerCase()
-            .includes(searchQuery.toLowerCase())
-      )
+          (order) =>
+            order.product_name
+              .toLowerCase()
+              .includes(searchQuery.toLowerCase()) ||
+            order.presentation_name
+              .toLowerCase()
+              .includes(searchQuery.toLowerCase()) ||
+            order.presentation_code
+              .toLowerCase()
+              .includes(searchQuery.toLowerCase())
+        )
       : ordersWholesaler;
 
     // Filter by state
@@ -146,32 +167,36 @@ function Purchasing() {
       selectedStatus === "short"
         ? filteredOrdersBySearch.filter((order) => order.short > 0)
         : selectedStatus === "available"
-          ? filteredOrdersBySearch.filter((order) => order.short === 0)
-          : filteredOrdersBySearch;
+        ? filteredOrdersBySearch.filter((order) => order.short === 0)
+        : filteredOrdersBySearch;
 
     let filteredOrdersBySelectedCategories = filteredOrdersByShort;
     if (isCheckedCategories.length > 0) {
-      filteredOrdersBySelectedCategories = filteredOrdersByShort.filter((order) =>
-        isCheckedCategories.includes(order.category_name)
+      filteredOrdersBySelectedCategories = filteredOrdersByShort.filter(
+        (order) => isCheckedCategories.includes(order.category_name)
       );
     }
-    let filteredOrdersBySelectedWholesalers = filteredOrdersBySelectedCategories;
+    let filteredOrdersBySelectedWholesalers =
+      filteredOrdersBySelectedCategories;
     if (isCheckedWholesalert.length > 0) {
-      filteredOrdersBySelectedWholesalers = filteredOrdersBySelectedCategories.filter((order) =>
-        isCheckedWholesalert.includes(order.wholesaler_name)
-      );
+      filteredOrdersBySelectedWholesalers =
+        filteredOrdersBySelectedCategories.filter((order) =>
+          isCheckedWholesalert.includes(order.wholesaler_name)
+        );
     }
     // Update orders with editableRows
-    const updatedOrders = filteredOrdersBySelectedWholesalers.map((order, index) => ({
-      ...order,
-      wholesaler_id:
-        editableRows[order.presentation_code]?.wholesaler_id ||
-        order.wholesaler_id,
-      quantity:
-        editableRows[order.presentation_code]?.quantity || order.quantity,
-      cost: editableRows[order.presentation_code]?.cost || order.cost,
-      note: editableRows[order.presentation_code]?.notes || order.note,
-    }));
+    const updatedOrders = filteredOrdersBySelectedWholesalers.map(
+      (order, index) => ({
+        ...order,
+        wholesaler_id:
+          editableRows[order.presentation_code]?.wholesaler_id ||
+          order.wholesaler_id,
+        quantity:
+          editableRows[order.presentation_code]?.quantity || order.quantity,
+        cost: editableRows[order.presentation_code]?.cost || order.cost,
+        note: editableRows[order.presentation_code]?.notes || order.note,
+      })
+    );
 
     setFilteredOrdersWholesaler(updatedOrders);
   }, [
@@ -192,9 +217,7 @@ function Purchasing() {
     setIsSendOrderDisabled(!checkIfAnyProductHasQuantity());
   }, [products]);
 
-
   const handleEditField = (key, productCode, value) => {
-
     if (key === "quantity" && isNaN(value)) {
       return;
     }
@@ -227,7 +250,6 @@ function Purchasing() {
       setProducts(updatedProducts);
     }
   };
-
 
   const handleSort = (column) => {
     if (sortColumn === column) {
@@ -424,10 +446,11 @@ function Purchasing() {
             </select>
           </div>
           <div className="flex gap-5">
-            <div className="relative ">
+            <div ref={categoriesRef} className="relative ">
               <button
-                className={`${!showCategories ? "text-gray-grownet" : "text-primary-blue"
-                  } hover:scale-110 hover:text-primary-blue transition-all`}
+                className={`${
+                  !showCategories ? "text-gray-grownet" : "text-primary-blue"
+                } hover:scale-110 hover:text-primary-blue transition-all`}
                 onClick={() => {
                   setShowCategories(!showCategories);
                   setShowWholesalerFilter(false);
@@ -455,12 +478,13 @@ function Purchasing() {
                 </div>
               )}
             </div>
-            <div className="relative ">
+            <div ref={wholesalerRef} className="relative ">
               <button
-                className={`${!showWholesalerFilter
-                  ? "text-gray-grownet"
-                  : "text-primary-blue"
-                  } hover:scale-110 hover:text-primary-blue transition-all`}
+                className={`${
+                  !showWholesalerFilter
+                    ? "text-gray-grownet"
+                    : "text-primary-blue"
+                } hover:scale-110 hover:text-primary-blue transition-all`}
                 onClick={() => {
                   setShowWholesalerFilter(!showWholesalerFilter);
                   setShowCategories(false);
@@ -474,9 +498,14 @@ function Purchasing() {
                     <div className="flex gap-2">
                       <input
                         type="checkbox"
-                        checked={isCheckedWholesalert.includes(wholesalert.name)}
+                        checked={isCheckedWholesalert.includes(
+                          wholesalert.name
+                        )}
                         onChange={(event) =>
-                          handleCheckboxWholesalertChange(event, wholesalert.name)
+                          handleCheckboxWholesalertChange(
+                            event,
+                            wholesalert.name
+                          )
                         }
                         className="form-checkbox h-4 w-4 text-primary-blue cursor-pointer"
                       />
@@ -581,13 +610,13 @@ function Purchasing() {
                           editableRows[order.presentation_code]
                             ?.wholesaler_id || order.wholesaler_id
                             ? {
-                              value:
-                                editableRows[order.presentation_code]
-                                  ?.wholesaler_id || order.wholesaler_id,
-                              label:
-                                editableRows[order.presentation_code]
-                                  ?.label || order.wholesaler_name,
-                            }
+                                value:
+                                  editableRows[order.presentation_code]
+                                    ?.wholesaler_id || order.wholesaler_id,
+                                label:
+                                  editableRows[order.presentation_code]
+                                    ?.label || order.wholesaler_name,
+                              }
                             : null
                         }
                         onChange={(selectedOption) => {
