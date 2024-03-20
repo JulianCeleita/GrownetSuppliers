@@ -1,5 +1,10 @@
 "use client";
-import { ArrowRightCircleIcon, TrashIcon } from "@heroicons/react/24/outline";
+import {
+  ArrowRightCircleIcon,
+  TrashIcon,
+  FunnelIcon,
+  Bars3BottomRightIcon,
+} from "@heroicons/react/24/outline";
 import axios from "axios";
 import { useEffect, useState } from "react";
 
@@ -44,6 +49,13 @@ function Purchasing() {
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
+  const [showCategories, setShowCategories] = useState(false);
+  const [showWholesalerFilter, setShowWholesalerFilter] = useState(false);
+  const [isCheckedCategory, setIsCheckedCategory] = useState(false);
+
+  const handleCheckboxChange = (event) => {
+    setIsCheckedCategory(event.target.checked);
+  };
 
   const formatDateToShow = (dateString) => {
     if (!dateString) return "Loading...";
@@ -273,114 +285,174 @@ function Purchasing() {
             </button>
           </div>
         </div>
-        <div className="flex ml-5 mb-4 gap-2">
-          <div className="border border-gray-300  rounded-md py-3 px-2 flex items-center">
-            <input
-              type="text"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search"
-              className="placeholder-[#04444F] outline-none text-sm custom:text-base w-[170px]"
-            />
-            {searchQuery != "" && (
-              <button
-                onClick={() => {
-                  setSearchQuery("");
-                }}
-              >
-                <TrashIcon className="h-6 w-6 text-danger" />
-              </button>
+        <div className="flex mx-8 mb-4 items-center justify-between ">
+          <div className="flex gap-1">
+            <div className="border border-gray-300  rounded-md py-3 px-2 flex items-center">
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Search"
+                className="placeholder-[#04444F] outline-none text-sm custom:text-base w-[170px]"
+              />
+              {searchQuery != "" && (
+                <button
+                  onClick={() => {
+                    setSearchQuery("");
+                  }}
+                >
+                  <TrashIcon className="h-6 w-6 text-danger" />
+                </button>
+              )}
+            </div>
+            <select
+              value={filterType}
+              onChange={(e) => setFilterType(e.target.value)}
+              className="form-select px-2 py-3 rounded-md border border-gray-300 text-sm custom:text-base w-[155px]"
+            >
+              <option value="range">Filter by range</option>
+              <option value="date">Filter by date</option>
+            </select>
+            {filterType === "range" && (
+              <>
+                <DatePicker
+                  selected={startDate}
+                  onChange={(date) => {
+                    setStartDate(date);
+                    setEndDate((currentEndDate) => {
+                      if (date && currentEndDate) {
+                        setDateFilter("range");
+                      }
+                      return currentEndDate;
+                    });
+                  }}
+                  selectsStart
+                  startDate={startDate}
+                  endDate={endDate}
+                  className="form-input px-3 py-3 rounded-md border border-gray-300 w-[120px] text-sm custom:text-base"
+                  dateFormat="dd/MM/yyyy"
+                  placeholderText="dd/mm/yyyy"
+                />
+                <DatePicker
+                  selected={endDate}
+                  onChange={(date) => {
+                    setEndDate(date);
+                    setStartDate((currentStartDate) => {
+                      if (currentStartDate && date) {
+                        setDateFilter("range");
+                      }
+                      return currentStartDate;
+                    });
+                  }}
+                  selectsEnd
+                  startDate={startDate}
+                  endDate={endDate}
+                  minDate={startDate}
+                  className="form-input px-3 py-3 w-[120px] rounded-md border border-gray-300 text-sm custom:text-base"
+                  dateFormat="dd/MM/yyyy"
+                  placeholderText="dd/mm/yyyy"
+                />
+              </>
             )}
-          </div>
-          <select
-            value={filterType}
-            onChange={(e) => setFilterType(e.target.value)}
-            className="form-select px-2 py-3 rounded-md border border-gray-300 text-sm custom:text-base w-[155px]"
-          >
-            <option value="range">Filter by range</option>
-            <option value="date">Filter by date</option>
-          </select>
-          {filterType === "range" && (
-            <>
+
+            {filterType === "date" && (
               <DatePicker
-                selected={startDate}
+                selected={selectedDate}
                 onChange={(date) => {
+                  setSelectedDate(date);
+                  setDateFilter("date");
                   setStartDate(date);
-                  setEndDate((currentEndDate) => {
-                    if (date && currentEndDate) {
-                      setDateFilter("range");
-                    }
-                    return currentEndDate;
-                  });
-                }}
-                selectsStart
-                startDate={startDate}
-                endDate={endDate}
-                className="form-input px-3 py-3 rounded-md border border-gray-300 w-[120px] text-sm custom:text-base"
-                dateFormat="dd/MM/yyyy"
-                placeholderText="dd/mm/yyyy"
-              />
-              <DatePicker
-                selected={endDate}
-                onChange={(date) => {
                   setEndDate(date);
-                  setStartDate((currentStartDate) => {
-                    if (currentStartDate && date) {
-                      setDateFilter("range");
-                    }
-                    return currentStartDate;
-                  });
                 }}
-                selectsEnd
-                startDate={startDate}
-                endDate={endDate}
-                minDate={startDate}
-                className="form-input px-3 py-3 w-[120px] rounded-md border border-gray-300 text-sm custom:text-base"
+                className="form-input px-3 py-3 w-[95px] rounded-md border border-gray-300 text-dark-blue placeholder-dark-blue text-sm custom:text-base"
                 dateFormat="dd/MM/yyyy"
-                placeholderText="dd/mm/yyyy"
+                placeholderText={formatDateToShow(workDate)}
               />
-            </>
-          )}
+            )}
 
-          {filterType === "date" && (
-            <DatePicker
-              selected={selectedDate}
-              onChange={(date) => {
-                setSelectedDate(date);
-                setDateFilter("date");
-                setStartDate(date);
-                setEndDate(date);
-              }}
-              className="form-input px-3 py-3 w-[95px] rounded-md border border-gray-300 text-dark-blue placeholder-dark-blue text-sm custom:text-base"
-              dateFormat="dd/MM/yyyy"
-              placeholderText={formatDateToShow(workDate)}
-            />
-          )}
-
-          <select
-            value={selectedStatus}
-            onChange={(e) => setSelectedStatus(e.target.value)}
-            className="form-select px-2 py-3 rounded-md border border-gray-300 text-sm custom:text-base w-[155px]"
-          >
-            <option value="" disabled selected>
-              Select status:
-            </option>
-            <option value="all">All</option>
-            <option value="short">Short</option>
-            <option value="available">Availables</option>
-          </select>
-          <select
-            value={selectedCategory}
-            onChange={(e) => setSelectedCategory(e.target.value)}
-            className="form-select px-2 py-3 rounded-md border border-gray-300 text-sm custom:text-base w-[155px]"
-          >
-            <option value="">All Categories</option>
-            {uniqueCategories.map((category) => (
-              <option key={category} value={category}>
-                {category}
+            <select
+              value={selectedStatus}
+              onChange={(e) => setSelectedStatus(e.target.value)}
+              className="form-select px-2 py-3 rounded-md border border-gray-300 text-sm custom:text-base w-[155px]"
+            >
+              <option value="" disabled selected>
+                Select status:
               </option>
-            ))}
-          </select>
+              <option value="all">All</option>
+              <option value="short">Short</option>
+              <option value="available">Availables</option>
+            </select>
+            <select
+              value={selectedCategory}
+              onChange={(e) => setSelectedCategory(e.target.value)}
+              className="form-select px-2 py-3 rounded-md border border-gray-300 text-sm custom:text-base w-[155px]"
+            >
+              <option value="">All Categories</option>
+              {uniqueCategories.map((category) => (
+                <option key={category} value={category}>
+                  {category}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div className="flex gap-5">
+            <div className="relative ">
+              <button
+                className={`${
+                  !showCategories ? "text-gray-grownet" : "text-primary-blue"
+                } hover:scale-110 hover:text-primary-blue transition-all`}
+                onClick={() => setShowCategories(!showCategories)}
+              >
+                <FunnelIcon className="h-8 w-8" />
+              </button>
+              {showCategories && (
+                <div className="bg-white p-3 rounded-lg shadow-[0_3px_10px_rgb(0,0,0,0.2)] absolute z-10 -right-14">
+                  {uniqueCategories.map((category) => (
+                    <div className="flex gap-2">
+                      <input
+                        type="checkbox"
+                        checked={isCheckedCategory}
+                        onChange={handleCheckboxChange}
+                        className="form-checkbox h-4 w-4 text-blue-500 cursor-pointer"
+                      />
+                      <p key={category} value={category}>
+                        {category}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+            <div className="relative ">
+              <button
+                className={`${
+                  !showWholesalerFilter
+                    ? "text-gray-grownet"
+                    : "text-primary-blue"
+                } hover:scale-110 hover:text-primary-blue transition-all`}
+                onClick={() => setShowWholesalerFilter(!showWholesalerFilter)}
+              >
+                <Bars3BottomRightIcon className="h-8 w-8" />
+              </button>
+              {showWholesalerFilter && (
+                <div className="bg-white p-3 rounded-lg shadow-[0_3px_10px_rgb(0,0,0,0.2)] absolute z-10 -right-[15px]">
+                  {uniqueCategories.map((category) => (
+                    <div className="flex gap-2">
+                      <input
+                        type="checkbox"
+                        checked={isCheckedCategory}
+                        onChange={handleCheckboxChange}
+                        className="form-checkbox h-4 w-4 text-blue-500 cursor-pointer"
+                      />
+                      <p key={category} value={category}>
+                        {category}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
         </div>
         <div className="flex items-center justify-center mb-20 overflow-x-auto">
           <table className="w-[95%] bg-white first-line:bg-white rounded-2xl text-left shadow-[rgba(17,_17,_26,_0.1)_0px_0px_16px]">
