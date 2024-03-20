@@ -7,12 +7,9 @@ import {
 } from "@heroicons/react/24/outline";
 import axios from "axios";
 import { useEffect, useState } from "react";
-
 import { purchasingCreate } from "../../app/config/urls.config";
 import useTokenStore from "../../app/store/useTokenStore";
-
 import Layout from "../layoutS";
-import useUserStore from "../store/useUserStore";
 import Select from "react-select";
 import DatePicker from "react-datepicker";
 import useWorkDateStore from "../store/useWorkDateStore";
@@ -22,6 +19,7 @@ import {
   fetchOrderWholesaler,
   fetchWholesalerList,
 } from "../api/purchasingRequest";
+import usePerchasingStore from "../store/usePurchasingStore";
 import ModalSendPurchasing from "../components/ModalSendPurchasing";
 
 function Purchasing() {
@@ -56,6 +54,8 @@ function Purchasing() {
   const handleCheckboxChange = (event) => {
     setIsCheckedCategory(event.target.checked);
   };
+
+  const { products, setProducts } = usePerchasingStore();
 
   const formatDateToShow = (dateString) => {
     if (!dateString) return "Loading...";
@@ -162,15 +162,20 @@ function Purchasing() {
   ]);
 
   const checkIfAnyProductHasQuantity = () => {
-    return filteredOrdersWholesaler.some((order) => order.quantity > 0);
+    return products.some((order) => order.quantity > 0);
   };
 
   useEffect(() => {
     setIsSendOrderDisabled(!checkIfAnyProductHasQuantity());
-  }, [filteredOrdersWholesaler]);
+  }, [products]);
 
   const handleEditField = (key, productCode, e) => {
     const value = e.target.value;
+
+    if (key === "quantity" && isNaN(value)) {
+      return;
+    }
+
     setEditableRows((prevEditableRows) => ({
       ...prevEditableRows,
       [productCode]: {
@@ -178,8 +183,30 @@ function Purchasing() {
         [key]: value,
       },
     }));
+
+    if (key === "quantity") {
+      const updatedProducts = products?.map((product) => {
+        if (product.presentation_code === productCode) {
+          return { ...product, quantity: value };
+        }
+        return product;
+      });
+
+      if (
+        !updatedProducts.some(
+          (product) => product.presentation_code === productCode
+        )
+      ) {
+        const newProduct = { presentation_code: productCode, quantity: value };
+        updatedProducts.push(newProduct);
+      }
+
+      setProducts(updatedProducts);
+    }
   };
+
   console.log("editableRows:", editableRows);
+
   const handleSort = (column) => {
     if (sortColumn === column) {
       setSortDirection(sortDirection === "asc" ? "desc" : "asc");
@@ -208,21 +235,16 @@ function Purchasing() {
       return 0;
     }
   });
-  console.log("sortedOrders:", sortedOrders);
+  console.log("products a enviar:", products);
   const uniqueCategories = [
     ...new Set(ordersWholesaler.map((order) => order.category_name)),
   ];
 
   const sendOrder = async () => {
-    console.log("selectd: ", selectedWholesalers);
+    //console.log(selectedWholesalers);
     try {
-      const ordersToSend = filteredOrdersWholesaler.filter(
-        (order) => order.quantity > 0
-      );
-      console.log("🚀 ~ sendOrder ~ ordersToSend:", ordersToSend);
-
       const sendData = {
-        orders_wholesaler: ordersToSend.map((order, index) => ({
+        orders_wholesaler: products.map((order) => ({
           presentation_code: order.presentation_code,
           wholesaler_id: order.wholesaler_id,
           date_delivery: workDate,
@@ -618,9 +640,12 @@ function Purchasing() {
                         step="0.01"
                         value={
                           editableRows[order.presentation_code]?.cost ||
-                          order.cost
+                          order.cost ||
+                          ""
                         }
-                        onChange={(e) => handleEditField("cost", index, e)}
+                        onChange={(e) =>
+                          handleEditField("cost", order.presentation_code, e)
+                        }
                         className="pl-2 h-[30px] outline-none w-full hide-number-arrows"
                         style={{
                           WebkitAppearance: "none",

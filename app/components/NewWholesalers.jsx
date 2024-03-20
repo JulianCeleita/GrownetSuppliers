@@ -1,9 +1,15 @@
-import { XMarkIcon } from "@heroicons/react/24/outline";
+import {
+  XMarkIcon,
+  PlusCircleIcon,
+  TrashIcon,
+} from "@heroicons/react/24/outline";
 import axios from "axios";
 import { useState } from "react";
 import { wholesalersCreateUrl } from "../../app/config/urls.config";
 import useTokenStore from "../store/useTokenStore";
 import { fetchWholesalerList } from "../api/purchasingRequest";
+import ModalSucessfullRounds from "./ModalSucesfullRounds";
+import ModalOrderError from "./ModalOrderError";
 
 function NewWholesalers({ isvisible, onClose, setWholesalerList }) {
   const { token } = useTokenStore();
@@ -13,23 +19,45 @@ function NewWholesalers({ isvisible, onClose, setWholesalerList }) {
   const [phone, setPhone] = useState("");
   const [name, setName] = useState("");
   const [contact, setContact] = useState("");
-  const [email, setEmail] = useState("");
+  const [emails, setEmails] = useState([""]);
+  const [showMoreEmail, setShowMoreEmail] = useState(false);
+  const [showSuccessfullClose, setShowSucshowSuccessfullClose] =
+    useState(false);
+  const [showModalError, setShowModalError] = useState(false);
 
   if (!isvisible) {
     return null;
   }
+  const handleAddEmail = () => {
+    setEmails([...emails, ""]);
+  };
+
+  const handleEmailChange = (index, value) => {
+    const newEmails = [...emails];
+    newEmails[index] = value;
+    setEmails(newEmails);
+  };
+
+  const handleRemoveEmail = (index) => {
+    if (index === 0) return;
+    const newEmails = [...emails];
+    newEmails.splice(index, 1);
+    setEmails(newEmails);
+  };
+
   //Api
   const enviarData = (e) => {
     e.preventDefault();
+    const formattedEmails = emails.join(";");
     const postData = {
       name: name,
       contact: contact,
       phone: phone,
       account_number: accountNumber,
-      email: email,
+      email: formattedEmails,
       prefix: prefix,
     };
-
+    console.log(postData);
     axios
       .post(wholesalersCreateUrl, postData, {
         headers: {
@@ -37,16 +65,17 @@ function NewWholesalers({ isvisible, onClose, setWholesalerList }) {
         },
       })
       .then((response) => {
+        setShowSucshowSuccessfullClose(true);
         fetchWholesalerList(token, setWholesalerList);
-        onClose();
         setAccountNumber("");
         setPrefix("");
         setPhone("");
         setName("");
         setContact("");
-        setEmail("");
+        setEmails([""]);
       })
       .catch(function (error) {
+        setShowModalError(true);
         console.error("Error al agregar el nuevo mayorista:", error);
       });
   };
@@ -62,7 +91,7 @@ function NewWholesalers({ isvisible, onClose, setWholesalerList }) {
             setPhone("");
             setName("");
             setContact("");
-            setEmail("");
+            setEmails([""]);
             onClose();
           }}
         >
@@ -72,6 +101,17 @@ function NewWholesalers({ isvisible, onClose, setWholesalerList }) {
           Add <span className="text-primary-blue">new wholesalers</span>
         </h1>
         <form className="text-left w-full" onSubmit={enviarData}>
+          <div className="flex items-center gap-2 mb-2">
+            <label>Name: </label>
+            <input
+              className="border p-3 rounded-md w-full"
+              placeholder="Name"
+              type="text"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              required
+            />
+          </div>
           <div className="flex gap-2">
             <div className="flex flex-col gap-2 w-[50%]">
               <div className="flex items-center gap-2">
@@ -83,16 +123,6 @@ function NewWholesalers({ isvisible, onClose, setWholesalerList }) {
                   value={accountNumber}
                   onChange={(e) => setAccountNumber(e.target.value)}
                   required
-                />
-              </div>
-              <div className="flex items-center gap-2">
-                <label>Prefix: </label>
-                <input
-                  className="border p-3 rounded-md w-full"
-                  placeholder="12345"
-                  type="text"
-                  value={prefix}
-                  onChange={(e) => setPrefix(e.target.value)}
                 />
               </div>
               <div className="flex items-center gap-2">
@@ -110,14 +140,13 @@ function NewWholesalers({ isvisible, onClose, setWholesalerList }) {
             </div>
             <div className="flex flex-col gap-2 w-[50%]">
               <div className="flex items-center gap-2">
-                <label>Name: </label>
+                <label>Prefix: </label>
                 <input
                   className="border p-3 rounded-md w-full"
-                  placeholder="Name"
+                  placeholder="12345"
                   type="text"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  required
+                  value={prefix}
+                  onChange={(e) => setPrefix(e.target.value)}
                 />
               </div>
               <div className="flex items-center gap-2">
@@ -131,20 +160,38 @@ function NewWholesalers({ isvisible, onClose, setWholesalerList }) {
                   required
                 />
               </div>
-              <div className="flex items-center gap-2">
-                <label>Email: </label>
-                <input
-                  className="border p-3 rounded-md w-full"
-                  placeholder="wholesalers@grownetapp.com"
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  required
-                />
-              </div>
             </div>
           </div>
-
+          <div className="flex items-center gap-2 mt-2">
+            <label>Email: </label>
+            <div className="w-full rounded-md">
+              {emails.map((email, index) => (
+                <input
+                  key={index}
+                  className="border p-3 rounded-md w-full mb-2"
+                  placeholder="email@grownetapp.com"
+                  type="email"
+                  value={email}
+                  onChange={(e) => handleEmailChange(index, e.target.value)}
+                  required
+                />
+              ))}
+            </div>
+            <button
+              onClick={handleAddEmail}
+              className="rounded-lg p-2 bg-primary-blue text-center transition-all hover:bg-dark-blue hover:scale-110 -mt-2"
+            >
+              <PlusCircleIcon className="text-white h-8 w-8" />
+            </button>
+            {emails.length >= 2 && (
+              <button
+                onClick={() => handleRemoveEmail()}
+                className="rounded-lg p-2 bg-danger text-center transition-all hover:bg-dark-blue hover:scale-110 -mt-2"
+              >
+                <TrashIcon className="text-white h-8 w-8" />
+              </button>
+            )}
+          </div>
           <div className="mt-3 text-center">
             <button
               type="submit"
@@ -162,7 +209,7 @@ function NewWholesalers({ isvisible, onClose, setWholesalerList }) {
                 setPhone("");
                 setName("");
                 setContact("");
-                setEmail("");
+                setEmails([""]);
                 onClose();
               }}
               className=" py-3 px-4 rounded-lg text-primary-blue border border-primary-blue font-medium"
@@ -172,6 +219,30 @@ function NewWholesalers({ isvisible, onClose, setWholesalerList }) {
           </div>
         </form>
       </div>
+      <ModalSucessfullRounds
+        isvisible={showSuccessfullClose}
+        onClose={() => {
+          setShowSucshowSuccessfullClose(false);
+          onClose();
+          setAccountNumber("");
+          setPrefix("");
+          setPhone("");
+          setName("");
+          setContact("");
+          setEmails([""]);
+        }}
+        title="Congratulations"
+        text="Your new wholesaler has been successfully created."
+        button=" Close"
+      />
+      <ModalOrderError
+        isvisible={showModalError}
+        onClose={() => {
+          setShowModalError(false);
+        }}
+        title={"Error"}
+        message="Your new wholesaler could not be created, please try again."
+      />
     </div>
   );
 }
