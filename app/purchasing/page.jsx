@@ -119,17 +119,17 @@ function Purchasing() {
     // Filter by search
     const filteredOrdersBySearch = searchQuery
       ? ordersWholesaler.filter(
-        (order) =>
-          order.product_name
-            .toLowerCase()
-            .includes(searchQuery.toLowerCase()) ||
-          order.presentation_name
-            .toLowerCase()
-            .includes(searchQuery.toLowerCase()) ||
-          order.presentation_code
-            .toLowerCase()
-            .includes(searchQuery.toLowerCase())
-      )
+          (order) =>
+            order.product_name
+              .toLowerCase()
+              .includes(searchQuery.toLowerCase()) ||
+            order.presentation_name
+              .toLowerCase()
+              .includes(searchQuery.toLowerCase()) ||
+            order.presentation_code
+              .toLowerCase()
+              .includes(searchQuery.toLowerCase())
+        )
       : ordersWholesaler;
 
     // Filter by state
@@ -137,24 +137,25 @@ function Purchasing() {
       selectedStatus === "short"
         ? filteredOrdersBySearch.filter((order) => order.short > 0)
         : selectedStatus === "available"
-          ? filteredOrdersBySearch.filter((order) => order.short === 0)
-          : filteredOrdersBySearch;
+        ? filteredOrdersBySearch.filter((order) => order.short === 0)
+        : filteredOrdersBySearch;
 
     // Filter by category
     const filteredOrdersByCategory =
       selectedCategory === ""
         ? filteredOrdersByShort
         : filteredOrdersByShort.filter(
-          (order) => order.category_name === selectedCategory
-        );
+            (order) => order.category_name === selectedCategory
+          );
 
     // Update orders with editableRows
     const updatedOrders = filteredOrdersByCategory.map((order, index) => ({
       ...order,
       wholesaler_id: selectedWholesalers[index]?.value || order.wholesaler_id,
-      quantity: editableRows[index]?.quantity || order.quantity,
-      cost: editableRows[index]?.cost || order.cost,
-      note: editableRows[index]?.notes || order.note,
+      quantity:
+        editableRows[order.presentation_code]?.quantity || order.quantity,
+      cost: editableRows[order.presentation_code]?.cost || order.cost,
+      note: editableRows[order.presentation_code]?.notes || order.note,
     }));
 
     setFilteredOrdersWholesaler(updatedOrders);
@@ -166,36 +167,25 @@ function Purchasing() {
     editableRows,
   ]);
 
-  // useEffect(() => {
-  //   const updatedOrders = ordersWholesaler.map((order, index) => ({
-  //     ...order,
-  //     wholesaler_id: selectedWholesalers[index]?.value || order.wholesaler_id,
-  //     quantity: editableRows[index]?.quantity || order.quantity,
-  //     cost: editableRows[index]?.cost || order.cost,
-  //     note: editableRows[index]?.notes || order.note,
-  //   }));
-  //   setFilteredOrdersWholesaler(updatedOrders);
-  // }, [ordersWholesaler, editableRows]);
-
   const checkIfAnyProductHasQuantity = () => {
-    return filteredOrdersWholesaler.some(order => order.quantity > 0);
+    return filteredOrdersWholesaler.some((order) => order.quantity > 0);
   };
 
   useEffect(() => {
     setIsSendOrderDisabled(!checkIfAnyProductHasQuantity());
   }, [filteredOrdersWholesaler]);
 
-  const handleEditField = (key, rowIndex, e) => {
+  const handleEditField = (key, productCode, e) => {
     const value = e.target.value;
-    const updatedRows = { ...editableRows };
-    if (!updatedRows[rowIndex]) {
-      updatedRows[rowIndex] = {};
-    }
-    updatedRows[rowIndex][key] = value;
-    setEditableRows(updatedRows);
+    setEditableRows((prevEditableRows) => ({
+      ...prevEditableRows,
+      [productCode]: {
+        ...prevEditableRows[productCode],
+        [key]: value,
+      },
+    }));
   };
-
-
+  console.log("editableRows:", editableRows);
   const handleSort = (column) => {
     if (sortColumn === column) {
       setSortDirection(sortDirection === "asc" ? "desc" : "asc");
@@ -224,16 +214,18 @@ function Purchasing() {
       return 0;
     }
   });
-
+  console.log("sortedOrders:", sortedOrders);
   const uniqueCategories = [
     ...new Set(ordersWholesaler.map((order) => order.category_name)),
   ];
 
   const sendOrder = async () => {
-    console.log(selectedWholesalers)
+    console.log(selectedWholesalers);
     try {
-      const ordersToSend = filteredOrdersWholesaler.filter(order => order.quantity > 0);
-      console.log("🚀 ~ sendOrder ~ ordersToSend:", ordersToSend)
+      const ordersToSend = filteredOrdersWholesaler.filter(
+        (order) => order.quantity > 0
+      );
+      console.log("🚀 ~ sendOrder ~ ordersToSend:", ordersToSend);
 
       const sendData = {
         orders_wholesaler: ordersToSend.map((order, index) => ({
@@ -242,26 +234,33 @@ function Purchasing() {
           date_delivery: workDate,
           note: order.note,
           cost: order.cost,
-          purchasing_qty: order.quantity
-        }))
+          purchasing_qty: order.quantity,
+        })),
       };
-      console.log("🚀 ~ sendOrder ~ sendData:", sendData)
+      console.log("🚀 ~ sendOrder ~ sendData:", sendData);
 
       const response = await axios.post(purchasingCreate, sendData, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
-      console.log(response)
+      console.log(response);
 
       if (response.status === 200) {
-        fetchOrderWholesaler(startDate, endDate, token, setOrdersWholesaler, setIsLoading)
-        setSelectedWholesalers(Array(filteredOrdersWholesaler.length).fill(null));
+        fetchOrderWholesaler(
+          startDate,
+          endDate,
+          token,
+          setOrdersWholesaler,
+          setIsLoading
+        );
+        setSelectedWholesalers(
+          Array(filteredOrdersWholesaler.length).fill(null)
+        );
         setEditableRows({});
         setFilteredOrdersWholesaler([]);
-        setShowSuccessModal(true)
+        setShowSuccessModal(true);
       }
-
     } catch (error) {
       setMessageError(error.response.data.message);
       setShowErrorModal(true);
@@ -279,8 +278,9 @@ function Purchasing() {
 
           <div className="flex gap-4">
             <button
-              className={`flex bg-green py-3 px-4 rounded-lg text-white font-medium hover:scale-110 transition-all ${isSendOrderDisabled ? "bg-gray-400 cursor-not-allowed" : ""
-                }`}
+              className={`flex bg-green py-3 px-4 rounded-lg text-white font-medium hover:scale-110 transition-all ${
+                isSendOrderDisabled ? "bg-gray-400 cursor-not-allowed" : ""
+              }`}
               type="button"
               onClick={sendOrder}
               disabled={isSendOrderDisabled}
@@ -478,8 +478,10 @@ function Purchasing() {
             <tbody>
               {sortedOrders?.map((order, index) => {
                 const quantity =
-                  editableRows[index]?.quantity || order.quantity;
-                const cost = editableRows[index]?.cost || order.cost;
+                  editableRows[order.presentation_code]?.quantity ||
+                  order.quantity;
+                const cost =
+                  editableRows[order.presentation_code]?.cost || order.cost;
                 const totalCost = isNaN(quantity * cost) ? 0 : quantity * cost;
                 return (
                   <tr className="text-dark-blue border-b-2 border-stone-100">
@@ -536,28 +538,53 @@ function Purchasing() {
                     <td className="py-4">
                       <input
                         type="number"
-                        value={editableRows[index]?.quantity || order.quantity}
-                        onChange={(e) => handleEditField("quantity", index, e)}
+                        value={
+                          editableRows[order.presentation_code]?.quantity ||
+                          order.quantity ||
+                          ""
+                        }
+                        onChange={(e) =>
+                          handleEditField(
+                            "quantity",
+                            order.presentation_code,
+                            e
+                          )
+                        }
                         className="pl-2 h-[30px] outline-none w-full hide-number-arrows"
-                        style={{ WebkitAppearance: "none", MozAppearance: "textfield" }}
+                        style={{
+                          WebkitAppearance: "none",
+                          MozAppearance: "textfield",
+                        }}
                       />
                     </td>
                     <td className="py-4">
                       <input
                         type="number"
                         step="0.01"
-                        value={editableRows[index]?.cost || order.cost}
+                        value={
+                          editableRows[order.presentation_code]?.cost ||
+                          order.cost
+                        }
                         onChange={(e) => handleEditField("cost", index, e)}
                         className="pl-2 h-[30px] outline-none w-full hide-number-arrows"
-                        style={{ WebkitAppearance: "none", MozAppearance: "textfield" }}
+                        style={{
+                          WebkitAppearance: "none",
+                          MozAppearance: "textfield",
+                        }}
                       />
                     </td>
                     <td className="py-4">{totalCost}</td>
                     <td className="py-4">
                       <input
                         type="text"
-                        value={editableRows[index]?.notes || order.note}
-                        onChange={(e) => handleEditField("notes", index, e)}
+                        value={
+                          editableRows[order.presentation_code]?.notes ||
+                          order.note ||
+                          ""
+                        }
+                        onChange={(e) =>
+                          handleEditField("notes", order.presentation_code, e)
+                        }
                         className="pl-2 h-[30px] outline-none w-full hide-number-arrows"
                       />
                     </td>
