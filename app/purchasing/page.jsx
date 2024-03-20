@@ -2,12 +2,9 @@
 import { ArrowRightCircleIcon, TrashIcon } from "@heroicons/react/24/outline";
 import axios from "axios";
 import { useEffect, useState } from "react";
-
 import { purchasingCreate } from "../../app/config/urls.config";
 import useTokenStore from "../../app/store/useTokenStore";
-
 import Layout from "../layoutS";
-import useUserStore from "../store/useUserStore";
 import Select from "react-select";
 import DatePicker from "react-datepicker";
 import useWorkDateStore from "../store/useWorkDateStore";
@@ -17,6 +14,7 @@ import {
   fetchOrderWholesaler,
   fetchWholesalerList,
 } from "../api/purchasingRequest";
+import usePerchasingStore from "../store/usePurchasingStore";
 
 function Purchasing() {
   const { token } = useTokenStore();
@@ -43,6 +41,7 @@ function Purchasing() {
   const [endDate, setEndDate] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
 
+  const { products, setProducts } = usePerchasingStore();
 
   const formatDateToShow = (dateString) => {
     if (!dateString) return "Loading...";
@@ -150,17 +149,57 @@ function Purchasing() {
     editableRows,
   ]);
 
+  const checkIfAnyProductHasQuantity = () => {
+    return products.some((order) => order.quantity > 0);
+  };
 
-  const handleEditField = (productCode, values) => {
+  useEffect(() => {
+    setIsSendOrderDisabled(!checkIfAnyProductHasQuantity());
+  }, [products]);
+
+  const handleEditField = (key, productCode, e) => {
+    if (e.target.value) {
+      var value = e?.target?.value;
+
+    } else {
+      var value = e.value
+    }
+
+    if (key === "quantity" && isNaN(value)) {
+      return;
+    }
+
     setEditableRows((prevEditableRows) => ({
       ...prevEditableRows,
       [productCode]: {
         ...prevEditableRows[productCode],
-        ...values,
+        [key]: value,
       },
     }));
+
+    if (key === "quantity") {
+      const updatedProducts = products?.map((product) => {
+        if (product.presentation_code === productCode) {
+          return { ...product, quantity: value };
+        }
+        return product;
+      });
+
+      if (
+        !updatedProducts.some(
+          (product) => product.presentation_code === productCode
+        )
+      ) {
+        const newProduct = { presentation_code: productCode, quantity: value };
+        updatedProducts.push(newProduct);
+      }
+
+      setProducts(updatedProducts);
+    }
   };
+
   console.log("editableRows:", editableRows);
+
   const handleSort = (column) => {
     if (sortColumn === column) {
       setSortDirection(sortDirection === "asc" ? "desc" : "asc");
@@ -189,24 +228,24 @@ function Purchasing() {
       return 0;
     }
   });
-  console.log("sortedOrders:", sortedOrders);
+  console.log("products a enviar:", products);
   const uniqueCategories = [
     ...new Set(ordersWholesaler.map((order) => order.category_name)),
   ];
 
   const sendOrder = async () => {
-    console.log(selectedWholesalers);
+    //console.log(selectedWholesalers);
     try {
-      const ordersToSend = Object.keys(editableRows).map((presentationCode) => ({
-        presentation_code: presentationCode,
-        wholesaler_id: editableRows[presentationCode].wholesaler_id,
-        date_delivery: workDate,
-        note: editableRows[presentationCode].note,
-        cost: editableRows[presentationCode].cost,
-        purchasing_qty: editableRows[presentationCode].quantity,
-      }));
-
-      const sendData = { orders_wholesaler: ordersToSend };
+      const sendData = {
+        orders_wholesaler: products.map((order) => ({
+          presentation_code: order.presentation_code,
+          wholesaler_id: order.wholesaler_id,
+          date_delivery: workDate,
+          note: order.note,
+          cost: order.cost,
+          purchasing_qty: order.quantity,
+        })),
+      };
       console.log("🚀 ~ sendOrder ~ sendData:", sendData);
 
       const response = await axios.post(purchasingCreate, sendData, {
@@ -534,13 +573,12 @@ function Purchasing() {
                         step="0.01"
                         value={
                           editableRows[order.presentation_code]?.cost ||
-                          order.cost
+                          order.cost ||
+                          ""
                         }
-                        onChange={(e) => {
-                          handleEditField(order.presentation_code, {
-                            cost: e.target.value,
-                          })
-                        }}
+                        onChange={(e) =>
+                          handleEditField("cost", order.presentation_code, e)
+                        }
                         className="pl-2 h-[30px] outline-none w-full hide-number-arrows"
                         style={{
                           WebkitAppearance: "none",
