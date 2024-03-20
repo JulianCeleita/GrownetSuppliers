@@ -1,28 +1,14 @@
 "use client";
-import {
-  ArrowRightCircleIcon,
-  MinusCircleIcon,
-  NoSymbolIcon,
-  PencilSquareIcon,
-  PlusCircleIcon,
-  TrashIcon,
-} from "@heroicons/react/24/outline";
+import { ArrowRightCircleIcon, TrashIcon } from "@heroicons/react/24/outline";
 import axios from "axios";
 import { useEffect, useState } from "react";
-import EditPresentation from "../../app/components/EditPresentation";
-import {
-  deletePresentationUrl,
-  purchasingCreate,
-  purchasingUrl,
-  wholesalersUrl,
-} from "../../app/config/urls.config";
+
+import { purchasingCreate } from "../../app/config/urls.config";
 import useTokenStore from "../../app/store/useTokenStore";
-import ModalDelete from "../components/ModalDelete";
+
 import Layout from "../layoutS";
 import useUserStore from "../store/useUserStore";
-import Select, { menuPortalTarget } from "react-select";
-import CreateProduct from "../components/CreateProduct";
-import AutomaticShort from "../components/AutomaticShort";
+import Select from "react-select";
 import DatePicker from "react-datepicker";
 import useWorkDateStore from "../store/useWorkDateStore";
 import ModalSuccessfull from "../components/ModalSuccessfull";
@@ -36,12 +22,9 @@ function Purchasing() {
   const { token } = useTokenStore();
   const { workDate, setFetchWorkDate } = useWorkDateStore();
   const [isLoading, setIsLoading] = useState(true);
-  const [selectedWholesaler, setSelectedWholesaler] = useState(null);
   const [selectedStatus, setSelectedStatus] = useState("");
-  const [suppliers, setSuppliers] = useState([]);
   const [filterType, setFilterType] = useState("date");
   const [selectedDate, setSelectedDate] = useState("");
-  const { user, setUser } = useUserStore();
   const [sortColumn, setSortColumn] = useState(null);
   const [sortDirection, setSortDirection] = useState("asc");
   const [editableRows, setEditableRows] = useState({});
@@ -56,12 +39,9 @@ function Purchasing() {
   const [showErrorModal, setShowErrorModal] = useState(false);
   const [messageError, setMessageError] = useState("");
   const [isSendOrderDisabled, setIsSendOrderDisabled] = useState(true);
-
-  const defaultDate = new Date();
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
-  const [editableProductData, setEditableProductData] = useState({});
 
   const formatDateToShow = (dateString) => {
     if (!dateString) return "Loading...";
