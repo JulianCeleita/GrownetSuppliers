@@ -74,7 +74,15 @@ function Wholesalers() {
                   <td className="py-4">{wholesaler.prefix}Test</td>
                   <td className="py-4">{wholesaler.contact}</td>
                   <td className="py-4">{wholesaler.phone}</td>
-                  <td className="py-4">{wholesaler.email}</td>
+                  <td className="py-4 pl-4">
+                    <div>
+                      {wholesaler.email.split(";").map((email, index) => (
+                        <div key={index} className="whitespace-pre-wrap">
+                          {email}
+                        </div>
+                      ))}
+                    </div>
+                  </td>
                 </tr>
               ))}
             </tbody>
