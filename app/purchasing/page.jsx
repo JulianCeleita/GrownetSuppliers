@@ -457,7 +457,7 @@ function Purchasing() {
                 <FunnelIcon className="h-8 w-8" />
               </button>
               {showCategories && (
-                <div className="bg-white p-3 rounded-lg shadow-[0_3px_10px_rgb(0,0,0,0.2)] absolute z-10 -right-14">
+                <div className="bg-white w-[280px] p-3 rounded-lg shadow-[0_3px_10px_rgb(0,0,0,0.2)] absolute z-10 -right-16">
                   {uniqueCategories.map((category) => (
                     <div className="flex gap-2">
                       <input
@@ -491,7 +491,7 @@ function Purchasing() {
                 <Bars3BottomRightIcon className="h-8 w-8" />
               </button>
               {showWholesalerFilter && (
-                <div className="bg-white p-3 rounded-lg shadow-[0_3px_10px_rgb(0,0,0,0.2)] absolute z-10 -right-[15px]">
+                <div className="bg-white p-3 w-[280px] rounded-lg shadow-[0_3px_10px_rgb(0,0,0,0.2)] absolute z-10 -right-[15px]">
                   {wholesalerList.map((wholesalert) => (
                     <div className="flex gap-2">
                       <input
