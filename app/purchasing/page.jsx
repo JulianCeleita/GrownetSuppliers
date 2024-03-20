@@ -99,17 +99,17 @@ function Purchasing() {
     // Filter by search
     const filteredOrdersBySearch = searchQuery
       ? ordersWholesaler.filter(
-          (order) =>
-            order.product_name
-              .toLowerCase()
-              .includes(searchQuery.toLowerCase()) ||
-            order.presentation_name
-              .toLowerCase()
-              .includes(searchQuery.toLowerCase()) ||
-            order.presentation_code
-              .toLowerCase()
-              .includes(searchQuery.toLowerCase())
-        )
+        (order) =>
+          order.product_name
+            .toLowerCase()
+            .includes(searchQuery.toLowerCase()) ||
+          order.presentation_name
+            .toLowerCase()
+            .includes(searchQuery.toLowerCase()) ||
+          order.presentation_code
+            .toLowerCase()
+            .includes(searchQuery.toLowerCase())
+      )
       : ordersWholesaler;
 
     // Filter by state
@@ -117,27 +117,29 @@ function Purchasing() {
       selectedStatus === "short"
         ? filteredOrdersBySearch.filter((order) => order.short > 0)
         : selectedStatus === "available"
-        ? filteredOrdersBySearch.filter((order) => order.short === 0)
-        : filteredOrdersBySearch;
+          ? filteredOrdersBySearch.filter((order) => order.short === 0)
+          : filteredOrdersBySearch;
 
     // Filter by category
     const filteredOrdersByCategory =
       selectedCategory === ""
         ? filteredOrdersByShort
         : filteredOrdersByShort.filter(
-            (order) => order.category_name === selectedCategory
-          );
+          (order) => order.category_name === selectedCategory
+        );
 
     // Update orders with editableRows
     const updatedOrders = filteredOrdersByCategory.map((order, index) => ({
       ...order,
-      wholesaler_id: selectedWholesalers[index]?.value || order.wholesaler_id,
+      wholesaler_id: editableRows[order.presentation_code]?.wholesaler_id || order.wholesaler_id,
       quantity:
         editableRows[order.presentation_code]?.quantity || order.quantity,
       cost: editableRows[order.presentation_code]?.cost || order.cost,
       note: editableRows[order.presentation_code]?.notes || order.note,
     }));
+    console.log("🚀 ~ updatedOrders ~ filteredOrdersByCategory:", filteredOrdersByCategory)
 
+    console.log("🚀 ~ updatedOrders ~ editableRows:", editableRows)
     setFilteredOrdersWholesaler(updatedOrders);
   }, [
     ordersWholesaler,
@@ -156,7 +158,12 @@ function Purchasing() {
   }, [products]);
 
   const handleEditField = (key, productCode, e) => {
-    const value = e.target.value;
+    if (e.target.value) {
+      var value = e?.target?.value;
+
+    } else {
+      var value = e.value
+    }
 
     if (key === "quantity" && isNaN(value)) {
       return;
@@ -280,12 +287,9 @@ function Purchasing() {
 
           <div className="flex gap-4">
             <button
-              className={`flex bg-green py-3 px-4 rounded-lg text-white font-medium hover:scale-110 transition-all ${
-                isSendOrderDisabled ? "bg-gray-400 cursor-not-allowed" : ""
-              }`}
+              className="flex bg-green py-3 px-4 rounded-lg text-white font-medium hover:scale-110 transition-all"
               type="button"
               onClick={sendOrder}
-              disabled={isSendOrderDisabled}
             >
               <ArrowRightCircleIcon className="h-6 w-6 mr-2 font-bold" />
               Send Purchasing
@@ -490,13 +494,19 @@ function Purchasing() {
                     <td className="py-4 pl-3">{order.presentation_code}</td>
                     <td className="py-4">
                       <Select
-                        value={selectedWholesalers[index]}
-                        onChange={(selectedOption) => {
-                          const newSelectedWholesalers = [
-                            ...selectedWholesalers,
-                          ];
-                          newSelectedWholesalers[index] = selectedOption;
-                          setSelectedWholesalers(newSelectedWholesalers);
+                        value={
+                          editableRows[order.presentation_code]?.wholesaler_id || order.wholesaler_id
+                            ? {
+                              value: editableRows[order.presentation_code]?.wholesaler_id || order.wholesaler_id,
+                              label: editableRows[order.presentation_code]?.label || order.wholesaler_name,
+                            }
+                            : null
+                        }
+                        onChange={(e) => {
+                          handleEditField(order.presentation_code, {
+                            wholesaler_id: e.value,
+                            label: e.label
+                          });
                         }}
                         options={wholesalerList?.map((wholesaler) => ({
                           value: wholesaler.id,
@@ -546,11 +556,9 @@ function Purchasing() {
                           ""
                         }
                         onChange={(e) =>
-                          handleEditField(
-                            "quantity",
-                            order.presentation_code,
-                            e
-                          )
+                          handleEditField(order.presentation_code, {
+                            quantity: e.target.value
+                          })
                         }
                         className="pl-2 h-[30px] outline-none w-full hide-number-arrows"
                         style={{
@@ -583,12 +591,15 @@ function Purchasing() {
                       <input
                         type="text"
                         value={
-                          editableRows[order.presentation_code]?.notes ||
+                          editableRows[order.presentation_code]?.note ||
                           order.note ||
                           ""
                         }
                         onChange={(e) =>
-                          handleEditField("notes", order.presentation_code, e)
+                          handleEditField(order.presentation_code, {
+                            note: e.target.value
+                          })
+
                         }
                         className="pl-2 h-[30px] outline-none w-full hide-number-arrows"
                       />
