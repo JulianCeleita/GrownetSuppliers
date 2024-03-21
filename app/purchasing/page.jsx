@@ -55,6 +55,7 @@ function Purchasing() {
   const [showWholesalerFilter, setShowWholesalerFilter] = useState(false);
   const [isCheckedCategories, setIsCheckedCategories] = useState([]);
   const [isCheckedWholesalert, setIsCheckedWholesalert] = useState([]);
+  const [activeSort, setActiveSort] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 30;
 
@@ -263,7 +264,7 @@ function Purchasing() {
     selectedStatus,
     searchQuery,
     editableRows,
-    sortedOrders
+    activeSort,
   ]);
   useEffect(() => {
     setCurrentPage(1);
@@ -339,6 +340,7 @@ function Purchasing() {
       setSortColumn(column);
       setSortDirection("asc");
     }
+    setActiveSort(!activeSort);
   };
 
 
