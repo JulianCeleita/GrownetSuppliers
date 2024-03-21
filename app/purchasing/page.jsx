@@ -342,7 +342,7 @@ function Purchasing() {
           presentation_code: order.presentation_code,
           wholesaler_id: order.wholesaler,
           date_delivery: workDate,
-          note: order.notes,
+          note: order.notes || "",
           cost: order.cost,
           purchasing_qty: order.quantity,
         })),
