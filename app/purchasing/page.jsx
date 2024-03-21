@@ -648,19 +648,16 @@ function Purchasing() {
                       <td className="py-4 pl-3">{order.presentation_code}</td>
                       <td className="py-4">
                         <Select
-                         value={
-                          editableRows[order.presentation_code]
-                            ?.wholesaler_id || order.wholesaler_id
-                            ? {
-                              value:
-                                editableRows[order.presentation_code]
-                                  ?.wholesaler_id || order.wholesaler_id,
-                              label:
-                                editableRows[order.presentation_code]
-                                  ?.label || order.wholesaler_name,
-                            }
-                            : null
-                        }
+                          value={
+                            editableRows[order.presentation_code]?.wholesaler
+                              ? wholesalerOptions.find(
+                                (option) =>
+                                  option.value ===
+                                  editableRows[order.presentation_code]
+                                    ?.wholesaler
+                              )
+                              : null
+                          }
                           onChange={(selectedOption) => {
                             handleEditField(
                               "wholesaler",
