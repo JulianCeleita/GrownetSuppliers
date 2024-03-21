@@ -149,17 +149,17 @@ function Purchasing() {
     // Filtrar por búsqueda
     let filteredOrdersBySearch = searchQuery
       ? ordersWholesaler.filter(
-          (order) =>
-            order.product_name
-              .toLowerCase()
-              .includes(searchQuery.toLowerCase()) ||
-            order.presentation_name
-              .toLowerCase()
-              .includes(searchQuery.toLowerCase()) ||
-            order.presentation_code
-              .toLowerCase()
-              .includes(searchQuery.toLowerCase())
-        )
+        (order) =>
+          order.product_name
+            .toLowerCase()
+            .includes(searchQuery.toLowerCase()) ||
+          order.presentation_name
+            .toLowerCase()
+            .includes(searchQuery.toLowerCase()) ||
+          order.presentation_code
+            .toLowerCase()
+            .includes(searchQuery.toLowerCase())
+      )
       : ordersWholesaler;
 
     // Filtrar por estado
@@ -167,8 +167,8 @@ function Purchasing() {
       selectedStatus === "short"
         ? filteredOrdersBySearch.filter((order) => order.short > 0)
         : selectedStatus === "available"
-        ? filteredOrdersBySearch.filter((order) => order.short === 0)
-        : filteredOrdersBySearch;
+          ? filteredOrdersBySearch.filter((order) => order.short === 0)
+          : filteredOrdersBySearch;
 
     // Filtrar por categorías seleccionadas
     if (isCheckedCategories.length > 0) {
@@ -264,22 +264,39 @@ function Purchasing() {
     setProducts([...updatedProducts, ...newProducts]);
   }, [editableRows]);
 
-  const handleEditField = (key, productCode, value) => {
+  const handleEditField = (key, productCode, value, label) => {
     if (key === "quantity" && isNaN(value)) {
       return;
     }
 
-    setEditableRows((prevEditableRows) => ({
-      ...prevEditableRows,
-      [productCode]: {
-        ...prevEditableRows[productCode],
-        [key]: value,
-      },
-    }));
+    if (key === "wholesaler") {
+      setEditableRows((prevEditableRows) => ({
+        ...prevEditableRows,
+        [productCode]: {
+          ...prevEditableRows[productCode],
+          [key]: value,
+          label: label
+        },
+      }));
+    } else {
+      setEditableRows((prevEditableRows) => ({
+        ...prevEditableRows,
+        [productCode]: {
+          ...prevEditableRows[productCode],
+          [key]: value,
+        },
+      }));
+    }
+    console.log(editableRows);
 
     const updatedProducts = products.map((product) => {
       if (product.presentation_code === productCode) {
-        return { ...product, [key]: value };
+        if (key === "wholesaler") {
+          console.log(label)
+          return { ...product, [key]: value };
+        } else {
+          return { ...product, [key]: value };
+        }
       }
       return product;
     });
@@ -325,7 +342,7 @@ function Purchasing() {
           presentation_code: order.presentation_code,
           wholesaler_id: order.wholesaler,
           date_delivery: workDate,
-          note: order.notes,
+          note: order.notes || "",
           cost: order.cost,
           purchasing_qty: order.quantity,
         })),
@@ -371,11 +388,10 @@ function Purchasing() {
 
           <div className="flex gap-4">
             <button
-              className={`flex ${
-                isSendOrderDisabled
-                  ? "bg-gray-input"
-                  : "bg-green hover:scale-110 transition-all"
-              } py-3 px-4 rounded-lg text-white font-medium `}
+              className={`flex ${isSendOrderDisabled
+                ? "bg-gray-input"
+                : "bg-green hover:scale-110 transition-all"
+                } py-3 px-4 rounded-lg text-white font-medium `}
               type="button"
               //onClick={() => setModalSendPurchasing(true)}
               onClick={sendOrder}
@@ -487,9 +503,8 @@ function Purchasing() {
           <div className="flex gap-5">
             <div ref={categoriesRef} className="relative ">
               <button
-                className={`${
-                  !showCategories ? "text-gray-grownet" : "text-primary-blue"
-                } hover:scale-110 hover:text-primary-blue transition-all`}
+                className={`${!showCategories ? "text-gray-grownet" : "text-primary-blue"
+                  } hover:scale-110 hover:text-primary-blue transition-all`}
                 onClick={() => {
                   setShowCategories(!showCategories);
                   setShowWholesalerFilter(false);
@@ -519,11 +534,10 @@ function Purchasing() {
             </div>
             <div ref={wholesalerRef} className="relative ">
               <button
-                className={`${
-                  !showWholesalerFilter
-                    ? "text-gray-grownet"
-                    : "text-primary-blue"
-                } hover:scale-110 hover:text-primary-blue transition-all`}
+                className={`${!showWholesalerFilter
+                  ? "text-gray-grownet"
+                  : "text-primary-blue"
+                  } hover:scale-110 hover:text-primary-blue transition-all`}
                 onClick={() => {
                   setShowWholesalerFilter(!showWholesalerFilter);
                   setShowCategories(false);
@@ -657,20 +671,25 @@ function Purchasing() {
                       <td className="py-4">
                         <Select
                           value={
-                            editableRows[order.presentation_code]?.wholesaler
-                              ? wholesalerOptions.find(
-                                (option) =>
-                                  option.value ===
+                            editableRows[order.presentation_code]
+                              ?.wholesaler || order.wholesaler_id
+                              ? {
+                                value:
                                   editableRows[order.presentation_code]
-                                    ?.wholesaler
-                              )
+                                    ?.wholesaler || order.wholesaler_id,
+                                label:
+                                  editableRows[order.presentation_code]
+                                    ?.label || order.wholesaler_name,
+                              }
                               : null
                           }
                           onChange={(selectedOption) => {
+                            console.log(editableRows)
                             handleEditField(
                               "wholesaler",
                               order.presentation_code,
-                              selectedOption.value
+                              selectedOption.value,
+                              selectedOption.label
                             );
                           }}
                           options={wholesalerOptions}
@@ -796,11 +815,10 @@ function Purchasing() {
                   <button
                     onClick={nextPage}
                     disabled={currentPage === totalPages}
-                    className={`px-3 py-1 text-sm font-medium rounded-md cursor-pointer transition-all ${
-                      currentPage === totalPages
-                        ? "text-primary-blue bg-light-blue border border-gray-200"
-                        : "text-primary-blue bg-primary-blue-light border border-primary-blue-light hover:bg-primary-blue hover:border-primary-blue-dark hover:text-white focus:outline-none"
-                    }`}
+                    className={`px-3 py-1 text-sm font-medium rounded-md cursor-pointer transition-all ${currentPage === totalPages
+                      ? "text-primary-blue bg-light-blue border border-gray-200"
+                      : "text-primary-blue bg-primary-blue-light border border-primary-blue-light hover:bg-primary-blue hover:border-primary-blue-dark hover:text-white focus:outline-none"
+                      }`}
                   >
                     Next
                   </button>
