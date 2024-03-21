@@ -149,7 +149,7 @@ function Purchasing() {
   ;
 
   const applyFilters = () => {
-    setCurrentPage(1);
+    console.log(currentPage)
     // Filtrar por búsqueda
     let filteredOrdersBySearch = searchQuery
       ? ordersWholesaler.filter(
@@ -205,9 +205,9 @@ function Purchasing() {
 
     const totalPages = Math.ceil(filteredOrdersBySearch.length / itemsPerPage);
 
-    // Devuelve los pedidos filtrados y totalPages
     return { sortedOrders, totalPages };
   };
+
   useEffect(() => {
     const { sortedOrders, totalPages } = applyFilters();
     setFilteredOrdersWholesaler(sortedOrders);
@@ -216,9 +216,17 @@ function Purchasing() {
     isCheckedCategories,
     ordersWholesaler,
     selectedStatus,
-    selectedCategory,
     searchQuery,
     editableRows,
+  ]);
+  useEffect(() => {
+    setCurrentPage(1)
+  }, [
+    isCheckedWholesalert,
+    isCheckedCategories,
+    ordersWholesaler,
+    selectedStatus,
+    searchQuery,
   ]);
 
   const checkIfAnyProductHasQuantity = () => {
@@ -233,7 +241,6 @@ function Purchasing() {
     if (key === "quantity" && isNaN(value)) {
       return;
     }
-    console.log(products);
 
     setEditableRows((prevEditableRows) => ({
       ...prevEditableRows,
@@ -243,27 +250,14 @@ function Purchasing() {
       },
     }));
 
-    if (key === "quantity") {
-      const updatedProducts = products?.map((product) => {
-        if (product.presentation_code === productCode) {
-          return { ...product, quantity: value };
-        }
-        return product;
-      });
-
-      if (
-        !updatedProducts.some(
-          (product) => product.presentation_code === productCode
-        )
-      ) {
-        const newProduct = { presentation_code: productCode, quantity: value };
-        updatedProducts.push(newProduct);
+    const updatedProducts = products.map((product) => {
+      if (product.presentation_code === productCode) {
+        return { ...product, [key]: value };
       }
-
-      setProducts(updatedProducts);
-    }
+      return product;
+    });
+    setProducts(updatedProducts);
   };
-
   const handleSort = (column) => {
     if (sortColumn === column) {
       setSortDirection(sortDirection === "asc" ? "desc" : "asc");
