@@ -237,6 +237,30 @@ function Purchasing() {
     setIsSendOrderDisabled(!checkIfAnyProductHasQuantity());
   }, [products]);
 
+  useEffect(() => {
+    const updatedProducts = products.map((product) => {
+      const editableRow = editableRows[product.presentation_code];
+      if (editableRow) {
+        return { ...product, ...editableRow };
+      }
+
+      return product;
+    });
+
+    const newProducts = Object.keys(editableRows)
+      .filter((productCode) => {
+        return !products.some(
+          (product) => product.presentation_code === productCode
+        );
+      })
+      .map((productCode) => ({
+        presentation_code: productCode,
+        ...editableRows[productCode],
+      }));
+
+    setProducts([...updatedProducts, ...newProducts]);
+  }, [editableRows]);
+
   const handleEditField = (key, productCode, value) => {
     if (key === "quantity" && isNaN(value)) {
       return;
@@ -296,9 +320,9 @@ function Purchasing() {
       const sendData = {
         orders_wholesaler: products.map((order) => ({
           presentation_code: order.presentation_code,
-          wholesaler_id: order.wholesaler_id,
+          wholesaler_id: order.wholesaler,
           date_delivery: workDate,
-          note: order.note,
+          note: order.notes,
           cost: order.cost,
           purchasing_qty: order.quantity,
         })),
@@ -612,57 +636,53 @@ function Purchasing() {
                     <tr className="text-dark-blue border-b-2 border-stone-100">
                       <td className="py-4 pl-3">{order.presentation_code}</td>
                       <td className="py-4">
-                        <Select
-                          value={
-                            editableRows[order.presentation_code]
-                              ?.wholesaler_id || order.wholesaler_id
-                              ? {
-                                value:
+                         <Select
+                        value={
+
+                          editableRows[order.presentation_code]?.wholesaler
+                            ? wholesalerOptions.find(
+                                (option) =>
+                                  option.value ===
                                   editableRows[order.presentation_code]
-                                    ?.wholesaler_id || order.wholesaler_id,
-                                label:
-                                  editableRows[order.presentation_code]
-                                    ?.label || order.wholesaler_name,
-                              }
-                              : null
-                          }
-                          onChange={(selectedOption) => {
-                            handleEditField(
-                              "Description",
-                              order.presentation_code,
-                              selectedOption.label
-                            );
-                          }}
-                          options={wholesalerList?.map((wholesaler) => ({
-                            value: wholesaler.id,
-                            label: wholesaler.name,
-                          }))}
-                          menuPortalTarget={document.body}
-                          styles={{
-                            control: (provided) => ({
-                              ...provided,
-                              border: "none",
-                              boxShadow: "none",
-                              backgroundColor: "transparent",
-                            }),
-                            menu: (provided) => ({
-                              ...provided,
-                              width: "33em",
-                            }),
-                            singleValue: (provided, state) => ({
-                              ...provided,
-                              color: "#04444F",
-                            }),
-                            dropdownIndicator: (provided) => ({
-                              ...provided,
-                              display: "none",
-                            }),
-                            indicatorSeparator: (provided) => ({
-                              ...provided,
-                              display: "none",
-                            }),
-                          }}
-                        />
+                                    ?.wholesaler
+                              )
+
+                            : null
+                        }
+                        onChange={(selectedOption) => {
+                          handleEditField(
+                            "wholesaler",
+                            order.presentation_code,
+                            selectedOption.value
+                          );
+                        }}
+                        options={wholesalerOptions}
+                        menuPortalTarget={document.body}
+                        styles={{
+                          control: (provided) => ({
+                            ...provided,
+                            border: "none",
+                            boxShadow: "none",
+                            backgroundColor: "transparent",
+                          }),
+                          menu: (provided) => ({
+                            ...provided,
+                            width: "33em",
+                          }),
+                          singleValue: (provided, state) => ({
+                            ...provided,
+                            color: "#04444F",
+                          }),
+                          dropdownIndicator: (provided) => ({
+                            ...provided,
+                            display: "none",
+                          }),
+                          indicatorSeparator: (provided) => ({
+                            ...provided,
+                            display: "none",
+                          }),
+                        }}
+                      />
                       </td>
                       <td className="py-4">
                         {order.product_name} - {order.presentation_name}
@@ -673,68 +693,68 @@ function Purchasing() {
                       <td className="py-4">{order.short}</td>
                       <td className="py-4">{order.ordered}</td>
                       <td className="py-4">
-                        <input
-                          type="number"
-                          value={
-                            editableRows[order.presentation_code]?.quantity ||
-                            order.quantity ||
-                            ""
-                          }
-                          onChange={(e) =>
-                            handleEditField(
-                              "quantity",
-                              order.presentation_code,
-                              e.target.value
-                            )
-                          }
-                          className="pl-2 h-[30px] outline-none w-full hide-number-arrows"
-                          style={{
-                            WebkitAppearance: "none",
-                            MozAppearance: "textfield",
-                          }}
-                        />
+                     <input
+                        type="number"
+                        value={
+                          editableRows[order.presentation_code]?.quantity ||
+                          order.quantity ||
+                          ""
+                        }
+                        onChange={(e) =>
+                          handleEditField(
+                            "quantity",
+                            order.presentation_code,
+                            e.target.value
+                          )
+                        }
+                        className="pl-2 h-[30px] outline-none w-full hide-number-arrows"
+                        style={{
+                          WebkitAppearance: "none",
+                          MozAppearance: "textfield",
+                        }}
+                      />
                       </td>
                       <td className="py-4">
                         <input
-                          type="number"
-                          step="0.01"
-                          value={
-                            editableRows[order.presentation_code]?.cost ||
-                            order.cost ||
-                            ""
-                          }
-                          onChange={(e) =>
-                            handleEditField(
-                              "cost",
-                              order.presentation_code,
-                              e.target.value
-                            )
-                          }
-                          className="pl-2 h-[30px] outline-none w-full hide-number-arrows"
-                          style={{
-                            WebkitAppearance: "none",
-                            MozAppearance: "textfield",
-                          }}
-                        />
+                        type="number"
+                        step="0.01"
+                        value={
+                          editableRows[order.presentation_code]?.cost ||
+                          order.cost ||
+                          ""
+                        }
+                        onChange={(e) =>
+                          handleEditField(
+                            "cost",
+                            order.presentation_code,
+                            e.target.value
+                          )
+                        }
+                        className="pl-2 h-[30px] outline-none w-full hide-number-arrows"
+                        style={{
+                          WebkitAppearance: "none",
+                          MozAppearance: "textfield",
+                        }}
+                      />
                       </td>
                       <td className="py-4">{totalCost}</td>
                       <td className="py-4">
                         <input
-                          type="text"
-                          value={
-                            editableRows[order.presentation_code]?.note ||
-                            order.note ||
-                            ""
-                          }
-                          onChange={(e) =>
-                            handleEditField(
-                              "notes",
-                              order.presentation_code,
-                              e.target.value
-                            )
-                          }
-                          className="pl-2 h-[30px] outline-none w-full hide-number-arrows"
-                        />
+                        type="text"
+                        value={
+                          editableRows[order.presentation_code]?.note ||
+                          order.note ||
+                          ""
+                        }
+                        onChange={(e) =>
+                          handleEditField(
+                            "notes",
+                            order.presentation_code,
+                            e.target.value
+                          )
+                        }
+                        className="pl-2 h-[30px] outline-none w-full hide-number-arrows"
+                      />
                       </td>
                     </tr>
                   );
