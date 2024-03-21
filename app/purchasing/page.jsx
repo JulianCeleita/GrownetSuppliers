@@ -42,6 +42,7 @@ function Purchasing() {
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [showErrorModal, setShowErrorModal] = useState(false);
   const [messageError, setMessageError] = useState("");
+  const [messageSuccess, setMessageSuccess] = useState("");
   const [isSendOrderDisabled, setIsSendOrderDisabled] = useState(true);
   const [modalSendPurchasing, setModalSendPurchasing] = useState(false);
   const [startDate, setStartDate] = useState("");
@@ -370,6 +371,9 @@ function Purchasing() {
         setEditableRows({});
         setFilteredOrdersWholesaler([]);
         setShowSuccessModal(true);
+        const po_numbers = response?.data.po_numbers;
+        const wholesalerNames = po_numbers?.map(po => po.wholesaler_name);
+        setMessageSuccess(wholesalerNames?.join(", "))
       }
     } catch (error) {
       setMessageError(error.response.data.message);
@@ -842,7 +846,8 @@ function Purchasing() {
           isvisible={showSuccessModal}
           onClose={() => setShowSuccessModal(false)}
           title="Congratulations"
-          text="Order sended successfully"
+          text="Order sended successfully for"
+          textGrownet={messageSuccess}
           button=" Close"
         />
         <ModalOrderError
