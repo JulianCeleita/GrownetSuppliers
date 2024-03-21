@@ -62,10 +62,10 @@ function Suppliers() {
       <div className="-mt-[97px]">
         <div className="flex justify-between p-8">
           <h1 className="text-2xl text-white font-semibold ml-20 mt-2">
-            Suppliers <span className="text-light-green">list</span>
+            <span className="text-light-green">Suppliers </span>list
           </h1>
           <button
-            className="flex bg-green py-3 px-4 rounded-lg text-white font-medium hover:bg-dark-blue hover:scale-110 "
+            className="flex bg-green py-3 px-4 rounded-full text-white font-medium hover:bg-dark-blue hover:scale-110 "
             type="button"
             onClick={() => setShowNewSupplier(true)}
           >

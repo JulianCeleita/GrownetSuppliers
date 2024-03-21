@@ -44,7 +44,13 @@ function Presentations() {
     if (user && user.rol_name === "AdminGrownet") {
       fetchPresentations(token, setProducts, setIsLoading);
     } else {
-      fetchPresentationsSupplier(token, user, setProducts, setIsLoading, setDescriptionData);
+      fetchPresentationsSupplier(
+        token,
+        user,
+        setProducts,
+        setIsLoading,
+        setDescriptionData
+      );
     }
   }, [user, token]);
 
@@ -85,9 +91,9 @@ function Presentations() {
           <h1 className="text-2xl text-white font-semibold ml-20 mt-2">
             <span className="text-light-green">Catalogue </span>list
           </h1>
-          <div className="flex gap-4">
+          <div className="flex gap-3">
             <button
-              className="flex bg-dark-blue py-3 px-4 rounded-lg text-white font-medium hover:bg-dark-blue hover:scale-110 transition-all"
+              className="flex bg-dark-blue py-3 px-4 rounded-full text-white font-medium hover:bg-dark-blue hover:scale-105 transition-all"
               type="button"
               onClick={() => setShowAutomaticShorts(true)}
             >
@@ -95,7 +101,7 @@ function Presentations() {
               Automatic Shorts
             </button>
             <button
-              className="flex bg-green py-3 px-4 rounded-lg text-white font-medium hover:scale-110 transition-all"
+              className="flex bg-green py-3 px-4 rounded-full text-white font-medium hover:scale-105 transition-all"
               type="button"
               onClick={() => setShowNewPresentations(true)}
             >

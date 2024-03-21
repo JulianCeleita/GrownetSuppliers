@@ -1,14 +1,7 @@
-import {
-  ExclamationCircleIcon,
-  XMarkIcon
-} from "@heroicons/react/24/outline";
+import { ExclamationCircleIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import axios from "axios";
 import { useEffect, useState } from "react";
-import {
-  familiesUrl,
-  uomUrl,
-  updateProductUrl
-} from "../config/urls.config";
+import { familiesUrl, uomUrl, updateProductUrl } from "../config/urls.config";
 import useCategoryStore from "../store/useCategoryStore";
 import useTokenStore from "../store/useTokenStore";
 
@@ -144,8 +137,9 @@ function EditProduct({ isvisible, onClose, fetchProducts, product }) {
         >
           <XMarkIcon className="h-6 w-6 text-gray-500" />
         </button>
-        <ExclamationCircleIcon className="h-8 w-8 text-green mb-2" />
-        <h1 className="text-2xl font-bold text-green mb-2">Edit Product</h1>
+        <h1 className="text-2xl font-bold text-dark-blue mb-2">
+          Edit <span className="text-primary-blue">product</span>
+        </h1>
         <form className="text-left  flex flex-col" onSubmit={enviarData}>
           <div>
             <label>Name: </label>
@@ -187,7 +181,7 @@ function EditProduct({ isvisible, onClose, fetchProducts, product }) {
                 value={selectedCategoryId}
                 required
               >
-                <option value="" disabled >
+                <option value="" disabled>
                   Select category
                 </option>
                 {categories.map((category) => (
