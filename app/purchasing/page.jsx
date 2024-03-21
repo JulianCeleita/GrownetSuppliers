@@ -773,7 +773,7 @@ function Purchasing() {
                               order.cost,
                               order.note,
                               null,
-                              order.wholesaler_name
+                              order.wholesaler_id
                             )
                           }
                           className="pl-2 h-[30px] outline-none w-full hide-number-arrows text-center"
