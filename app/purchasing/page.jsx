@@ -149,17 +149,17 @@ function Purchasing() {
     // Filtrar por búsqueda
     let filteredOrdersBySearch = searchQuery
       ? ordersWholesaler.filter(
-        (order) =>
-          order.product_name
-            .toLowerCase()
-            .includes(searchQuery.toLowerCase()) ||
-          order.presentation_name
-            .toLowerCase()
-            .includes(searchQuery.toLowerCase()) ||
-          order.presentation_code
-            .toLowerCase()
-            .includes(searchQuery.toLowerCase())
-      )
+          (order) =>
+            order.product_name
+              .toLowerCase()
+              .includes(searchQuery.toLowerCase()) ||
+            order.presentation_name
+              .toLowerCase()
+              .includes(searchQuery.toLowerCase()) ||
+            order.presentation_code
+              .toLowerCase()
+              .includes(searchQuery.toLowerCase())
+        )
       : ordersWholesaler;
 
     // Filtrar por estado
@@ -167,8 +167,8 @@ function Purchasing() {
       selectedStatus === "short"
         ? filteredOrdersBySearch.filter((order) => order.short > 0)
         : selectedStatus === "available"
-          ? filteredOrdersBySearch.filter((order) => order.short === 0)
-          : filteredOrdersBySearch;
+        ? filteredOrdersBySearch.filter((order) => order.short === 0)
+        : filteredOrdersBySearch;
 
     // Filtrar por categorías seleccionadas
     if (isCheckedCategories.length > 0) {
@@ -238,7 +238,8 @@ function Purchasing() {
   useEffect(() => {
     setIsSendOrderDisabled(!checkIfAnyProductHasQuantity());
   }, [products]);
-
+  console.log("setIsSendOrderDisabled:", isSendOrderDisabled);
+  console.log("products:", products);
   useEffect(() => {
     const updatedProducts = products.map((product) => {
       const editableRow = editableRows[product.presentation_code];
@@ -370,10 +371,15 @@ function Purchasing() {
 
           <div className="flex gap-4">
             <button
-              className="flex bg-green py-3 px-4 rounded-lg text-white font-medium hover:scale-110 transition-all"
+              className={`flex ${
+                isSendOrderDisabled
+                  ? "bg-gray-input"
+                  : "bg-green hover:scale-110 transition-all"
+              } py-3 px-4 rounded-lg text-white font-medium `}
               type="button"
               //onClick={() => setModalSendPurchasing(true)}
               onClick={sendOrder}
+              disabled={isSendOrderDisabled}
             >
               <ArrowRightCircleIcon className="h-6 w-6 mr-2 font-bold" />
               Send Purchasing
@@ -481,8 +487,9 @@ function Purchasing() {
           <div className="flex gap-5">
             <div ref={categoriesRef} className="relative ">
               <button
-                className={`${!showCategories ? "text-gray-grownet" : "text-primary-blue"
-                  } hover:scale-110 hover:text-primary-blue transition-all`}
+                className={`${
+                  !showCategories ? "text-gray-grownet" : "text-primary-blue"
+                } hover:scale-110 hover:text-primary-blue transition-all`}
                 onClick={() => {
                   setShowCategories(!showCategories);
                   setShowWholesalerFilter(false);
@@ -512,10 +519,11 @@ function Purchasing() {
             </div>
             <div ref={wholesalerRef} className="relative ">
               <button
-                className={`${!showWholesalerFilter
-                  ? "text-gray-grownet"
-                  : "text-primary-blue"
-                  } hover:scale-110 hover:text-primary-blue transition-all`}
+                className={`${
+                  !showWholesalerFilter
+                    ? "text-gray-grownet"
+                    : "text-primary-blue"
+                } hover:scale-110 hover:text-primary-blue transition-all`}
                 onClick={() => {
                   setShowWholesalerFilter(!showWholesalerFilter);
                   setShowCategories(false);
@@ -772,9 +780,7 @@ function Purchasing() {
                   );
                 })}
             </tbody>
-            <div>
-
-            </div>
+            <div></div>
           </table>
           {!isLoading && (
             <div className="flex items-center justify-center my-8">
@@ -793,16 +799,16 @@ function Purchasing() {
                   <button
                     onClick={nextPage}
                     disabled={currentPage === totalPages}
-                    className={`px-3 py-1 text-sm font-medium rounded-md cursor-pointer transition-all ${currentPage === totalPages
-                      ? 'text-primary-blue bg-light-blue border border-gray-200'
-                      : 'text-primary-blue bg-primary-blue-light border border-primary-blue-light hover:bg-primary-blue hover:border-primary-blue-dark hover:text-white focus:outline-none'
-                      }`}
+                    className={`px-3 py-1 text-sm font-medium rounded-md cursor-pointer transition-all ${
+                      currentPage === totalPages
+                        ? "text-primary-blue bg-light-blue border border-gray-200"
+                        : "text-primary-blue bg-primary-blue-light border border-primary-blue-light hover:bg-primary-blue hover:border-primary-blue-dark hover:text-white focus:outline-none"
+                    }`}
                   >
                     Next
                   </button>
                 </div>
               </div>
-
             </div>
           )}
         </div>

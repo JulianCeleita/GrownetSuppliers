@@ -19,7 +19,7 @@ function Wholesalers() {
   const [showNewWholesalers, setShowNewWholesalers] = useState(false);
 
   useEffect(() => {
-    fetchWholesalerList(token, setWholesalerList);
+    fetchWholesalerList(token, setWholesalerList, setIsLoading);
   }, []);
 
   return (
@@ -89,6 +89,11 @@ function Wholesalers() {
           </table>
         </div>
       </div>
+      {isLoading && (
+        <div className="flex justify-center items-center mb-15">
+          <div className="loader"></div>
+        </div>
+      )}
       <NewWholesalers
         isvisible={showNewWholesalers}
         onClose={() => setShowNewWholesalers(false)}
