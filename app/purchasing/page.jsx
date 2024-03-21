@@ -169,7 +169,6 @@ function Purchasing() {
     setEndDate(newEndDate);
   }, [workDate]);
   const applyFilters = () => {
-    console.log(currentPage);
     // Filtrar por búsqueda
     let filteredOrdersBySearch = searchQuery
       ? ordersWholesaler.filter(
@@ -284,8 +283,6 @@ function Purchasing() {
     setIsSendOrderDisabled(!checkIfAnyProductHasQuantity());
   }, [products, isSendOrderDisabled]);
 
-  console.log("products:", products);
-  console.log("editableRows:", editableRows);
   useEffect(() => {
     const updatedProducts = products.map((product) => {
       const editableRow = editableRows[product.presentation_code];
@@ -322,7 +319,6 @@ function Purchasing() {
     if (key === "quantity" && isNaN(value)) {
       return;
     }
-    console.log("cost:", cost, notes);
 
     setEditableRows((prevEditableRows) => ({
       ...prevEditableRows,
@@ -366,7 +362,6 @@ function Purchasing() {
           purchasing_qty: order.quantity,
         })),
       };
-      console.log("🚀 ~ sendOrder ~ sendData:", sendData);
 
       const response = await axios.post(purchasingCreate, sendData, {
         headers: {
@@ -401,8 +396,6 @@ function Purchasing() {
       console.error(error);
     }
   };
-  // console.log("filteredOrdersWholesaler", filteredOrdersWholesaler);
-  console.log("isSendOrderDisabled", isSendOrderDisabled);
   return (
     <Layout>
       <div>
