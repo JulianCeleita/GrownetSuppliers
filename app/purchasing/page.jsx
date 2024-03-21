@@ -294,8 +294,7 @@ function Purchasing() {
     productCode,
     value,
     cost = null,
-    notes = null,
-    label = null
+    notes = null
   ) => {
     if (key === "quantity" && isNaN(value)) {
       return;
@@ -309,7 +308,6 @@ function Purchasing() {
         [key]: value,
         ...(cost !== null && { cost }),
         ...(notes !== null && { notes }),
-        ...(label !== null && { label }),
       },
     }));
   };
@@ -683,31 +681,21 @@ function Purchasing() {
                   const defaultOption = wholesalerOptions.find(
                     (option) => option.label === order.wholesaler_name
                   );
-                  console.log(
-                    "editableRows[order.presentation_code]?.label",
-                    editableRows[order.presentation_code]?.label
-                  );
+
                   return (
                     <tr className="text-dark-blue border-b-2 border-stone-100">
                       <td className="py-4 pl-3">{order.presentation_code}</td>
                       <td className="py-4">
                         <Select
-                          value={
-                            editableRows[order.presentation_code]?.label
-                              ? editableRows[order.presentation_code]?.label
-                              : defaultOption
-                          }
+                          value={defaultOption}
                           onChange={(selectedOption) => {
                             handleEditField(
                               "wholesaler",
                               order.presentation_code,
-                              selectedOption.value,
-                              null,
-                              null,
-                              selectedOption.label
+                              selectedOption.value
                             );
                           }}
-                          options={[...wholesalerOptions]}
+                          options={wholesalerOptions}
                           menuPortalTarget={document.body}
                           styles={{
                             control: (provided) => ({
