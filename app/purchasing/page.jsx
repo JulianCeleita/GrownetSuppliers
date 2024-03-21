@@ -6,7 +6,7 @@ import {
   Bars3BottomRightIcon,
 } from "@heroicons/react/24/outline";
 import axios from "axios";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { purchasingCreate } from "../../app/config/urls.config";
 import useTokenStore from "../../app/store/useTokenStore";
 import Layout from "../layoutS";
@@ -72,7 +72,28 @@ function Purchasing() {
       }
     });
   };
+  //Cerrar filtros al oprimir afuera de la pantalla
+  const categoriesRef = useRef(null);
+  const wholesalerRef = useRef(null);
 
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (
+        categoriesRef.current &&
+        !categoriesRef.current.contains(event.target) &&
+        wholesalerRef.current &&
+        !wholesalerRef.current.contains(event.target)
+      ) {
+        setShowCategories(false);
+        setShowWholesalerFilter(false);
+      }
+    }
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
   const { products, setProducts } = usePerchasingStore();
 
   const formatDateToShow = (dateString) => {
@@ -430,7 +451,7 @@ function Purchasing() {
             </select>
           </div>
           <div className="flex gap-5">
-            <div className="relative ">
+            <div ref={categoriesRef} className="relative ">
               <button
                 className={`${
                   !showCategories ? "text-gray-grownet" : "text-primary-blue"
@@ -462,7 +483,7 @@ function Purchasing() {
                 </div>
               )}
             </div>
-            <div className="relative ">
+            <div ref={wholesalerRef} className="relative ">
               <button
                 className={`${
                   !showWholesalerFilter
@@ -596,6 +617,7 @@ function Purchasing() {
                     <td className="py-4">
                       <Select
                         value={
+
                           editableRows[order.presentation_code]?.wholesaler
                             ? wholesalerOptions.find(
                                 (option) =>
@@ -603,6 +625,7 @@ function Purchasing() {
                                   editableRows[order.presentation_code]
                                     ?.wholesaler
                               )
+
                             : null
                         }
                         onChange={(selectedOption) => {
