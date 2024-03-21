@@ -238,7 +238,8 @@ function Purchasing() {
   useEffect(() => {
     setIsSendOrderDisabled(!checkIfAnyProductHasQuantity());
   }, [products]);
-
+  console.log("setIsSendOrderDisabled:", isSendOrderDisabled);
+  console.log("products:", products);
   useEffect(() => {
     const updatedProducts = products.map((product) => {
       const editableRow = editableRows[product.presentation_code];
@@ -370,10 +371,15 @@ function Purchasing() {
 
           <div className="flex gap-4">
             <button
-              className="flex bg-green py-3 px-4 rounded-lg text-white font-medium hover:scale-110 transition-all"
+              className={`flex ${
+                isSendOrderDisabled
+                  ? "bg-gray-300"
+                  : "bg-green hover:scale-110 transition-all"
+              } py-3 px-4 rounded-lg text-white font-medium `}
               type="button"
               //onClick={() => setModalSendPurchasing(true)}
               onClick={sendOrder}
+              disabled={isSendOrderDisabled}
             >
               <ArrowRightCircleIcon className="h-6 w-6 mr-2 font-bold" />
               Send Purchasing
