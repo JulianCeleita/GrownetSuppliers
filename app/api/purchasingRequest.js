@@ -40,7 +40,7 @@ export const fetchOrderWholesaler = (
     });
 };
 
-export const fetchWholesalerList = (token, setWholesalerList) => {
+export const fetchWholesalerList = (token, setWholesalerList, setIsLoading) => {
   axios
     .get(wholesalersUrl, {
       headers: {
@@ -50,6 +50,7 @@ export const fetchWholesalerList = (token, setWholesalerList) => {
     .then((response) => {
       console.log("🚀 ~ .then ~ response:", response);
       setWholesalerList(response.data.wholesalers);
+      setIsLoading(false);
     })
     .catch((error) => {
       console.log("🚀 ~ error:", error);
