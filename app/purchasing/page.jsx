@@ -6,6 +6,7 @@ import {
   Bars3BottomRightIcon,
   ChevronLeftIcon,
   ChevronRightIcon,
+  ChevronUpIcon,
 } from "@heroicons/react/24/outline";
 import axios from "axios";
 import { useEffect, useState, useRef } from "react";
@@ -59,6 +60,26 @@ function Purchasing() {
 
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const [showScrollButton, setShowScrollButton] = useState(false);
+  //Flecha
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.scrollY > 300) {
+        setShowScrollButton(true);
+      } else {
+        setShowScrollButton(false);
+      }
+    };
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  const scrollToTop = () => {
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    });
+  };
 
   const nextPage = () => {
     setCurrentPage((prevPage) => prevPage + 1);
@@ -832,6 +853,14 @@ function Purchasing() {
                 </div>
               </div>
             </div>
+          )}
+          {showScrollButton && (
+            <button
+              className="fixed bottom-[18px] right-10 bg-green z-30 text-white rounded-full p-2 hover:bg-primary-blue transition-all"
+              onClick={scrollToTop}
+            >
+              <ChevronUpIcon className="h-6 w-6" />
+            </button>
           )}
         </div>
         {isLoading && (
