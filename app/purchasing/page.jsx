@@ -190,6 +190,30 @@ function Purchasing() {
     setIsSendOrderDisabled(!checkIfAnyProductHasQuantity());
   }, [products]);
 
+  useEffect(() => {
+    const updatedProducts = products.map((product) => {
+      const editableRow = editableRows[product.presentation_code];
+      if (editableRow) {
+        return { ...product, ...editableRow };
+      }
+
+      return product;
+    });
+
+    const newProducts = Object.keys(editableRows)
+      .filter((productCode) => {
+        return !products.some(
+          (product) => product.presentation_code === productCode
+        );
+      })
+      .map((productCode) => ({
+        presentation_code: productCode,
+        ...editableRows[productCode],
+      }));
+
+    setProducts([...updatedProducts, ...newProducts]);
+  }, [editableRows]);
+
   const handleEditField = (key, productCode, value) => {
     if (key === "quantity" && isNaN(value)) {
       return;
@@ -202,26 +226,6 @@ function Purchasing() {
         [key]: value,
       },
     }));
-
-    if (key === "quantity") {
-      const updatedProducts = products?.map((product) => {
-        if (product.presentation_code === productCode) {
-          return { ...product, quantity: value };
-        }
-        return product;
-      });
-
-      if (
-        !updatedProducts.some(
-          (product) => product.presentation_code === productCode
-        )
-      ) {
-        const newProduct = { presentation_code: productCode, quantity: value };
-        updatedProducts.push(newProduct);
-      }
-
-      setProducts(updatedProducts);
-    }
   };
 
   console.log("editableRows:", editableRows);
@@ -255,6 +259,7 @@ function Purchasing() {
     }
   });
   console.log("products a enviar:", products);
+
   const uniqueCategories = [
     ...new Set(ordersWholesaler.map((order) => order.category_name)),
   ];
@@ -265,9 +270,9 @@ function Purchasing() {
       const sendData = {
         orders_wholesaler: products.map((order) => ({
           presentation_code: order.presentation_code,
-          wholesaler_id: order.wholesaler_id,
+          wholesaler_id: order.wholesaler,
           date_delivery: workDate,
-          note: order.note,
+          note: order.notes,
           cost: order.cost,
           purchasing_qty: order.quantity,
         })),
@@ -584,35 +589,34 @@ function Purchasing() {
                 const cost =
                   editableRows[order.presentation_code]?.cost || order.cost;
                 const totalCost = isNaN(quantity * cost) ? 0 : quantity * cost;
+
+                const wholesalerOptions = wholesalerList?.map((wholesaler) => ({
+                  value: wholesaler.id,
+                  label: wholesaler.name,
+                }));
                 return (
                   <tr className="text-dark-blue border-b-2 border-stone-100">
                     <td className="py-4 pl-3">{order.presentation_code}</td>
                     <td className="py-4">
                       <Select
                         value={
-                          editableRows[order.presentation_code]
-                            ?.wholesaler_id || order.wholesaler_id
-                            ? {
-                                value:
+                          editableRows[order.presentation_code]?.wholesaler
+                            ? wholesalerOptions.find(
+                                (option) =>
+                                  option.value ===
                                   editableRows[order.presentation_code]
-                                    ?.wholesaler_id || order.wholesaler_id,
-                                label:
-                                  editableRows[order.presentation_code]
-                                    ?.label || order.wholesaler_name,
-                              }
+                                    ?.wholesaler
+                              )
                             : null
                         }
                         onChange={(selectedOption) => {
                           handleEditField(
-                            "Description",
+                            "wholesaler",
                             order.presentation_code,
-                            selectedOption.label
+                            selectedOption.value
                           );
                         }}
-                        options={wholesalerList?.map((wholesaler) => ({
-                          value: wholesaler.id,
-                          label: wholesaler.name,
-                        }))}
+                        options={wholesalerOptions}
                         menuPortalTarget={document.body}
                         styles={{
                           control: (provided) => ({
