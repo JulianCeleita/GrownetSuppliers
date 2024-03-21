@@ -270,25 +270,42 @@ function Purchasing() {
     productCode,
     value,
     cost = null,
-    notes = null
+    notes = null,
+    label
   ) => {
     if (key === "quantity" && isNaN(value)) {
       return;
     }
     console.log("cost:", cost, notes);
-    setEditableRows((prevEditableRows) => ({
-      ...prevEditableRows,
-      [productCode]: {
-        ...prevEditableRows[productCode],
-        [key]: value,
-        ...(cost !== null && { cost }),
-        ...(notes !== null && { notes }),
-      },
-    }));
+    if (key === "wholesaler") {
+      setEditableRows((prevEditableRows) => ({
+        ...prevEditableRows,
+        [productCode]: {
+          ...prevEditableRows[productCode],
+          [key]: value,
+          label: label,
+        },
+      }));
+    } else {
+      setEditableRows((prevEditableRows) => ({
+        ...prevEditableRows,
+        [productCode]: {
+          ...prevEditableRows[productCode],
+          [key]: value,
+          ...(cost !== null && { cost }),
+          ...(notes !== null && { notes }),
+        },
+      }));
+    }
 
     const updatedProducts = products.map((product) => {
       if (product.presentation_code === productCode) {
-        return { ...product, [key]: value };
+        if (key === "wholesaler") {
+          console.log(label);
+          return { ...product, [key]: value };
+        } else {
+          return { ...product, [key]: value };
+        }
       }
       return product;
     });
@@ -334,7 +351,7 @@ function Purchasing() {
           presentation_code: order.presentation_code,
           wholesaler_id: order.wholesaler,
           date_delivery: workDate,
-          note: order.notes,
+          note: order.notes || "",
           cost: order.cost,
           purchasing_qty: order.quantity,
         })),
@@ -666,20 +683,25 @@ function Purchasing() {
                       <td className="py-4">
                         <Select
                           value={
-                            editableRows[order.presentation_code]?.wholesaler
-                              ? wholesalerOptions.find(
-                                  (option) =>
-                                    option.value ===
+                            editableRows[order.presentation_code]?.wholesaler ||
+                            order.wholesaler_id
+                              ? {
+                                  value:
                                     editableRows[order.presentation_code]
-                                      ?.wholesaler
-                                )
+                                      ?.wholesaler || order.wholesaler_id,
+                                  label:
+                                    editableRows[order.presentation_code]
+                                      ?.label || order.wholesaler_name,
+                                }
                               : null
                           }
                           onChange={(selectedOption) => {
+                            console.log(editableRows);
                             handleEditField(
                               "wholesaler",
                               order.presentation_code,
-                              selectedOption.value
+                              selectedOption.value,
+                              selectedOption.label
                             );
                           }}
                           options={wholesalerOptions}
