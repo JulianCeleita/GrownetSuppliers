@@ -362,7 +362,7 @@ function Purchasing() {
       console.error(error);
     }
   };
-
+  // console.log("filteredOrdersWholesaler", filteredOrdersWholesaler);
   return (
     <Layout>
       <div>
@@ -653,26 +653,17 @@ function Purchasing() {
                       label: wholesaler.name,
                     })
                   );
+                  const defaultOption = wholesalerOptions.find(
+                    (option) => option.label === order.wholesaler_name
+                  );
+
                   return (
                     <tr className="text-dark-blue border-b-2 border-stone-100">
                       <td className="py-4 pl-3">{order.presentation_code}</td>
                       <td className="py-4">
                         <Select
-                          value={
-                            editableRows[order.presentation_code]?.wholesaler ||
-                            order.wholesaler_id
-                              ? {
-                                  value:
-                                    editableRows[order.presentation_code]
-                                      ?.wholesaler || order.wholesaler_id,
-                                  label:
-                                    editableRows[order.presentation_code]
-                                      ?.label || order.wholesaler_name,
-                                }
-                              : null
-                          }
+                          value={defaultOption}
                           onChange={(selectedOption) => {
-                            console.log(editableRows);
                             handleEditField(
                               "wholesaler",
                               order.presentation_code,
