@@ -98,9 +98,6 @@ function Purchasing() {
       setOrdersWholesaler,
       setIsLoading
     );
-    console.log(startDate);
-    console.log(endDate);
-    console.log(workDate);
   }, [endDate, startDate]);
 
   useEffect(() => {
@@ -152,29 +149,38 @@ function Purchasing() {
         ? filteredOrdersBySearch.filter((order) => order.short === 0)
         : filteredOrdersBySearch;
 
-    // Filter by category
-    const filteredOrdersByCategory =
-      selectedCategory === ""
-        ? filteredOrdersByShort
-        : filteredOrdersByShort.filter(
-            (order) => order.category_name === selectedCategory
-          );
-
+    let filteredOrdersBySelectedCategories = filteredOrdersByShort;
+    if (isCheckedCategories.length > 0) {
+      filteredOrdersBySelectedCategories = filteredOrdersByShort.filter(
+        (order) => isCheckedCategories.includes(order.category_name)
+      );
+    }
+    let filteredOrdersBySelectedWholesalers =
+      filteredOrdersBySelectedCategories;
+    if (isCheckedWholesalert.length > 0) {
+      filteredOrdersBySelectedWholesalers =
+        filteredOrdersBySelectedCategories.filter((order) =>
+          isCheckedWholesalert.includes(order.wholesaler_name)
+        );
+    }
     // Update orders with editableRows
-    const updatedOrders = filteredOrdersByCategory.map((order, index) => ({
-      ...order,
-      wholesaler_id:
-        editableRows[order.presentation_code]?.wholesaler_id ||
-        order.wholesaler_id,
-      quantity:
-        editableRows[order.presentation_code]?.quantity || order.quantity,
-      cost: editableRows[order.presentation_code]?.cost || order.cost,
-      note: editableRows[order.presentation_code]?.notes || order.note,
-    }));
+    const updatedOrders = filteredOrdersBySelectedWholesalers.map(
+      (order, index) => ({
+        ...order,
+        wholesaler_id:
+          editableRows[order.presentation_code]?.wholesaler_id ||
+          order.wholesaler_id,
+        quantity:
+          editableRows[order.presentation_code]?.quantity || order.quantity,
+        cost: editableRows[order.presentation_code]?.cost || order.cost,
+        note: editableRows[order.presentation_code]?.notes || order.note,
+      })
+    );
 
-    console.log("🚀 ~ updatedOrders ~ editableRows:", editableRows);
     setFilteredOrdersWholesaler(updatedOrders);
   }, [
+    isCheckedWholesalert,
+    isCheckedCategories,
     ordersWholesaler,
     selectedStatus,
     selectedCategory,
@@ -228,8 +234,6 @@ function Purchasing() {
     }));
   };
 
-  console.log("editableRows:", editableRows);
-
   const handleSort = (column) => {
     if (sortColumn === column) {
       setSortDirection(sortDirection === "asc" ? "desc" : "asc");
@@ -265,7 +269,6 @@ function Purchasing() {
   ];
 
   const sendOrder = async () => {
-    //console.log(selectedWholesalers);
     try {
       const sendData = {
         orders_wholesaler: products.map((order) => ({
@@ -425,18 +428,6 @@ function Purchasing() {
               <option value="short">Short</option>
               <option value="available">Availables</option>
             </select>
-            <select
-              value={selectedCategory}
-              onChange={(e) => setSelectedCategory(e.target.value)}
-              className="form-select px-2 py-3 rounded-md border border-gray-300 text-sm custom:text-base w-[155px]"
-            >
-              <option value="">All Categories</option>
-              {uniqueCategories.map((category) => (
-                <option key={category} value={category}>
-                  {category}
-                </option>
-              ))}
-            </select>
           </div>
           <div className="flex gap-5">
             <div className="relative ">
@@ -491,9 +482,14 @@ function Purchasing() {
                     <div className="flex gap-2">
                       <input
                         type="checkbox"
-                        checked={isCheckedWholesalert.includes(wholesalert)}
+                        checked={isCheckedWholesalert.includes(
+                          wholesalert.name
+                        )}
                         onChange={(event) =>
-                          handleCheckboxWholesalertChange(event, wholesalert)
+                          handleCheckboxWholesalertChange(
+                            event,
+                            wholesalert.name
+                          )
                         }
                         className="form-checkbox h-4 w-4 text-primary-blue cursor-pointer"
                       />
