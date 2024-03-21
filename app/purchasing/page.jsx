@@ -412,7 +412,7 @@ function Purchasing() {
             <button
               className={`flex ${
                 isSendOrderDisabled
-                  ? "bg-gray-input"
+                  ? "bg-gray-input cursor-not-allowed"
                   : "bg-green hover:scale-110 transition-all"
               } py-3 px-4 rounded-lg text-white font-medium `}
               type="button"
