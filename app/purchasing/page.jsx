@@ -270,46 +270,22 @@ function Purchasing() {
     productCode,
     value,
     cost = null,
-    notes = null,
-    label
+    notes = null
   ) => {
     if (key === "quantity" && isNaN(value)) {
       return;
     }
     console.log("cost:", cost, notes);
-    if (key === "wholesaler") {
-      setEditableRows((prevEditableRows) => ({
-        ...prevEditableRows,
-        [productCode]: {
-          ...prevEditableRows[productCode],
-          [key]: value,
-          label: label,
-        },
-      }));
-    } else {
-      setEditableRows((prevEditableRows) => ({
-        ...prevEditableRows,
-        [productCode]: {
-          ...prevEditableRows[productCode],
-          [key]: value,
-          ...(cost !== null && { cost }),
-          ...(notes !== null && { notes }),
-        },
-      }));
-    }
 
-    const updatedProducts = products.map((product) => {
-      if (product.presentation_code === productCode) {
-        if (key === "wholesaler") {
-          console.log(label);
-          return { ...product, [key]: value };
-        } else {
-          return { ...product, [key]: value };
-        }
-      }
-      return product;
-    });
-    setProducts(updatedProducts);
+    setEditableRows((prevEditableRows) => ({
+      ...prevEditableRows,
+      [productCode]: {
+        ...prevEditableRows[productCode],
+        [key]: value,
+        ...(cost !== null && { cost }),
+        ...(notes !== null && { notes }),
+      },
+    }));
   };
   const handleSort = (column) => {
     if (sortColumn === column) {
@@ -700,8 +676,7 @@ function Purchasing() {
                             handleEditField(
                               "wholesaler",
                               order.presentation_code,
-                              selectedOption.value,
-                              selectedOption.label
+                              selectedOption.value
                             );
                           }}
                           options={wholesalerOptions}
