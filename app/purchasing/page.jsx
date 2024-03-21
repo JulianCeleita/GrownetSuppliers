@@ -261,7 +261,7 @@ function Purchasing() {
 
   useEffect(() => {
     setIsSendOrderDisabled(!checkIfAnyProductHasQuantity());
-  }, [products]);
+  }, [products, isSendOrderDisabled]);
 
   console.log("products:", products);
   console.log("editableRows:", editableRows);
@@ -399,6 +399,7 @@ function Purchasing() {
     }
   };
   // console.log("filteredOrdersWholesaler", filteredOrdersWholesaler);
+  console.log("isSendOrderDisabled", isSendOrderDisabled);
   return (
     <Layout>
       <div>
