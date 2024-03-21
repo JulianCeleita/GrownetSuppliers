@@ -238,8 +238,9 @@ function Purchasing() {
   useEffect(() => {
     setIsSendOrderDisabled(!checkIfAnyProductHasQuantity());
   }, [products]);
-  console.log("setIsSendOrderDisabled:", isSendOrderDisabled);
+
   console.log("products:", products);
+  console.log("editableRows:", editableRows);
   useEffect(() => {
     const updatedProducts = products.map((product) => {
       const editableRow = editableRows[product.presentation_code];
@@ -264,16 +265,24 @@ function Purchasing() {
     setProducts([...updatedProducts, ...newProducts]);
   }, [editableRows]);
 
-  const handleEditField = (key, productCode, value) => {
+  const handleEditField = (
+    key,
+    productCode,
+    value,
+    cost = null,
+    notes = null
+  ) => {
     if (key === "quantity" && isNaN(value)) {
       return;
     }
-
+    console.log("cost:", cost, notes);
     setEditableRows((prevEditableRows) => ({
       ...prevEditableRows,
       [productCode]: {
         ...prevEditableRows[productCode],
         [key]: value,
+        ...(cost !== null && { cost }),
+        ...(notes !== null && { notes }),
       },
     }));
 
@@ -659,11 +668,11 @@ function Purchasing() {
                           value={
                             editableRows[order.presentation_code]?.wholesaler
                               ? wholesalerOptions.find(
-                                (option) =>
-                                  option.value ===
-                                  editableRows[order.presentation_code]
-                                    ?.wholesaler
-                              )
+                                  (option) =>
+                                    option.value ===
+                                    editableRows[order.presentation_code]
+                                      ?.wholesaler
+                                )
                               : null
                           }
                           onChange={(selectedOption) => {
@@ -721,7 +730,9 @@ function Purchasing() {
                             handleEditField(
                               "quantity",
                               order.presentation_code,
-                              e.target.value
+                              e.target.value,
+                              order.cost,
+                              order.note
                             )
                           }
                           className="pl-2 h-[30px] outline-none w-full hide-number-arrows"
