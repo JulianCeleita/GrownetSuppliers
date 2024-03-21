@@ -150,17 +150,17 @@ function Purchasing() {
     // Filtrar por búsqueda
     let filteredOrdersBySearch = searchQuery
       ? ordersWholesaler.filter(
-          (order) =>
-            order.product_name
-              .toLowerCase()
-              .includes(searchQuery.toLowerCase()) ||
-            order.presentation_name
-              .toLowerCase()
-              .includes(searchQuery.toLowerCase()) ||
-            order.presentation_code
-              .toLowerCase()
-              .includes(searchQuery.toLowerCase())
-        )
+        (order) =>
+          order.product_name
+            .toLowerCase()
+            .includes(searchQuery.toLowerCase()) ||
+          order.presentation_name
+            .toLowerCase()
+            .includes(searchQuery.toLowerCase()) ||
+          order.presentation_code
+            .toLowerCase()
+            .includes(searchQuery.toLowerCase())
+      )
       : ordersWholesaler;
 
     // Filtrar por estado
@@ -168,8 +168,8 @@ function Purchasing() {
       selectedStatus === "short"
         ? filteredOrdersBySearch.filter((order) => order.short > 0)
         : selectedStatus === "available"
-        ? filteredOrdersBySearch.filter((order) => order.short === 0)
-        : filteredOrdersBySearch;
+          ? filteredOrdersBySearch.filter((order) => order.short === 0)
+          : filteredOrdersBySearch;
 
     // Filtrar por categorías seleccionadas
     if (isCheckedCategories.length > 0) {
@@ -329,7 +329,7 @@ function Purchasing() {
           wholesaler_id: order.wholesaler,
           date_delivery: workDate,
           note: order.notes || "",
-          cost: order.cost,
+          cost: order.cost === "" ? 0 : order.cost,
           purchasing_qty: order.quantity,
         })),
       };
@@ -377,11 +377,10 @@ function Purchasing() {
 
           <div className="flex gap-4">
             <button
-              className={`flex ${
-                isSendOrderDisabled
+              className={`flex ${isSendOrderDisabled
                   ? "bg-gray-input"
                   : "bg-green hover:scale-110 transition-all"
-              } py-3 px-4 rounded-lg text-white font-medium `}
+                } py-3 px-4 rounded-lg text-white font-medium `}
               type="button"
               //onClick={() => setModalSendPurchasing(true)}
               onClick={sendOrder}
@@ -493,9 +492,8 @@ function Purchasing() {
           <div className="flex gap-5">
             <div ref={categoriesRef} className="relative ">
               <button
-                className={`${
-                  !showCategories ? "text-gray-grownet" : "text-primary-blue"
-                } hover:scale-110 hover:text-primary-blue transition-all`}
+                className={`${!showCategories ? "text-gray-grownet" : "text-primary-blue"
+                  } hover:scale-110 hover:text-primary-blue transition-all`}
                 onClick={() => {
                   setShowCategories(!showCategories);
                   setShowWholesalerFilter(false);
@@ -525,11 +523,10 @@ function Purchasing() {
             </div>
             <div ref={wholesalerRef} className="relative ">
               <button
-                className={`${
-                  !showWholesalerFilter
+                className={`${!showWholesalerFilter
                     ? "text-gray-grownet"
                     : "text-primary-blue"
-                } hover:scale-110 hover:text-primary-blue transition-all`}
+                  } hover:scale-110 hover:text-primary-blue transition-all`}
                 onClick={() => {
                   setShowWholesalerFilter(!showWholesalerFilter);
                   setShowCategories(false);
@@ -664,15 +661,15 @@ function Purchasing() {
                         <Select
                           value={
                             editableRows[order.presentation_code]?.wholesaler ||
-                            order.wholesaler_id
+                              order.wholesaler_id
                               ? {
-                                  value:
-                                    editableRows[order.presentation_code]
-                                      ?.wholesaler || order.wholesaler_id,
-                                  label:
-                                    editableRows[order.presentation_code]
-                                      ?.label || order.wholesaler_name,
-                                }
+                                value:
+                                  editableRows[order.presentation_code]
+                                    ?.wholesaler || order.wholesaler_id,
+                                label:
+                                  editableRows[order.presentation_code]
+                                    ?.label || order.wholesaler_name,
+                              }
                               : null
                           }
                           onChange={(selectedOption) => {
@@ -748,9 +745,9 @@ function Purchasing() {
                           type="number"
                           step="0.01"
                           value={
-                            editableRows[order.presentation_code]?.cost ||
-                            order.cost ||
-                            ""
+                            editableRows[order.presentation_code]?.cost !== undefined
+                              ? editableRows[order.presentation_code]?.cost
+                              : order.cost ?? 0
                           }
                           onChange={(e) =>
                             handleEditField(
@@ -771,9 +768,9 @@ function Purchasing() {
                         <input
                           type="text"
                           value={
-                            editableRows[order.presentation_code]?.notes ||
-                            order.note ||
-                            ""
+                            editableRows[order.presentation_code]?.notes !== undefined
+                              ? editableRows[order.presentation_code]?.notes
+                              : order.note ?? ""
                           }
                           onChange={(e) =>
                             handleEditField(
@@ -808,11 +805,10 @@ function Purchasing() {
                   <button
                     onClick={nextPage}
                     disabled={currentPage === totalPages}
-                    className={`px-3 py-1 text-sm font-medium rounded-md cursor-pointer transition-all ${
-                      currentPage === totalPages
+                    className={`px-3 py-1 text-sm font-medium rounded-md cursor-pointer transition-all ${currentPage === totalPages
                         ? "text-primary-blue bg-light-blue border border-gray-200"
                         : "text-primary-blue bg-primary-blue-light border border-primary-blue-light hover:bg-primary-blue hover:border-primary-blue-dark hover:text-white focus:outline-none"
-                    }`}
+                      }`}
                   >
                     Next
                   </button>
