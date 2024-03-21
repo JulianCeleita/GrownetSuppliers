@@ -52,7 +52,7 @@ function Purchasing() {
   const [isCheckedCategories, setIsCheckedCategories] = useState([]);
   const [isCheckedWholesalert, setIsCheckedWholesalert] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 50;
+  const itemsPerPage = 30;
 
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
@@ -149,17 +149,17 @@ function Purchasing() {
     // Filtrar por búsqueda
     let filteredOrdersBySearch = searchQuery
       ? ordersWholesaler.filter(
-          (order) =>
-            order.product_name
-              .toLowerCase()
-              .includes(searchQuery.toLowerCase()) ||
-            order.presentation_name
-              .toLowerCase()
-              .includes(searchQuery.toLowerCase()) ||
-            order.presentation_code
-              .toLowerCase()
-              .includes(searchQuery.toLowerCase())
-        )
+        (order) =>
+          order.product_name
+            .toLowerCase()
+            .includes(searchQuery.toLowerCase()) ||
+          order.presentation_name
+            .toLowerCase()
+            .includes(searchQuery.toLowerCase()) ||
+          order.presentation_code
+            .toLowerCase()
+            .includes(searchQuery.toLowerCase())
+      )
       : ordersWholesaler;
 
     // Filtrar por estado
@@ -167,8 +167,8 @@ function Purchasing() {
       selectedStatus === "short"
         ? filteredOrdersBySearch.filter((order) => order.short > 0)
         : selectedStatus === "available"
-        ? filteredOrdersBySearch.filter((order) => order.short === 0)
-        : filteredOrdersBySearch;
+          ? filteredOrdersBySearch.filter((order) => order.short === 0)
+          : filteredOrdersBySearch;
 
     // Filtrar por categorías seleccionadas
     if (isCheckedCategories.length > 0) {
@@ -481,9 +481,8 @@ function Purchasing() {
           <div className="flex gap-5">
             <div ref={categoriesRef} className="relative ">
               <button
-                className={`${
-                  !showCategories ? "text-gray-grownet" : "text-primary-blue"
-                } hover:scale-110 hover:text-primary-blue transition-all`}
+                className={`${!showCategories ? "text-gray-grownet" : "text-primary-blue"
+                  } hover:scale-110 hover:text-primary-blue transition-all`}
                 onClick={() => {
                   setShowCategories(!showCategories);
                   setShowWholesalerFilter(false);
@@ -513,11 +512,10 @@ function Purchasing() {
             </div>
             <div ref={wholesalerRef} className="relative ">
               <button
-                className={`${
-                  !showWholesalerFilter
-                    ? "text-gray-grownet"
-                    : "text-primary-blue"
-                } hover:scale-110 hover:text-primary-blue transition-all`}
+                className={`${!showWholesalerFilter
+                  ? "text-gray-grownet"
+                  : "text-primary-blue"
+                  } hover:scale-110 hover:text-primary-blue transition-all`}
                 onClick={() => {
                   setShowWholesalerFilter(!showWholesalerFilter);
                   setShowCategories(false);
@@ -550,7 +548,7 @@ function Purchasing() {
             </div>
           </div>
         </div>
-        <div className="flex items-center justify-center mb-20 overflow-x-auto">
+        <div className="flex flex-col items-center justify-center mb-20 overflow-x-auto">
           <table className="w-[95%] bg-white first-line:bg-white rounded-2xl shadow-[rgba(17,_17,_26,_0.1)_0px_0px_16px]">
             <thead className="sticky top-0 bg-white text-center shadow-[0px_11px_15px_-3px_#edf2f7] ">
               <tr className="border-b-2 border-stone-100 text-dark-blue">
@@ -653,11 +651,11 @@ function Purchasing() {
                           value={
                             editableRows[order.presentation_code]?.wholesaler
                               ? wholesalerOptions.find(
-                                  (option) =>
-                                    option.value ===
-                                    editableRows[order.presentation_code]
-                                      ?.wholesaler
-                                )
+                                (option) =>
+                                  option.value ===
+                                  editableRows[order.presentation_code]
+                                    ?.wholesaler
+                              )
                               : null
                           }
                           onChange={(selectedOption) => {
@@ -753,7 +751,7 @@ function Purchasing() {
                         <input
                           type="text"
                           value={
-                            editableRows[order.presentation_code]?.note ||
+                            editableRows[order.presentation_code]?.notes ||
                             order.note ||
                             ""
                           }
@@ -772,14 +770,38 @@ function Purchasing() {
                 })}
             </tbody>
             <div>
-              <button onClick={prevPage} disabled={currentPage === 1}>
-                Previous
-              </button>
-              <button onClick={nextPage} disabled={currentPage === totalPages}>
-                Next
-              </button>
+
             </div>
           </table>
+          {!isLoading && (
+            <div className="flex items-center justify-center my-8">
+              <button
+                onClick={prevPage}
+                disabled={currentPage === 1}
+                className="px-3 py-1 mr-2 text-sm font-medium text-gray-600 bg-gray-100 border border-gray-200 rounded-md cursor-pointer transition-all hover:bg-gray-200 focus:outline-none focus:bg-gray-200"
+              >
+                Previous
+              </button>
+              <div className="flex items-center space-x-2">
+                <span className="text-sm font-medium text-gray-600">
+                  Page {currentPage} of {totalPages}
+                </span>
+                <div>
+                  <button
+                    onClick={nextPage}
+                    disabled={currentPage === totalPages}
+                    className={`px-3 py-1 text-sm font-medium rounded-md cursor-pointer transition-all ${currentPage === totalPages
+                      ? 'text-primary-blue bg-light-blue border border-gray-200'
+                      : 'text-primary-blue bg-primary-blue-light border border-primary-blue-light hover:bg-primary-blue hover:border-primary-blue-dark hover:text-white focus:outline-none'
+                      }`}
+                  >
+                    Next
+                  </button>
+                </div>
+              </div>
+
+            </div>
+          )}
         </div>
         {isLoading && (
           <div className="flex justify-center items-center mb-20">
