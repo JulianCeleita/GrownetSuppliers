@@ -44,6 +44,7 @@ function Purchasing() {
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [showErrorModal, setShowErrorModal] = useState(false);
   const [messageError, setMessageError] = useState("");
+  const [messageSuccess, setMessageSuccess] = useState("");
   const [isSendOrderDisabled, setIsSendOrderDisabled] = useState(true);
   const [modalSendPurchasing, setModalSendPurchasing] = useState(false);
   const [startDate, setStartDate] = useState("");
@@ -240,8 +241,9 @@ function Purchasing() {
   useEffect(() => {
     setIsSendOrderDisabled(!checkIfAnyProductHasQuantity());
   }, [products]);
-  console.log("setIsSendOrderDisabled:", isSendOrderDisabled);
+
   console.log("products:", products);
+  console.log("editableRows:", editableRows);
   useEffect(() => {
     const updatedProducts = products.map((product) => {
       const editableRow = editableRows[product.presentation_code];
@@ -266,43 +268,27 @@ function Purchasing() {
     setProducts([...updatedProducts, ...newProducts]);
   }, [editableRows]);
 
-  const handleEditField = (key, productCode, value, label) => {
+  const handleEditField = (
+    key,
+    productCode,
+    value,
+    cost = null,
+    notes = null
+  ) => {
     if (key === "quantity" && isNaN(value)) {
       return;
     }
+    console.log("cost:", cost, notes);
 
-    if (key === "wholesaler") {
-      setEditableRows((prevEditableRows) => ({
-        ...prevEditableRows,
-        [productCode]: {
-          ...prevEditableRows[productCode],
-          [key]: value,
-          label: label,
-        },
-      }));
-    } else {
-      setEditableRows((prevEditableRows) => ({
-        ...prevEditableRows,
-        [productCode]: {
-          ...prevEditableRows[productCode],
-          [key]: value,
-        },
-      }));
-    }
-    console.log(editableRows);
-
-    const updatedProducts = products.map((product) => {
-      if (product.presentation_code === productCode) {
-        if (key === "wholesaler") {
-          console.log(label);
-          return { ...product, [key]: value };
-        } else {
-          return { ...product, [key]: value };
-        }
-      }
-      return product;
-    });
-    setProducts(updatedProducts);
+    setEditableRows((prevEditableRows) => ({
+      ...prevEditableRows,
+      [productCode]: {
+        ...prevEditableRows[productCode],
+        [key]: value,
+        ...(cost !== null && { cost }),
+        ...(notes !== null && { notes }),
+      },
+    }));
   };
   const handleSort = (column) => {
     if (sortColumn === column) {
@@ -373,6 +359,9 @@ function Purchasing() {
         setEditableRows({});
         setFilteredOrdersWholesaler([]);
         setShowSuccessModal(true);
+        const po_numbers = response?.data.po_numbers;
+        const wholesalerNames = po_numbers?.map((po) => po.wholesaler_name);
+        setMessageSuccess(wholesalerNames?.join(", "));
       }
     } catch (error) {
       setMessageError(error.response.data.message);
@@ -694,8 +683,7 @@ function Purchasing() {
                             handleEditField(
                               "wholesaler",
                               order.presentation_code,
-                              selectedOption.value,
-                              selectedOption.label
+                              selectedOption.value
                             );
                           }}
                           options={wholesalerOptions}
@@ -748,7 +736,9 @@ function Purchasing() {
                             handleEditField(
                               "quantity",
                               order.presentation_code,
-                              e.target.value
+                              e.target.value,
+                              order.cost,
+                              order.note
                             )
                           }
                           className="pl-2 h-[30px] outline-none w-full hide-number-arrows text-center"
@@ -859,7 +849,8 @@ function Purchasing() {
           isvisible={showSuccessModal}
           onClose={() => setShowSuccessModal(false)}
           title="Congratulations"
-          text="Order sended successfully"
+          text="Order sended successfully for"
+          textGrownet={messageSuccess}
           button=" Close"
         />
         <ModalOrderError
