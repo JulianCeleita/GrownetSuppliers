@@ -390,6 +390,7 @@ function Purchasing() {
         const wholesalerNames = po_numbers?.map((po) => po.wholesaler_name);
         setMessageSuccess(wholesalerNames?.join(", "));
         setIsSendOrderDisabled(false);
+        setProducts([]);
       }
     } catch (error) {
       setMessageError(error.response.data.message);
