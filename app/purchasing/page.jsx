@@ -4,6 +4,8 @@ import {
   TrashIcon,
   FunnelIcon,
   Bars3BottomRightIcon,
+  ChevronLeftIcon,
+  ChevronRightIcon,
 } from "@heroicons/react/24/outline";
 import axios from "axios";
 import { useEffect, useState, useRef } from "react";
@@ -149,17 +151,17 @@ function Purchasing() {
     // Filtrar por búsqueda
     let filteredOrdersBySearch = searchQuery
       ? ordersWholesaler.filter(
-        (order) =>
-          order.product_name
-            .toLowerCase()
-            .includes(searchQuery.toLowerCase()) ||
-          order.presentation_name
-            .toLowerCase()
-            .includes(searchQuery.toLowerCase()) ||
-          order.presentation_code
-            .toLowerCase()
-            .includes(searchQuery.toLowerCase())
-      )
+          (order) =>
+            order.product_name
+              .toLowerCase()
+              .includes(searchQuery.toLowerCase()) ||
+            order.presentation_name
+              .toLowerCase()
+              .includes(searchQuery.toLowerCase()) ||
+            order.presentation_code
+              .toLowerCase()
+              .includes(searchQuery.toLowerCase())
+        )
       : ordersWholesaler;
 
     // Filtrar por estado
@@ -167,8 +169,8 @@ function Purchasing() {
       selectedStatus === "short"
         ? filteredOrdersBySearch.filter((order) => order.short > 0)
         : selectedStatus === "available"
-          ? filteredOrdersBySearch.filter((order) => order.short === 0)
-          : filteredOrdersBySearch;
+        ? filteredOrdersBySearch.filter((order) => order.short === 0)
+        : filteredOrdersBySearch;
 
     // Filtrar por categorías seleccionadas
     if (isCheckedCategories.length > 0) {
@@ -275,7 +277,7 @@ function Purchasing() {
         [productCode]: {
           ...prevEditableRows[productCode],
           [key]: value,
-          label: label
+          label: label,
         },
       }));
     } else {
@@ -292,7 +294,7 @@ function Purchasing() {
     const updatedProducts = products.map((product) => {
       if (product.presentation_code === productCode) {
         if (key === "wholesaler") {
-          console.log(label)
+          console.log(label);
           return { ...product, [key]: value };
         } else {
           return { ...product, [key]: value };
@@ -331,6 +333,7 @@ function Purchasing() {
     }
   });
   const totalPages = Math.ceil(sortedOrders.length / itemsPerPage);
+
   const uniqueCategories = [
     ...new Set(ordersWholesaler.map((order) => order.category_name)),
   ];
@@ -377,7 +380,7 @@ function Purchasing() {
       console.error(error);
     }
   };
-
+  console.log("asi llega " + currentPage + " total " + totalPages);
   return (
     <Layout>
       <div>
@@ -388,10 +391,11 @@ function Purchasing() {
 
           <div className="flex gap-4">
             <button
-              className={`flex ${isSendOrderDisabled
-                ? "bg-gray-input"
-                : "bg-green hover:scale-110 transition-all"
-                } py-3 px-4 rounded-lg text-white font-medium `}
+              className={`flex ${
+                isSendOrderDisabled
+                  ? "bg-gray-input"
+                  : "bg-green hover:scale-110 transition-all"
+              } py-3 px-4 rounded-lg text-white font-medium `}
               type="button"
               //onClick={() => setModalSendPurchasing(true)}
               onClick={sendOrder}
@@ -503,8 +507,9 @@ function Purchasing() {
           <div className="flex gap-5">
             <div ref={categoriesRef} className="relative ">
               <button
-                className={`${!showCategories ? "text-gray-grownet" : "text-primary-blue"
-                  } hover:scale-110 hover:text-primary-blue transition-all`}
+                className={`${
+                  !showCategories ? "text-gray-grownet" : "text-primary-blue"
+                } hover:scale-110 hover:text-primary-blue transition-all`}
                 onClick={() => {
                   setShowCategories(!showCategories);
                   setShowWholesalerFilter(false);
@@ -534,10 +539,11 @@ function Purchasing() {
             </div>
             <div ref={wholesalerRef} className="relative ">
               <button
-                className={`${!showWholesalerFilter
-                  ? "text-gray-grownet"
-                  : "text-primary-blue"
-                  } hover:scale-110 hover:text-primary-blue transition-all`}
+                className={`${
+                  !showWholesalerFilter
+                    ? "text-gray-grownet"
+                    : "text-primary-blue"
+                } hover:scale-110 hover:text-primary-blue transition-all`}
                 onClick={() => {
                   setShowWholesalerFilter(!showWholesalerFilter);
                   setShowCategories(false);
@@ -570,8 +576,8 @@ function Purchasing() {
             </div>
           </div>
         </div>
-        <div className="flex flex-col items-center justify-center mb-20 overflow-x-auto">
-          <table className="w-[95%] bg-white first-line:bg-white rounded-2xl shadow-[rgba(17,_17,_26,_0.1)_0px_0px_16px]">
+        <div className="flex flex-col items-center justify-center mb-[18px] overflow-x-auto">
+          <table className="w-[95%] mt-2 bg-white first-line:bg-white rounded-2xl shadow-[rgba(17,_17,_26,_0.1)_0px_0px_16px]">
             <thead className="sticky top-0 bg-white text-center shadow-[0px_11px_15px_-3px_#edf2f7] ">
               <tr className="border-b-2 border-stone-100 text-dark-blue">
                 <th
@@ -671,20 +677,20 @@ function Purchasing() {
                       <td className="py-4">
                         <Select
                           value={
-                            editableRows[order.presentation_code]
-                              ?.wholesaler || order.wholesaler_id
+                            editableRows[order.presentation_code]?.wholesaler ||
+                            order.wholesaler_id
                               ? {
-                                value:
-                                  editableRows[order.presentation_code]
-                                    ?.wholesaler || order.wholesaler_id,
-                                label:
-                                  editableRows[order.presentation_code]
-                                    ?.label || order.wholesaler_name,
-                              }
+                                  value:
+                                    editableRows[order.presentation_code]
+                                      ?.wholesaler || order.wholesaler_id,
+                                  label:
+                                    editableRows[order.presentation_code]
+                                      ?.label || order.wholesaler_name,
+                                }
                               : null
                           }
                           onChange={(selectedOption) => {
-                            console.log(editableRows)
+                            console.log(editableRows);
                             handleEditField(
                               "wholesaler",
                               order.presentation_code,
@@ -720,15 +726,17 @@ function Purchasing() {
                           }}
                         />
                       </td>
-                      <td className="py-4">
+                      <td className="py-4 pl-4">
                         {order.product_name} - {order.presentation_name}
                       </td>
                       {/* <td className="py-4">{order.soh}</td> */}
-                      <td className="py-4 pl-4">{order.requisitions}</td>
-                      <td className="py-4">{order.future_requisitions}</td>
-                      <td className="py-4">{order.short}</td>
-                      <td className="py-4">{order.ordered}</td>
-                      <td className="py-4">
+                      <td className="py-4 text-center">{order.requisitions}</td>
+                      <td className="py-4 text-center">
+                        {order.future_requisitions}
+                      </td>
+                      <td className="py-4 text-center">{order.short}</td>
+                      <td className="py-4 text-center">{order.ordered}</td>
+                      <td className="py-4 text-center">
                         <input
                           type="number"
                           value={
@@ -743,14 +751,14 @@ function Purchasing() {
                               e.target.value
                             )
                           }
-                          className="pl-2 h-[30px] outline-none w-full hide-number-arrows"
+                          className="pl-2 h-[30px] outline-none w-full hide-number-arrows text-center"
                           style={{
                             WebkitAppearance: "none",
                             MozAppearance: "textfield",
                           }}
                         />
                       </td>
-                      <td className="py-4">
+                      <td className="py-4 text-center ">
                         <input
                           type="number"
                           step="0.01"
@@ -766,14 +774,14 @@ function Purchasing() {
                               e.target.value
                             )
                           }
-                          className="pl-2 h-[30px] outline-none w-full hide-number-arrows"
+                          className="pl-2 h-[30px] outline-none w-full hide-number-arrows text-center"
                           style={{
                             WebkitAppearance: "none",
                             MozAppearance: "textfield",
                           }}
                         />
                       </td>
-                      <td className="py-4">{totalCost}</td>
+                      <td className="py-4 text-center">{totalCost}</td>
                       <td className="py-4">
                         <input
                           type="text"
@@ -789,7 +797,7 @@ function Purchasing() {
                               e.target.value
                             )
                           }
-                          className="pl-2 h-[30px] outline-none w-full hide-number-arrows"
+                          className="pl-8 h-[30px] outline-none w-full hide-number-arrows"
                         />
                       </td>
                     </tr>
@@ -799,28 +807,37 @@ function Purchasing() {
             <div></div>
           </table>
           {!isLoading && (
-            <div className="flex items-center justify-center my-8">
+            <div className="flex items-center justify-center my-8 gap-3">
               <button
                 onClick={prevPage}
                 disabled={currentPage === 1}
-                className="px-3 py-1 mr-2 text-sm font-medium text-gray-600 bg-gray-100 border border-gray-200 rounded-md cursor-pointer transition-all hover:bg-gray-200 focus:outline-none focus:bg-gray-200"
+                className={`w-8 h-8 mr-2 font-medium text-dark-blue bg-[#EDF6FF] text-center rounded-full cursor-pointer transition-all flex justify-center items-center ${
+                  currentPage === 1
+                    ? "hidden"
+                    : "text-dark-blue bg-[#EDF6FF] hover:bg-primary-blue hover:text-white"
+                }`}
               >
-                Previous
+                <ChevronLeftIcon className="h-5 w-5 text-center" />
               </button>
-              <div className="flex items-center space-x-2">
+              <div className="flex items-center space-x-2 gap-3">
                 <span className="text-sm font-medium text-gray-600">
-                  Page {currentPage} of {totalPages}
+                  Page{" "}
+                  <span className="text-primary-blue font-bold">
+                    {currentPage}
+                  </span>{" "}
+                  of {totalPages}
                 </span>
                 <div>
                   <button
                     onClick={nextPage}
                     disabled={currentPage === totalPages}
-                    className={`px-3 py-1 text-sm font-medium rounded-md cursor-pointer transition-all ${currentPage === totalPages
-                      ? "text-primary-blue bg-light-blue border border-gray-200"
-                      : "text-primary-blue bg-primary-blue-light border border-primary-blue-light hover:bg-primary-blue hover:border-primary-blue-dark hover:text-white focus:outline-none"
-                      }`}
+                    className={`w-8 h-8 font-medium bg-[#EDF6FF] text-center rounded-full cursor-pointer transition-all flex justify-center items-center ${
+                      currentPage === totalPages
+                        ? "hidden"
+                        : "text-dark-blue bg-[#EDF6FF] hover:bg-primary-blue hover:text-white"
+                    }`}
                   >
-                    Next
+                    <ChevronRightIcon className="h-5 w-5 text-center" />
                   </button>
                 </div>
               </div>
