@@ -489,67 +489,62 @@ const OrderHistory = () => {
                         className="py-1 text-center"
                         onClick={(e) => goToOrder(e, order)}
                       >
-                        {order.reference}
+                        {order.po_number}
                       </td>
                       <td
                         className="py-1 text-center"
                         onClick={(e) => goToOrder(e, order)}
                       >
-                        {order.accountNumber}
+                        {order.wholesaler_name}
                       </td>
                       <td
                         className="py-1 pl-4"
                         onClick={(e) => goToOrder(e, order)}
                       >
-                        {order.accountName}
+                        {order.category_name}
                       </td>
                       <td
                         className="py-1 text-center"
                         onClick={(e) => goToOrder(e, order)}
                       >
-                        {order.net}
+                        {order.presentation_code}
                       </td>
                       <td
                         className="py-1 text-center"
                         onClick={(e) => goToOrder(e, order)}
                       >
-                        {order.profitOrder ? order.profitOrder.toFixed(2) : ""}
+                        {order.product_name + order.presentation_name}
                       </td>
                       <td
                         className="py-1 text-center"
                         onClick={(e) => goToOrder(e, order)}
                       >
-                        {order.route}
+                        {order.uom_name}
                       </td>
-                      {/* <td className="py-4 pl-4">{order.created_by}</td> */}
+
                       <td
                         className="py-1 text-center"
                         onClick={(e) => goToOrder(e, order)}
                       >
-                        {order.drop}
-                      </td>
-                      <td
-                        className="py-1 text-center"
-                        onClick={(e) => goToOrder(e, order)}
-                      >
-                        {order.quantity_products}
+                        {order.ordered}
                       </td>
                       <td
                         className="py-1 text-center"
                         onClick={(e) => goToOrder(e, order)}
                       >
-                        {order.date_delivery}
+                        {order.cost}
+                      </td>
+                      <td
+                        className="py-1 text-center"
+                        onClick={(e) => goToOrder(e, order)}
+                      >
+                        {order.cost * order.ordered}
                       </td>
                       <td
                         className="py-1 flex gap-2 justify-center"
                         onClick={(e) => goToOrder(e, order)}
                       >
-                        <div
-                          className={`inline-block mt-1 rounded-full text-white ${statusColorClass(
-                            order.status_order
-                          )} w-3 h-3 flex items-center justify-center`}
-                        ></div>
-                        {order.status_order}
+                        {order.note}
                       </td>
                     </tr>
                   ))
