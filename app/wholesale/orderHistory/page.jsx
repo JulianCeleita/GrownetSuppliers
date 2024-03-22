@@ -53,7 +53,6 @@ const OrderHistory = () => {
   const { token } = useTokenStore();
   const { workDate } = useWorkDateStore();
   const [isLoading, setIsLoading] = useState(true);
-  const [orders, setOrders] = useState([]);
   const { user } = useUserStore();
   const [dateFilter, setDateFilter] = useState("today");
   const [showAllOrders, setShowAllOrders] = useState(false);
@@ -190,7 +189,7 @@ const OrderHistory = () => {
     setSelectedGroup(e.target.value);
   };
 
-  const sortedOrders = orders
+  const sortedOrders = ordersHistory
     ?.filter((order) => filterOrdersByDate(order))
     .sort((a, b) => {
       const dateA = new Date(a.date_delivery);
@@ -200,54 +199,45 @@ const OrderHistory = () => {
 
   const filteredOrders = sortedOrders
     ?.filter((order) => {
-      const isRouteMatch = selectedRoute
-        ? order.route.toLowerCase() === selectedRoute.toLowerCase()
-        : true;
-      const isGroupMatch = selectedGroup
-        ? order.group_name.toLowerCase() === selectedGroup.toLowerCase()
-        : true;
-
       const isSearchQueryMatch =
-        order.reference
+        order.ordered
           .toString()
           .toLowerCase()
           .includes(searchQuery.toLowerCase()) ||
-        order.accountName.toLowerCase().includes(searchQuery.toLowerCase());
+        order.product_name.toLowerCase().includes(searchQuery.toLowerCase());
 
       const isStatusMatch = selectedStatus
         ? order.status_order.toLowerCase() === selectedStatus.toLowerCase()
         : true;
 
-      return (
-        isRouteMatch && isGroupMatch && isSearchQueryMatch && isStatusMatch
-      );
+      return isSearchQueryMatch && isStatusMatch;
     })
     .sort((a, b) => {
       if (sortList === "invoice") {
         if (!sortType) {
-          return a.reference - b.reference;
+          return a.ordered - b.ordered;
         } else {
-          return b.reference - a.reference;
+          return b.ordered - a.ordered;
         }
       } else if (sortList === "accNumber") {
         if (!sortType) {
-          return a.accountNumber
+          return a.presentation_code
             .toLowerCase()
-            .localeCompare(b.accountNumber.toLowerCase());
+            .localeCompare(b.presentation_code.toLowerCase());
         } else {
-          return b.accountNumber
+          return b.presentation_code
             .toLowerCase()
-            .localeCompare(a.accountNumber.toLowerCase());
+            .localeCompare(a.presentation_code.toLowerCase());
         }
       } else if (sortList === "customer") {
         if (!sortType) {
-          return a.accountName
+          return a.product_name
             .toLowerCase()
-            .localeCompare(b.accountName.toLowerCase());
+            .localeCompare(b.product_name.toLowerCase());
         } else {
-          return b.accountName
+          return b.product_name
             .toLowerCase()
-            .localeCompare(a.accountName.toLowerCase());
+            .localeCompare(a.product_name.toLowerCase());
         }
       } else if (sortList === "amount") {
         if (!sortType) {
@@ -415,7 +405,7 @@ const OrderHistory = () => {
             <option value="">Wholesalers</option>
             {[
               ...new Set(
-                orders?.map((order) =>
+                ordersHistory?.map((order) =>
                   order.group_name !== null ? order.group_name : "No group"
                 )
               ),
