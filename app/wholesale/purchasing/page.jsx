@@ -10,20 +10,19 @@ import {
 } from "@heroicons/react/24/outline";
 import axios from "axios";
 import { useEffect, useState, useRef } from "react";
-import { purchasingCreate } from "../../config/urls.config";
-import useTokenStore from "../../store/useTokenStore";
-import Layout from "../../layoutS";
 import Select from "react-select";
 import DatePicker from "react-datepicker";
-import useWorkDateStore from "../../store/useWorkDateStore";
-import ModalSuccessfull from "../../components/ModalSuccessfull";
-import ModalOrderError from "../../components/ModalOrderError";
+import { purchasingCreate } from "@/app/config/urls.config";
+import useTokenStore from "@/app/store/useTokenStore";
+import Layout from "@/app/layoutS";
+import useWorkDateStore from "@/app/store/useWorkDateStore";
+import ModalSuccessfull from "@/app/components/ModalSuccessfull";
+import ModalOrderError from "@/app/components/ModalOrderError";
 import {
   fetchOrderWholesaler,
   fetchWholesalerList,
-} from "../../api/purchasingRequest";
-import usePerchasingStore from "../../store/usePurchasingStore";
-import ModalSendPurchasing from "../../components/ModalSendPurchasing";
+} from "@/app/api/purchasingRequest";
+import usePerchasingStore from "@/app/store/usePurchasingStore";
 
 function Purchasing() {
   const { token } = useTokenStore();
@@ -55,9 +54,10 @@ function Purchasing() {
   const [showWholesalerFilter, setShowWholesalerFilter] = useState(false);
   const [isCheckedCategories, setIsCheckedCategories] = useState([]);
   const [isCheckedWholesalert, setIsCheckedWholesalert] = useState([]);
+  const [activeSort, setActiveSort] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 30;
-
+  const { products, setProducts } = usePerchasingStore();
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   const [showScrollButton, setShowScrollButton] = useState(false);
@@ -131,7 +131,6 @@ function Purchasing() {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
-  const { products, setProducts } = usePerchasingStore();
 
   const formatDateToShow = (dateString) => {
     if (!dateString) return "Loading...";
@@ -263,7 +262,7 @@ function Purchasing() {
     selectedStatus,
     searchQuery,
     editableRows,
-    sortedOrders,
+    activeSort,
   ]);
   useEffect(() => {
     setCurrentPage(1);
@@ -339,6 +338,7 @@ function Purchasing() {
       setSortColumn(column);
       setSortDirection("asc");
     }
+    setActiveSort(!activeSort);
   };
 
   const totalPages = Math.ceil(sortedOrders.length / itemsPerPage);
@@ -532,7 +532,7 @@ function Purchasing() {
                 <FunnelIcon className="h-8 w-8" />
               </button>
               {showCategories && (
-                <div className="bg-white w-[280px] p-3 rounded-lg shadow-[0_3px_10px_rgb(0,0,0,0.2)] absolute z-10 -right-16  h-auto max-h-[590px]  overflow-y-auto">
+                <div className="bg-white w-[280px] p-3 rounded-lg shadow-[0_3px_10px_rgb(0,0,0,0.2)] absolute z-10 -right-16">
                   {uniqueCategories.map((category) => (
                     <div className="flex gap-2">
                       <input
@@ -566,7 +566,7 @@ function Purchasing() {
                 <Bars3BottomRightIcon className="h-8 w-8" />
               </button>
               {showWholesalerFilter && (
-                <div className="bg-white p-3 w-[280px] rounded-lg shadow-[0_3px_10px_rgb(0,0,0,0.2)] absolute z-10 -right-[15px] h-auto max-h-[590px]  overflow-y-auto">
+                <div className="bg-white p-3 w-[280px] rounded-lg shadow-[0_3px_10px_rgb(0,0,0,0.2)] absolute z-10 -right-[15px]">
                   {wholesalerList.map((wholesalert) => (
                     <div className="flex gap-2">
                       <input
