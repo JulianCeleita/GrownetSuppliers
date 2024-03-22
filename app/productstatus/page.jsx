@@ -1,26 +1,23 @@
 "use client";
 import {
-  MinusCircleIcon,
-  NoSymbolIcon,
-  PencilSquareIcon,
-  PlusCircleIcon,
-  TrashIcon,
+  AdjustmentsHorizontalIcon, TrashIcon
 } from "@heroicons/react/24/outline";
 import axios from "axios";
 import { useEffect, useState } from "react";
-import EditPresentation from "../components/EditPresentation";
-import { deletePresentationUrl } from "../config/urls.config";
-import useTokenStore from "../store/useTokenStore";
-import ModalDelete from "../components/ModalDelete";
-import Layout from "../layoutS";
-import useUserStore from "../store/useUserStore";
+import DatePicker from "react-datepicker";
+import { fetchGroups } from "../api/customerRequest";
 import {
   fetchPresentations,
-  fetchPresentationsSupplier,
+  fetchPresentationsSupplier
 } from "../api/presentationsRequest";
+import { fetchProductStatus } from "../api/productStatus";
 import CreateProduct from "../components/CreateProduct";
-import AutomaticShort from "../components/AutomaticShort";
-import DatePicker from "react-datepicker";
+import EditPresentation from "../components/EditPresentation";
+import ModalDelete from "../components/ModalDelete";
+import { deletePresentationUrl } from "../config/urls.config";
+import Layout from "../layoutS";
+import useTokenStore from "../store/useTokenStore";
+import useUserStore from "../store/useUserStore";
 import useWorkDateStore from "../store/useWorkDateStore";
 
 function ProductState() {
@@ -36,12 +33,13 @@ function ProductState() {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedDate, setSelectedDate] = useState("");
   const [dateFilter, setDateFilter] = useState("today");
-  const [selectedResponsible, setSelectedResponsible] = useState("");
-  const [selectedState, setSelectedState] = useState("");
+  const [selectedGroup, setSelectedGroup] = useState("");
   const [filterType, setFilterType] = useState("date")
   const { workDate, setFetchWorkDate } = useWorkDateStore();
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
+  const [productsStatus, setProductsStatus] = useState([]);
+  const [groups, setGroups] = useState([]);
 
   const formatDateToShow = (dateString) => {
     if (!dateString) return "Loading...";
@@ -62,13 +60,6 @@ function ProductState() {
     return `${year}-${month}-${day}`;
   };
 
-  const handleResponsibleChange = (e) => {
-    setSelectedResponsible(e.target.value);
-  };
-  const handleStateChange = (e) => {
-    setSelectedState(e.target.value);
-  };
-
   //Api
   const [products, setProducts] = useState([]);
 
@@ -78,18 +69,15 @@ function ProductState() {
   // }, [setUser]);
 
   useEffect(() => {
-    if (user && user.rol_name === "AdminGrownet") {
-      fetchPresentations(token, setProducts, setIsLoading);
-    } else {
-      fetchPresentationsSupplier(
-        token,
-        user,
-        setProducts,
-        setIsLoading,
-        setDescriptionData
-      );
-    }
-  }, [user, token]);
+    fetchProductStatus(startDate, endDate, token, setProductsStatus, setIsLoading);
+  }, [startDate, endDate]);
+
+  useEffect(() => {
+    setStartDate(workDate);
+    setEndDate(workDate);
+    fetchGroups(token, user, setGroups, setIsLoading);
+  }, [workDate])
+
 
   //Delete
   const [showDeleteModal, setShowDeleteModal] = useState(false);
@@ -173,7 +161,6 @@ function ProductState() {
                 selected={startDate}
                 onChange={(date) => {
                   setStartDate(date);
-                  setStartDateByNet(formatDateToTransform(date));
                   setEndDate((currentEndDate) => {
                     if (date && currentEndDate) {
                       setDateFilter("range");
@@ -192,7 +179,6 @@ function ProductState() {
                 selected={endDate}
                 onChange={(date) => {
                   setEndDate(date);
-                  setEndDateByNet(formatDateToTransform(date));
                   setStartDate((currentStartDate) => {
                     if (currentStartDate && date) {
                       setDateFilter("range");
@@ -216,8 +202,8 @@ function ProductState() {
               selected={selectedDate}
               onChange={(date) => {
                 setSelectedDate(date);
-                setStartDateByNet(formatDateToTransform(date));
-                setEndDateByNet(formatDateToTransform(date));
+                setStartDate(date);
+                setEndDate(date)
                 setDateFilter("date");
               }}
               className="form-input px-3 py-3 w-[95px] rounded-md border border-gray-300 text-dark-blue placeholder-dark-blue text-sm custom:text-base"
@@ -225,43 +211,46 @@ function ProductState() {
               placeholderText={formatDateToShow(workDate)}
             />
           )}
+         
           <select
-            value={selectedState}
-            onChange={handleStateChange}
+            value={selectedGroup}
+            onChange={(e) => setSelectedGroup(e.target.value)}
             className="form-select py-3 px-2 rounded-md border border-gray-300 text-sm custom:text-base h-[50px]"
           >
-            <option value="">All states</option>
-
-            <option key="loaded">Loaded</option>
-            <option key="packed">Packed</option>
-            <option key="short">Shorts</option>
+            <option value="" selected disabled>All groups</option>
+            {groups &&
+              groups.map((group) => (
+                <option key={group.id} value={group.id}>
+                  {group.group}
+                </option>
+              ))}
           </select>
-          <select
-            value={selectedResponsible}
-            onChange={handleResponsibleChange}
-            className="form-select py-3 px-2 rounded-md border border-gray-300 text-sm custom:text-base h-[50px]"
+          <button
+            className="flex bg-green hover:scale-110 transition-all py-3 px-4 rounded-lg h-12 ml-1 text-white font-medium"
+            type="button"
+          // onClick={sendOrder}
           >
-            <option value="">All responsible</option>
-            <option key="diego">Diego</option>
-            <option key="julian">Julian</option>
-            <option key="heiner">Heiner</option>
-          </select>
+            <AdjustmentsHorizontalIcon className="h-6 w-6 mr-2 font-bold" />
+            Apply filters
+          </button>
         </div>
 
         <div className="flex flex-col items-center justify-center mb-20 mt-2">
           <table className="w-[95%] bg-white rounded-2xl  shadow-[0_8px_30px_rgb(0,0,0,0.12)]">
             <thead className="sticky top-0 bg-white shadow-[0px_11px_15px_-3px_#edf2f7] ">
               <tr className="border-b-2 border-stone-100 text-dark-blue">
-                <th className="py-4 rounded-tl-lg">Account number</th>
-                <th className="py-4">Sitename</th>
+                <th className="py-4 rounded-tl-lg">Acc number</th>
+                <th className="py-4">Acc name</th>
                 <th className="py-4">Inv. number</th>
-                <th className="py-4">Product</th>
-                <th className="py-4">Qty</th>
-                <th className="py-4">Amendments</th>
-                <th className="py-4">Packed</th>
-                <th className="py-4">Loaded</th>
-                <th className="py-4">Checked</th>
-                {/* <th className="py-4 rounded-tr-lg">Operate</th> */}
+                <th className="py-4">Product code</th>
+                <th className="py-4">Product name</th>
+                <th className="py-4">Category</th>
+                <th className="py-4">Group</th>
+                <th className="py-4">Qty initial</th>
+                <th className="py-4">Qty packing</th>
+                <th className="py-4">Qty Definitive</th>
+                <th className="py-4">Delivery date</th>
+                <th className="py-4 rounded-tr-lg">Missing</th>
               </tr>
             </thead>
             <tbody>
@@ -274,7 +263,6 @@ function ProductState() {
                   <td className="py-4">{presentation.product_name}</td>
                   <td className="py-4">{presentation.uom}</td>
                   <td className="py-4">{presentation.name}</td>
-                  <td className="py-4">{presentation.type}</td>
                   <td className="py-4">£ {presentation.cost}</td>
                   <td className="py-4">{presentation.quantity}</td>
                   <td className="py-4">{presentation.quantity}</td>
