@@ -640,35 +640,34 @@ const OrderHistory = () => {
                   className="py-4 cursor-pointer hover:bg-gray-100 transition-all rounded-tl-lg"
                   onClick={handleClickInvoice}
                 >
-                  # Invoice
+                  PO Number
                 </th>
                 <th
                   className="py-4 cursor-pointer hover:bg-gray-100 transition-all"
                   onClick={handleClickAccNumber}
                 >
-                  Acc number
+                  Wholesaler
                 </th>
                 <th
                   className="py-4 cursor-pointer hover:bg-gray-100 transition-all"
                   onClick={handleClickCustomer}
                 >
-                  Customer
+                  Category
                 </th>
                 <th
                   className="py-4 cursor-pointer hover:bg-gray-100 transition-all"
                   onClick={handleClickAmount}
                 >
-                  Amount
+                  Code
                 </th>
-                <th className="py-4">Profit %</th>
-                <th className="py-4">Route</th>
-                <th className="py-4">Drop</th>
-                <th className="py-4"># Products</th>
-                {/* <th className="py-4">Responsable</th> */}
-                <th className="py-4">Delivery date</th>
+                <th className="py-4">Description</th>
+                <th className="py-4">UOM</th>
+                <th className="py-4">Orderd</th>
+                <th className="py-4">Cost</th>
+                <th className="py-4">Total cost</th>
                 <th className="py-4 rounded-tr-lg">
-                  Status{" "}
-                  <select
+                  Notes
+                  {/* <select
                     onChange={handleStatusChange}
                     className="w-[15px] ml-[2px]"
                   >
@@ -678,7 +677,7 @@ const OrderHistory = () => {
                         {status}
                       </option>
                     ))}
-                  </select>
+                  </select> */}
                 </th>
               </tr>
             </thead>
