@@ -22,6 +22,7 @@ import CreateProduct from "../components/CreateProduct";
 import AutomaticShort from "../components/AutomaticShort";
 import DatePicker from "react-datepicker";
 import useWorkDateStore from "../store/useWorkDateStore";
+import { fetchProductStatus } from "../api/productStatus";
 
 function ProductState() {
   const { token } = useTokenStore();
@@ -42,6 +43,7 @@ function ProductState() {
   const { workDate, setFetchWorkDate } = useWorkDateStore();
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
+  const [productsStatus, setProductsStatus] = useState([]);
 
   const formatDateToShow = (dateString) => {
     if (!dateString) return "Loading...";
@@ -78,18 +80,14 @@ function ProductState() {
   // }, [setUser]);
 
   useEffect(() => {
-    if (user && user.rol_name === "AdminGrownet") {
-      fetchPresentations(token, setProducts, setIsLoading);
-    } else {
-      fetchPresentationsSupplier(
-        token,
-        user,
-        setProducts,
-        setIsLoading,
-        setDescriptionData
-      );
-    }
-  }, [user, token]);
+    fetchProductStatus(startDate, endDate, token, setProductsStatus, setIsLoading);
+  }, [startDate, endDate]);
+
+  useEffect(() => {
+    setStartDate(workDate);
+    setEndDate(workDate);
+  }, [workDate])
+  
 
   //Delete
   const [showDeleteModal, setShowDeleteModal] = useState(false);
@@ -173,7 +171,6 @@ function ProductState() {
                 selected={startDate}
                 onChange={(date) => {
                   setStartDate(date);
-                  setStartDateByNet(formatDateToTransform(date));
                   setEndDate((currentEndDate) => {
                     if (date && currentEndDate) {
                       setDateFilter("range");
@@ -192,7 +189,6 @@ function ProductState() {
                 selected={endDate}
                 onChange={(date) => {
                   setEndDate(date);
-                  setEndDateByNet(formatDateToTransform(date));
                   setStartDate((currentStartDate) => {
                     if (currentStartDate && date) {
                       setDateFilter("range");
@@ -216,8 +212,8 @@ function ProductState() {
               selected={selectedDate}
               onChange={(date) => {
                 setSelectedDate(date);
-                setStartDateByNet(formatDateToTransform(date));
-                setEndDateByNet(formatDateToTransform(date));
+                setStartDate(date);
+                setEndDate(date)
                 setDateFilter("date");
               }}
               className="form-input px-3 py-3 w-[95px] rounded-md border border-gray-300 text-dark-blue placeholder-dark-blue text-sm custom:text-base"
