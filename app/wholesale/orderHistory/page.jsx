@@ -93,13 +93,6 @@ const OrderHistory = () => {
     return `${day}/${month}/${year}`;
   };
 
-  const formattedDate = selectedDate
-    ? new Date(selectedDate).toLocaleDateString("es-CO", {
-        day: "2-digit",
-        month: "2-digit",
-        year: "2-digit",
-      })
-    : formatDateToShow(workDate);
   const formatDateToTransform = (dateString) => {
     const date = new Date(dateString);
     const day = String(date.getDate()).padStart(2, "0");
@@ -120,7 +113,7 @@ const OrderHistory = () => {
       document.removeEventListener("mousedown", handleOutsideClick);
     };
   }, [user, token, showDatePicker]);
-
+  console.log("startDateByNet:", startDateByNet, endDateByNet);
   useEffect(() => {
     fetchOrdersHistory(
       workDate,
