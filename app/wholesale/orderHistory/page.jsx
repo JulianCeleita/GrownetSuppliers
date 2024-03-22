@@ -407,7 +407,7 @@ const OrderHistory = () => {
             onChange={handleGroupChange}
             className="orm-select px-3 py-3 rounded-md border border-gray-300 text-sm custom:text-base"
           >
-            <option value="">Wholesalers</option>
+            <option value="">All Wholesalers</option>
             {[
               ...new Set(
                 ordersHistory?.map((order) =>
