@@ -10,20 +10,20 @@ import {
 } from "@heroicons/react/24/outline";
 import axios from "axios";
 import { useEffect, useState, useRef } from "react";
-import { purchasingCreate } from "../../app/config/urls.config";
-import useTokenStore from "../../app/store/useTokenStore";
-import Layout from "../layoutS";
+import { purchasingCreate } from "../../config/urls.config";
+import useTokenStore from "../../store/useTokenStore";
+import Layout from "../../layoutS";
 import Select from "react-select";
 import DatePicker from "react-datepicker";
-import useWorkDateStore from "../store/useWorkDateStore";
-import ModalSuccessfull from "../components/ModalSuccessfull";
-import ModalOrderError from "../components/ModalOrderError";
+import useWorkDateStore from "../../store/useWorkDateStore";
+import ModalSuccessfull from "../../components/ModalSuccessfull";
+import ModalOrderError from "../../components/ModalOrderError";
 import {
   fetchOrderWholesaler,
   fetchWholesalerList,
-} from "../api/purchasingRequest";
-import usePerchasingStore from "../store/usePurchasingStore";
-import ModalSendPurchasing from "../components/ModalSendPurchasing";
+} from "../../api/purchasingRequest";
+import usePerchasingStore from "../../store/usePurchasingStore";
+import ModalSendPurchasing from "../../components/ModalSendPurchasing";
 
 function Purchasing() {
   const { token } = useTokenStore();
