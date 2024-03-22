@@ -1,5 +1,5 @@
 import axios from "axios";
-import { productStatusUrl, purchasingUrl, wholesalersUrl } from "../config/urls.config";
+import { productStatusUrl } from "../config/urls.config";
 import { formatISO } from "date-fns";
 
 export const fetchProductStatus = (
