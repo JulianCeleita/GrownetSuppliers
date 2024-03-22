@@ -31,6 +31,7 @@ import Image from "next/image";
 import ModalOrderError from "../../components/ModalOrderError";
 import { saveAs } from "file-saver";
 import ModalSuccessfull from "../../components/ModalSuccessfull";
+import { fetchOrdersHistory } from "@/app/api/orderHistoryRequest";
 
 export const customStyles = {
   placeholder: (provided) => ({
@@ -50,10 +51,7 @@ export const customStyles = {
 const OrderHistory = () => {
   const router = useRouter();
   const { token } = useTokenStore();
-  const { workDate, setFetchWorkDate } = useWorkDateStore();
-  const [ordersWorkDate, setOrdersWorkDate] = useState(0);
-  const [ordersLoadingToday, setOrdersLoadingToday] = useState(0);
-  const { routePercentages, setFetchRoutePercentages } = usePercentageStore();
+  const { workDate } = useWorkDateStore();
   const [isLoading, setIsLoading] = useState(true);
   const [orders, setOrders] = useState([]);
   const { user } = useUserStore();
@@ -65,11 +63,8 @@ const OrderHistory = () => {
   const [endDate, setEndDate] = useState("");
   const [startDateByNet, setStartDateByNet] = useState("");
   const [endDateByNet, setEndDateByNet] = useState("");
-  const [selectedOrders, setSelectedOrders] = useState({ route: "" });
   const [selectedRoute, setSelectedRoute] = useState("");
-  const [selectedRouteId, setSelectedRouteId] = useState("");
   const [filterType, setFilterType] = useState("date");
-  const [showPercentage, setShowPercentage] = useState(null);
   const [totalNet, setTotalNet] = useState("");
   const [routeId, setRouteId] = useState();
   const [searchQuery, setSearchQuery] = useState("");
@@ -84,6 +79,7 @@ const OrderHistory = () => {
   const [errorCsvMessage, setErrorCsvMessage] = useState("");
   const [sortList, setSortList] = useState("invoice");
   const [sortType, setSortType] = useState(false);
+  const [ordersHistory, setOrdersHistory] = useState([]);
 
   const formatDateToShow = (dateString) => {
     if (!dateString) return "Loading...";
@@ -126,56 +122,17 @@ const OrderHistory = () => {
   }, [user, token, showDatePicker]);
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        setFetchWorkDate(
-          token,
-          user.id_supplier,
-          setStartDateByNet,
-          setEndDateByNet
-        );
-      } catch (error) {
-        console.error("Error fetching data: ", error);
-      }
-    };
-
-    fetchData();
-  }, [user, token]);
-
-  useEffect(() => {
-    fetchOrdersDateByWorkDate(
-      token,
+    fetchOrdersHistory(
       workDate,
-      setOrdersWorkDate,
-      setOrdersLoadingToday
-    );
-  }, [workDate]);
-
-  useEffect(() => {
-    fetchOrdersDate(
-      token,
-      endDateByNet,
       startDateByNet,
-      routeId,
-      setTotalNet,
-      setOrders,
+      endDateByNet,
+      token,
+      setOrdersHistory,
       setIsLoading
     );
-  }, [endDateByNet, startDateByNet]);
+  }, [endDateByNet, startDateByNet, workDate]);
 
-  useEffect(() => {
-    if (routePercentages) {
-      const result = routePercentages.find(
-        (item) => item.nameRoute === selectedRoute
-      );
-
-      if (result) {
-        setShowPercentage(result.percentage_loading);
-      } else {
-        setShowPercentage(null);
-      }
-    }
-  }, [routePercentages]);
+  console.log("setOrdersHistory:", ordersHistory);
 
   const subtractDays = (date, days) => {
     const result = new Date(date);
@@ -236,96 +193,8 @@ const OrderHistory = () => {
     });
   };
 
-  const handleOrderSelect = (order, checked) => {
-    setSelectedOrders((prevState) => ({
-      ...prevState,
-      [order.reference]: checked,
-    }));
-  };
-
   const handleGroupChange = (e) => {
     setSelectedGroup(e.target.value);
-  };
-
-  const selectAll = (checked) => {
-    const newSelectedOrders = {};
-    filteredOrders.forEach((order) => {
-      newSelectedOrders[order.reference] = checked;
-    });
-    setSelectedOrders(newSelectedOrders);
-    setShowPercentage(null);
-  };
-
-  const objectToArray = (object) => {
-    return Object.entries(object)
-      .filter(([reference, checked]) => checked)
-      .map(([reference]) => reference);
-  };
-
-  const downloadCSV = () => {
-    let date;
-
-    if (selectedDate) {
-      date = new Date(selectedDate);
-
-      const formattedDate = `${date.getFullYear()}-${(date.getMonth() + 1)
-        .toString()
-        .padStart(2, "0")}-${date.getDate().toString().padStart(2, "0")}`;
-
-      var postDataCSV = {
-        route_id: selectedRouteId,
-        date: formattedDate,
-      };
-    } else {
-      date = workDate;
-
-      var postDataCSV = {
-        route_id: selectedRouteId,
-        date: date,
-      };
-    }
-    axios
-      .post(orderCSV, postDataCSV, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-        // responseType: "blob",
-      })
-      .then((response) => {
-        saveAs(new Blob([response.data], { type: "text/csv" }), "orders.csv");
-      })
-      .catch((error) => {
-        setShowErrorCsv(true);
-        setErrorMessage(error?.response?.data?.msg);
-        console.error("Error al descargar csv: ", error);
-      });
-  };
-  const printOrders = () => {
-    const ordersToPrint = objectToArray(selectedOrders);
-
-    const postDataPrint = {
-      references: ordersToPrint,
-    };
-    console.log("🚀 ~ printOrders ~ postDataPrint:", postDataPrint);
-
-    axios
-      .post(printInvoices, postDataPrint, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-        responseType: "blob",
-      })
-      .then((response) => {
-        console.log("🚀 ~ .then ~ response:", response);
-        const blob = new Blob([response.data], { type: "application/pdf" });
-
-        // Para abrir automáticamente el archivo
-        const fileURL = URL.createObjectURL(blob);
-        window.open(fileURL);
-      })
-      .catch((error) => {
-        console.error("Error al imprimir invoice: ", error);
-      });
   };
 
   const sortedOrders = orders
@@ -335,73 +204,6 @@ const OrderHistory = () => {
       const dateB = new Date(b.date_delivery);
       return dateA - dateB;
     });
-
-  const uniqueRoutesSet = new Set(
-    sortedOrders?.map((order) => order.route_id + "_" + order.route)
-  );
-
-  const uniqueRoutesArray = Array.from(uniqueRoutesSet).map((route) => {
-    const [routeId, routeName] = route.split("_");
-    return {
-      route_id: parseInt(routeId, 10),
-      route_name: routeName,
-    };
-  });
-
-  const handleRouteChange = (event) => {
-    if (event.target.value) {
-      const selectedOption = JSON?.parse(event.target.value);
-      setSelectedRoute(selectedOption.route_name);
-      setSelectedRouteId(selectedOption.route_id);
-    } else {
-      setSelectedRoute("");
-      setSelectedRouteId("");
-    }
-  };
-
-  const handleFileChange = (event) => {
-    const file = event.target.files[0];
-    setCsvFile(file);
-    setFileName(file ? file.name : "");
-  };
-
-  const handleUpload = () => {
-    if (csvFile) {
-      const csv = new FormData();
-      csv.append("csv", csvFile);
-
-      axios
-        .post(uploadCsv, csv, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "multipart/form-data",
-          },
-        })
-        .then((response) => {
-          if (response.status === 200) {
-            setShowModalSuccessfull(true);
-            handleRemoveFile();
-          } else {
-            setShowModalError(true);
-            setErrorCsvMessage(response.data.msg);
-          }
-        })
-        .catch((error) => {
-          setShowModalError(true);
-          setErrorCsvMessage(error.response.data.msg);
-          console.error("Error al cargar el csv: ", error);
-        });
-    }
-  };
-
-  const handleRemoveFile = () => {
-    const fileInput = document.getElementById("fileInput");
-    if (fileInput) {
-      fileInput.value = null;
-    }
-    setCsvFile(null);
-    setFileName("");
-  };
 
   const filteredOrders = sortedOrders
     ?.filter((order) => {
@@ -640,35 +442,34 @@ const OrderHistory = () => {
                   className="py-4 cursor-pointer hover:bg-gray-100 transition-all rounded-tl-lg"
                   onClick={handleClickInvoice}
                 >
-                  # Invoice
+                  PO Number
                 </th>
                 <th
                   className="py-4 cursor-pointer hover:bg-gray-100 transition-all"
                   onClick={handleClickAccNumber}
                 >
-                  Acc number
+                  Wholesaler
                 </th>
                 <th
                   className="py-4 cursor-pointer hover:bg-gray-100 transition-all"
                   onClick={handleClickCustomer}
                 >
-                  Customer
+                  Category
                 </th>
                 <th
                   className="py-4 cursor-pointer hover:bg-gray-100 transition-all"
                   onClick={handleClickAmount}
                 >
-                  Amount
+                  Code
                 </th>
-                <th className="py-4">Profit %</th>
-                <th className="py-4">Route</th>
-                <th className="py-4">Drop</th>
-                <th className="py-4"># Products</th>
-                {/* <th className="py-4">Responsable</th> */}
-                <th className="py-4">Delivery date</th>
+                <th className="py-4">Description</th>
+                <th className="py-4">UOM</th>
+                <th className="py-4">Orderd</th>
+                <th className="py-4">Cost</th>
+                <th className="py-4">Total cost</th>
                 <th className="py-4 rounded-tr-lg">
-                  Status{" "}
-                  <select
+                  Notes
+                  {/* <select
                     onChange={handleStatusChange}
                     className="w-[15px] ml-[2px]"
                   >
@@ -678,7 +479,7 @@ const OrderHistory = () => {
                         {status}
                       </option>
                     ))}
-                  </select>
+                  </select> */}
                 </th>
               </tr>
             </thead>

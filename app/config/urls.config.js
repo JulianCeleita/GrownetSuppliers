@@ -147,3 +147,5 @@ export const wholesalersCreateUrl = `${BASE_URL}wholesalers/create`;
 
 // Product status
 export const productStatusUrl = `${BASE_URL}orders/listDetailOrders`
+//orderHistory
+export const orderHistoryRequest = `${BASE_URL}wholesalers/orders`;
