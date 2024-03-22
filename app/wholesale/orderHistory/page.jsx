@@ -76,7 +76,7 @@ const OrderHistory = () => {
   const [showModalSuccessfull, setShowModalSuccessfull] = useState(false);
   const [showModalError, setShowModalError] = useState(false);
   const [errorCsvMessage, setErrorCsvMessage] = useState("");
-  const [sortList, setSortList] = useState("invoice");
+  const [sortList, setSortList] = useState("po_number");
   const [sortType, setSortType] = useState(false);
   const [ordersHistory, setOrdersHistory] = useState([]);
 
@@ -112,7 +112,7 @@ const OrderHistory = () => {
       document.removeEventListener("mousedown", handleOutsideClick);
     };
   }, [user, token, showDatePicker]);
-  console.log("startDateByNet:", startDateByNet, endDateByNet);
+
   useEffect(() => {
     fetchOrdersHistory(
       workDate,
@@ -218,13 +218,37 @@ const OrderHistory = () => {
       return isWholesalerMatch && isSearchQueryMatch && isStatusMatch;
     })
     .sort((a, b) => {
-      if (sortList === "invoice") {
+      if (sortList === "po_number") {
         if (!sortType) {
-          return a.ordered - b.ordered;
+          return a.po_number
+            .toLowerCase()
+            .localeCompare(b.po_number.toLowerCase());
         } else {
-          return b.ordered - a.ordered;
+          return b.po_number
+            .toLowerCase()
+            .localeCompare(a.po_number.toLowerCase());
         }
-      } else if (sortList === "accNumber") {
+      } else if (sortList === "wholesaler") {
+        if (!sortType) {
+          return a.wholesaler_name
+            .toLowerCase()
+            .localeCompare(b.wholesaler_name.toLowerCase());
+        } else {
+          return b.wholesaler_name
+            .toLowerCase()
+            .localeCompare(a.wholesaler_name.toLowerCase());
+        }
+      } else if (sortList === "category") {
+        if (!sortType) {
+          return a.category_name
+            .toLowerCase()
+            .localeCompare(b.category_name.toLowerCase());
+        } else {
+          return b.category_name
+            .toLowerCase()
+            .localeCompare(a.category_name.toLowerCase());
+        }
+      } else if (sortList === "code") {
         if (!sortType) {
           return a.presentation_code
             .toLowerCase()
@@ -234,71 +258,55 @@ const OrderHistory = () => {
             .toLowerCase()
             .localeCompare(a.presentation_code.toLowerCase());
         }
-      } else if (sortList === "customer") {
-        if (!sortType) {
-          return a.product_name
-            .toLowerCase()
-            .localeCompare(b.product_name.toLowerCase());
-        } else {
-          return b.product_name
-            .toLowerCase()
-            .localeCompare(a.product_name.toLowerCase());
-        }
-      } else if (sortList === "amount") {
-        if (!sortType) {
-          return a.net - b.net;
-        } else {
-          return b.net - a.net;
-        }
       }
     });
+  console.log("setSortList", sortList);
+  const handleClickPoNumber = () => {
+    setSortList("po_number");
+    setSortType((prevSortType) => !prevSortType);
+  };
+  const handleClickWholesaler = () => {
+    setSortList("wholesaler");
+    setSortType((prevSortType) => !prevSortType);
+  };
+  const handleClickCategory = () => {
+    setSortList("category");
+    setSortType((prevSortType) => !prevSortType);
+  };
+  const handleClickCode = () => {
+    setSortList("code");
+    setSortType((prevSortType) => !prevSortType);
+  };
+  // const uniqueStatuses = [
+  //   ...new Set(sortedOrders?.map((order) => order.status_order)),
+  // ];
 
-  const handleClickInvoice = () => {
-    setSortList("invoice");
-    setSortType((prevSortType) => !prevSortType);
-  };
-  const handleClickCustomer = () => {
-    setSortList("customer");
-    setSortType((prevSortType) => !prevSortType);
-  };
-  const handleClickAmount = () => {
-    setSortList("amount");
-    setSortType((prevSortType) => !prevSortType);
-  };
-  const handleClickAccNumber = () => {
-    setSortList("accNumber");
-    setSortType((prevSortType) => !prevSortType);
-  };
-  const uniqueStatuses = [
-    ...new Set(sortedOrders?.map((order) => order.status_order)),
-  ];
+  // const handleStatusChange = (e) => {
+  //   const newSelectedStatus = e.target.value;
+  //   setSelectedStatus(newSelectedStatus);
+  // };
 
-  const handleStatusChange = (e) => {
-    const newSelectedStatus = e.target.value;
-    setSelectedStatus(newSelectedStatus);
-  };
-
-  const statusColorClass = (status) => {
-    switch (status) {
-      case "Delivered":
-        return "bg-dark-blue";
-      case "Solved":
-      case "Loaded":
-      case "Printed":
-        return "bg-green";
-      case "Dispute":
-        return "bg-danger";
-      case "Generated":
-      case "Received":
-      case "Preparing":
-      case "Sent":
-        return "bg-primary-blue";
-      case "Packed":
-        return "bg-orange-grownet";
-      default:
-        return "bg-primary-blue";
-    }
-  };
+  // const statusColorClass = (status) => {
+  //   switch (status) {
+  //     case "Delivered":
+  //       return "bg-dark-blue";
+  //     case "Solved":
+  //     case "Loaded":
+  //     case "Printed":
+  //       return "bg-green";
+  //     case "Dispute":
+  //       return "bg-danger";
+  //     case "Generated":
+  //     case "Received":
+  //     case "Preparing":
+  //     case "Sent":
+  //       return "bg-primary-blue";
+  //     case "Packed":
+  //       return "bg-orange-grownet";
+  //     default:
+  //       return "bg-primary-blue";
+  //   }
+  // };
 
   return (
     <Layout>
@@ -428,25 +436,25 @@ const OrderHistory = () => {
               <tr className=" text-dark-blue">
                 <th
                   className="py-4 cursor-pointer hover:bg-gray-100 transition-all rounded-tl-lg"
-                  onClick={handleClickInvoice}
+                  onClick={handleClickPoNumber}
                 >
                   PO Number
                 </th>
                 <th
                   className="py-4 cursor-pointer hover:bg-gray-100 transition-all"
-                  onClick={handleClickAccNumber}
+                  onClick={handleClickWholesaler}
                 >
                   Wholesaler
                 </th>
                 <th
                   className="py-4 cursor-pointer hover:bg-gray-100 transition-all"
-                  onClick={handleClickCustomer}
+                  onClick={handleClickCategory}
                 >
                   Category
                 </th>
                 <th
                   className="py-4 cursor-pointer hover:bg-gray-100 transition-all"
-                  onClick={handleClickAmount}
+                  onClick={handleClickCode}
                 >
                   Code
                 </th>
