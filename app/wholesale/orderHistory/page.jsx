@@ -481,13 +481,13 @@ const OrderHistory = () => {
                       className="text-dark-blue border-b-[1.5px] cursor-pointer hover:bg-[#F6F6F6]"
                     >
                       <td
-                        className="py-1 text-center"
+                        className="py-1 pl-5"
                         onClick={(e) => goToOrder(e, order)}
                       >
                         {order.po_number}
                       </td>
                       <td
-                        className="py-1 text-center"
+                        className="py-1 pl-5"
                         onClick={(e) => goToOrder(e, order)}
                       >
                         {order.wholesaler_name}
@@ -505,10 +505,10 @@ const OrderHistory = () => {
                         {order.presentation_code}
                       </td>
                       <td
-                        className="py-1 text-center"
+                        className="py-1 text-left pl-5"
                         onClick={(e) => goToOrder(e, order)}
                       >
-                        {order.product_name + order.presentation_name}
+                        {order.product_name + " " + order.presentation_name}
                       </td>
                       <td
                         className="py-1 text-center"
@@ -536,7 +536,7 @@ const OrderHistory = () => {
                         {order.cost * order.ordered}
                       </td>
                       <td
-                        className="py-1 flex gap-2 justify-center"
+                        className="py-1 text-left px-5"
                         onClick={(e) => goToOrder(e, order)}
                       >
                         {order.note}
