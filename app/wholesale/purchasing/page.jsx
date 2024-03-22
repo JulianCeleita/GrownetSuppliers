@@ -10,26 +10,27 @@ import {
 } from "@heroicons/react/24/outline";
 import axios from "axios";
 import { useEffect, useState, useRef } from "react";
-import { purchasingCreate } from "../../app/config/urls.config";
-import useTokenStore from "../../app/store/useTokenStore";
-import Layout from "../layoutS";
 import Select from "react-select";
 import DatePicker from "react-datepicker";
-import useWorkDateStore from "../store/useWorkDateStore";
-import ModalSuccessfull from "../components/ModalSuccessfull";
-import ModalOrderError from "../components/ModalOrderError";
+import { purchasingCreate } from "@/app/config/urls.config";
+import useTokenStore from "@/app/store/useTokenStore";
+import Layout from "@/app/layoutS";
+import useWorkDateStore from "@/app/store/useWorkDateStore";
+import ModalSuccessfull from "@/app/components/ModalSuccessfull";
+import ModalOrderError from "@/app/components/ModalOrderError";
 import {
   fetchOrderWholesaler,
   fetchWholesalerList,
-} from "../api/purchasingRequest";
-import usePerchasingStore from "../store/usePurchasingStore";
-import ModalSendPurchasing from "../components/ModalSendPurchasing";
+} from "@/app/api/purchasingRequest";
+import usePerchasingStore from "@/app/store/usePurchasingStore";
 
 function Purchasing() {
   const { token } = useTokenStore();
   const { workDate, setFetchWorkDate } = useWorkDateStore();
   const [isLoading, setIsLoading] = useState(true);
   const [selectedStatus, setSelectedStatus] = useState("");
+  const [selectedRequisition, setSelectedRequisition] = useState("");
+  const [selectedOrdered, setSelectedOrdered] = useState("");
   const [filterType, setFilterType] = useState("date");
   const [selectedDate, setSelectedDate] = useState("");
   const [sortColumn, setSortColumn] = useState(null);
@@ -58,7 +59,7 @@ function Purchasing() {
   const [activeSort, setActiveSort] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 30;
-
+  const { products, setProducts } = usePerchasingStore();
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   const [showScrollButton, setShowScrollButton] = useState(false);
@@ -132,7 +133,6 @@ function Purchasing() {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
-  const { products, setProducts } = usePerchasingStore();
 
   const formatDateToShow = (dateString) => {
     if (!dateString) return "Loading...";
@@ -193,6 +193,18 @@ function Purchasing() {
         : selectedStatus === "available"
           ? filteredOrdersBySearch.filter((order) => order.short === 0)
           : filteredOrdersBySearch;
+
+    if (selectedRequisition === "requisition") {
+      filteredOrdersBySearch = filteredOrdersBySearch.filter((order) => Number(order.requisitions) > 0);
+    } else if (selectedRequisition === "available") {
+      filteredOrdersBySearch = filteredOrdersBySearch.filter((order) => Number(order.requisitions) === 0);
+    }
+    
+    if (selectedOrdered === "ordered") {
+      filteredOrdersBySearch = filteredOrdersBySearch.filter((order) => Number(order.ordered) > 0);
+    } else if (selectedOrdered === "available") {
+      filteredOrdersBySearch = filteredOrdersBySearch.filter((order) => Number(order.ordered) === 0);
+    }
 
     // Filtrar por categorías seleccionadas
     if (isCheckedCategories.length > 0) {
@@ -262,6 +274,8 @@ function Purchasing() {
     isCheckedCategories,
     ordersWholesaler,
     selectedStatus,
+    selectedRequisition,
+    selectedOrdered,
     searchQuery,
     editableRows,
     activeSort,
@@ -343,7 +357,6 @@ function Purchasing() {
     setActiveSort(!activeSort);
   };
 
-
   const totalPages = Math.ceil(sortedOrders.length / itemsPerPage);
 
   const uniqueCategories = [
@@ -409,8 +422,8 @@ function Purchasing() {
           <div className="flex gap-4">
             <button
               className={`flex ${isSendOrderDisabled
-                  ? "bg-gray-input cursor-not-allowed"
-                  : "bg-green hover:scale-110 transition-all"
+                ? "bg-gray-input cursor-not-allowed"
+                : "bg-green hover:scale-110 transition-all"
                 } py-3 px-4 rounded-lg text-white font-medium `}
               type="button"
               //onClick={() => setModalSendPurchasing(true)}
@@ -443,71 +456,6 @@ function Purchasing() {
               )}
             </div>
             <select
-              value={filterType}
-              onChange={(e) => setFilterType(e.target.value)}
-              className="form-select px-2 py-3 rounded-md border border-gray-300 text-sm custom:text-base w-[155px]"
-            >
-              <option value="range">Filter by range</option>
-              <option value="date">Filter by date</option>
-            </select>
-            {filterType === "range" && (
-              <>
-                <DatePicker
-                  selected={startDate}
-                  onChange={(date) => {
-                    setStartDate(date);
-                    setEndDate((currentEndDate) => {
-                      if (date && currentEndDate) {
-                        setDateFilter("range");
-                      }
-                      return currentEndDate;
-                    });
-                  }}
-                  selectsStart
-                  startDate={startDate}
-                  endDate={endDate}
-                  className="form-input px-3 py-3 rounded-md border border-gray-300 w-[120px] text-sm custom:text-base"
-                  dateFormat="dd/MM/yyyy"
-                  placeholderText="dd/mm/yyyy"
-                />
-                <DatePicker
-                  selected={endDate}
-                  onChange={(date) => {
-                    setEndDate(date);
-                    setStartDate((currentStartDate) => {
-                      if (currentStartDate && date) {
-                        setDateFilter("range");
-                      }
-                      return currentStartDate;
-                    });
-                  }}
-                  selectsEnd
-                  startDate={startDate}
-                  endDate={endDate}
-                  minDate={startDate}
-                  className="form-input px-3 py-3 w-[120px] rounded-md border border-gray-300 text-sm custom:text-base"
-                  dateFormat="dd/MM/yyyy"
-                  placeholderText="dd/mm/yyyy"
-                />
-              </>
-            )}
-
-            {filterType === "date" && (
-              <DatePicker
-                selected={selectedDate}
-                onChange={(date) => {
-                  setSelectedDate(date);
-                  setDateFilter("date");
-                  setStartDate(date);
-                  setEndDate(date);
-                }}
-                className="form-input px-3 py-3 w-[95px] rounded-md border border-gray-300 text-dark-blue placeholder-dark-blue text-sm custom:text-base"
-                dateFormat="dd/MM/yyyy"
-                placeholderText={formatDateToShow(workDate)}
-              />
-            )}
-
-            <select
               value={selectedStatus}
               onChange={(e) => setSelectedStatus(e.target.value)}
               className="form-select px-2 py-3 rounded-md border border-gray-300 text-sm custom:text-base w-[155px]"
@@ -517,6 +465,30 @@ function Purchasing() {
               </option>
               <option value="all">All</option>
               <option value="short">Short</option>
+              <option value="available">Availables</option>
+            </select>
+            <select
+              value={selectedRequisition}
+              onChange={(e) => setSelectedRequisition(e.target.value)}
+              className="form-select px-2 py-3 rounded-md border border-gray-300 text-sm custom:text-base w-[165px]"
+            >
+              <option value="" disabled selected>
+                Select Requisition:
+              </option>
+              <option value="all">All</option>
+              <option value="requisition">Requisition</option>
+              <option value="available">Availables</option>
+            </select>
+            <select
+              value={selectedOrdered}
+              onChange={(e) => setSelectedOrdered(e.target.value)}
+              className="form-select px-2 py-3 rounded-md border border-gray-300 text-sm custom:text-base w-[150px]"
+            >
+              <option value="" disabled selected>
+                Select Ordered:
+              </option>
+              <option value="all">All</option>
+              <option value="ordered">Ordered</option>
               <option value="available">Availables</option>
             </select>
           </div>
@@ -555,8 +527,8 @@ function Purchasing() {
             <div ref={wholesalerRef} className="relative ">
               <button
                 className={`${!showWholesalerFilter
-                    ? "text-gray-grownet"
-                    : "text-primary-blue"
+                  ? "text-gray-grownet"
+                  : "text-primary-blue"
                   } hover:scale-110 hover:text-primary-blue transition-all`}
                 onClick={() => {
                   setShowWholesalerFilter(!showWholesalerFilter);
@@ -604,7 +576,13 @@ function Purchasing() {
                   className="p-4 cursor-pointer hover:bg-gray-100 transition-all w-[240px] select-none"
                   onClick={() => handleSort("supplier")}
                 >
-                  Supplier
+                  Wholesaler
+                </th>
+                <th
+                  className="p-4 cursor-pointer hover:bg-gray-100 transition-all w-[240px] select-none"
+                  onClick={() => handleSort("category_name")}
+                >
+                  Category
                 </th>
                 <th
                   className="p-4 cursor-pointer hover:bg-gray-100 transition-all select-none"
@@ -691,8 +669,8 @@ function Purchasing() {
 
                   return (
                     <tr className="text-dark-blue border-b-2 border-stone-100">
-                      <td className="py-4 pl-3">{order.presentation_code}</td>
-                      <td className="py-4">
+                      <td className="py-[1px] pl-3">{order.presentation_code}</td>
+                      <td className="py-[1px]">
                         <Select
                           value={
                             editableRows[order.presentation_code]?.label
@@ -744,17 +722,18 @@ function Purchasing() {
                           }}
                         />
                       </td>
-                      <td className="py-4 pl-4">
+                      <td className="py-[1px] text-center">{order.category_name}</td>
+                      <td className="py-[1px] pl-4">
                         {order.product_name} - {order.presentation_name}
                       </td>
-                      {/* <td className="py-4">{order.soh}</td> */}
-                      <td className="py-4 text-center">{order.requisitions}</td>
-                      <td className="py-4 text-center">
+                      {/* <td className="py-[1px]">{order.soh}</td> */}
+                      <td className="py-[1px] text-center">{order.requisitions}</td>
+                      <td className="py-[1px] text-center">
                         {order.future_requisitions}
                       </td>
-                      <td className="py-4 text-center">{order.short}</td>
-                      <td className="py-4 text-center">{order.ordered}</td>
-                      <td className="py-4 text-center">
+                      <td className="py-[1px] text-center">{order.short}</td>
+                      <td className="py-[1px] text-center">{order.ordered}</td>
+                      <td className="py-[1px] text-center">
                         <input
                           type="number"
                           value={
@@ -780,7 +759,7 @@ function Purchasing() {
                           }}
                         />
                       </td>
-                      <td className="py-4 text-center ">
+                      <td className="py-[1px] text-center ">
                         <input
                           type="number"
                           step="0.01"
@@ -804,8 +783,8 @@ function Purchasing() {
                           }}
                         />
                       </td>
-                      <td className="py-4 text-center">{totalCost}</td>
-                      <td className="py-4">
+                      <td className="py-[1px] text-center">{totalCost}</td>
+                      <td className="py-[1px]">
                         <input
                           type="text"
                           value={
@@ -836,8 +815,8 @@ function Purchasing() {
                 onClick={prevPage}
                 disabled={currentPage === 1}
                 className={`w-8 h-8 mr-2 font-medium text-dark-blue bg-[#EDF6FF] text-center rounded-full cursor-pointer transition-all flex justify-center items-center ${currentPage === 1
-                    ? "hidden"
-                    : "text-dark-blue bg-[#EDF6FF] hover:bg-primary-blue hover:text-white"
+                  ? "hidden"
+                  : "text-dark-blue bg-[#EDF6FF] hover:bg-primary-blue hover:text-white"
                   }`}
               >
                 <ChevronLeftIcon className="h-5 w-5 text-center" />
@@ -855,8 +834,8 @@ function Purchasing() {
                     onClick={nextPage}
                     disabled={currentPage === totalPages}
                     className={`w-8 h-8 font-medium bg-[#EDF6FF] text-center rounded-full cursor-pointer transition-all flex justify-center items-center ${currentPage === totalPages
-                        ? "hidden"
-                        : "text-dark-blue bg-[#EDF6FF] hover:bg-primary-blue hover:text-white"
+                      ? "hidden"
+                      : "text-dark-blue bg-[#EDF6FF] hover:bg-primary-blue hover:text-white"
                       }`}
                   >
                     <ChevronRightIcon className="h-5 w-5 text-center" />

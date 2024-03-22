@@ -144,3 +144,8 @@ export const purchasingUrl = `${BASE_URL}orders-wholesalers/all`;
 export const purchasingCreate = `${BASE_URL}orders-wholesalers/create`;
 export const wholesalersUrl = `${BASE_URL}wholesalers/all`;
 export const wholesalersCreateUrl = `${BASE_URL}wholesalers/create`;
+
+// Product status
+export const productStatusUrl = `${BASE_URL}orders/listDetailOrders`
+//orderHistory
+export const orderHistoryRequest = `${BASE_URL}wholesalers/orders`;

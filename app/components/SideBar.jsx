@@ -353,7 +353,10 @@ const SideBar = () => {
 
                         {openMenuWholesale && (
                           <div className="mt-3 border-l-[1px] border-light-green pl-5">
-                            <Link href="/purchasing" className="text-white">
+                            <Link
+                              href="/wholesale/purchasing"
+                              className="text-white"
+                            >
                               <h3
                                 className={`hover:bg-[#046373] px-2 py-2 pl-4 rounded-xl w-[360px] mb-2 ${
                                   pathname === "/purchasing"
@@ -364,7 +367,10 @@ const SideBar = () => {
                                 Purchasing
                               </h3>
                             </Link>
-                            <Link href="" className="text-white">
+                            <Link
+                              href="/wholesale/orderHistory"
+                              className="text-white"
+                            >
                               <h3
                                 className={`hover:bg-[#046373] px-2 py-2 pl-4 rounded-xl w-[360px] mb-2 ${
                                   pathname === "" ? "bg-[#046373]" : null
