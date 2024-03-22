@@ -67,7 +67,7 @@ const OrderHistory = () => {
   const [totalNet, setTotalNet] = useState("");
   const [routeId, setRouteId] = useState();
   const [searchQuery, setSearchQuery] = useState("");
-  const [selectedGroup, setSelectedGroup] = useState("");
+  const [selectedWholesaler, setSelectedWholesaler] = useState("");
   const [selectedStatus, setSelectedStatus] = useState("");
   const [showErrorCsv, setShowErrorCsv] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
@@ -186,7 +186,7 @@ const OrderHistory = () => {
   };
 
   const handleGroupChange = (e) => {
-    setSelectedGroup(e.target.value);
+    setSelectedWholesaler(e.target.value);
   };
 
   const sortedOrders = ordersHistory
@@ -199,6 +199,11 @@ const OrderHistory = () => {
 
   const filteredOrders = sortedOrders
     ?.filter((order) => {
+      const isWholesalerMatch = selectedWholesaler
+        ? order.wholesaler_name.toLowerCase() ===
+          selectedWholesaler.toLowerCase()
+        : true;
+
       const isSearchQueryMatch =
         order.ordered
           .toString()
@@ -210,7 +215,7 @@ const OrderHistory = () => {
         ? order.status_order.toLowerCase() === selectedStatus.toLowerCase()
         : true;
 
-      return isSearchQueryMatch && isStatusMatch;
+      return isWholesalerMatch && isSearchQueryMatch && isStatusMatch;
     })
     .sort((a, b) => {
       if (sortList === "invoice") {
@@ -323,7 +328,7 @@ const OrderHistory = () => {
                 onClick={() => {
                   setSearchQuery("");
                   setSelectedRoute("");
-                  setSelectedGroup("");
+                  setSelectedWholesaler("");
                 }}
               >
                 <TrashIcon className="h-6 w-6 text-danger" />
@@ -398,7 +403,7 @@ const OrderHistory = () => {
           )}
 
           <select
-            value={selectedGroup}
+            value={selectedWholesaler}
             onChange={handleGroupChange}
             className="orm-select px-3 py-3 rounded-md border border-gray-300 text-sm custom:text-base"
           >
@@ -406,7 +411,7 @@ const OrderHistory = () => {
             {[
               ...new Set(
                 ordersHistory?.map((order) =>
-                  order.group_name !== null ? order.group_name : "No group"
+                  order.wholesaler_name !== null ? order.wholesaler_name : "-"
                 )
               ),
             ].map((uniqueGroup) => (
