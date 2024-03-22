@@ -172,17 +172,17 @@ function Purchasing() {
     // Filtrar por búsqueda
     let filteredOrdersBySearch = searchQuery
       ? ordersWholesaler.filter(
-        (order) =>
-          order.product_name
-            .toLowerCase()
-            .includes(searchQuery.toLowerCase()) ||
-          order.presentation_name
-            .toLowerCase()
-            .includes(searchQuery.toLowerCase()) ||
-          order.presentation_code
-            .toLowerCase()
-            .includes(searchQuery.toLowerCase())
-      )
+          (order) =>
+            order.product_name
+              .toLowerCase()
+              .includes(searchQuery.toLowerCase()) ||
+            order.presentation_name
+              .toLowerCase()
+              .includes(searchQuery.toLowerCase()) ||
+            order.presentation_code
+              .toLowerCase()
+              .includes(searchQuery.toLowerCase())
+        )
       : ordersWholesaler;
 
     // Filtrar por estado
@@ -190,8 +190,8 @@ function Purchasing() {
       selectedStatus === "short"
         ? filteredOrdersBySearch.filter((order) => order.short > 0)
         : selectedStatus === "available"
-          ? filteredOrdersBySearch.filter((order) => order.short === 0)
-          : filteredOrdersBySearch;
+        ? filteredOrdersBySearch.filter((order) => order.short === 0)
+        : filteredOrdersBySearch;
 
     // Filtrar por categorías seleccionadas
     if (isCheckedCategories.length > 0) {
@@ -263,7 +263,7 @@ function Purchasing() {
     selectedStatus,
     searchQuery,
     editableRows,
-    sortedOrders
+    sortedOrders,
   ]);
   useEffect(() => {
     setCurrentPage(1);
@@ -341,7 +341,6 @@ function Purchasing() {
     }
   };
 
-
   const totalPages = Math.ceil(sortedOrders.length / itemsPerPage);
 
   const uniqueCategories = [
@@ -406,10 +405,11 @@ function Purchasing() {
 
           <div className="flex gap-4">
             <button
-              className={`flex ${isSendOrderDisabled
+              className={`flex ${
+                isSendOrderDisabled
                   ? "bg-gray-input cursor-not-allowed"
                   : "bg-green hover:scale-110 transition-all"
-                } py-3 px-4 rounded-lg text-white font-medium `}
+              } py-3 px-4 rounded-lg text-white font-medium `}
               type="button"
               //onClick={() => setModalSendPurchasing(true)}
               onClick={sendOrder}
@@ -521,8 +521,9 @@ function Purchasing() {
           <div className="flex gap-5">
             <div ref={categoriesRef} className="relative ">
               <button
-                className={`${!showCategories ? "text-gray-grownet" : "text-primary-blue"
-                  } hover:scale-110 hover:text-primary-blue transition-all`}
+                className={`${
+                  !showCategories ? "text-gray-grownet" : "text-primary-blue"
+                } hover:scale-110 hover:text-primary-blue transition-all`}
                 onClick={() => {
                   setShowCategories(!showCategories);
                   setShowWholesalerFilter(false);
@@ -531,7 +532,7 @@ function Purchasing() {
                 <FunnelIcon className="h-8 w-8" />
               </button>
               {showCategories && (
-                <div className="bg-white w-[280px] p-3 rounded-lg shadow-[0_3px_10px_rgb(0,0,0,0.2)] absolute z-10 -right-16">
+                <div className="bg-white w-[280px] p-3 rounded-lg shadow-[0_3px_10px_rgb(0,0,0,0.2)] absolute z-10 -right-16  h-auto max-h-[590px]  overflow-y-auto">
                   {uniqueCategories.map((category) => (
                     <div className="flex gap-2">
                       <input
@@ -552,10 +553,11 @@ function Purchasing() {
             </div>
             <div ref={wholesalerRef} className="relative ">
               <button
-                className={`${!showWholesalerFilter
+                className={`${
+                  !showWholesalerFilter
                     ? "text-gray-grownet"
                     : "text-primary-blue"
-                  } hover:scale-110 hover:text-primary-blue transition-all`}
+                } hover:scale-110 hover:text-primary-blue transition-all`}
                 onClick={() => {
                   setShowWholesalerFilter(!showWholesalerFilter);
                   setShowCategories(false);
@@ -564,7 +566,7 @@ function Purchasing() {
                 <Bars3BottomRightIcon className="h-8 w-8" />
               </button>
               {showWholesalerFilter && (
-                <div className="bg-white p-3 w-[280px] rounded-lg shadow-[0_3px_10px_rgb(0,0,0,0.2)] absolute z-10 -right-[15px]">
+                <div className="bg-white p-3 w-[280px] rounded-lg shadow-[0_3px_10px_rgb(0,0,0,0.2)] absolute z-10 -right-[15px] h-auto max-h-[590px]  overflow-y-auto">
                   {wholesalerList.map((wholesalert) => (
                     <div className="flex gap-2">
                       <input
@@ -695,13 +697,13 @@ function Purchasing() {
                           value={
                             editableRows[order.presentation_code]?.label
                               ? {
-                                value:
-                                  editableRows[order.presentation_code]
-                                    ?.label,
-                                label:
-                                  editableRows[order.presentation_code]
-                                    ?.label,
-                              }
+                                  value:
+                                    editableRows[order.presentation_code]
+                                      ?.label,
+                                  label:
+                                    editableRows[order.presentation_code]
+                                      ?.label,
+                                }
                               : defaultOption
                           }
                           onChange={(selectedOption) => {
@@ -784,7 +786,7 @@ function Purchasing() {
                           step="0.01"
                           value={
                             editableRows[order.presentation_code]?.cost !==
-                              undefined
+                            undefined
                               ? editableRows[order.presentation_code]?.cost
                               : order.cost ?? 0
                           }
@@ -808,7 +810,7 @@ function Purchasing() {
                           type="text"
                           value={
                             editableRows[order.presentation_code]?.notes !==
-                              undefined
+                            undefined
                               ? editableRows[order.presentation_code]?.notes
                               : order.note ?? ""
                           }
@@ -833,10 +835,11 @@ function Purchasing() {
               <button
                 onClick={prevPage}
                 disabled={currentPage === 1}
-                className={`w-8 h-8 mr-2 font-medium text-dark-blue bg-[#EDF6FF] text-center rounded-full cursor-pointer transition-all flex justify-center items-center ${currentPage === 1
+                className={`w-8 h-8 mr-2 font-medium text-dark-blue bg-[#EDF6FF] text-center rounded-full cursor-pointer transition-all flex justify-center items-center ${
+                  currentPage === 1
                     ? "hidden"
                     : "text-dark-blue bg-[#EDF6FF] hover:bg-primary-blue hover:text-white"
-                  }`}
+                }`}
               >
                 <ChevronLeftIcon className="h-5 w-5 text-center" />
               </button>
@@ -852,10 +855,11 @@ function Purchasing() {
                   <button
                     onClick={nextPage}
                     disabled={currentPage === totalPages}
-                    className={`w-8 h-8 font-medium bg-[#EDF6FF] text-center rounded-full cursor-pointer transition-all flex justify-center items-center ${currentPage === totalPages
+                    className={`w-8 h-8 font-medium bg-[#EDF6FF] text-center rounded-full cursor-pointer transition-all flex justify-center items-center ${
+                      currentPage === totalPages
                         ? "hidden"
                         : "text-dark-blue bg-[#EDF6FF] hover:bg-primary-blue hover:text-white"
-                      }`}
+                    }`}
                   >
                     <ChevronRightIcon className="h-5 w-5 text-center" />
                   </button>
