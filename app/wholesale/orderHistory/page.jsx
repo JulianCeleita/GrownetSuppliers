@@ -523,36 +523,6 @@ const OrderHistory = () => {
           >
             <PlusCircleIcon className="h-6 w-6 mr-1" /> New Order
           </Link>
-          {/* <div className="flex items-center gap-2">
-            <label className="bg-dark-blue p-5 text-sm text-white h-12 w-38 hover:scale-105 transition-all font-semibold rounded-full cursor-pointer flex flex-col items-center justify-center">
-              <div className="flex">
-                <ArrowUpTrayIcon className="h-6 w-6 mr-1" /> Upload CSV
-                <input
-                  id="fileInput"
-                  type="file"
-                  accept=".csv"
-                  onChange={handleFileChange}
-                  className="absolute hidden opacity-0"
-                />
-              </div>
-            </label>
-            {csvFile && (
-              <>
-                <button
-                  className="bg-green p-2 text-sm flex text-center items-center pl-3 text-white hover:scale-105 transition-all font-semibold rounded-full w-16"
-                  onClick={handleUpload}
-                >
-                  Send
-                </button>
-                <button
-                  className="bg-none p-2 transition-all text-white hover:scale-110 h-8 w-8 rounded-full bg-white text-center items-center flex"
-                  onClick={handleRemoveFile}
-                >
-                  <TrashIcon className="h-8 w-8 text-black font-bold" />
-                </button>
-              </>
-            )}
-          </div> */}
         </div>
         <div
           className={`flex ml-7 mb-0 items-center space-x-2 ${
@@ -797,18 +767,9 @@ const OrderHistory = () => {
         <div className="flex items-center justify-center mb-20 mt-4  p-2">
           <table className="w-[95%] bg-white first-line:bg-white rounded-2xl text-left shadow-[rgba(17,_17,_26,_0.1)_0px_0px_16px]">
             <thead className="relative top-0 text-center shadow-[0px_11px_15px_-3px_#edf2f7]">
-              <tr className="  text-dark-blue">
-                <th className="py-4 flex items-center justify-center rounded-tl-lg">
-                  <label className="inline-flex items-center">
-                    <input
-                      type="checkbox"
-                      className="form-checkbox h-5 w-5 text-blue-500"
-                      onChange={(e) => selectAll(e.target.checked)}
-                    />
-                  </label>
-                </th>
+              <tr className=" text-dark-blue">
                 <th
-                  className="py-4 cursor-pointer hover:bg-gray-100 transition-all"
+                  className="py-4 cursor-pointer hover:bg-gray-100 transition-all rounded-tl-lg"
                   onClick={handleClickInvoice}
                 >
                   # Invoice
@@ -862,29 +823,14 @@ const OrderHistory = () => {
                       key={index}
                       className="text-dark-blue border-b-[1.5px] cursor-pointer hover:bg-[#F6F6F6]"
                     >
-                      <td className="py-1 pl-4 cursor-default">
-                        <label className="inline-flex items-center">
-                          <input
-                            type="checkbox"
-                            className="form-checkbox h-5 w-5 text-blue-500"
-                            checked={!!selectedOrders[order.reference]}
-                            onChange={(e) => {
-                              handleOrderSelect(order, e.target.checked);
-                              if (e.target.checked) {
-                                setRouteId(order.route_id);
-                              }
-                            }}
-                          />
-                        </label>
-                      </td>
                       <td
-                        className="py-1 pl-4"
+                        className="py-1 text-center"
                         onClick={(e) => goToOrder(e, order)}
                       >
                         {order.reference}
                       </td>
                       <td
-                        className="py-1 pl-4"
+                        className="py-1 text-center"
                         onClick={(e) => goToOrder(e, order)}
                       >
                         {order.accountNumber}
@@ -896,44 +842,44 @@ const OrderHistory = () => {
                         {order.accountName}
                       </td>
                       <td
-                        className="py-1 pl-4"
+                        className="py-1 text-center"
                         onClick={(e) => goToOrder(e, order)}
                       >
                         {order.net}
                       </td>
                       <td
-                        className="py-1 pl-4"
+                        className="py-1 text-center"
                         onClick={(e) => goToOrder(e, order)}
                       >
                         {order.profitOrder ? order.profitOrder.toFixed(2) : ""}
                       </td>
                       <td
-                        className="py-1 pl-4"
+                        className="py-1 text-center"
                         onClick={(e) => goToOrder(e, order)}
                       >
                         {order.route}
                       </td>
                       {/* <td className="py-4 pl-4">{order.created_by}</td> */}
                       <td
-                        className="py-1 pl-4"
+                        className="py-1 text-center"
                         onClick={(e) => goToOrder(e, order)}
                       >
                         {order.drop}
                       </td>
                       <td
-                        className="py-1 pl-4"
+                        className="py-1 text-center"
                         onClick={(e) => goToOrder(e, order)}
                       >
                         {order.quantity_products}
                       </td>
                       <td
-                        className="py-1 pl-4"
+                        className="py-1 text-center"
                         onClick={(e) => goToOrder(e, order)}
                       >
                         {order.date_delivery}
                       </td>
                       <td
-                        className="py-1 pl-4 flex gap-2 justify-center"
+                        className="py-1 flex gap-2 justify-center"
                         onClick={(e) => goToOrder(e, order)}
                       >
                         <div

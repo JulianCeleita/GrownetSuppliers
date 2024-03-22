@@ -604,7 +604,7 @@ function Purchasing() {
                   className="p-4 cursor-pointer hover:bg-gray-100 transition-all w-[240px] select-none"
                   onClick={() => handleSort("supplier")}
                 >
-                  Supplier
+                  Wholesaler
                 </th>
                 <th
                   className="p-4 cursor-pointer hover:bg-gray-100 transition-all select-none"
