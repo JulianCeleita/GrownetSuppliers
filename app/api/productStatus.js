@@ -9,7 +9,10 @@ export const fetchProductStatus = (
   setProductsStatus,
   setIsLoading,
   presentation,
-  group
+  group,
+  page,
+  setPage,
+  setTotalPages
 ) => {
   if (!end || !start || start === new Date()) {
     return;
@@ -24,7 +27,8 @@ export const fetchProductStatus = (
     startDate: formattedStartDate,
     endDate: formattedEndDate,
     groupId: group,
-    presentationId: presentation
+    presentationId: presentation,
+    page: page
   }
   console.log("🚀 ~ postData:", postData)
   axios
@@ -38,6 +42,8 @@ export const fetchProductStatus = (
       console.log("🚀 ~ .then ~ response:", response);
       setProductsStatus(response.data.data);
       setIsLoading(false);
+      setTotalPages(response.data.last_page);
+      setPage(response.data.current_page);
     })
     .catch((error) => {
       console.log("🚀 ~ error:", error);
