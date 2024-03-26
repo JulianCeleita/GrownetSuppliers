@@ -1,6 +1,6 @@
 //BASE URL
- const BASE_URL = "https://api.grownetapp.com/grownet/api/";
-//const BASE_URL = "http://3.139.16.141/api/";
+//const BASE_URL = "https://api.grownetapp.com/grownet/api/";
+const BASE_URL = "http://3.139.16.141/api/";
 
 // Login
 export const loginUrl = `${BASE_URL}login/login`;
@@ -146,6 +146,6 @@ export const wholesalersUrl = `${BASE_URL}wholesalers/all`;
 export const wholesalersCreateUrl = `${BASE_URL}wholesalers/create`;
 
 // Product status
-export const productStatusUrl = `${BASE_URL}orders/listDetailOrders`
+export const productStatusUrl = `${BASE_URL}orders/listDetailOrders`;
 //orderHistory
 export const orderHistoryRequest = `${BASE_URL}wholesalers/orders`;
