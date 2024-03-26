@@ -1,6 +1,7 @@
 "use client";
 import {
-  AdjustmentsHorizontalIcon, TrashIcon
+  AdjustmentsHorizontalIcon,
+  TrashIcon,
 } from "@heroicons/react/24/outline";
 import axios from "axios";
 import { useEffect, useState } from "react";
@@ -8,7 +9,7 @@ import DatePicker from "react-datepicker";
 import { fetchGroups } from "../api/customerRequest";
 import {
   fetchPresentations,
-  fetchPresentationsSupplier
+  fetchPresentationsSupplier,
 } from "../api/presentationsRequest";
 import { fetchProductStatus } from "../api/productStatus";
 import CreateProduct from "../components/CreateProduct";
@@ -19,6 +20,7 @@ import Layout from "../layoutS";
 import useTokenStore from "../store/useTokenStore";
 import useUserStore from "../store/useUserStore";
 import useWorkDateStore from "../store/useWorkDateStore";
+import Select from "react-select";
 
 function ProductState() {
   const { token } = useTokenStore();
@@ -28,18 +30,19 @@ function ProductState() {
   const [showAutomaticShorts, setShowAutomaticShorts] = useState(false);
   const [showEditPresentations, setShowEditPresentations] = useState(false);
   const [selectedPresentation, setSelectedPresentation] = useState(null);
-  const [descriptionData, setDescriptionData] = useState();
+  const [presentations, setPresentations] = useState("");
   const { user, setUser } = useUserStore();
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedDate, setSelectedDate] = useState("");
   const [dateFilter, setDateFilter] = useState("today");
   const [selectedGroup, setSelectedGroup] = useState("");
-  const [filterType, setFilterType] = useState("date")
+  const [filterType, setFilterType] = useState("date");
   const { workDate, setFetchWorkDate } = useWorkDateStore();
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
   const [productsStatus, setProductsStatus] = useState([]);
   const [groups, setGroups] = useState([]);
+  const [selectedPresentationId, setSelectedPresentationId] = useState(null);
 
   const formatDateToShow = (dateString) => {
     if (!dateString) return "Loading...";
@@ -76,7 +79,7 @@ function ProductState() {
       setProductsStatus,
       setIsLoading,
       selectedPresentation,
-      selectedGroup,
+      selectedGroup
     );
   }, [startDate, endDate]);
 
@@ -84,7 +87,7 @@ function ProductState() {
     setStartDate(workDate);
     setEndDate(workDate);
     fetchGroups(token, user, setGroups, setIsLoading);
-  }, [workDate])
+  }, [workDate]);
 
   const applyFilters = () => {
     fetchProductStatus(
@@ -94,10 +97,9 @@ function ProductState() {
       setProductsStatus,
       setIsLoading,
       selectedPresentation,
-      selectedGroup,
-    )
-  }
-
+      selectedGroup
+    );
+  };
 
   //Delete
   const [showDeleteModal, setShowDeleteModal] = useState(false);
@@ -122,6 +124,17 @@ function ProductState() {
         console.error("Error al eliminar la presentación:", error);
       });
   };
+
+  useEffect(() => {
+    fetchPresentationsSupplier(token, user, setPresentations, setIsLoading);
+  }, [token]);
+
+  const presentationsOptions =
+    presentations &&
+    presentations.map((item) => ({
+      value: item.id,
+      label: `${item.code} - ${item.product_name} - ${item.name}`,
+    }));
 
   return (
     <Layout>
@@ -149,7 +162,26 @@ function ProductState() {
                 <TrashIcon className="h-6 w-6 text-danger" />
               </button>
             )}
-          </div>
+          </div>{" "}
+          <Select
+            className="w-full"
+            menuPlacement="auto"
+            menuPortalTarget={document.body}
+            options={presentationsOptions}
+            value={
+              selectedPresentationId
+                ? {
+                    value: selectedPresentationId,
+                    label: presentationsOptions.find(
+                      (item) => item.value === selectedPresentationId
+                    ).label,
+                  }
+                : null
+            }
+            onChange={(selectedOption) =>
+              setSelectedPresentationId(selectedOption.value)
+            }
+          />
           <select
             value={filterType}
             onChange={(e) => setFilterType(e.target.value)}
@@ -199,14 +231,13 @@ function ProductState() {
               />
             </>
           )}
-
           {filterType === "date" && (
             <DatePicker
               selected={selectedDate}
               onChange={(date) => {
                 setSelectedDate(date);
                 setStartDate(date);
-                setEndDate(date)
+                setEndDate(date);
                 setDateFilter("date");
               }}
               className="form-input px-3 py-3 w-[95px] rounded-md border border-gray-300 text-dark-blue placeholder-dark-blue text-sm custom:text-base"
@@ -214,13 +245,14 @@ function ProductState() {
               placeholderText={formatDateToShow(workDate)}
             />
           )}
-
           <select
             value={selectedGroup}
             onChange={(e) => setSelectedGroup(e.target.value)}
             className="form-select py-3 px-2 rounded-md border border-gray-300 text-sm custom:text-base h-[50px]"
           >
-            <option value="" selected disabled>All groups</option>
+            <option value="" selected disabled>
+              All groups
+            </option>
             {groups &&
               groups.map((group) => (
                 <option key={group.id} value={group.id}>
@@ -257,29 +289,37 @@ function ProductState() {
               </tr>
             </thead>
             <tbody>
-              {!isLoading && productsStatus.map((productState) => {
-                var missing = productState.quantity_initial - productState.quantity_definitive;
-                return (
-
-                  <tr
-                    key={productState.id}
-                    className="text-dark-blue border-b-2 border-stone-100"
-                  >
-                    <td className="py-4 pl-3">{productState.accountNumber}</td>
-                    <td className="py-4">{productState.accountNumber}</td>
-                    <td className="py-4">{productState.reference}</td>
-                    <td className="py-4">{productState.product_code}</td>
-                    <td className="py-4">{productState.product_name}</td>
-                    <td className="py-4">{productState.product_category}</td>
-                    <td className="py-4">{productState.group}</td>
-                    <td className="py-4">{productState.quantity_initial}</td>
-                    <td className="py-4">{productState.quantity_packing}</td>
-                    <td className="py-4">{productState.quantity_definitive}</td>
-                    <td className="py-4">{productState.delivery_date}</td>
-                    <td className="py-4">{!isNaN(missing) ? missing : null}</td>
-                  </tr>
-                )
-              })}
+              {!isLoading &&
+                productsStatus.map((productState) => {
+                  var missing =
+                    productState.quantity_initial -
+                    productState.quantity_definitive;
+                  return (
+                    <tr
+                      key={productState.id}
+                      className="text-dark-blue border-b-2 border-stone-100"
+                    >
+                      <td className="py-4 pl-3">
+                        {productState.accountNumber}
+                      </td>
+                      <td className="py-4">{productState.accountNumber}</td>
+                      <td className="py-4">{productState.reference}</td>
+                      <td className="py-4">{productState.product_code}</td>
+                      <td className="py-4">{productState.product_name}</td>
+                      <td className="py-4">{productState.product_category}</td>
+                      <td className="py-4">{productState.group}</td>
+                      <td className="py-4">{productState.quantity_initial}</td>
+                      <td className="py-4">{productState.quantity_packing}</td>
+                      <td className="py-4">
+                        {productState.quantity_definitive}
+                      </td>
+                      <td className="py-4">{productState.delivery_date}</td>
+                      <td className="py-4">
+                        {!isNaN(missing) ? missing : null}
+                      </td>
+                    </tr>
+                  );
+                })}
             </tbody>
           </table>
         </div>
