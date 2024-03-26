@@ -1,6 +1,8 @@
 "use client";
 import {
   AdjustmentsHorizontalIcon,
+  ChevronLeftIcon,
+  ChevronRightIcon,
   TrashIcon,
 } from "@heroicons/react/24/outline";
 import axios from "axios";
@@ -33,22 +35,28 @@ function ProductState() {
   const [presentations, setPresentations] = useState("");
   const { user, setUser } = useUserStore();
   const [searchQuery, setSearchQuery] = useState("");
-  const [selectedDate, setSelectedDate] = useState("");
+  const [selectedDate, setSelectedDate] = useState();
   const [dateFilter, setDateFilter] = useState("today");
   const [selectedGroup, setSelectedGroup] = useState("");
   const [filterType, setFilterType] = useState("date");
   const { workDate, setFetchWorkDate } = useWorkDateStore();
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
+  const [selectedStartDate, setSelectedStartDate] = useState("");
+  const [selectedEndDate, setSelectedEndDate] = useState("");
   const [productsStatus, setProductsStatus] = useState([]);
   const [groups, setGroups] = useState([]);
   const [selectedPresentationId, setSelectedPresentationId] = useState(null);
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState();
 
   const formatDateToShow = (dateString) => {
     if (!dateString) return "Loading...";
 
     const parts = dateString.split("-").map((part) => parseInt(part, 10));
     const utcDate = new Date(Date.UTC(parts[0], parts[1] - 1, parts[2]));
+
+    utcDate.setDate(utcDate.getDate() - 1);
 
     const day = String(utcDate.getUTCDate()).padStart(2, "0");
     const month = String(utcDate.getUTCMonth() + 1).padStart(2, "0");
@@ -78,14 +86,19 @@ function ProductState() {
       token,
       setProductsStatus,
       setIsLoading,
-      selectedPresentation,
-      selectedGroup
+      selectedPresentationId,
+      selectedGroup,
+      page,
+      setPage,
+      setTotalPages
     );
-  }, [startDate, endDate]);
+  }, [selectedStartDate, selectedEndDate]);
 
   useEffect(() => {
     setStartDate(workDate);
     setEndDate(workDate);
+    setSelectedStartDate(workDate);
+    setSelectedEndDate(workDate);
     fetchGroups(token, user, setGroups, setIsLoading);
   }, [workDate]);
 
@@ -96,8 +109,11 @@ function ProductState() {
       token,
       setProductsStatus,
       setIsLoading,
-      selectedPresentation,
-      selectedGroup
+      selectedPresentationId,
+      selectedGroup,
+      page,
+      setPage,
+      setTotalPages
     );
   };
 
@@ -164,24 +180,34 @@ function ProductState() {
             )}
           </div>{" "}
           <Select
-            className="w-full"
+            className="w-[250px]"
+            styles="height: 40px"
             menuPlacement="auto"
             menuPortalTarget={document.body}
             options={presentationsOptions}
             value={
               selectedPresentationId
                 ? {
-                    value: selectedPresentationId,
-                    label: presentationsOptions.find(
-                      (item) => item.value === selectedPresentationId
-                    ).label,
-                  }
+                  value: selectedPresentationId,
+                  label: presentationsOptions.find(
+                    (item) => item.value === selectedPresentationId
+                  ).label,
+                }
                 : null
             }
             onChange={(selectedOption) =>
               setSelectedPresentationId(selectedOption.value)
             }
           />
+          {selectedPresentationId && (
+            <button
+              onClick={() => {
+                setSelectedPresentationId(null);
+              }}
+            >
+              <TrashIcon className="h-6 w-6 mb-6 text-danger" />
+            </button>
+          )}
           <select
             value={filterType}
             onChange={(e) => setFilterType(e.target.value)}
@@ -250,7 +276,7 @@ function ProductState() {
             onChange={(e) => setSelectedGroup(e.target.value)}
             className="form-select py-3 px-2 rounded-md border border-gray-300 text-sm custom:text-base h-[50px]"
           >
-            <option value="" selected disabled>
+            <option value="" selected>
               All groups
             </option>
             {groups &&
@@ -322,6 +348,41 @@ function ProductState() {
                 })}
             </tbody>
           </table>
+          {!isLoading && productsStatus && (
+            <div className="flex items-center justify-center my-8 gap-3">
+              <button
+                // onClick={prevPage}
+                disabled="1"
+                className={`w-8 h-8 mr-2 font-medium text-dark-blue bg-[#EDF6FF] text-center rounded-full cursor-pointer transition-all flex justify-center items-center ${page === 1
+                  ? "hidden"
+                  : "text-dark-blue bg-[#EDF6FF] hover:bg-primary-blue hover:text-white"
+                  }`}
+              >
+                <ChevronLeftIcon className="h-5 w-5 text-center" />
+              </button>
+              <div className="flex items-center space-x-2 gap-3">
+                <span className="text-sm font-medium text-gray-600">
+                  Page{" "}
+                  <span className="text-primary-blue font-bold">
+                    {page}
+                  </span>{" "}
+                  of {totalPages}
+                </span>
+                <div>
+                  <button
+                    // onClick={setPage(page + 1)}
+                    disabled={page === totalPages}
+                    className={`w-8 h-8 font-medium bg-[#EDF6FF] text-center rounded-full cursor-pointer transition-all flex justify-center items-center ${page === totalPages
+                      ? "hidden"
+                      : "text-dark-blue bg-[#EDF6FF] hover:bg-primary-blue hover:text-white"
+                      }`}
+                  >
+                    <ChevronRightIcon className="h-5 w-5 text-center" />
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
         <EditPresentation
           isvisible={showEditPresentations}
