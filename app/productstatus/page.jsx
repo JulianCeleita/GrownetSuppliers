@@ -91,7 +91,7 @@ function ProductState() {
       startDate,
       endDate,
       token,
-      setProducts,
+      setProductsStatus,
       setIsLoading,
       selectedPresentation,
       selectedGroup,
