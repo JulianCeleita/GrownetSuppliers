@@ -69,7 +69,15 @@ function ProductState() {
   // }, [setUser]);
 
   useEffect(() => {
-    fetchProductStatus(startDate, endDate, token, setProductsStatus, setIsLoading);
+    fetchProductStatus(
+      startDate,
+      endDate,
+      token,
+      setProductsStatus,
+      setIsLoading,
+      selectedPresentation,
+      selectedGroup,
+    );
   }, [startDate, endDate]);
 
   useEffect(() => {
@@ -77,6 +85,18 @@ function ProductState() {
     setEndDate(workDate);
     fetchGroups(token, user, setGroups, setIsLoading);
   }, [workDate])
+
+  const applyFilters = () => {
+    fetchProductStatus(
+      startDate,
+      endDate,
+      token,
+      setProducts,
+      setIsLoading,
+      selectedPresentation,
+      selectedGroup,
+    )
+  }
 
 
   //Delete
@@ -103,12 +123,6 @@ function ProductState() {
       });
   };
 
-  const sortedPresentations = products.slice().sort((a, b) => {
-    const presentationProductNameA = a.product_name || "";
-    const presentationProductNameB = b.product_name || "";
-    return presentationProductNameA.localeCompare(presentationProductNameB);
-  });
-
   return (
     <Layout>
       <div>
@@ -116,17 +130,6 @@ function ProductState() {
           <h1 className="text-2xl text-white font-semibold ml-20 mt-2">
             <span className="text-light-green">Products </span>status
           </h1>
-
-          <div className="flex gap-4">
-            {/* <button
-              className="flex bg-green py-3 px-4 rounded-lg text-white font-medium hover:scale-110 transition-all"
-              type="button"
-              onClick={() => setShowNewPresentations(true)}
-            >
-              <PlusCircleIcon className="h-6 w-6 mr-2 font-bold" />
-              New Presentations
-            </button> */}
-          </div>
         </div>
         <div className="mx-10 flex gap-2">
           <div className="border border-gray-300  rounded-md py-3 px-2 flex items-center mb-3">
@@ -211,7 +214,7 @@ function ProductState() {
               placeholderText={formatDateToShow(workDate)}
             />
           )}
-         
+
           <select
             value={selectedGroup}
             onChange={(e) => setSelectedGroup(e.target.value)}
@@ -228,7 +231,7 @@ function ProductState() {
           <button
             className="flex bg-green hover:scale-110 transition-all py-3 px-4 rounded-lg h-12 ml-1 text-white font-medium"
             type="button"
-          // onClick={sendOrder}
+            onClick={applyFilters}
           >
             <AdjustmentsHorizontalIcon className="h-6 w-6 mr-2 font-bold" />
             Apply filters
@@ -254,58 +257,32 @@ function ProductState() {
               </tr>
             </thead>
             <tbody>
-              {sortedPresentations.map((presentation) => (
-                <tr
-                  key={presentation.id}
-                  className="text-dark-blue border-b-2 border-stone-100"
-                >
-                  <td className="py-4 pl-3">{presentation.code}</td>
-                  <td className="py-4">{presentation.product_name}</td>
-                  <td className="py-4">{presentation.uom}</td>
-                  <td className="py-4">{presentation.name}</td>
-                  <td className="py-4">£ {presentation.cost}</td>
-                  <td className="py-4">{presentation.quantity}</td>
-                  <td className="py-4">{presentation.quantity}</td>
-                  <td className="py-4 px-3">
-                    <div className="flex items-center">
-                      <div
-                        className={`bg-green w-2 h-2 mr-2 rounded-full`}
-                      ></div>
-                      Status
-                    </div>
-                  </td>
-                  {/* <td className="py-4 pl-3 flex justify-center">
-                    <button
-                      onClick={() => {
-                        setSelectedPresentation(presentation);
-                        setShowEditPresentations(true);
-                      }}
-                      className="flex text-primary-blue mr-6 font-medium hover:scale-110 hover:text-green hover:border-green"
-                    >
-                      <PencilSquareIcon className="h-6 w-6 mr-1" />
-                      Edit
-                    </button>
-                    <button
-                      onClick={() => {
-                        setSelectedPresentation(presentation);
-                        setShowDeleteModal(true);
-                      }}
-                      className="flex text-primary-blue font-medium hover:scale-110 hover:text-danger hover:border-danger"
-                    >
-                      <TrashIcon className="h-6 w-6 mr-1" />
-                      Delete
-                    </button>
-                  </td> */}
-                </tr>
-              ))}
+              {!isLoading && productsStatus.map((productState) => {
+                var missing = productState.quantity_initial - productState.quantity_definitive;
+                return (
+
+                  <tr
+                    key={productState.id}
+                    className="text-dark-blue border-b-2 border-stone-100"
+                  >
+                    <td className="py-4 pl-3">{productState.accountNumber}</td>
+                    <td className="py-4">{productState.accountNumber}</td>
+                    <td className="py-4">{productState.reference}</td>
+                    <td className="py-4">{productState.product_code}</td>
+                    <td className="py-4">{productState.product_name}</td>
+                    <td className="py-4">{productState.product_category}</td>
+                    <td className="py-4">{productState.group}</td>
+                    <td className="py-4">{productState.quantity_initial}</td>
+                    <td className="py-4">{productState.quantity_packing}</td>
+                    <td className="py-4">{productState.quantity_definitive}</td>
+                    <td className="py-4">{productState.delivery_date}</td>
+                    <td className="py-4">{!isNaN(missing) ? missing : null}</td>
+                  </tr>
+                )
+              })}
             </tbody>
           </table>
         </div>
-        <ModalDelete
-          isvisible={showDeleteModal}
-          onClose={() => setShowDeleteModal(false)}
-          onConfirm={() => handleDeletePresentation(selectedPresentation)}
-        />
         <EditPresentation
           isvisible={showEditPresentations}
           onClose={() => setShowEditPresentations(false)}
