@@ -55,7 +55,7 @@ function Purchasing() {
   const [showCategories, setShowCategories] = useState(false);
   const [showWholesalerFilter, setShowWholesalerFilter] = useState(false);
   const [isCheckedCategories, setIsCheckedCategories] = useState([]);
-  const [isCheckedWholesalert, setIsCheckedWholesalert] = useState([]);
+  const [isCheckedWholesaler, setIsCheckedWholesaler] = useState([]);
   const [activeSort, setActiveSort] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 30;
@@ -101,13 +101,13 @@ function Purchasing() {
       }
     });
   };
-  const handleCheckboxWholesalertChange = (event, wholesalert) => {
+  const handleCheckboxWholesalerChange = (event, wholesaler) => {
     const { checked } = event.target;
-    setIsCheckedWholesalert((prevCheckedWholesalert) => {
+    setIsCheckedWholesaler((prevCheckedWholesaler) => {
       if (checked) {
-        return [...prevCheckedWholesalert, wholesalert];
+        return [...prevCheckedWholesaler, wholesaler];
       } else {
-        return prevCheckedWholesalert.filter((item) => item !== wholesalert);
+        return prevCheckedWholesaler.filter((item) => item !== wholesaler);
       }
     });
   };
@@ -214,9 +214,9 @@ function Purchasing() {
     }
 
     // Filtrar por mayoristas seleccionados
-    if (isCheckedWholesalert.length > 0) {
+    if (isCheckedWholesaler.length > 0) {
       filteredOrdersBySearch = filteredOrdersBySearch.filter((order) =>
-        isCheckedWholesalert.includes(order.wholesaler_name)
+        isCheckedWholesaler.includes(order.wholesaler_name)
       );
     }
 
@@ -270,7 +270,7 @@ function Purchasing() {
     const { sortedOrders, totalPages } = applyFilters();
     setFilteredOrdersWholesaler(sortedOrders);
   }, [
-    isCheckedWholesalert,
+    isCheckedWholesaler,
     isCheckedCategories,
     ordersWholesaler,
     selectedStatus,
@@ -283,7 +283,7 @@ function Purchasing() {
   useEffect(() => {
     setCurrentPage(1);
   }, [
-    isCheckedWholesalert,
+    isCheckedWholesaler,
     isCheckedCategories,
     ordersWholesaler,
     selectedStatus,
@@ -539,22 +539,22 @@ function Purchasing() {
               </button>
               {showWholesalerFilter && (
                 <div className="bg-white p-3 w-[280px] rounded-lg shadow-[0_3px_10px_rgb(0,0,0,0.2)] absolute z-10 -right-[15px]">
-                  {wholesalerList.map((wholesalert) => (
+                  {wholesalerList.map((wholesaler) => (
                     <div className="flex gap-2">
                       <input
                         type="checkbox"
-                        checked={isCheckedWholesalert.includes(
-                          wholesalert.name
+                        checked={isCheckedWholesaler.includes(
+                          wholesaler.name
                         )}
                         onChange={(event) =>
-                          handleCheckboxWholesalertChange(
+                          handleCheckboxWholesalerChange(
                             event,
-                            wholesalert.name
+                            wholesaler.name
                           )
                         }
                         className="form-checkbox h-4 w-4 text-primary-blue cursor-pointer"
                       />
-                      <p key={wholesalert.id}>{wholesalert.name}</p>
+                      <p key={wholesaler.id}>{wholesaler.name}</p>
                     </div>
                   ))}
                 </div>
