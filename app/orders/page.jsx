@@ -306,7 +306,7 @@ const OrderView = () => {
     const postDataPrint = {
       references: ordersToPrint,
     };
-    console.log("🚀 ~ printOrders ~ postDataPrint:", postDataPrint)
+    console.log("🚀 ~ printOrders ~ postDataPrint:", postDataPrint);
 
     axios
       .post(printInvoices, postDataPrint, {
@@ -316,7 +316,7 @@ const OrderView = () => {
         responseType: "blob",
       })
       .then((response) => {
-        console.log("🚀 ~ .then ~ response:", response)
+        console.log("🚀 ~ .then ~ response:", response);
         const blob = new Blob([response.data], { type: "application/pdf" });
 
         // Para abrir automáticamente el archivo
@@ -862,7 +862,7 @@ const OrderView = () => {
                       key={index}
                       className="text-dark-blue border-b-[1.5px] cursor-pointer hover:bg-[#F6F6F6]"
                     >
-                      <td className="py-1 pl-4 cursor-default">
+                      <td className="py-1 text-center cursor-default">
                         <label className="inline-flex items-center">
                           <input
                             type="checkbox"
@@ -878,13 +878,13 @@ const OrderView = () => {
                         </label>
                       </td>
                       <td
-                        className="py-1 pl-4"
+                        className="py-1 text-center"
                         onClick={(e) => goToOrder(e, order)}
                       >
                         {order.reference}
                       </td>
                       <td
-                        className="py-1 pl-4"
+                        className="py-1 text-center"
                         onClick={(e) => goToOrder(e, order)}
                       >
                         {order.accountNumber}
@@ -896,50 +896,50 @@ const OrderView = () => {
                         {order.accountName}
                       </td>
                       <td
-                        className="py-1 pl-4"
+                        className="py-1 text-center"
                         onClick={(e) => goToOrder(e, order)}
                       >
                         {order.net}
                       </td>
                       <td
-                        className="py-1 pl-4"
+                        className="py-1 text-center"
                         onClick={(e) => goToOrder(e, order)}
                       >
                         {order.profitOrder ? order.profitOrder.toFixed(2) : ""}
                       </td>
                       <td
-                        className="py-1 pl-4"
+                        className="py-1 text-center"
                         onClick={(e) => goToOrder(e, order)}
                       >
                         {order.route}
                       </td>
                       {/* <td className="py-4 pl-4">{order.created_by}</td> */}
                       <td
-                        className="py-1 pl-4"
+                        className="py-1 text-center"
                         onClick={(e) => goToOrder(e, order)}
                       >
                         {order.drop}
                       </td>
                       <td
-                        className="py-1 pl-4"
+                        className="py-1 text-center"
                         onClick={(e) => goToOrder(e, order)}
                       >
                         {order.quantity_products}
                       </td>
                       <td
-                        className="py-1 pl-4"
+                        className="py-1 text-center"
                         onClick={(e) => goToOrder(e, order)}
                       >
                         {order.date_delivery}
                       </td>
                       <td
-                        className="py-1 pl-4 flex gap-2 justify-center"
+                        className="py-1 flex gap-2 text-left items-center pl-8"
                         onClick={(e) => goToOrder(e, order)}
                       >
                         <div
-                          className={`inline-block mt-1 rounded-full text-white ${statusColorClass(
+                          className={`inline-block rounded-full text-white ${statusColorClass(
                             order.status_order
-                          )} w-3 h-3 flex items-center justify-center`}
+                          )} w-2 h-2 flex items-center`}
                         ></div>
                         {order.status_order}
                       </td>

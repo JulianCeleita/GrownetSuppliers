@@ -131,10 +131,29 @@ function Presentations() {
                   className="text-dark-blue border-b-2 border-stone-100 "
                 >
                   <td className="py-4">{presentation.code}</td>
-                  <td className="py-4">{presentation.product_name}</td>
+                  <td className="py-4 text-left flex gap-2 pl-8 items-center">
+                    <div
+                      className={`w-2 h-2 rounded-full ${
+                        presentation.category_short === true
+                          ? "bg-danger"
+                          : "hidden"
+                      } `}
+                    />
+                    {presentation.product_name}
+                  </td>
                   <td className="py-4">{presentation.uom}</td>
                   <td className="py-4">{presentation.name}</td>
-                  <td className="py-4">{presentation.type}</td>
+                  <td className="py-4 text-left flex gap-2 pl-8 items-center">
+                    <div
+                      className={`w-2 h-2 rounded-full ${
+                        presentation.product_short === true
+                          ? "bg-danger"
+                          : "hidden"
+                      } `}
+                    />
+                    {presentation.type}
+                  </td>
+
                   <td className="py-4">£ {presentation.cost}</td>
                   <td className="py-4">{presentation.quantity}</td>
                   <td className="py-4 flex justify-center">

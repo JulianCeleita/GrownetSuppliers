@@ -415,7 +415,7 @@ const SideBar = () => {
                                     : null
                                 }`}
                               >
-                                Catalog
+                                Catalogue
                               </h3>
                             </Link>
                             <Link href="" className="text-white">
