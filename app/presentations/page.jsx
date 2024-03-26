@@ -89,7 +89,7 @@ function Presentations() {
       <div>
         <div className="flex justify-between p-8 -mt-24">
           <h1 className="text-2xl text-white font-semibold ml-20 mt-2">
-            <span className="text-light-green">Catalog </span>list
+            <span className="text-light-green">Catalogue </span>list
           </h1>
           <div className="flex gap-3">
             <button
@@ -136,7 +136,7 @@ function Presentations() {
                       className={`w-2 h-2 rounded-full ${
                         presentation.category_short === true
                           ? "bg-danger"
-                          : "bg-gray-grownet"
+                          : "hidden"
                       } `}
                     />
                     {presentation.product_name}
@@ -148,7 +148,7 @@ function Presentations() {
                       className={`w-2 h-2 rounded-full ${
                         presentation.product_short === true
                           ? "bg-danger"
-                          : "bg-gray-grownet"
+                          : "hidden"
                       } `}
                     />
                     {presentation.type}
