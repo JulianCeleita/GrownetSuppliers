@@ -53,7 +53,6 @@ const OrderHistory = () => {
   const { token } = useTokenStore();
   const { workDate } = useWorkDateStore();
   const [isLoading, setIsLoading] = useState(true);
-  const [orders, setOrders] = useState([]);
   const { user } = useUserStore();
   const [dateFilter, setDateFilter] = useState("today");
   const [showAllOrders, setShowAllOrders] = useState(false);
@@ -68,7 +67,7 @@ const OrderHistory = () => {
   const [totalNet, setTotalNet] = useState("");
   const [routeId, setRouteId] = useState();
   const [searchQuery, setSearchQuery] = useState("");
-  const [selectedGroup, setSelectedGroup] = useState("");
+  const [selectedWholesaler, setSelectedWholesaler] = useState("");
   const [selectedStatus, setSelectedStatus] = useState("");
   const [showErrorCsv, setShowErrorCsv] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
@@ -77,7 +76,7 @@ const OrderHistory = () => {
   const [showModalSuccessfull, setShowModalSuccessfull] = useState(false);
   const [showModalError, setShowModalError] = useState(false);
   const [errorCsvMessage, setErrorCsvMessage] = useState("");
-  const [sortList, setSortList] = useState("invoice");
+  const [sortList, setSortList] = useState("po_number");
   const [sortType, setSortType] = useState(false);
   const [ordersHistory, setOrdersHistory] = useState([]);
 
@@ -93,13 +92,6 @@ const OrderHistory = () => {
     return `${day}/${month}/${year}`;
   };
 
-  const formattedDate = selectedDate
-    ? new Date(selectedDate).toLocaleDateString("es-CO", {
-        day: "2-digit",
-        month: "2-digit",
-        year: "2-digit",
-      })
-    : formatDateToShow(workDate);
   const formatDateToTransform = (dateString) => {
     const date = new Date(dateString);
     const day = String(date.getDate()).padStart(2, "0");
@@ -194,10 +186,10 @@ const OrderHistory = () => {
   };
 
   const handleGroupChange = (e) => {
-    setSelectedGroup(e.target.value);
+    setSelectedWholesaler(e.target.value);
   };
 
-  const sortedOrders = orders
+  const sortedOrders = ordersHistory
     ?.filter((order) => filterOrdersByDate(order))
     .sort((a, b) => {
       const dateA = new Date(a.date_delivery);
@@ -207,110 +199,114 @@ const OrderHistory = () => {
 
   const filteredOrders = sortedOrders
     ?.filter((order) => {
-      const isRouteMatch = selectedRoute
-        ? order.route.toLowerCase() === selectedRoute.toLowerCase()
-        : true;
-      const isGroupMatch = selectedGroup
-        ? order.group_name.toLowerCase() === selectedGroup.toLowerCase()
+      const isWholesalerMatch = selectedWholesaler
+        ? order.wholesaler_name.toLowerCase() ===
+          selectedWholesaler.toLowerCase()
         : true;
 
       const isSearchQueryMatch =
-        order.reference
+        order.ordered
           .toString()
           .toLowerCase()
           .includes(searchQuery.toLowerCase()) ||
-        order.accountName.toLowerCase().includes(searchQuery.toLowerCase());
+        order.product_name.toLowerCase().includes(searchQuery.toLowerCase());
 
       const isStatusMatch = selectedStatus
         ? order.status_order.toLowerCase() === selectedStatus.toLowerCase()
         : true;
 
-      return (
-        isRouteMatch && isGroupMatch && isSearchQueryMatch && isStatusMatch
-      );
+      return isWholesalerMatch && isSearchQueryMatch && isStatusMatch;
     })
     .sort((a, b) => {
-      if (sortList === "invoice") {
+      if (sortList === "po_number") {
         if (!sortType) {
-          return a.reference - b.reference;
+          return a.po_number
+            .toLowerCase()
+            .localeCompare(b.po_number.toLowerCase());
         } else {
-          return b.reference - a.reference;
+          return b.po_number
+            .toLowerCase()
+            .localeCompare(a.po_number.toLowerCase());
         }
-      } else if (sortList === "accNumber") {
+      } else if (sortList === "wholesaler") {
         if (!sortType) {
-          return a.accountNumber
+          return a.wholesaler_name
             .toLowerCase()
-            .localeCompare(b.accountNumber.toLowerCase());
+            .localeCompare(b.wholesaler_name.toLowerCase());
         } else {
-          return b.accountNumber
+          return b.wholesaler_name
             .toLowerCase()
-            .localeCompare(a.accountNumber.toLowerCase());
+            .localeCompare(a.wholesaler_name.toLowerCase());
         }
-      } else if (sortList === "customer") {
+      } else if (sortList === "category") {
         if (!sortType) {
-          return a.accountName
+          return a.category_name
             .toLowerCase()
-            .localeCompare(b.accountName.toLowerCase());
+            .localeCompare(b.category_name.toLowerCase());
         } else {
-          return b.accountName
+          return b.category_name
             .toLowerCase()
-            .localeCompare(a.accountName.toLowerCase());
+            .localeCompare(a.category_name.toLowerCase());
         }
-      } else if (sortList === "amount") {
+      } else if (sortList === "code") {
         if (!sortType) {
-          return a.net - b.net;
+          return a.presentation_code
+            .toLowerCase()
+            .localeCompare(b.presentation_code.toLowerCase());
         } else {
-          return b.net - a.net;
+          return b.presentation_code
+            .toLowerCase()
+            .localeCompare(a.presentation_code.toLowerCase());
         }
       }
     });
+  console.log("setSortList", sortList);
+  const handleClickPoNumber = () => {
+    setSortList("po_number");
+    setSortType((prevSortType) => !prevSortType);
+  };
+  const handleClickWholesaler = () => {
+    setSortList("wholesaler");
+    setSortType((prevSortType) => !prevSortType);
+  };
+  const handleClickCategory = () => {
+    setSortList("category");
+    setSortType((prevSortType) => !prevSortType);
+  };
+  const handleClickCode = () => {
+    setSortList("code");
+    setSortType((prevSortType) => !prevSortType);
+  };
+  // const uniqueStatuses = [
+  //   ...new Set(sortedOrders?.map((order) => order.status_order)),
+  // ];
 
-  const handleClickInvoice = () => {
-    setSortList("invoice");
-    setSortType((prevSortType) => !prevSortType);
-  };
-  const handleClickCustomer = () => {
-    setSortList("customer");
-    setSortType((prevSortType) => !prevSortType);
-  };
-  const handleClickAmount = () => {
-    setSortList("amount");
-    setSortType((prevSortType) => !prevSortType);
-  };
-  const handleClickAccNumber = () => {
-    setSortList("accNumber");
-    setSortType((prevSortType) => !prevSortType);
-  };
-  const uniqueStatuses = [
-    ...new Set(sortedOrders?.map((order) => order.status_order)),
-  ];
+  // const handleStatusChange = (e) => {
+  //   const newSelectedStatus = e.target.value;
+  //   setSelectedStatus(newSelectedStatus);
+  // };
 
-  const handleStatusChange = (e) => {
-    const newSelectedStatus = e.target.value;
-    setSelectedStatus(newSelectedStatus);
-  };
-
-  const statusColorClass = (status) => {
-    switch (status) {
-      case "Delivered":
-        return "bg-dark-blue";
-      case "Solved":
-      case "Loaded":
-      case "Printed":
-        return "bg-green";
-      case "Dispute":
-        return "bg-danger";
-      case "Generated":
-      case "Received":
-      case "Preparing":
-      case "Sent":
-        return "bg-primary-blue";
-      case "Packed":
-        return "bg-orange-grownet";
-      default:
-        return "bg-primary-blue";
-    }
-  };
+  // const statusColorClass = (status) => {
+  //   switch (status) {
+  //     case "Delivered":
+  //       return "bg-dark-blue";
+  //     case "Solved":
+  //     case "Loaded":
+  //     case "Printed":
+  //       return "bg-green";
+  //     case "Dispute":
+  //       return "bg-danger";
+  //     case "Generated":
+  //     case "Received":
+  //     case "Preparing":
+  //     case "Sent":
+  //       return "bg-primary-blue";
+  //     case "Packed":
+  //       return "bg-orange-grownet";
+  //     default:
+  //       return "bg-primary-blue";
+  //   }
+  // };
 
   return (
     <Layout>
@@ -340,7 +336,7 @@ const OrderHistory = () => {
                 onClick={() => {
                   setSearchQuery("");
                   setSelectedRoute("");
-                  setSelectedGroup("");
+                  setSelectedWholesaler("");
                 }}
               >
                 <TrashIcon className="h-6 w-6 text-danger" />
@@ -415,15 +411,15 @@ const OrderHistory = () => {
           )}
 
           <select
-            value={selectedGroup}
+            value={selectedWholesaler}
             onChange={handleGroupChange}
             className="orm-select px-3 py-3 rounded-md border border-gray-300 text-sm custom:text-base"
           >
             <option value="">Wholesalers</option>
             {[
               ...new Set(
-                orders?.map((order) =>
-                  order.group_name !== null ? order.group_name : "No group"
+                ordersHistory?.map((order) =>
+                  order.wholesaler_name !== null ? order.wholesaler_name : "-"
                 )
               ),
             ].map((uniqueGroup) => (
@@ -440,25 +436,25 @@ const OrderHistory = () => {
               <tr className=" text-dark-blue">
                 <th
                   className="py-4 cursor-pointer hover:bg-gray-100 transition-all rounded-tl-lg"
-                  onClick={handleClickInvoice}
+                  onClick={handleClickPoNumber}
                 >
                   PO Number
                 </th>
                 <th
                   className="py-4 cursor-pointer hover:bg-gray-100 transition-all"
-                  onClick={handleClickAccNumber}
+                  onClick={handleClickWholesaler}
                 >
                   Wholesaler
                 </th>
                 <th
                   className="py-4 cursor-pointer hover:bg-gray-100 transition-all"
-                  onClick={handleClickCustomer}
+                  onClick={handleClickCategory}
                 >
                   Category
                 </th>
                 <th
                   className="py-4 cursor-pointer hover:bg-gray-100 transition-all"
-                  onClick={handleClickAmount}
+                  onClick={handleClickCode}
                 >
                   Code
                 </th>
@@ -493,70 +489,65 @@ const OrderHistory = () => {
                       className="text-dark-blue border-b-[1.5px] cursor-pointer hover:bg-[#F6F6F6]"
                     >
                       <td
-                        className="py-1 text-center"
+                        className="py-1 pl-5"
                         onClick={(e) => goToOrder(e, order)}
                       >
-                        {order.reference}
+                        {order.po_number}
                       </td>
                       <td
-                        className="py-1 text-center"
+                        className="py-1 pl-5"
                         onClick={(e) => goToOrder(e, order)}
                       >
-                        {order.accountNumber}
+                        {order.wholesaler_name}
                       </td>
                       <td
                         className="py-1 pl-4"
                         onClick={(e) => goToOrder(e, order)}
                       >
-                        {order.accountName}
+                        {order.category_name}
                       </td>
                       <td
                         className="py-1 text-center"
                         onClick={(e) => goToOrder(e, order)}
                       >
-                        {order.net}
+                        {order.presentation_code}
+                      </td>
+                      <td
+                        className="py-1 text-left pl-5"
+                        onClick={(e) => goToOrder(e, order)}
+                      >
+                        {order.product_name + " " + order.presentation_name}
                       </td>
                       <td
                         className="py-1 text-center"
                         onClick={(e) => goToOrder(e, order)}
                       >
-                        {order.profitOrder ? order.profitOrder.toFixed(2) : ""}
+                        {order.uom_name}
+                      </td>
+
+                      <td
+                        className="py-1 text-center"
+                        onClick={(e) => goToOrder(e, order)}
+                      >
+                        {order.ordered}
                       </td>
                       <td
                         className="py-1 text-center"
                         onClick={(e) => goToOrder(e, order)}
                       >
-                        {order.route}
-                      </td>
-                      {/* <td className="py-4 pl-4">{order.created_by}</td> */}
-                      <td
-                        className="py-1 text-center"
-                        onClick={(e) => goToOrder(e, order)}
-                      >
-                        {order.drop}
+                        {order.cost}
                       </td>
                       <td
                         className="py-1 text-center"
                         onClick={(e) => goToOrder(e, order)}
                       >
-                        {order.quantity_products}
+                        {order.cost * order.ordered}
                       </td>
                       <td
-                        className="py-1 text-center"
+                        className="py-1 text-left px-5"
                         onClick={(e) => goToOrder(e, order)}
                       >
-                        {order.date_delivery}
-                      </td>
-                      <td
-                        className="py-1 flex gap-2 justify-center"
-                        onClick={(e) => goToOrder(e, order)}
-                      >
-                        <div
-                          className={`inline-block mt-1 rounded-full text-white ${statusColorClass(
-                            order.status_order
-                          )} w-3 h-3 flex items-center justify-center`}
-                        ></div>
-                        {order.status_order}
+                        {order.note}
                       </td>
                     </tr>
                   ))

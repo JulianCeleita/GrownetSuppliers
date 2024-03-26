@@ -9,28 +9,9 @@ export const fetchOrdersHistory = async (
   setOrdersHistory,
   setIsLoading
 ) => {
-  let postData;
-
-  switch (true) {
-    case start && end:
-      postData = {
-        date: {
-          start: start,
-          end: end,
-        },
-      };
-      break;
-    case start:
-      postData = {
-        date: start,
-      };
-      break;
-
-    default:
-      postData = {
-        date: workDate,
-      };
-  }
+  const postData = {
+    ...(start && end ? { date: { start, end } } : { date: workDate }),
+  };
   console.log("🚀 ~ postData:", postData);
 
   try {
