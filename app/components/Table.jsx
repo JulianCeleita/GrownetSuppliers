@@ -516,7 +516,7 @@ export default function Table({
       const condition = currentDescription
         ? existingCodes.has(lowerCaseCode)
         : existingCodes.has(lowerCaseCode) ||
-          existingCodes.has(rows[rowIndex].Code.toLowerCase());
+        existingCodes.has(rows[rowIndex].Code.toLowerCase());
 
       if (condition) {
         setActiveInputIndex(rowIndex);
@@ -662,6 +662,7 @@ export default function Table({
       setRows(Array.from({ length: 5 }, () => ({ ...initialRowsState })));
       setSpecialRequirements("");
       setProducts([]);
+      setCustomers([]);
     } catch (error) {
       setShowErrorOrderModal(true);
     }
@@ -760,28 +761,25 @@ export default function Table({
                       <th
                         key={index}
                         scope="col"
-                        className={`py-2 px-2 capitalize ${
-                          index === firstVisibleColumnIndex
+                        className={`py-2 px-2 capitalize ${index === firstVisibleColumnIndex
                             ? "rounded-tl-lg"
                             : ""
-                        } ${
-                          index === lastVisibleColumnIndex
+                          } ${index === lastVisibleColumnIndex
                             ? "rounded-tr-lg"
                             : ""
-                        } ${
-                          column === "quantity" ||
-                          column === "VAT %" ||
-                          column === "UOM" ||
-                          column === "Net"
+                          } ${column === "quantity" ||
+                            column === "VAT %" ||
+                            column === "UOM" ||
+                            column === "Net"
                             ? "w-20"
                             : column === "Packsize" || column === "Total Price"
-                            ? "w-40"
-                            : column === "Code"
-                            ? "w-[8em]"
-                            : column === "Description"
-                            ? "w-auto p-0"
-                            : ""
-                        }`}
+                              ? "w-40"
+                              : column === "Code"
+                                ? "w-[8em]"
+                                : column === "Description"
+                                  ? "w-auto p-0"
+                                  : ""
+                          }`}
                         onContextMenu={(e) => handleContextMenu(e)}
                       >
                         <p className="text-base text-dark-blue my-2">
@@ -860,10 +858,10 @@ export default function Table({
                                       options={
                                         DescriptionData
                                           ? DescriptionData.map((item) => ({
-                                              value: item.product_name,
-                                              label: `${item.code} - ${item.product_name} - ${item.name}`,
-                                              code: item.code,
-                                            }))
+                                            value: item.product_name,
+                                            label: `${item.code} - ${item.product_name} - ${item.name}`,
+                                            code: item.code,
+                                          }))
                                           : []
                                       }
                                       value={{
@@ -925,11 +923,10 @@ export default function Table({
                                   data-row-index={rowIndex}
                                   type={inputTypes[column]}
                                   data-field-name={column}
-                                  className={`pl-2 h-[30px] outline-none w-full ${
-                                    inputTypes[column] === "number"
+                                  className={`pl-2 h-[30px] outline-none w-full ${inputTypes[column] === "number"
                                       ? "hide-number-arrows"
                                       : ""
-                                  } `}
+                                    } `}
                                   value={row[column] || ""}
                                   onFocus={(e) => {
                                     if (column === "quantity") {
@@ -1029,7 +1026,10 @@ export default function Table({
 
       <ModalSuccessfull
         isvisible={showConfirmModal}
-        onClose={() => setShowConfirmModal(false)}
+        onClose={() => {
+          setShowConfirmModal(false)
+          window.location.reload()
+        }}
         title="Congratulations"
         text="Your order has been shipped, thank you for using"
         textGrownet="Grownet"
