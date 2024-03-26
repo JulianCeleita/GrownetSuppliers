@@ -642,6 +642,7 @@ export default function Table({
         customers_ref: customerRef,
         products: filteredProducts,
       };
+      console.log("🚀 ~ createOrder ~ jsonOrderData:", jsonOrderData)
 
       const response = await axios.post(createStorageOrder, jsonOrderData, {
         headers: {
