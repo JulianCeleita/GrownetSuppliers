@@ -432,29 +432,29 @@ const CreateOrderView = () => {
             <div className="flex flex-col items-start">
               <h3 className="font-medium">Post Code:</h3>
               <h3>
-                {customers && customers[0].postCode
-                  ? customers[0].postCode
+                {customers && customers[0]?.postCode
+                  ? customers[0]?.postCode
                   : "-"}
               </h3>
             </div>
             <div className="flex flex-col items-start">
               <h3 className="font-medium">Telephone:</h3>
               <h3>
-                {customers && customers[0].telephone
-                  ? customers[0].telephone
+                {customers && customers[0]?.telephone
+                  ? customers[0]?.telephone
                   : "-"}
               </h3>
             </div>
             <div className="flex flex-col items-start">
               <h3 className="font-medium">Address:</h3>
               <h3>
-                {customers && customers[0].address ? customers[0].address : "-"}
+                  {customers && customers[0]?.address ? customers[0]?.address : "-"}
               </h3>
             </div>
             <div className="flex flex-col items-start">
               <h3 className="font-medium">Contact:</h3>
               <h3>
-                {customers && customers[0].email ? customers[0].email : "-"}
+                {customers && customers[0]?.email ? customers[0]?.email : "-"}
               </h3>
             </div>
             {customerDate && (
