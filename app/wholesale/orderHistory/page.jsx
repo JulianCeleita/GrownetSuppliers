@@ -1,35 +1,14 @@
 "use client";
-import {
-  ArrowUpTrayIcon,
-  CalendarIcon,
-  CloudArrowUpIcon,
-  ExclamationCircleIcon,
-  PlusCircleIcon,
-  PrinterIcon,
-  TableCellsIcon,
-  TrashIcon,
-} from "@heroicons/react/24/outline";
-import axios from "axios";
-import Link from "next/link";
+import { ExclamationCircleIcon, TrashIcon } from "@heroicons/react/24/outline";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import Select from "react-select";
-import {
-  fetchOrdersDate,
-  fetchOrdersDateByWorkDate,
-} from "../../api/ordersRequest";
-import { CircleProgressBar } from "../../components/CircleProgressBar";
-import { orderCSV, printInvoices, uploadCsv } from "../../config/urls.config";
 import Layout from "../../layoutS";
-import usePercentageStore from "../../store/usePercentageStore";
 import useTokenStore from "../../store/useTokenStore";
 import useUserStore from "../../store/useUserStore";
 import useWorkDateStore from "../../store/useWorkDateStore";
-import Image from "next/image";
 import ModalOrderError from "../../components/ModalOrderError";
-import { saveAs } from "file-saver";
 import ModalSuccessfull from "../../components/ModalSuccessfull";
 import { fetchOrdersHistory } from "@/app/api/orderHistoryRequest";
 
@@ -64,15 +43,11 @@ const OrderHistory = () => {
   const [endDateByNet, setEndDateByNet] = useState("");
   const [selectedRoute, setSelectedRoute] = useState("");
   const [filterType, setFilterType] = useState("date");
-  const [totalNet, setTotalNet] = useState("");
-  const [routeId, setRouteId] = useState();
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedWholesaler, setSelectedWholesaler] = useState("");
   const [selectedStatus, setSelectedStatus] = useState("");
   const [showErrorCsv, setShowErrorCsv] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
-  const [fileName, setFileName] = useState("");
-  const [csvFile, setCsvFile] = useState(null);
   const [showModalSuccessfull, setShowModalSuccessfull] = useState(false);
   const [showModalError, setShowModalError] = useState(false);
   const [errorCsvMessage, setErrorCsvMessage] = useState("");
