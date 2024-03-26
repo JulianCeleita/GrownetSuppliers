@@ -89,7 +89,7 @@ function Presentations() {
       <div>
         <div className="flex justify-between p-8 -mt-24">
           <h1 className="text-2xl text-white font-semibold ml-20 mt-2">
-            <span className="text-light-green">Catalogue </span>list
+            <span className="text-light-green">Catalog </span>list
           </h1>
           <div className="flex gap-3">
             <button
@@ -131,10 +131,29 @@ function Presentations() {
                   className="text-dark-blue border-b-2 border-stone-100 "
                 >
                   <td className="py-4">{presentation.code}</td>
-                  <td className="py-4">{presentation.product_name}</td>
+                  <td className="py-4 text-left flex gap-2 pl-8 items-center">
+                    <div
+                      className={`w-2 h-2 rounded-full ${
+                        presentation.category_short === true
+                          ? "bg-danger"
+                          : "bg-gray-grownet"
+                      } `}
+                    />
+                    {presentation.product_name}
+                  </td>
                   <td className="py-4">{presentation.uom}</td>
                   <td className="py-4">{presentation.name}</td>
-                  <td className="py-4">{presentation.type}</td>
+                  <td className="py-4 text-left flex gap-2 pl-8 items-center">
+                    <div
+                      className={`w-2 h-2 rounded-full ${
+                        presentation.product_short === true
+                          ? "bg-danger"
+                          : "bg-gray-grownet"
+                      } `}
+                    />
+                    {presentation.type}
+                  </td>
+
                   <td className="py-4">£ {presentation.cost}</td>
                   <td className="py-4">{presentation.quantity}</td>
                   <td className="py-4 flex justify-center">
