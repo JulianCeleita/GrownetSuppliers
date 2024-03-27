@@ -299,8 +299,9 @@ function ProductState() {
                 <th className="p-3">Group</th>
                 <th className="p-3">Initial</th>
                 <th className="p-3">Packing</th>
+                <th className="p-3">Loading</th>
                 <th className="p-3">Definitive</th>
-                <th className="p-3">Delivery date</th>
+                {/* <th className="p-3">Delivery date</th> */}
                 <th className="p-3 rounded-tr-lg">Missing</th>
               </tr>
             </thead>
@@ -341,11 +342,14 @@ function ProductState() {
                         {productState.quantity_packing}
                       </td>
                       <td className="py-1 px-2 text-center">
-                        {productState.quantity_definitive}
+                        {productState.quantity_loading}
                       </td>
                       <td className="py-1 px-2 text-center">
-                        {productState.delivery_date}
+                        {productState.quantity_definitive}
                       </td>
+                      {/* <td className="py-1 px-2 text-center">
+                        {productState.delivery_date}
+                      </td> */}
                       <td className="py-1 px-2 text-center">
                         {!isNaN(missing) ? missing : null}
                       </td>
