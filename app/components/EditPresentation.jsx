@@ -86,7 +86,7 @@ function EditPresentation({
     setSelectedType(presentation ? presentation.type : "");
     setSelectedTypeId(presentation ? presentation.type_id : "");
     setSelectedDivisible(presentation ? presentation.is_divisible : "");
-    setSelectedShort(presentation ? presentation.product_short : "")
+    setSelectedShort(presentation ? presentation.flagshort : "")
     console.log(selectedShort)
   }, [presentation]);
 
@@ -432,10 +432,10 @@ function EditPresentation({
               <option disabled selected>
                 Select option
               </option>
-              <option key={"1"} value="1" selected={selectedShort === "True"}>
+              <option key={"1"} value="1" selected={selectedShort === 1}>
                 Active
               </option>
-              <option key={"0"} value="0" selected={selectedShort === "False"}>
+              <option key={"0"} value="0" selected={selectedShort === 0}>
                 Disable
               </option>
             </select>
