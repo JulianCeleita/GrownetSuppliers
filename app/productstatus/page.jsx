@@ -196,11 +196,11 @@ function ProductState() {
             value={
               selectedPresentationId
                 ? {
-                  value: selectedPresentationId,
-                  label: presentationsOptions.find(
-                    (item) => item.value === selectedPresentationId
-                  ).label,
-                }
+                    value: selectedPresentationId,
+                    label: presentationsOptions.find(
+                      (item) => item.value === selectedPresentationId
+                    ).label,
+                  }
                 : null
             }
             onChange={(selectedOption) =>
@@ -274,7 +274,7 @@ function ProductState() {
                 setEndDate(date);
                 setDateFilter("date");
               }}
-              className="form-input px-3 py-3 w-[95px] rounded-md border border-gray-300 text-dark-blue placeholder-dark-blue text-sm custom:text-base h-[52px]"
+              className="form-input px-3 py-3 w-[120px] rounded-md border border-gray-300 text-dark-blue placeholder-dark-blue text-sm custom:text-base h-[52px]"
               dateFormat="dd/MM/yyyy"
               placeholderText={formatDateToShow(workDate)}
             />
@@ -315,9 +315,9 @@ function ProductState() {
                 <th className="py-4">Product name</th>
                 <th className="py-4">Category</th>
                 <th className="py-4">Group</th>
-                <th className="py-4">Qty initial</th>
-                <th className="py-4">Qty packing</th>
-                <th className="py-4">Qty Definitive</th>
+                <th className="py-4">Initial</th>
+                <th className="py-4">Packing</th>
+                <th className="py-4">Definitive</th>
                 <th className="py-4">Delivery date</th>
                 <th className="py-4 rounded-tr-lg">Missing</th>
               </tr>
@@ -333,22 +333,34 @@ function ProductState() {
                       key={productState.id}
                       className="text-dark-blue border-b-2 border-stone-100"
                     >
-                      <td className="py-4 pl-3">
+                      <td className="py-4 pl-4">
                         {productState.accountNumber}
                       </td>
-                      <td className="py-4">{productState.accountName}</td>
-                      <td className="py-4">{productState.reference}</td>
-                      <td className="py-4">{productState.product_code}</td>
-                      <td className="py-4">{productState.product_name}</td>
-                      <td className="py-4">{productState.product_category}</td>
-                      <td className="py-4">{productState.group}</td>
-                      <td className="py-4">{productState.quantity_initial}</td>
-                      <td className="py-4">{productState.quantity_packing}</td>
-                      <td className="py-4">
+                      <td className="py-4 pl-4">{productState.accountName}</td>
+                      <td className="py-4 text-center">
+                        {productState.reference}
+                      </td>
+                      <td className="py-4 text-center">
+                        {productState.product_code}
+                      </td>
+                      <td className="py-4 pl-4">{productState.product_name}</td>
+                      <td className="py-4 px-4">
+                        {productState.product_category}
+                      </td>
+                      <td className="py-4 text-center">{productState.group}</td>
+                      <td className="py-4 text-center">
+                        {productState.quantity_initial}
+                      </td>
+                      <td className="py-4 text-center">
+                        {productState.quantity_packing}
+                      </td>
+                      <td className="py-4 text-center">
                         {productState.quantity_definitive}
                       </td>
-                      <td className="py-4">{productState.delivery_date}</td>
-                      <td className="py-4">
+                      <td className="py-4 text-center">
+                        {productState.delivery_date}
+                      </td>
+                      <td className="py-4 text-center">
                         {!isNaN(missing) ? missing : null}
                       </td>
                     </tr>
@@ -391,7 +403,7 @@ function ProductState() {
           )}
         </div>
         {isLoading && (
-          <div className="flex justify-center items-center mb-20">
+          <div className="flex justify-center items-center -mt-[7rem]">
             <div className="loader"></div>
           </div>
         )}
