@@ -161,13 +161,12 @@ function Purchasing() {
   }, [endDate, startDate]);
 
   useEffect(() => {
-    const newStartDate = new Date(workDate);
-    newStartDate.setDate(newStartDate.getDate() + 1);
-    setStartDate(newStartDate);
+    const workDateObj = new Date(workDate);
 
-    const newEndDate = new Date(workDate);
-    newEndDate.setDate(newEndDate.getDate() + 1);
-    setEndDate(newEndDate);
+    workDateObj.setDate(workDateObj.getDate() + 1);
+
+    setStartDate(workDateObj);
+    setEndDate(workDateObj);
   }, [workDate]);
   const applyFilters = () => {
     // Filtrar por búsqueda
