@@ -5,6 +5,7 @@ import {
   PencilSquareIcon,
   PlusCircleIcon,
   TrashIcon,
+  ChevronUpIcon,
 } from "@heroicons/react/24/outline";
 import axios from "axios";
 import { useEffect, useState } from "react";
@@ -31,6 +32,26 @@ function Presentations() {
   const [showEditPresentations, setShowEditPresentations] = useState(false);
   const [selectedPresentation, setSelectedPresentation] = useState(null);
   const { user, setUser } = useUserStore();
+  const [showScrollButton, setShowScrollButton] = useState(false);
+  //Flecha
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.scrollY > 300) {
+        setShowScrollButton(true);
+      } else {
+        setShowScrollButton(false);
+      }
+    };
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  const scrollToTop = () => {
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    });
+  };
 
   //Api
   const [products, setProducts] = useState([]);
@@ -134,7 +155,7 @@ function Presentations() {
                   <td className="py-4 text-left flex gap-2 pl-8 items-center">
                     <div
                       className={`w-2 h-2 rounded-full ${
-                        presentation.category_short === true
+                        presentation.product_short === "True"
                           ? "bg-danger"
                           : "hidden"
                       } `}
@@ -143,14 +164,8 @@ function Presentations() {
                   </td>
                   <td className="py-4">{presentation.uom}</td>
                   <td className="py-4">{presentation.name}</td>
+
                   <td className="py-4 text-left flex gap-2 pl-8 items-center">
-                    <div
-                      className={`w-2 h-2 rounded-full ${
-                        presentation.product_short === true
-                          ? "bg-danger"
-                          : "hidden"
-                      } `}
-                    />
                     {presentation.type}
                   </td>
 
@@ -211,6 +226,14 @@ function Presentations() {
           <div className="flex justify-center items-center -mt-[7rem]">
             <div className="loader"></div>
           </div>
+        )}
+        {showScrollButton && (
+          <button
+            className="fixed bottom-[18px] right-10 bg-green z-30 text-white rounded-full p-2 hover:bg-primary-blue transition-all"
+            onClick={scrollToTop}
+          >
+            <ChevronUpIcon className="h-6 w-6" />
+          </button>
         )}
       </div>
     </Layout>
