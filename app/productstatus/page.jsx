@@ -330,7 +330,7 @@ function ProductState() {
                       <td className="py-4 pl-3">
                         {productState.accountNumber}
                       </td>
-                      <td className="py-4">{productState.accountNumber}</td>
+                      <td className="py-4">{productState.accountName}</td>
                       <td className="py-4">{productState.reference}</td>
                       <td className="py-4">{productState.product_code}</td>
                       <td className="py-4">{productState.product_name}</td>
