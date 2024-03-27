@@ -167,24 +167,6 @@ function ProductState() {
           </h1>
         </div>
         <div className="mx-10 flex gap-2 mb-5 items-center">
-          <div className="border border-gray-300 bg-white rounded-md py-3 px-2 flex items-center">
-            <input
-              type="text"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search"
-              className="placeholder-[#04444F] outline-none text-sm custom:text-base w-[170px] h-[25px]"
-            />
-            {searchQuery != "" && (
-              <button
-                onClick={() => {
-                  setSearchQuery("");
-                }}
-              >
-                <TrashIcon className="h-6 w-6 text-danger" />
-              </button>
-            )}
-          </div>
           <Select
             className="w-[250px]"
             styles={{
