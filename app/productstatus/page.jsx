@@ -112,7 +112,6 @@ function ProductState() {
     fetchGroups(token, user, setGroups, setIsLoading);
   }, [workDate]);
 
-
   const applyFilters = () => {
     fetchProductStatus(
       startDate,
@@ -128,8 +127,8 @@ function ProductState() {
     );
   };
   useEffect(() => {
-    applyFilters()
-  }, [page])
+    applyFilters();
+  }, [page]);
 
   //Delete
   const [showDeleteModal, setShowDeleteModal] = useState(false);
@@ -204,11 +203,11 @@ function ProductState() {
             value={
               selectedPresentationId
                 ? {
-                  value: selectedPresentationId,
-                  label: presentationsOptions.find(
-                    (item) => item.value === selectedPresentationId
-                  ).label,
-                }
+                    value: selectedPresentationId,
+                    label: presentationsOptions.find(
+                      (item) => item.value === selectedPresentationId
+                    ).label,
+                  }
                 : null
             }
             onChange={(selectedOption) =>
@@ -381,10 +380,11 @@ function ProductState() {
               <button
                 onClick={prevPage}
                 disabled={page === 1}
-                className={`w-8 h-8 mr-2 font-medium text-dark-blue bg-[#EDF6FF] text-center rounded-full cursor-pointer transition-all flex justify-center items-center ${page === 1
+                className={`w-8 h-8 mr-2 font-medium text-dark-blue bg-[#EDF6FF] text-center rounded-full cursor-pointer transition-all flex justify-center items-center ${
+                  page === 1
                     ? "hidden"
                     : "text-dark-blue bg-[#EDF6FF] hover:bg-primary-blue hover:text-white"
-                  }`}
+                }`}
               >
                 <ChevronLeftIcon className="h-5 w-5 text-center" />
               </button>
@@ -398,10 +398,11 @@ function ProductState() {
                   <button
                     onClick={nextPage}
                     disabled={page === totalPages}
-                    className={`w-8 h-8 font-medium bg-[#EDF6FF] text-center rounded-full cursor-pointer transition-all flex justify-center items-center ${page === totalPages
+                    className={`w-8 h-8 font-medium bg-[#EDF6FF] text-center rounded-full cursor-pointer transition-all flex justify-center items-center ${
+                      page === totalPages
                         ? "hidden"
                         : "text-dark-blue bg-[#EDF6FF] hover:bg-primary-blue hover:text-white"
-                      }`}
+                    }`}
                   >
                     <ChevronRightIcon className="h-5 w-5 text-center" />
                   </button>
@@ -425,7 +426,7 @@ function ProductState() {
         />
 
         {isLoading && (
-          <div className="flex justify-center items-center mb-20">
+          <div className="flex justify-center items-center -mt-[7rem]">
             <div className="loader"></div>
           </div>
         )}

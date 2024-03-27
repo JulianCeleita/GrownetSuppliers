@@ -655,7 +655,10 @@ const SideBar = () => {
       </Transition.Root>
       <ModalSuccessfull
         isvisible={showSuccessfullClose}
-        onClose={() => setShowSuccessfullClose(false)}
+        onClose={() => {
+          setShowSuccessfullClose(false);
+          window.location.reload();
+        }}
         title="Congratulations"
         text="Day closed correctly!"
         button=" Close"
@@ -663,7 +666,9 @@ const SideBar = () => {
       />
       <ModalOrderError
         isvisible={showModalError}
-        onClose={() => setShowModalError(false)}
+        onClose={() => {
+          setShowModalError(false);
+        }}
         title={"Error closing the day"}
         message={messageError}
       />

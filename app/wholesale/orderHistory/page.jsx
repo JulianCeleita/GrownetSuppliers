@@ -343,7 +343,7 @@ const OrderHistory = () => {
                 selectsStart
                 startDate={startDate}
                 endDate={endDate}
-                className="form-input px-3 py-3 rounded-md border border-gray-300 w-[120px] text-sm custom:text-base"
+                className="form-input px-3 py-3 rounded-md border border-gray-300 w-[130px] text-sm custom:text-base"
                 dateFormat="dd/MM/yyyy"
                 placeholderText="dd/mm/yyyy"
               />
@@ -363,7 +363,7 @@ const OrderHistory = () => {
                 startDate={startDate}
                 endDate={endDate}
                 minDate={startDate}
-                className="form-input px-3 py-3 w-[120px] rounded-md border border-gray-300 text-sm custom:text-base"
+                className="form-input px-3 py-3 w-[130px] rounded-md border border-gray-300 text-sm custom:text-base"
                 dateFormat="dd/MM/yyyy"
                 placeholderText="dd/mm/yyyy"
               />
@@ -379,7 +379,7 @@ const OrderHistory = () => {
                 setEndDateByNet(formatDateToTransform(date));
                 setDateFilter("date");
               }}
-              className="form-input px-3 py-3 w-[95px] rounded-md border border-gray-300 text-dark-blue placeholder-dark-blue text-sm custom:text-base"
+              className="form-input px-3 py-3 w-[130px] rounded-md border border-gray-300 text-dark-blue placeholder-dark-blue text-sm custom:text-base"
               dateFormat="dd/MM/yyyy"
               placeholderText={formatDateToShow(workDate)}
             />
