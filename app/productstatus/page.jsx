@@ -360,74 +360,74 @@ function ProductState() {
             <thead className="sticky top-0 bg-white shadow-[0px_11px_15px_-3px_#edf2f7] ">
               <tr className="border-b-2 border-stone-100 text-dark-blue">
                 <th
-                  className="p-3 cursor-pointer hover:bg-gray-100 select-none rounded-tl-lg"
+                  className="p-3 cursor-pointer hover:bg-gray-100 select-none rounded-tl-lg w-[70px]"
                   onClick={() => handleSort("accountNumber")}
                 >
                   Acc number
                 </th>
                 <th
-                  className="p-3 cursor-pointer hover:bg-gray-100 select-none"
+                  className="p-3 cursor-pointer hover:bg-gray-100 select-none w-[200px]"
                   onClick={() => handleSort("accountName")}
                 >
                   Acc name
                 </th>
                 <th
-                  className="p-3 cursor-pointer hover:bg-gray-100 select-none"
+                  className="p-3 cursor-pointer hover:bg-gray-100 select-none w-[70px]"
                   onClick={() => handleSort("reference")}
                 >
                   Inv. number
                 </th>
                 <th
-                  className="p-3 cursor-pointer hover:bg-gray-100 select-none"
+                  className="p-3 cursor-pointer hover:bg-gray-100 select-none w-[70px]"
                   onClick={() => handleSort("presentation_code")}
                 >
                   Product code
                 </th>
                 <th
-                  className="p-3 cursor-pointer hover:bg-gray-100 select-none w-[350px]"
+                  className="p-3 cursor-pointer hover:bg-gray-100 select-none w-[450px]"
                   onClick={() => handleSort("product_name")}
                 >
                   Product name
                 </th>
-                <th
+                {/* <th
                   className="p-3 cursor-pointer hover:bg-gray-100 select-none"
                   onClick={() => handleSort("product_category")}
                 >
                   Category
-                </th>
+                </th> */}
                 <th
-                  className="p-3 cursor-pointer hover:bg-gray-100 select-none"
+                  className="p-3 cursor-pointer hover:bg-gray-100 select-none w-[70px]"
                   onClick={() => handleSort("group")}
                 >
                   Group
                 </th>
                 <th
-                  className="p-3 cursor-pointer hover:bg-gray-100 select-none"
+                  className="p-3 cursor-pointer hover:bg-gray-100 select-none w-[0px]"
                   onClick={() => handleSort("quantity_initial")}
                 >
                   Initial
                 </th>
                 <th
-                  className="p-3 cursor-pointer hover:bg-gray-100 select-none"
+                  className="p-3 cursor-pointer hover:bg-gray-100 select-none w-[0px]"
                   onClick={() => handleSort("quantity_packing")}
                 >
                   Packing
                 </th>
                 <th
-                  className="p-3 cursor-pointer hover:bg-gray-100 select-none"
+                  className="p-3 cursor-pointer hover:bg-gray-100 select-none w-[0px]"
                   onClick={() => handleSort("quantity_loading")}
                 >
                   Loading
                 </th>
                 <th
-                  className="p-3 cursor-pointer hover:bg-gray-100 select-none"
+                  className="p-3 cursor-pointer hover:bg-gray-100 select-none w-[0px]"
                   onClick={() => handleSort("quantity_definitive")}
                 >
                   Definitive
                 </th>
                 {/* <th className="p-3">Delivery date</th> */}
                 <th
-                  className="p-3 cursor-pointer hover:bg-gray-100 select-none rounded-tr-lg"
+                  className="p-3 cursor-pointer hover:bg-gray-100 select-none rounded-tr-lg w-[70px]"
                   onClick={() => handleSortMissing()}
                 >
                   Amendments
@@ -472,9 +472,9 @@ function ProductState() {
                       <td className="py-1 px-2 ">
                         {productState.product_name} - {productState.packsize}
                       </td>
-                      <td className="py-1 px-2">
+                      {/* <td className="py-1 px-2">
                         {productState.product_category}
-                      </td>
+                      </td> */}
                       <td className="py-1 px-2 text-center">
                         {productState.group}
                       </td>
