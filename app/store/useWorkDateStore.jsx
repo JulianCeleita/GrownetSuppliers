@@ -21,7 +21,6 @@ const useWorkDateStore = create((set) => ({
           },
         }
       );
-      console.log("🚀 ~ useWorkDateStore ~ response.data.operation.principal[0]:", response.data.operation.principal[0])
       setEndDateByNet(response.data.operation.principal[0].fecha);
       setStartDateByNet(response.data.operation.principal[0].fecha);
       set({ workDate: response.data.operation.principal[0].fecha });
