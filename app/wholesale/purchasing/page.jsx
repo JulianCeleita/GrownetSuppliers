@@ -389,8 +389,7 @@ function Purchasing() {
 
       if (response.status === 200) {
         fetchOrderWholesaler(
-          startDate,
-          endDate,
+          workDate,
           token,
           setOrdersWholesaler,
           setIsLoading
