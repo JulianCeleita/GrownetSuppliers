@@ -498,7 +498,9 @@ function ProductState() {
                           missing === 0 ? "hidden" : null
                         }`}
                       >
-                        {!isNaN(missing) ? missing : null}
+                        {!isNaN(missing)
+                          ? parseFloat(missing).toFixed(2)
+                          : null}
                       </td>
                     </tr>
                   );
