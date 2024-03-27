@@ -366,7 +366,7 @@ function ProductState() {
                   Acc number
                 </th>
                 <th
-                  className="p-3 cursor-pointer hover:bg-gray-100 select-none"
+                  className="p-3 cursor-pointer hover:bg-gray-100 select-none w-[200px]"
                   onClick={() => handleSort("accountName")}
                 >
                   Acc name
@@ -384,7 +384,7 @@ function ProductState() {
                   Product code
                 </th>
                 <th
-                  className="p-3 cursor-pointer hover:bg-gray-100 select-none w-[350px]"
+                  className="p-3 cursor-pointer hover:bg-gray-100 select-none w-[450px]"
                   onClick={() => handleSort("product_name")}
                 >
                   Product name
@@ -402,25 +402,25 @@ function ProductState() {
                   Group
                 </th>
                 <th
-                  className="p-3 cursor-pointer hover:bg-gray-100 select-none"
+                  className="p-3 cursor-pointer hover:bg-gray-100 select-none w-[0px]"
                   onClick={() => handleSort("quantity_initial")}
                 >
                   Initial
                 </th>
                 <th
-                  className="p-3 cursor-pointer hover:bg-gray-100 select-none"
+                  className="p-3 cursor-pointer hover:bg-gray-100 select-none w-[0px]"
                   onClick={() => handleSort("quantity_packing")}
                 >
                   Packing
                 </th>
                 <th
-                  className="p-3 cursor-pointer hover:bg-gray-100 select-none"
+                  className="p-3 cursor-pointer hover:bg-gray-100 select-none w-[0px]"
                   onClick={() => handleSort("quantity_loading")}
                 >
                   Loading
                 </th>
                 <th
-                  className="p-3 cursor-pointer hover:bg-gray-100 select-none"
+                  className="p-3 cursor-pointer hover:bg-gray-100 select-none w-[0px]"
                   onClick={() => handleSort("quantity_definitive")}
                 >
                   Definitive
