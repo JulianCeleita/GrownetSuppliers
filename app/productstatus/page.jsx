@@ -95,8 +95,8 @@ function ProductState() {
   }, [selectedStartDate, selectedEndDate]);
 
   useEffect(() => {
-    setStartDate(workDate);
-    setEndDate(workDate);
+    setStartDate(new Date(workDate));
+    setEndDate(new Date(workDate));
     setSelectedStartDate(workDate);
     setSelectedEndDate(workDate);
     fetchGroups(token, user, setGroups, setIsLoading);
