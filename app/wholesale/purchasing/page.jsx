@@ -150,20 +150,8 @@ function Purchasing() {
   const [ordersWholesaler, setOrdersWholesaler] = useState([]);
 
   useEffect(() => {
-    fetchOrderWholesaler(
-      workDate,
-      token,
-      setOrdersWholesaler,
-      setIsLoading
-    );
+    fetchOrderWholesaler(workDate, token, setOrdersWholesaler, setIsLoading);
     fetchWholesalerList(token, setWholesalerList);
-  }, [workDate]);
-
-  useEffect(() => {
-    if (workDate) {
-      setStartDate(workDate);
-      setEndDate(workDate);
-    }
   }, [workDate]);
   const applyFilters = () => {
     // Filtrar por búsqueda
@@ -396,8 +384,7 @@ function Purchasing() {
 
       if (response.status === 200) {
         fetchOrderWholesaler(
-          startDate,
-          endDate,
+          workDate,
           token,
           setOrdersWholesaler,
           setIsLoading
@@ -799,7 +786,9 @@ function Purchasing() {
                           }}
                         />
                       </td>
-                      <td className="py-[1px] text-center">{totalCost}</td>
+                      <td className="py-[1px] text-center">
+                        {parseFloat(totalCost.toFixed(2))}
+                      </td>
                       <td className="py-[1px]">
                         <input
                           type="text"
@@ -807,7 +796,7 @@ function Purchasing() {
                             editableRows[order.presentation_code]?.notes !==
                             undefined
                               ? editableRows[order.presentation_code]?.notes
-                              : order.note ?? ""
+                              : ""
                           }
                           onChange={(e) =>
                             handleEditField(

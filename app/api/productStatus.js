@@ -22,7 +22,6 @@ export const fetchProductStatus = (
 
   const formattedStartDate = formatISO(start, { representation: "date" });
   const formattedEndDate = formatISO(end, { representation: "date" });
-  console.log("🚀 ~ `${productStatusUrl}`:", `${productStatusUrl}?startDate=${formattedStartDate}&endDate=${formattedEndDate}&page=1`)
 
   const postData = {
     startDate: formattedStartDate,
@@ -32,7 +31,6 @@ export const fetchProductStatus = (
     page: page,
     missing: missing
   }
-  console.log("🚀 ~ postData:", postData)
   axios
     .get(productStatusUrl, {
       params: postData,
@@ -41,7 +39,6 @@ export const fetchProductStatus = (
       },
     })
     .then((response) => {
-      console.log("🚀 ~ .then ~ response:", response);
       setProductsStatus(response.data.data);
       setIsLoading(false);
       setTotalPages(response.data.last_page);
