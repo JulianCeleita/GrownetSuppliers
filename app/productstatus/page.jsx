@@ -160,14 +160,14 @@ function ProductState() {
             <span className="text-light-green">Products </span>status
           </h1>
         </div>
-        <div className="mx-10 flex gap-2">
-          <div className="border border-gray-300  rounded-md py-3 px-2 flex items-center mb-3">
+        <div className="mx-10 flex gap-2 mb-5 items-center">
+          <div className="border border-gray-300 bg-white rounded-md py-3 px-2 flex items-center">
             <input
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search"
-              className="placeholder-[#04444F] outline-none text-sm custom:text-base w-[170px]"
+              className="placeholder-[#04444F] outline-none text-sm custom:text-base w-[170px] h-[25px]"
             />
             {searchQuery != "" && (
               <button
@@ -178,21 +178,23 @@ function ProductState() {
                 <TrashIcon className="h-6 w-6 text-danger" />
               </button>
             )}
-          </div>{" "}
+          </div>
           <Select
             className="w-[250px]"
-            styles="height: 40px"
+            styles={{
+              control: (provided) => ({ ...provided, height: "51px" }),
+            }}
             menuPlacement="auto"
             menuPortalTarget={document.body}
             options={presentationsOptions}
             value={
               selectedPresentationId
                 ? {
-                  value: selectedPresentationId,
-                  label: presentationsOptions.find(
-                    (item) => item.value === selectedPresentationId
-                  ).label,
-                }
+                    value: selectedPresentationId,
+                    label: presentationsOptions.find(
+                      (item) => item.value === selectedPresentationId
+                    ).label,
+                  }
                 : null
             }
             onChange={(selectedOption) =>
@@ -205,13 +207,13 @@ function ProductState() {
                 setSelectedPresentationId(null);
               }}
             >
-              <TrashIcon className="h-6 w-6 mb-6 text-danger" />
+              <TrashIcon className="h-6 w-6 text-danger" />
             </button>
           )}
           <select
             value={filterType}
             onChange={(e) => setFilterType(e.target.value)}
-            className="form-select px-2 rounded-md border border-gray-300 text-sm custom:text-base w-[155px] h-[3.2rem]"
+            className="form-select px-2 rounded-md border border-gray-300 text-sm custom:text-base w-[155px] h-[52px]"
           >
             <option value="range">Filter by range</option>
             <option value="date">Filter by date</option>
@@ -232,7 +234,7 @@ function ProductState() {
                 selectsStart
                 startDate={startDate}
                 endDate={endDate}
-                className="form-input px-3 py-3 rounded-md border border-gray-300 w-[120px] text-sm custom:text-base"
+                className="form-input px-3 py-3 rounded-md border border-gray-300 w-[120px] text-sm custom:text-base h-[52px]"
                 dateFormat="dd/MM/yyyy"
                 placeholderText="dd/mm/yyyy"
               />
@@ -251,7 +253,7 @@ function ProductState() {
                 startDate={startDate}
                 endDate={endDate}
                 minDate={startDate}
-                className="form-input px-3 py-3 w-[120px] rounded-md border border-gray-300 text-sm custom:text-base"
+                className="form-input px-3 py-3 w-[120px] rounded-md border border-gray-300 text-sm custom:text-base h-[52px]"
                 dateFormat="dd/MM/yyyy"
                 placeholderText="dd/mm/yyyy"
               />
@@ -266,7 +268,7 @@ function ProductState() {
                 setEndDate(date);
                 setDateFilter("date");
               }}
-              className="form-input px-3 py-3 w-[95px] rounded-md border border-gray-300 text-dark-blue placeholder-dark-blue text-sm custom:text-base"
+              className="form-input px-3 py-3 w-[95px] rounded-md border border-gray-300 text-dark-blue placeholder-dark-blue text-sm custom:text-base h-[52px]"
               dateFormat="dd/MM/yyyy"
               placeholderText={formatDateToShow(workDate)}
             />
@@ -274,7 +276,7 @@ function ProductState() {
           <select
             value={selectedGroup}
             onChange={(e) => setSelectedGroup(e.target.value)}
-            className="form-select py-3 px-2 rounded-md border border-gray-300 text-sm custom:text-base h-[50px]"
+            className="form-select py-3 px-2 rounded-md border border-gray-300 text-sm custom:text-base h-[52px]"
           >
             <option value="" selected>
               All groups
@@ -353,29 +355,29 @@ function ProductState() {
               <button
                 // onClick={prevPage}
                 disabled="1"
-                className={`w-8 h-8 mr-2 font-medium text-dark-blue bg-[#EDF6FF] text-center rounded-full cursor-pointer transition-all flex justify-center items-center ${page === 1
-                  ? "hidden"
-                  : "text-dark-blue bg-[#EDF6FF] hover:bg-primary-blue hover:text-white"
-                  }`}
+                className={`w-8 h-8 mr-2 font-medium text-dark-blue bg-[#EDF6FF] text-center rounded-full cursor-pointer transition-all flex justify-center items-center ${
+                  page === 1
+                    ? "hidden"
+                    : "text-dark-blue bg-[#EDF6FF] hover:bg-primary-blue hover:text-white"
+                }`}
               >
                 <ChevronLeftIcon className="h-5 w-5 text-center" />
               </button>
               <div className="flex items-center space-x-2 gap-3">
                 <span className="text-sm font-medium text-gray-600">
                   Page{" "}
-                  <span className="text-primary-blue font-bold">
-                    {page}
-                  </span>{" "}
-                  of {totalPages}
+                  <span className="text-primary-blue font-bold">{page}</span> of{" "}
+                  {totalPages}
                 </span>
                 <div>
                   <button
                     // onClick={setPage(page + 1)}
                     disabled={page === totalPages}
-                    className={`w-8 h-8 font-medium bg-[#EDF6FF] text-center rounded-full cursor-pointer transition-all flex justify-center items-center ${page === totalPages
-                      ? "hidden"
-                      : "text-dark-blue bg-[#EDF6FF] hover:bg-primary-blue hover:text-white"
-                      }`}
+                    className={`w-8 h-8 font-medium bg-[#EDF6FF] text-center rounded-full cursor-pointer transition-all flex justify-center items-center ${
+                      page === totalPages
+                        ? "hidden"
+                        : "text-dark-blue bg-[#EDF6FF] hover:bg-primary-blue hover:text-white"
+                    }`}
                   >
                     <ChevronRightIcon className="h-5 w-5 text-center" />
                   </button>

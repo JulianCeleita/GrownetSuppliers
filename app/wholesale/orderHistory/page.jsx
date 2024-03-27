@@ -465,62 +465,62 @@ const OrderHistory = () => {
                     >
                       <td
                         className="py-1 pl-5"
-                        onClick={(e) => goToOrder(e, order)}
+                        //onClick={(e) => goToOrder(e, order)}
                       >
                         {order.po_number}
                       </td>
                       <td
                         className="py-1 pl-5"
-                        onClick={(e) => goToOrder(e, order)}
+                        //onClick={(e) => goToOrder(e, order)}
                       >
                         {order.wholesaler_name}
                       </td>
                       <td
                         className="py-1 pl-4"
-                        onClick={(e) => goToOrder(e, order)}
+                        //onClick={(e) => goToOrder(e, order)}
                       >
                         {order.category_name}
                       </td>
                       <td
                         className="py-1 text-center"
-                        onClick={(e) => goToOrder(e, order)}
+                        //onClick={(e) => goToOrder(e, order)}
                       >
                         {order.presentation_code}
                       </td>
                       <td
                         className="py-1 text-left pl-5"
-                        onClick={(e) => goToOrder(e, order)}
+                        //onClick={(e) => goToOrder(e, order)}
                       >
                         {order.product_name + " " + order.presentation_name}
                       </td>
                       <td
                         className="py-1 text-center"
-                        onClick={(e) => goToOrder(e, order)}
+                        //onClick={(e) => goToOrder(e, order)}
                       >
                         {order.uom_name}
                       </td>
 
                       <td
                         className="py-1 text-center"
-                        onClick={(e) => goToOrder(e, order)}
+                        //onClick={(e) => goToOrder(e, order)}
                       >
                         {order.ordered}
                       </td>
                       <td
                         className="py-1 text-center"
-                        onClick={(e) => goToOrder(e, order)}
+                        //onClick={(e) => goToOrder(e, order)}
                       >
                         {order.cost}
                       </td>
                       <td
                         className="py-1 text-center"
-                        onClick={(e) => goToOrder(e, order)}
+                        //onClick={(e) => goToOrder(e, order)}
                       >
                         {order.cost * order.ordered}
                       </td>
                       <td
                         className="py-1 text-left px-5"
-                        onClick={(e) => goToOrder(e, order)}
+                        //onClick={(e) => goToOrder(e, order)}
                       >
                         {order.note}
                       </td>

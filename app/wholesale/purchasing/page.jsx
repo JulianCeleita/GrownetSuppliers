@@ -55,7 +55,7 @@ function Purchasing() {
   const [showCategories, setShowCategories] = useState(false);
   const [showWholesalerFilter, setShowWholesalerFilter] = useState(false);
   const [isCheckedCategories, setIsCheckedCategories] = useState([]);
-  const [isCheckedWholesalert, setIsCheckedWholesalert] = useState([]);
+  const [isCheckedWholesaler, setIsCheckedWholesaler] = useState([]);
   const [activeSort, setActiveSort] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 30;
@@ -101,13 +101,13 @@ function Purchasing() {
       }
     });
   };
-  const handleCheckboxWholesalertChange = (event, wholesalert) => {
+  const handleCheckboxWholesalerChange = (event, wholesaler) => {
     const { checked } = event.target;
-    setIsCheckedWholesalert((prevCheckedWholesalert) => {
+    setIsCheckedWholesaler((prevCheckedWholesaler) => {
       if (checked) {
-        return [...prevCheckedWholesalert, wholesalert];
+        return [...prevCheckedWholesaler, wholesaler];
       } else {
-        return prevCheckedWholesalert.filter((item) => item !== wholesalert);
+        return prevCheckedWholesaler.filter((item) => item !== wholesaler);
       }
     });
   };
@@ -173,17 +173,17 @@ function Purchasing() {
     // Filtrar por búsqueda
     let filteredOrdersBySearch = searchQuery
       ? ordersWholesaler.filter(
-        (order) =>
-          order.product_name
-            .toLowerCase()
-            .includes(searchQuery.toLowerCase()) ||
-          order.presentation_name
-            .toLowerCase()
-            .includes(searchQuery.toLowerCase()) ||
-          order.presentation_code
-            .toLowerCase()
-            .includes(searchQuery.toLowerCase())
-      )
+          (order) =>
+            order.product_name
+              .toLowerCase()
+              .includes(searchQuery.toLowerCase()) ||
+            order.presentation_name
+              .toLowerCase()
+              .includes(searchQuery.toLowerCase()) ||
+            order.presentation_code
+              .toLowerCase()
+              .includes(searchQuery.toLowerCase())
+        )
       : ordersWholesaler;
 
     // Filtrar por estado
@@ -191,19 +191,27 @@ function Purchasing() {
       selectedStatus === "short"
         ? filteredOrdersBySearch.filter((order) => order.short > 0)
         : selectedStatus === "available"
-          ? filteredOrdersBySearch.filter((order) => order.short === 0)
-          : filteredOrdersBySearch;
+        ? filteredOrdersBySearch.filter((order) => order.short === 0)
+        : filteredOrdersBySearch;
 
     if (selectedRequisition === "requisition") {
-      filteredOrdersBySearch = filteredOrdersBySearch.filter((order) => Number(order.requisitions) > 0);
+      filteredOrdersBySearch = filteredOrdersBySearch.filter(
+        (order) => Number(order.requisitions) > 0
+      );
     } else if (selectedRequisition === "available") {
-      filteredOrdersBySearch = filteredOrdersBySearch.filter((order) => Number(order.requisitions) === 0);
+      filteredOrdersBySearch = filteredOrdersBySearch.filter(
+        (order) => Number(order.requisitions) === 0
+      );
     }
-    
+
     if (selectedOrdered === "ordered") {
-      filteredOrdersBySearch = filteredOrdersBySearch.filter((order) => Number(order.ordered) > 0);
+      filteredOrdersBySearch = filteredOrdersBySearch.filter(
+        (order) => Number(order.ordered) > 0
+      );
     } else if (selectedOrdered === "available") {
-      filteredOrdersBySearch = filteredOrdersBySearch.filter((order) => Number(order.ordered) === 0);
+      filteredOrdersBySearch = filteredOrdersBySearch.filter(
+        (order) => Number(order.ordered) === 0
+      );
     }
 
     // Filtrar por categorías seleccionadas
@@ -214,9 +222,9 @@ function Purchasing() {
     }
 
     // Filtrar por mayoristas seleccionados
-    if (isCheckedWholesalert.length > 0) {
+    if (isCheckedWholesaler.length > 0) {
       filteredOrdersBySearch = filteredOrdersBySearch.filter((order) =>
-        isCheckedWholesalert.includes(order.wholesaler_name)
+        isCheckedWholesaler.includes(order.wholesaler_name)
       );
     }
 
@@ -270,7 +278,7 @@ function Purchasing() {
     const { sortedOrders, totalPages } = applyFilters();
     setFilteredOrdersWholesaler(sortedOrders);
   }, [
-    isCheckedWholesalert,
+    isCheckedWholesaler,
     isCheckedCategories,
     ordersWholesaler,
     selectedStatus,
@@ -283,7 +291,7 @@ function Purchasing() {
   useEffect(() => {
     setCurrentPage(1);
   }, [
-    isCheckedWholesalert,
+    isCheckedWholesaler,
     isCheckedCategories,
     ordersWholesaler,
     selectedStatus,
@@ -335,18 +343,24 @@ function Purchasing() {
       return;
     }
 
-    setEditableRows((prevEditableRows) => ({
-      ...prevEditableRows,
-      [productCode]: {
-        ...prevEditableRows[productCode],
-        [key]: value,
-        ...(cost !== null && { cost }),
-        ...(notes !== null && { notes }),
-        ...(label !== null && { label }),
-        ...(wholesaler !== null && { wholesaler }),
-      },
-    }));
+    setEditableRows((prevEditableRows) => {
+      const existingProduct = prevEditableRows[productCode];
+
+      return {
+        ...prevEditableRows,
+        [productCode]: {
+          ...existingProduct,
+          [key]: value,
+          ...(cost !== null && { cost }),
+          ...(notes !== null && { notes }),
+          ...(label !== null && { label }),
+          ...(wholesaler !== null &&
+            !existingProduct?.wholesaler && { wholesaler }),
+        },
+      };
+    });
   };
+
   const handleSort = (column) => {
     if (sortColumn === column) {
       setSortDirection(sortDirection === "asc" ? "desc" : "asc");
@@ -377,13 +391,12 @@ function Purchasing() {
           purchasing_qty: order.quantity,
         })),
       };
-
+      console.log("sendData:", sendData);
       const response = await axios.post(purchasingCreate, sendData, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
-      console.log(response);
 
       if (response.status === 200) {
         fetchOrderWholesaler(
@@ -411,6 +424,9 @@ function Purchasing() {
       console.error(error);
     }
   };
+
+  console.log("editableRows:", editableRows);
+  // console.log("wholesalerList:", wholesalerList);
   return (
     <Layout>
       <div>
@@ -421,10 +437,11 @@ function Purchasing() {
 
           <div className="flex gap-4">
             <button
-              className={`flex ${isSendOrderDisabled
-                ? "bg-gray-input cursor-not-allowed"
-                : "bg-green hover:scale-110 transition-all"
-                } py-3 px-4 rounded-lg text-white font-medium `}
+              className={`flex ${
+                isSendOrderDisabled
+                  ? "bg-gray-input cursor-not-allowed"
+                  : "bg-green hover:scale-110 transition-all"
+              } py-3 px-4 rounded-lg text-white font-medium `}
               type="button"
               //onClick={() => setModalSendPurchasing(true)}
               onClick={sendOrder}
@@ -495,8 +512,9 @@ function Purchasing() {
           <div className="flex gap-5">
             <div ref={categoriesRef} className="relative ">
               <button
-                className={`${!showCategories ? "text-gray-grownet" : "text-primary-blue"
-                  } hover:scale-110 hover:text-primary-blue transition-all`}
+                className={`${
+                  !showCategories ? "text-gray-grownet" : "text-primary-blue"
+                } hover:scale-110 hover:text-primary-blue transition-all`}
                 onClick={() => {
                   setShowCategories(!showCategories);
                   setShowWholesalerFilter(false);
@@ -526,10 +544,11 @@ function Purchasing() {
             </div>
             <div ref={wholesalerRef} className="relative ">
               <button
-                className={`${!showWholesalerFilter
-                  ? "text-gray-grownet"
-                  : "text-primary-blue"
-                  } hover:scale-110 hover:text-primary-blue transition-all`}
+                className={`${
+                  !showWholesalerFilter
+                    ? "text-gray-grownet"
+                    : "text-primary-blue"
+                } hover:scale-110 hover:text-primary-blue transition-all`}
                 onClick={() => {
                   setShowWholesalerFilter(!showWholesalerFilter);
                   setShowCategories(false);
@@ -539,22 +558,22 @@ function Purchasing() {
               </button>
               {showWholesalerFilter && (
                 <div className="bg-white p-3 w-[280px] rounded-lg shadow-[0_3px_10px_rgb(0,0,0,0.2)] absolute z-10 -right-[15px]">
-                  {wholesalerList.map((wholesalert) => (
+                  {wholesalerList.map((wholesaler) => (
                     <div className="flex gap-2">
                       <input
                         type="checkbox"
-                        checked={isCheckedWholesalert.includes(
-                          wholesalert.name
+                        checked={isCheckedWholesaler.includes(
+                          wholesaler.name
                         )}
                         onChange={(event) =>
-                          handleCheckboxWholesalertChange(
+                          handleCheckboxWholesalerChange(
                             event,
-                            wholesalert.name
+                            wholesaler.name
                           )
                         }
                         className="form-checkbox h-4 w-4 text-primary-blue cursor-pointer"
                       />
-                      <p key={wholesalert.id}>{wholesalert.name}</p>
+                      <p key={wholesaler.id}>{wholesaler.name}</p>
                     </div>
                   ))}
                 </div>
@@ -669,19 +688,21 @@ function Purchasing() {
 
                   return (
                     <tr className="text-dark-blue border-b-2 border-stone-100">
-                      <td className="py-[1px] pl-3">{order.presentation_code}</td>
+                      <td className="py-[1px] pl-3">
+                        {order.presentation_code}
+                      </td>
                       <td className="py-[1px]">
                         <Select
                           value={
                             editableRows[order.presentation_code]?.label
                               ? {
-                                value:
-                                  editableRows[order.presentation_code]
-                                    ?.label,
-                                label:
-                                  editableRows[order.presentation_code]
-                                    ?.label,
-                              }
+                                  value:
+                                    editableRows[order.presentation_code]
+                                      ?.label,
+                                  label:
+                                    editableRows[order.presentation_code]
+                                      ?.label,
+                                }
                               : defaultOption
                           }
                           onChange={(selectedOption) => {
@@ -722,12 +743,16 @@ function Purchasing() {
                           }}
                         />
                       </td>
-                      <td className="py-[1px] text-center">{order.category_name}</td>
+                      <td className="py-[1px] text-center">
+                        {order.category_name}
+                      </td>
                       <td className="py-[1px] pl-4">
                         {order.product_name} - {order.presentation_name}
                       </td>
                       {/* <td className="py-[1px]">{order.soh}</td> */}
-                      <td className="py-[1px] text-center">{order.requisitions}</td>
+                      <td className="py-[1px] text-center">
+                        {order.requisitions}
+                      </td>
                       <td className="py-[1px] text-center">
                         {order.future_requisitions}
                       </td>
@@ -765,7 +790,7 @@ function Purchasing() {
                           step="0.01"
                           value={
                             editableRows[order.presentation_code]?.cost !==
-                              undefined
+                            undefined
                               ? editableRows[order.presentation_code]?.cost
                               : order.cost ?? 0
                           }
@@ -789,7 +814,7 @@ function Purchasing() {
                           type="text"
                           value={
                             editableRows[order.presentation_code]?.notes !==
-                              undefined
+                            undefined
                               ? editableRows[order.presentation_code]?.notes
                               : order.note ?? ""
                           }
@@ -814,10 +839,11 @@ function Purchasing() {
               <button
                 onClick={prevPage}
                 disabled={currentPage === 1}
-                className={`w-8 h-8 mr-2 font-medium text-dark-blue bg-[#EDF6FF] text-center rounded-full cursor-pointer transition-all flex justify-center items-center ${currentPage === 1
-                  ? "hidden"
-                  : "text-dark-blue bg-[#EDF6FF] hover:bg-primary-blue hover:text-white"
-                  }`}
+                className={`w-8 h-8 mr-2 font-medium text-dark-blue bg-[#EDF6FF] text-center rounded-full cursor-pointer transition-all flex justify-center items-center ${
+                  currentPage === 1
+                    ? "hidden"
+                    : "text-dark-blue bg-[#EDF6FF] hover:bg-primary-blue hover:text-white"
+                }`}
               >
                 <ChevronLeftIcon className="h-5 w-5 text-center" />
               </button>
@@ -833,10 +859,11 @@ function Purchasing() {
                   <button
                     onClick={nextPage}
                     disabled={currentPage === totalPages}
-                    className={`w-8 h-8 font-medium bg-[#EDF6FF] text-center rounded-full cursor-pointer transition-all flex justify-center items-center ${currentPage === totalPages
-                      ? "hidden"
-                      : "text-dark-blue bg-[#EDF6FF] hover:bg-primary-blue hover:text-white"
-                      }`}
+                    className={`w-8 h-8 font-medium bg-[#EDF6FF] text-center rounded-full cursor-pointer transition-all flex justify-center items-center ${
+                      currentPage === totalPages
+                        ? "hidden"
+                        : "text-dark-blue bg-[#EDF6FF] hover:bg-primary-blue hover:text-white"
+                    }`}
                   >
                     <ChevronRightIcon className="h-5 w-5 text-center" />
                   </button>
