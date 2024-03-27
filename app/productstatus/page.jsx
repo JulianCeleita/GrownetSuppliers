@@ -309,9 +309,9 @@ function ProductState() {
                 <th className="py-4">Product name</th>
                 <th className="py-4">Category</th>
                 <th className="py-4">Group</th>
-                <th className="py-4">Qty initial</th>
-                <th className="py-4">Qty packing</th>
-                <th className="py-4">Qty Definitive</th>
+                <th className="py-4">Initial</th>
+                <th className="py-4">Packing</th>
+                <th className="py-4">Definitive</th>
                 <th className="py-4">Delivery date</th>
                 <th className="py-4 rounded-tr-lg">Missing</th>
               </tr>
