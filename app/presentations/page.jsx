@@ -155,7 +155,7 @@ function Presentations() {
                   <td className="py-4 text-left flex gap-2 pl-8 items-center">
                     <div
                       className={`w-2 h-2 rounded-full ${
-                        presentation.product_short === "True"
+                        presentation.product_short === true
                           ? "bg-danger"
                           : "hidden"
                       } `}
