@@ -303,7 +303,7 @@ function ProductState() {
           </button>
         </div>
 
-        <div className="flex flex-col items-center justify-center mb-20 mt-2">
+        <div className="flex flex-col items-center justify-center mt-2">
           <table className="w-[95%] bg-white rounded-2xl  shadow-[0_8px_30px_rgb(0,0,0,0.12)]">
             <thead className="sticky top-0 bg-white shadow-[0px_11px_15px_-3px_#edf2f7] ">
               <tr className="border-b-2 border-stone-100 text-dark-blue">
@@ -316,8 +316,9 @@ function ProductState() {
                 <th className="p-3">Group</th>
                 <th className="p-3">Initial</th>
                 <th className="p-3">Packing</th>
+                <th className="p-3">Loading</th>
                 <th className="p-3">Definitive</th>
-                <th className="p-3">Delivery date</th>
+                {/* <th className="p-3">Delivery date</th> */}
                 <th className="p-3 rounded-tr-lg">Missing</th>
               </tr>
             </thead>
@@ -358,11 +359,14 @@ function ProductState() {
                         {productState.quantity_packing}
                       </td>
                       <td className="py-1 px-2 text-center">
-                        {productState.quantity_definitive}
+                        {productState.quantity_loading}
                       </td>
                       <td className="py-1 px-2 text-center">
-                        {productState.delivery_date}
+                        {productState.quantity_definitive}
                       </td>
+                      {/* <td className="py-1 px-2 text-center">
+                        {productState.delivery_date}
+                      </td> */}
                       <td
                         className={`py-1 px-2 text-center ${
                           productState.quantity_definitive === null
