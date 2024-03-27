@@ -291,13 +291,7 @@ const OrderHistory = () => {
             Orders <span className="text-white">history</span>
           </h1>
         </div>
-        <div
-          className={`flex ml-7 mb-0 items-center space-x-2 ${
-            window.innerWidth <= 1300 && filterType === "date"
-              ? "mt-[70px]"
-              : "mt-[8px]"
-          }`}
-        >
+        <div className="flex ml-7 mb-0 items-center space-x-2 mt-5">
           <div className="border border-gray-300  rounded-md py-3 px-2 flex items-center">
             <input
               type="text"
@@ -516,7 +510,7 @@ const OrderHistory = () => {
                         className="py-1 text-center"
                         //onClick={(e) => goToOrder(e, order)}
                       >
-                        {order.cost * order.ordered}
+                        {parseFloat((order.cost * order.ordered).toFixed(2))}
                       </td>
                       <td
                         className="py-1 text-left px-5"

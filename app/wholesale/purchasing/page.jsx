@@ -150,12 +150,7 @@ function Purchasing() {
   const [ordersWholesaler, setOrdersWholesaler] = useState([]);
 
   useEffect(() => {
-    fetchOrderWholesaler(
-      workDate,
-      token,
-      setOrdersWholesaler,
-      setIsLoading
-    );
+    fetchOrderWholesaler(workDate, token, setOrdersWholesaler, setIsLoading);
     fetchWholesalerList(token, setWholesalerList);
   }, [workDate]);
   const applyFilters = () => {
@@ -791,7 +786,9 @@ function Purchasing() {
                           }}
                         />
                       </td>
-                      <td className="py-[1px] text-center">{totalCost}</td>
+                      <td className="py-[1px] text-center">
+                        {parseFloat(totalCost.toFixed(2))}
+                      </td>
                       <td className="py-[1px]">
                         <input
                           type="text"
