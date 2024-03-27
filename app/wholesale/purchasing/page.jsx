@@ -151,14 +151,13 @@ function Purchasing() {
 
   useEffect(() => {
     fetchOrderWholesaler(
-      startDate,
-      endDate,
+      workDate,
       token,
       setOrdersWholesaler,
       setIsLoading
     );
     fetchWholesalerList(token, setWholesalerList);
-  }, [endDate, startDate]);
+  }, [workDate]);
 
   useEffect(() => {
     if (workDate) {
