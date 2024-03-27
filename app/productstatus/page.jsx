@@ -4,6 +4,7 @@ import {
   ChevronLeftIcon,
   ChevronRightIcon,
   TrashIcon,
+  ChevronUpIcon,
 } from "@heroicons/react/24/outline";
 import axios from "axios";
 import { useEffect, useState } from "react";
@@ -50,14 +51,34 @@ function ProductState() {
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState();
   const [presentationsOptions, setPresentationsOptions] = useState([]);
-  let sortedPresentations = []
+  const [sortBy, setSortBy] = useState({ column: null, asc: true });
+  const [showScrollButton, setShowScrollButton] = useState(false);
+  let sortedPresentations = [];
+  //Flecha
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.scrollY > 300) {
+        setShowScrollButton(true);
+      } else {
+        setShowScrollButton(false);
+      }
+    };
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  const scrollToTop = () => {
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    });
+  };
 
   const formatDateToShow = (dateString) => {
     if (!dateString) return "Loading...";
 
     const parts = dateString.split("-").map((part) => parseInt(part, 10));
     const utcDate = new Date(Date.UTC(parts[0], parts[1] - 1, parts[2]));
-
 
     const day = String(utcDate.getUTCDate()).padStart(2, "0");
     const month = String(utcDate.getUTCMonth() + 1).padStart(2, "0");
@@ -106,8 +127,13 @@ function ProductState() {
   }, [selectedStartDate, selectedEndDate]);
 
   useEffect(() => {
-    setStartDate(new Date(workDate));
-    setEndDate(new Date(workDate));
+    const workDateObj = new Date(workDate);
+
+    workDateObj.setDate(workDateObj.getDate() + 1);
+
+    setStartDate(workDateObj);
+    setEndDate(workDateObj);
+
     setSelectedStartDate(workDate);
     setSelectedEndDate(workDate);
     fetchGroups(token, user, setGroups, setIsLoading);
@@ -116,7 +142,6 @@ function ProductState() {
   useEffect(() => {
     fetchPresentationsSupplier(token, user, setPresentations, setIsLoading);
   }, []);
-
 
   const applyFilters = () => {
     fetchProductStatus(
@@ -133,8 +158,8 @@ function ProductState() {
     );
   };
   useEffect(() => {
-    applyFilters()
-  }, [page])
+    applyFilters();
+  }, [page]);
 
   useEffect(() => {
     if (presentations) {
@@ -143,7 +168,10 @@ function ProductState() {
         const presentationProductNameB = b.product_name || "";
         return presentationProductNameA.localeCompare(presentationProductNameB);
       });
-      console.log("🚀 ~ sortedPresentations=presentations.slice ~ sortedPresentations:", sortedPresentations)
+      console.log(
+        "🚀 ~ sortedPresentations=presentations.slice ~ sortedPresentations:",
+        sortedPresentations
+      );
       const options = sortedPresentations.map((item) => ({
         value: item.id,
         label: `${item.code} - ${item.product_name} - ${item.name}`,
@@ -153,10 +181,36 @@ function ProductState() {
 
   }, [presentations])
 
+  const handleSort = (columnName) => {
+    setSortBy((prevSortBy) => ({
+      column: columnName,
+      asc: prevSortBy.column === columnName ? !prevSortBy.asc : true,
+    }));
+  };
 
+  const handleSortMissing = () => {
+    setSortBy((prevSortBy) => ({
+      column: "missing",
+      asc: !prevSortBy.asc,
+    }));
+  };
 
-
-
+  const sortedProductsStatus = productsStatus.slice().sort((a, b) => {
+    if (sortBy.column === "missing") {
+      const missingA = a.quantity_initial - a.quantity_definitive;
+      const missingB = b.quantity_initial - b.quantity_definitive;
+      return sortBy.asc ? missingA - missingB : missingB - missingA;
+    }
+    const columnA = a[sortBy.column];
+    const columnB = b[sortBy.column];
+    let comparison = 0;
+    if (columnA > columnB) {
+      comparison = 1;
+    } else if (columnA < columnB) {
+      comparison = -1;
+    }
+    return sortBy.asc ? comparison : comparison * -1;
+  });
 
   return (
     <Layout>
@@ -167,24 +221,6 @@ function ProductState() {
           </h1>
         </div>
         <div className="mx-10 flex gap-2 mb-5 items-center">
-          <div className="border border-gray-300 bg-white rounded-md py-3 px-2 flex items-center">
-            <input
-              type="text"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search"
-              className="placeholder-[#04444F] outline-none text-sm custom:text-base w-[170px] h-[25px]"
-            />
-            {searchQuery != "" && (
-              <button
-                onClick={() => {
-                  setSearchQuery("");
-                }}
-              >
-                <TrashIcon className="h-6 w-6 text-danger" />
-              </button>
-            )}
-          </div>
           <Select
             className="w-[250px]"
             styles={{
@@ -196,11 +232,11 @@ function ProductState() {
             value={
               selectedPresentationId
                 ? {
-                    value: selectedPresentationId,
-                    label: presentationsOptions.find(
-                      (item) => item.value === selectedPresentationId
-                    ).label,
-                  }
+                  value: selectedPresentationId,
+                  label: presentationsOptions.find(
+                    (item) => item.value === selectedPresentationId
+                  ).label,
+                }
                 : null
             }
             onChange={(selectedOption) =>
@@ -295,7 +331,7 @@ function ProductState() {
               ))}
           </select>
           <button
-            className="flex bg-green hover:scale-110 transition-all py-3 px-4 rounded-lg h-[52px] ml-1 text-white font-medium"
+            className="flex items-center bg-green hover:scale-110 transition-all py-3 px-4 rounded-lg h-[52px] ml-1 text-white font-medium"
             type="button"
             onClick={applyFilters}
           >
@@ -304,63 +340,77 @@ function ProductState() {
           </button>
         </div>
 
-        <div className="flex flex-col items-center justify-center mb-20 mt-2">
+        <div className="flex flex-col items-center justify-center mt-2">
           <table className="w-[95%] bg-white rounded-2xl  shadow-[0_8px_30px_rgb(0,0,0,0.12)]">
             <thead className="sticky top-0 bg-white shadow-[0px_11px_15px_-3px_#edf2f7] ">
               <tr className="border-b-2 border-stone-100 text-dark-blue">
-                <th className="py-4 rounded-tl-lg">Acc number</th>
-                <th className="py-4">Acc name</th>
-                <th className="py-4">Inv. number</th>
-                <th className="py-4">Product code</th>
-                <th className="py-4">Product name</th>
-                <th className="py-4">Category</th>
-                <th className="py-4">Group</th>
-                <th className="py-4">Initial</th>
-                <th className="py-4">Packing</th>
-                <th className="py-4">Definitive</th>
-                <th className="py-4">Delivery date</th>
-                <th className="py-4 rounded-tr-lg">Missing</th>
+                <th className="p-3 cursor-pointer hover:bg-gray-100 select-none rounded-tl-lg" onClick={() => handleSort("accountNumber")}>Acc number</th>
+                <th className="p-3 cursor-pointer hover:bg-gray-100 select-none" onClick={() => handleSort("accountName")}>Acc name</th>
+                <th className="p-3 cursor-pointer hover:bg-gray-100 select-none" onClick={() => handleSort("reference")}>Inv. number</th>
+                <th className="p-3 cursor-pointer hover:bg-gray-100 select-none" onClick={() => handleSort("presentation_code")}>Product code</th>
+                <th className="p-3 cursor-pointer hover:bg-gray-100 select-none w-[350px]" onClick={() => handleSort("product_name")}>Product name</th>
+                <th className="p-3 cursor-pointer hover:bg-gray-100 select-none" onClick={() => handleSort("product_category")}>Category</th>
+                <th className="p-3 cursor-pointer hover:bg-gray-100 select-none" onClick={() => handleSort("group")}>Group</th>
+                <th className="p-3 cursor-pointer hover:bg-gray-100 select-none" onClick={() => handleSort("quantity_initial")}>Initial</th>
+                <th className="p-3 cursor-pointer hover:bg-gray-100 select-none" onClick={() => handleSort("quantity_packing")}>Packing</th>
+                <th className="p-3 cursor-pointer hover:bg-gray-100 select-none" onClick={() => handleSort("quantity_loading")}>Loading</th>
+                <th className="p-3 cursor-pointer hover:bg-gray-100 select-none" onClick={() => handleSort("quantity_definitive")}>Definitive</th>
+                {/* <th className="p-3">Delivery date</th> */}
+                <th className="p-3 cursor-pointer hover:bg-gray-100 select-none rounded-tr-lg" onClick={() => handleSortMissing()}>Missing</th>
               </tr>
             </thead>
             <tbody>
               {!isLoading &&
-                productsStatus?.map((productState) => {
+                sortedProductsStatus?.map((productState) => {
                   var missing =
                     productState.quantity_initial -
                     productState.quantity_definitive;
                   return (
                     <tr
                       key={productState.id}
-                      className="text-dark-blue border-b-2 border-stone-100"
+                      className="text-dark-blue text-[16px] border-b-2 border-stone-100"
                     >
-                      <td className="py-4 pl-4">
+                      <td className="py-1 px-2">
                         {productState.accountNumber}
                       </td>
-                      <td className="py-4 pl-4">{productState.accountName}</td>
-                      <td className="py-4 text-center">
+                      <td className="py-1 px-2">{productState.accountName}</td>
+                      <td className="py-1 text-center">
                         {productState.reference}
                       </td>
-                      <td className="py-4 text-center">
-                        {productState.product_code}
+                      <td className="py-1 text-center">
+                        {productState.presentation_code}
                       </td>
-                      <td className="py-4 pl-4">{productState.product_name}</td>
-                      <td className="py-4 px-4">
+                      <td className="py-1 px-2 ">
+                        {productState.product_name} - {productState.packsize}
+                      </td>
+                      <td className="py-1 px-2">
                         {productState.product_category}
                       </td>
-                      <td className="py-4 text-center">{productState.group}</td>
-                      <td className="py-4 text-center">
+                      <td className="py-1 px-2 text-center">
+                        {productState.group}
+                      </td>
+                      <td className="py-1 px-2 text-center">
                         {productState.quantity_initial}
                       </td>
-                      <td className="py-4 text-center">
+                      <td className="py-1 px-2 text-center">
                         {productState.quantity_packing}
                       </td>
-                      <td className="py-4 text-center">
+                      <td className="py-1 px-2 text-center">
+                        {productState.quantity_loading}
+                      </td>
+                      <td className="py-1 px-2 text-center">
                         {productState.quantity_definitive}
                       </td>
-                      <td className="py-4 text-center">
+                      {/* <td className="py-1 px-2 text-center">
                         {productState.delivery_date}
-                      </td>
-                      <td className="py-4 text-center">
+                      </td> */}
+                      <td
+                        className={`py-1 px-2 text-center ${
+                          productState.quantity_definitive === null
+                            ? "hidden"
+                            : "block"
+                        }`}
+                      >
                         {!isNaN(missing) ? missing : null}
                       </td>
                     </tr>
@@ -373,10 +423,11 @@ function ProductState() {
               <button
                 onClick={prevPage}
                 disabled={page === 1}
-                className={`w-8 h-8 mr-2 font-medium text-dark-blue bg-[#EDF6FF] text-center rounded-full cursor-pointer transition-all flex justify-center items-center ${page === 1
-                  ? "hidden"
-                  : "text-dark-blue bg-[#EDF6FF] hover:bg-primary-blue hover:text-white"
-                  }`}
+                className={`w-8 h-8 mr-2 font-medium text-dark-blue bg-[#EDF6FF] text-center rounded-full cursor-pointer transition-all flex justify-center items-center ${
+                  page === 1
+                    ? "hidden"
+                    : "text-dark-blue bg-[#EDF6FF] hover:bg-primary-blue hover:text-white"
+                }`}
               >
                 <ChevronLeftIcon className="h-5 w-5 text-center" />
               </button>
@@ -390,10 +441,11 @@ function ProductState() {
                   <button
                     onClick={nextPage}
                     disabled={page === totalPages}
-                    className={`w-8 h-8 font-medium bg-[#EDF6FF] text-center rounded-full cursor-pointer transition-all flex justify-center items-center ${page === totalPages
-                      ? "hidden"
-                      : "text-dark-blue bg-[#EDF6FF] hover:bg-primary-blue hover:text-white"
-                      }`}
+                    className={`w-8 h-8 font-medium bg-[#EDF6FF] text-center rounded-full cursor-pointer transition-all flex justify-center items-center ${
+                      page === totalPages
+                        ? "hidden"
+                        : "text-dark-blue bg-[#EDF6FF] hover:bg-primary-blue hover:text-white"
+                    }`}
                   >
                     <ChevronRightIcon className="h-5 w-5 text-center" />
                   </button>
@@ -402,6 +454,14 @@ function ProductState() {
             </div>
           )}
         </div>
+        {showScrollButton && (
+          <button
+            className="fixed bottom-[18px] right-10 bg-green z-30 text-white rounded-full p-2 hover:bg-primary-blue transition-all"
+            onClick={scrollToTop}
+          >
+            <ChevronUpIcon className="h-6 w-6" />
+          </button>
+        )}
         {isLoading && (
           <div className="flex justify-center items-center -mt-[7rem]">
             <div className="loader"></div>

@@ -1,34 +1,29 @@
 import axios from "axios";
 import { deliveriesCustomerDetail, deliveriesUrl } from "../config/urls.config";
 
-export const fetchDeliveries = (
+export const fetchDeliveries = async (
   token,
   setDeliveries,
   setIsLoading,
-  selectedDate,
+  workDate,
+  Date,
   setDataLoaded
 ) => {
-  let formattedDate;
-  if (selectedDate) {
-    formattedDate = new Date(selectedDate).toISOString().split("T")[0];
-  } else {
-    formattedDate = null;
-  }
-  axios
-    .get(`${deliveriesUrl}${formattedDate}`, {
+  const formattedDate = Date ? Date : workDate;
+
+  try {
+    const response = await axios.get(`${deliveriesUrl}${formattedDate}`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
-    })
-    .then((response) => {
-      console.log("🚀 ~ .then ~ response:", response)
-      setDeliveries(response.data);
-      setIsLoading(false);
-      setDataLoaded(true);
-    })
-    .catch((error) => {
-      console.error("Error al obtener las deliveries :", error);
     });
+
+    setDeliveries(response.data);
+    setIsLoading(false);
+    setDataLoaded(true);
+  } catch (error) {
+    console.error("Error al obtener las deliveries :", error);
+  }
 };
 
 export const fetchDeliveriesDetails = async (
@@ -37,8 +32,8 @@ export const fetchDeliveriesDetails = async (
   setIsLoading,
   reference
 ) => {
-  if(!reference) {
-    return
+  if (!reference) {
+    return;
   }
   try {
     const response = await axios.get(
