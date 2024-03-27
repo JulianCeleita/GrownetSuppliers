@@ -12,7 +12,6 @@ export const fetchOrdersHistory = async (
   const postData = {
     ...(start && end ? { date: { start, end } } : { date: workDate }),
   };
-  console.log("🚀 ~ postData:", postData);
 
   try {
     const response = await axios.post(orderHistoryRequest, postData, {
@@ -20,7 +19,6 @@ export const fetchOrdersHistory = async (
         Authorization: `Bearer ${token}`,
       },
     });
-    console.log("🚀 ~ .then ~ response:", response);
     setOrdersHistory(response.data.products);
     setIsLoading(false);
   } catch (error) {

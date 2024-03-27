@@ -81,7 +81,6 @@ const CustomerDetailPage = ({
       setAccountName("");
     }
   }, [isvisible]);
-  console.log(detailCustomer);
   useEffect(() => {
     if (detailCustomer && detailCustomer.length > 0) {
       setAccountNumber(detailCustomer[0]?.accountNumber);

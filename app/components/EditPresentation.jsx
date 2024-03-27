@@ -86,6 +86,8 @@ function EditPresentation({
     setSelectedType(presentation ? presentation.type : "");
     setSelectedTypeId(presentation ? presentation.type_id : "");
     setSelectedDivisible(presentation ? presentation.is_divisible : "");
+    setSelectedShort(presentation ? presentation.product_short : "")
+    console.log(selectedShort)
   }, [presentation]);
 
   // Api products
@@ -163,6 +165,12 @@ function EditPresentation({
   //Api editar
   const handleEditPresentation = async (event) => {
     event.preventDefault();
+    let editedShort = 0;
+    if (selectedShort === "True") {
+      editedShort = 1
+    } else {
+      editedShort = 0
+    }
 
     const postData = {
       uoms_id: selectedUomsStatus,
@@ -174,7 +182,7 @@ function EditPresentation({
       tax: selectedTax,
       type: selectedTypeId,
       supplier_id: user ? user.id_supplier : null,
-      flagshort: selectedShort,
+      flagshort: editedShort,
     };
 
     try {
@@ -198,6 +206,7 @@ function EditPresentation({
       setSelectedProductsStatus("");
       setSelectedType("");
       setSelectedTypeId("");
+      setSelectedShort("");
       onClose();
     } catch (error) {
       console.error("Error editando la presentación:", error);
@@ -423,10 +432,10 @@ function EditPresentation({
               <option disabled selected>
                 Select option
               </option>
-              <option key={"1"} value="1">
+              <option key={"1"} value="1" selected={selectedShort === "True"}>
                 Active
               </option>
-              <option key={"0"} value="0">
+              <option key={"0"} value="0" selected={selectedShort === "False"}>
                 Disable
               </option>
             </select>

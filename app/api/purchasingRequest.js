@@ -14,7 +14,6 @@ export const fetchOrderWholesaler = (
       end: workDate,
     },
   };
-  console.log("🚀 ~ postData:", postData);
   axios
     .get(purchasingUrl, {
       params: postData,
@@ -23,7 +22,6 @@ export const fetchOrderWholesaler = (
       },
     })
     .then((response) => {
-      console.log("🚀 ~ .then ~ response:", response);
       setOrdersWholeseler(response.data.data);
       setIsLoading(false);
     })
@@ -40,7 +38,6 @@ export const fetchWholesalerList = (token, setWholesalerList, setIsLoading) => {
       },
     })
     .then((response) => {
-      console.log("🚀 ~ .then ~ response:", response);
       setWholesalerList(response.data.wholesalers);
       setIsLoading(false);
     })
