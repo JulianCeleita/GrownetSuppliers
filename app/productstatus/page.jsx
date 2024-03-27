@@ -53,6 +53,7 @@ function ProductState() {
   const [presentationsOptions, setPresentationsOptions] = useState([]);
   const [sortBy, setSortBy] = useState({ column: null, asc: true });
   const [showScrollButton, setShowScrollButton] = useState(false);
+  const [missingFilter, setMissingFilter] = useState();
   let sortedPresentations = [];
   //Flecha
   useEffect(() => {
@@ -154,7 +155,8 @@ function ProductState() {
       selectedGroup,
       page,
       setPage,
-      setTotalPages
+      setTotalPages,
+      missingFilter
     );
   };
   useEffect(() => {
@@ -180,6 +182,10 @@ function ProductState() {
     }
 
   }, [presentations])
+
+  const handleMissingFilterChange = (event) => {
+    setMissingFilter(event.target.value);
+  };
 
   const handleSort = (columnName) => {
     setSortBy((prevSortBy) => ({
@@ -330,6 +336,16 @@ function ProductState() {
                 </option>
               ))}
           </select>
+          <select
+            value={missingFilter}
+            onChange={handleMissingFilterChange}
+            className="form-select py-3 px-2 rounded-md border border-gray-300 text-sm custom:text-base h-[52px]"
+          >
+            <option value="">All</option>
+            <option value="0">Missing</option>
+            <option value="1">Available</option>
+          </select>
+
           <button
             className="flex items-center bg-green hover:scale-110 transition-all py-3 px-4 rounded-lg h-[52px] ml-1 text-white font-medium"
             type="button"
@@ -405,11 +421,10 @@ function ProductState() {
                         {productState.delivery_date}
                       </td> */}
                       <td
-                        className={`py-1 px-2 text-center ${
-                          productState.quantity_definitive === null
-                            ? "hidden"
-                            : "block"
-                        }`}
+                        className={`py-1 px-2 text-center ${productState.quantity_definitive === null
+                          ? "hidden"
+                          : ""
+                          }`}
                       >
                         {!isNaN(missing) ? missing : null}
                       </td>
@@ -423,11 +438,10 @@ function ProductState() {
               <button
                 onClick={prevPage}
                 disabled={page === 1}
-                className={`w-8 h-8 mr-2 font-medium text-dark-blue bg-[#EDF6FF] text-center rounded-full cursor-pointer transition-all flex justify-center items-center ${
-                  page === 1
-                    ? "hidden"
-                    : "text-dark-blue bg-[#EDF6FF] hover:bg-primary-blue hover:text-white"
-                }`}
+                className={`w-8 h-8 mr-2 font-medium text-dark-blue bg-[#EDF6FF] text-center rounded-full cursor-pointer transition-all flex justify-center items-center ${page === 1
+                  ? "hidden"
+                  : "text-dark-blue bg-[#EDF6FF] hover:bg-primary-blue hover:text-white"
+                  }`}
               >
                 <ChevronLeftIcon className="h-5 w-5 text-center" />
               </button>
@@ -441,11 +455,10 @@ function ProductState() {
                   <button
                     onClick={nextPage}
                     disabled={page === totalPages}
-                    className={`w-8 h-8 font-medium bg-[#EDF6FF] text-center rounded-full cursor-pointer transition-all flex justify-center items-center ${
-                      page === totalPages
-                        ? "hidden"
-                        : "text-dark-blue bg-[#EDF6FF] hover:bg-primary-blue hover:text-white"
-                    }`}
+                    className={`w-8 h-8 font-medium bg-[#EDF6FF] text-center rounded-full cursor-pointer transition-all flex justify-center items-center ${page === totalPages
+                      ? "hidden"
+                      : "text-dark-blue bg-[#EDF6FF] hover:bg-primary-blue hover:text-white"
+                      }`}
                   >
                     <ChevronRightIcon className="h-5 w-5 text-center" />
                   </button>

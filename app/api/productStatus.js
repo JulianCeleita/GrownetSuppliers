@@ -12,7 +12,8 @@ export const fetchProductStatus = (
   group,
   page,
   setPage,
-  setTotalPages
+  setTotalPages,
+  missing
 ) => {
   if (!end || !start || start === new Date()) {
     return;
@@ -28,7 +29,8 @@ export const fetchProductStatus = (
     endDate: formattedEndDate,
     groupId: group,
     presentationId: presentation,
-    page: page
+    page: page,
+    missing: missing
   }
   console.log("🚀 ~ postData:", postData)
   axios
