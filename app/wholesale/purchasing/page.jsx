@@ -158,13 +158,6 @@ function Purchasing() {
     );
     fetchWholesalerList(token, setWholesalerList);
   }, [workDate]);
-
-  useEffect(() => {
-    if (workDate) {
-      setStartDate(workDate);
-      setEndDate(workDate);
-    }
-  }, [workDate]);
   const applyFilters = () => {
     // Filtrar por búsqueda
     let filteredOrdersBySearch = searchQuery
