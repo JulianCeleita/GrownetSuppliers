@@ -289,7 +289,7 @@ function ProductState() {
               ))}
           </select>
           <button
-            className="flex bg-green hover:scale-110 transition-all py-3 px-4 rounded-lg h-12 ml-1 text-white font-medium"
+            className="flex bg-green hover:scale-110 transition-all py-3 px-4 rounded-lg h-[52px] ml-1 text-white font-medium"
             type="button"
             onClick={applyFilters}
           >
