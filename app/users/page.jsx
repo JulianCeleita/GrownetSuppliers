@@ -128,7 +128,7 @@ function Users() {
           setIsLoading={setIsLoading}
         />
         {isLoading && (
-          <div className="flex justify-center items-center mb-20">
+          <div className="flex justify-center items-center -mt-[7rem]">
             <div className="loader"></div>
           </div>
         )}

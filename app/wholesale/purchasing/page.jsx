@@ -351,8 +351,8 @@ function Purchasing() {
         [productCode]: {
           ...existingProduct,
           [key]: value,
-          ...(cost !== null && { cost }),
-          ...(notes !== null && { notes }),
+          ...(cost !== null && !existingProduct?.cost && { cost }),
+          ...(notes !== null && !existingProduct?.notes && { notes }),
           ...(label !== null && { label }),
           ...(wholesaler !== null &&
             !existingProduct?.wholesaler && { wholesaler }),
@@ -475,7 +475,7 @@ function Purchasing() {
             <select
               value={selectedStatus}
               onChange={(e) => setSelectedStatus(e.target.value)}
-              className="form-select px-2 py-3 rounded-md border border-gray-300 text-sm custom:text-base w-[155px]"
+              className="form-select px-2 py-3 rounded-md border border-gray-300 text-sm custom:text-base w-auto"
             >
               <option value="" disabled selected>
                 Select status:
@@ -487,7 +487,7 @@ function Purchasing() {
             <select
               value={selectedRequisition}
               onChange={(e) => setSelectedRequisition(e.target.value)}
-              className="form-select px-2 py-3 rounded-md border border-gray-300 text-sm custom:text-base w-[165px]"
+              className="form-select px-2 py-3 rounded-md border border-gray-300 text-sm custom:text-base w-auto"
             >
               <option value="" disabled selected>
                 Select Requisition:
@@ -499,7 +499,7 @@ function Purchasing() {
             <select
               value={selectedOrdered}
               onChange={(e) => setSelectedOrdered(e.target.value)}
-              className="form-select px-2 py-3 rounded-md border border-gray-300 text-sm custom:text-base w-[150px]"
+              className="form-select px-2 py-3 rounded-md border border-gray-300 text-sm custom:text-base w-auto"
             >
               <option value="" disabled selected>
                 Select Ordered:
@@ -562,14 +562,9 @@ function Purchasing() {
                     <div className="flex gap-2">
                       <input
                         type="checkbox"
-                        checked={isCheckedWholesaler.includes(
-                          wholesaler.name
-                        )}
+                        checked={isCheckedWholesaler.includes(wholesaler.name)}
                         onChange={(event) =>
-                          handleCheckboxWholesalerChange(
-                            event,
-                            wholesaler.name
-                          )
+                          handleCheckboxWholesalerChange(event, wholesaler.name)
                         }
                         className="form-checkbox h-4 w-4 text-primary-blue cursor-pointer"
                       />
@@ -881,7 +876,7 @@ function Purchasing() {
           )}
         </div>
         {isLoading && (
-          <div className="flex justify-center items-center mb-20">
+          <div className="flex justify-center items-center -mt-[7rem]">
             <div className="loader"></div>
           </div>
         )}

@@ -62,7 +62,7 @@ function ModalSuccessfull({
         ref={modalRef}
         tabIndex="0"
         onKeyDown={handleKeyCloseModal}
-        className="fixed inset-0 bg-black bg-opacity-25 backdrop-blur-sm flex flex-col justify-center items-center"
+        className="fixed inset-0 bg-black bg-opacity-25 backdrop-blur-sm flex flex-col justify-center items-center z-40"
       >
         <motion.div
           initial="hidden"
