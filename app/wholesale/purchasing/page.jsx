@@ -873,7 +873,10 @@ function Purchasing() {
         /> */}
         <ModalSuccessfull
           isvisible={showSuccessModal}
-          onClose={() => setShowSuccessModal(false)}
+          onClose={() => {
+            setShowSuccessModal(false);
+            window.location.reload();
+          }}
           title="Congratulations"
           text="Order sended successfully for"
           textGrownet={messageSuccess}
