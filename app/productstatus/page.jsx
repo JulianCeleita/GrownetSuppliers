@@ -430,17 +430,28 @@ function ProductState() {
                   className="p-3 cursor-pointer hover:bg-gray-100 select-none rounded-tr-lg w-[70px]"
                   onClick={() => handleSortMissing()}
                 >
-                  Missing
+                  Amendments
                 </th>
               </tr>
             </thead>
             <tbody>
               {!isLoading &&
                 sortedProductsStatus?.map((productState) => {
-                  var missing =
-                    productState.quantity_initial -
-                    productState.quantity_definitive;
+                  var missing;
                   if (productState.quantity_definitive === null) {
+                    missing =
+                      productState.quantity_loading -
+                      productState.quantity_initial;
+                  } else if (productState.quantity_loading === null) {
+                    missing =
+                      productState.quantity_definitive -
+                      productState.quantity_initial;
+                  }
+
+                  if (
+                    productState.quantity_loading === null &&
+                    productState.quantity_definitive === null
+                  ) {
                     missing = 0;
                   }
                   return (
@@ -484,12 +495,12 @@ function ProductState() {
                       </td> */}
                       <td
                         className={`py-1 px-2 text-center ${
-                          productState.quantity_definitive === null
-                            ? "hidden"
-                            : ""
+                          missing === 0 ? "hidden" : null
                         }`}
                       >
-                        {!isNaN(missing) ? missing : null}
+                        {!isNaN(missing)
+                          ? parseFloat(missing).toFixed(2)
+                          : null}
                       </td>
                     </tr>
                   );
