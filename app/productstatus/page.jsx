@@ -4,6 +4,7 @@ import {
   ChevronLeftIcon,
   ChevronRightIcon,
   TrashIcon,
+  ChevronUpIcon,
 } from "@heroicons/react/24/outline";
 import axios from "axios";
 import { useEffect, useState } from "react";
@@ -51,14 +52,33 @@ function ProductState() {
   const [totalPages, setTotalPages] = useState();
   const [presentationsOptions, setPresentationsOptions] = useState([]);
   const [sortBy, setSortBy] = useState({ column: null, asc: true });
-  let sortedPresentations = []
+  const [showScrollButton, setShowScrollButton] = useState(false);
+  let sortedPresentations = [];
+  //Flecha
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.scrollY > 300) {
+        setShowScrollButton(true);
+      } else {
+        setShowScrollButton(false);
+      }
+    };
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  const scrollToTop = () => {
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    });
+  };
 
   const formatDateToShow = (dateString) => {
     if (!dateString) return "Loading...";
 
     const parts = dateString.split("-").map((part) => parseInt(part, 10));
     const utcDate = new Date(Date.UTC(parts[0], parts[1] - 1, parts[2]));
-
 
     const day = String(utcDate.getUTCDate()).padStart(2, "0");
     const month = String(utcDate.getUTCMonth() + 1).padStart(2, "0");
@@ -123,7 +143,6 @@ function ProductState() {
     fetchPresentationsSupplier(token, user, setPresentations, setIsLoading);
   }, []);
 
-
   const applyFilters = () => {
     fetchProductStatus(
       startDate,
@@ -139,8 +158,8 @@ function ProductState() {
     );
   };
   useEffect(() => {
-    applyFilters()
-  }, [page])
+    applyFilters();
+  }, [page]);
 
   useEffect(() => {
     if (presentations) {
@@ -149,7 +168,10 @@ function ProductState() {
         const presentationProductNameB = b.product_name || "";
         return presentationProductNameA.localeCompare(presentationProductNameB);
       });
-      console.log("🚀 ~ sortedPresentations=presentations.slice ~ sortedPresentations:", sortedPresentations)
+      console.log(
+        "🚀 ~ sortedPresentations=presentations.slice ~ sortedPresentations:",
+        sortedPresentations
+      );
       const options = sortedPresentations.map((item) => ({
         value: item.id,
         label: `${item.code} - ${item.product_name} - ${item.name}`,
@@ -318,7 +340,7 @@ function ProductState() {
           </button>
         </div>
 
-        <div className="flex flex-col items-center justify-center mb-20 mt-2">
+        <div className="flex flex-col items-center justify-center mt-2">
           <table className="w-[95%] bg-white rounded-2xl  shadow-[0_8px_30px_rgb(0,0,0,0.12)]">
             <thead className="sticky top-0 bg-white shadow-[0px_11px_15px_-3px_#edf2f7] ">
               <tr className="border-b-2 border-stone-100 text-dark-blue">
@@ -382,7 +404,13 @@ function ProductState() {
                       {/* <td className="py-1 px-2 text-center">
                         {productState.delivery_date}
                       </td> */}
-                      <td className="py-1 px-2 text-center">
+                      <td
+                        className={`py-1 px-2 text-center ${
+                          productState.quantity_definitive === null
+                            ? "hidden"
+                            : "block"
+                        }`}
+                      >
                         {!isNaN(missing) ? missing : null}
                       </td>
                     </tr>
@@ -395,10 +423,11 @@ function ProductState() {
               <button
                 onClick={prevPage}
                 disabled={page === 1}
-                className={`w-8 h-8 mr-2 font-medium text-dark-blue bg-[#EDF6FF] text-center rounded-full cursor-pointer transition-all flex justify-center items-center ${page === 1
-                  ? "hidden"
-                  : "text-dark-blue bg-[#EDF6FF] hover:bg-primary-blue hover:text-white"
-                  }`}
+                className={`w-8 h-8 mr-2 font-medium text-dark-blue bg-[#EDF6FF] text-center rounded-full cursor-pointer transition-all flex justify-center items-center ${
+                  page === 1
+                    ? "hidden"
+                    : "text-dark-blue bg-[#EDF6FF] hover:bg-primary-blue hover:text-white"
+                }`}
               >
                 <ChevronLeftIcon className="h-5 w-5 text-center" />
               </button>
@@ -412,10 +441,11 @@ function ProductState() {
                   <button
                     onClick={nextPage}
                     disabled={page === totalPages}
-                    className={`w-8 h-8 font-medium bg-[#EDF6FF] text-center rounded-full cursor-pointer transition-all flex justify-center items-center ${page === totalPages
-                      ? "hidden"
-                      : "text-dark-blue bg-[#EDF6FF] hover:bg-primary-blue hover:text-white"
-                      }`}
+                    className={`w-8 h-8 font-medium bg-[#EDF6FF] text-center rounded-full cursor-pointer transition-all flex justify-center items-center ${
+                      page === totalPages
+                        ? "hidden"
+                        : "text-dark-blue bg-[#EDF6FF] hover:bg-primary-blue hover:text-white"
+                    }`}
                   >
                     <ChevronRightIcon className="h-5 w-5 text-center" />
                   </button>
@@ -424,6 +454,14 @@ function ProductState() {
             </div>
           )}
         </div>
+        {showScrollButton && (
+          <button
+            className="fixed bottom-[18px] right-10 bg-green z-30 text-white rounded-full p-2 hover:bg-primary-blue transition-all"
+            onClick={scrollToTop}
+          >
+            <ChevronUpIcon className="h-6 w-6" />
+          </button>
+        )}
         {isLoading && (
           <div className="flex justify-center items-center -mt-[7rem]">
             <div className="loader"></div>
