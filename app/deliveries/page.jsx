@@ -32,11 +32,8 @@ const DeliveryView = () => {
   const { workDate } = useWorkDateStore();
   const [isLoading, setIsLoading] = useState(true);
   const { user } = useUserStore();
-  const [dateFilter, setDateFilter] = useState("today");
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [selectedDate, setSelectedDate] = useState("");
-  const [startDateByNet, setStartDateByNet] = useState("");
-  const [endDateByNet, setEndDateByNet] = useState("");
   const [selectedRoute, setSelectedRoute] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
   const [showErrorCsv, setShowErrorCsv] = useState("");
@@ -45,6 +42,7 @@ const DeliveryView = () => {
   const [deliveries, setDeliveries] = useState(null);
   const [reference, setReference] = useState("");
   const [dataLoaded, setDataLoaded] = useState(false);
+  const [dateDelivery, setDateDelivery] = useState("");
   let noDeliveriesFound = false;
 
   const formatDateToShow = (dateString) => {
@@ -81,22 +79,15 @@ const DeliveryView = () => {
   }, [user, token, showDatePicker]);
 
   useEffect(() => {
-    // fetchOrdersDateByWorkDate(token, workDate, setOrdersWorkDate);
     fetchDeliveries(
       token,
       setDeliveries,
       setIsLoading,
-      selectedDate,
+      workDate,
+      dateDelivery,
       setDataLoaded
     );
-  }, [selectedDate]);
-
-  useEffect(() => {
-    if (workDate) {
-      const [year, month, day] = workDate.split("-").map(Number);
-      setSelectedDate(new Date(year, month - 1, day));
-    }
-  }, [workDate]);
+  }, [dateDelivery, workDate]);
 
   const handleCLickModal = (customer) => {
     setReference(customer);
@@ -132,7 +123,6 @@ const DeliveryView = () => {
 
   let foundMatchingCustomer = false;
 
-  console.log("sortedDeliveries:", sortedDeliveries);
   return (
     <Layout>
       <div className="-mt-24">
@@ -167,9 +157,7 @@ const DeliveryView = () => {
             selected={selectedDate}
             onChange={(date) => {
               setSelectedDate(date);
-              setStartDateByNet(formatDateToTransform(date));
-              setEndDateByNet(formatDateToTransform(date));
-              setDateFilter("date");
+              setDateDelivery(formatDateToTransform(date));
             }}
             className="form-input px-4 py-3 w-[125px] rounded-md border border-gray-300 text-dark-blue placeholder-dark-blue"
             dateFormat="dd/MM/yyyy"
@@ -235,12 +223,16 @@ const DeliveryView = () => {
                             <h1 className="text-left my-2 font-semibold">
                               {delivery.route} - Driver:{" "}
                               <span className="font-normal mr-5">
-                                {delivery.driver ? delivery.driver : "Not assigned"}
+                                {delivery.driver
+                                  ? delivery.driver
+                                  : "Not assigned"}
                               </span>{" "}
                               - Car plate:
                               <span className="font-normal">
                                 {" "}
-                                {delivery.plaque ? delivery.plaque : "Not assigned"}
+                                {delivery.plaque
+                                  ? delivery.plaque
+                                  : "Not assigned"}
                               </span>
                             </h1>
                             <div

@@ -277,7 +277,7 @@ function ProductState() {
               ))}
           </select>
           <button
-            className="flex bg-green hover:scale-110 transition-all py-3 px-4 rounded-lg h-[52px] ml-1 text-white font-medium"
+            className="flex items-center bg-green hover:scale-110 transition-all py-3 px-4 rounded-lg h-[52px] ml-1 text-white font-medium"
             type="button"
             onClick={applyFilters}
           >
@@ -290,18 +290,18 @@ function ProductState() {
           <table className="w-[95%] bg-white rounded-2xl  shadow-[0_8px_30px_rgb(0,0,0,0.12)]">
             <thead className="sticky top-0 bg-white shadow-[0px_11px_15px_-3px_#edf2f7] ">
               <tr className="border-b-2 border-stone-100 text-dark-blue">
-                <th className="py-4 rounded-tl-lg">Acc number</th>
-                <th className="py-4">Acc name</th>
-                <th className="py-4">Inv. number</th>
-                <th className="py-4">Product code</th>
-                <th className="py-4">Product name</th>
-                <th className="py-4">Category</th>
-                <th className="py-4">Group</th>
-                <th className="py-4">Initial</th>
-                <th className="py-4">Packing</th>
-                <th className="py-4">Definitive</th>
-                <th className="py-4">Delivery date</th>
-                <th className="py-4 rounded-tr-lg">Missing</th>
+                <th className="p-3 rounded-tl-lg">Acc number</th>
+                <th className="p-3">Acc name</th>
+                <th className="p-3">Inv. number</th>
+                <th className="p-3">Product code</th>
+                <th className="p-3 w-[350px]">Product name</th>
+                <th className="p-3">Category</th>
+                <th className="p-3">Group</th>
+                <th className="p-3">Initial</th>
+                <th className="p-3">Packing</th>
+                <th className="p-3">Definitive</th>
+                <th className="p-3">Delivery date</th>
+                <th className="p-3 rounded-tr-lg">Missing</th>
               </tr>
             </thead>
             <tbody>
@@ -313,36 +313,40 @@ function ProductState() {
                   return (
                     <tr
                       key={productState.id}
-                      className="text-dark-blue border-b-2 border-stone-100"
+                      className="text-dark-blue text-[16px] border-b-2 border-stone-100"
                     >
-                      <td className="py-4 pl-4">
+                      <td className="py-1 px-2">
                         {productState.accountNumber}
                       </td>
-                      <td className="py-4 pl-4">{productState.accountName}</td>
-                      <td className="py-4 text-center">
+                      <td className="py-1 px-2">{productState.accountName}</td>
+                      <td className="py-1 text-center">
                         {productState.reference}
                       </td>
-                      <td className="py-4 text-center">
+                      <td className="py-1 text-center">
                         {productState.product_code}
                       </td>
-                      <td className="py-4 pl-4">{productState.product_name}</td>
-                      <td className="py-4 px-4">
+                      <td className="py-1 px-2 ">
+                        {productState.product_name}
+                      </td>
+                      <td className="py-1 px-2">
                         {productState.product_category}
                       </td>
-                      <td className="py-4 text-center">{productState.group}</td>
-                      <td className="py-4 text-center">
+                      <td className="py-1 px-2 text-center">
+                        {productState.group}
+                      </td>
+                      <td className="py-1 px-2 text-center">
                         {productState.quantity_initial}
                       </td>
-                      <td className="py-4 text-center">
+                      <td className="py-1 px-2 text-center">
                         {productState.quantity_packing}
                       </td>
-                      <td className="py-4 text-center">
+                      <td className="py-1 px-2 text-center">
                         {productState.quantity_definitive}
                       </td>
-                      <td className="py-4 text-center">
+                      <td className="py-1 px-2 text-center">
                         {productState.delivery_date}
                       </td>
-                      <td className="py-4 text-center">
+                      <td className="py-1 px-2 text-center">
                         {!isNaN(missing) ? missing : null}
                       </td>
                     </tr>
