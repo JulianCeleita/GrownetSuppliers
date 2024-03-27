@@ -180,8 +180,7 @@ function ProductState() {
       }));
       setPresentationsOptions(options);
     }
-
-  }, [presentations])
+  }, [presentations]);
 
   const handleMissingFilterChange = (event) => {
     setMissingFilter(event.target.value);
@@ -238,11 +237,11 @@ function ProductState() {
             value={
               selectedPresentationId
                 ? {
-                  value: selectedPresentationId,
-                  label: presentationsOptions.find(
-                    (item) => item.value === selectedPresentationId
-                  ).label,
-                }
+                    value: selectedPresentationId,
+                    label: presentationsOptions.find(
+                      (item) => item.value === selectedPresentationId
+                    ).label,
+                  }
                 : null
             }
             onChange={(selectedOption) =>
@@ -360,19 +359,79 @@ function ProductState() {
           <table className="w-[95%] bg-white rounded-2xl  shadow-[0_8px_30px_rgb(0,0,0,0.12)]">
             <thead className="sticky top-0 bg-white shadow-[0px_11px_15px_-3px_#edf2f7] ">
               <tr className="border-b-2 border-stone-100 text-dark-blue">
-                <th className="p-3 cursor-pointer hover:bg-gray-100 select-none rounded-tl-lg" onClick={() => handleSort("accountNumber")}>Acc number</th>
-                <th className="p-3 cursor-pointer hover:bg-gray-100 select-none" onClick={() => handleSort("accountName")}>Acc name</th>
-                <th className="p-3 cursor-pointer hover:bg-gray-100 select-none" onClick={() => handleSort("reference")}>Inv. number</th>
-                <th className="p-3 cursor-pointer hover:bg-gray-100 select-none" onClick={() => handleSort("presentation_code")}>Product code</th>
-                <th className="p-3 cursor-pointer hover:bg-gray-100 select-none w-[350px]" onClick={() => handleSort("product_name")}>Product name</th>
-                <th className="p-3 cursor-pointer hover:bg-gray-100 select-none" onClick={() => handleSort("product_category")}>Category</th>
-                <th className="p-3 cursor-pointer hover:bg-gray-100 select-none" onClick={() => handleSort("group")}>Group</th>
-                <th className="p-3 cursor-pointer hover:bg-gray-100 select-none" onClick={() => handleSort("quantity_initial")}>Initial</th>
-                <th className="p-3 cursor-pointer hover:bg-gray-100 select-none" onClick={() => handleSort("quantity_packing")}>Packing</th>
-                <th className="p-3 cursor-pointer hover:bg-gray-100 select-none" onClick={() => handleSort("quantity_loading")}>Loading</th>
-                <th className="p-3 cursor-pointer hover:bg-gray-100 select-none" onClick={() => handleSort("quantity_definitive")}>Definitive</th>
+                <th
+                  className="p-3 cursor-pointer hover:bg-gray-100 select-none rounded-tl-lg"
+                  onClick={() => handleSort("accountNumber")}
+                >
+                  Acc number
+                </th>
+                <th
+                  className="p-3 cursor-pointer hover:bg-gray-100 select-none"
+                  onClick={() => handleSort("accountName")}
+                >
+                  Acc name
+                </th>
+                <th
+                  className="p-3 cursor-pointer hover:bg-gray-100 select-none"
+                  onClick={() => handleSort("reference")}
+                >
+                  Inv. number
+                </th>
+                <th
+                  className="p-3 cursor-pointer hover:bg-gray-100 select-none"
+                  onClick={() => handleSort("presentation_code")}
+                >
+                  Product code
+                </th>
+                <th
+                  className="p-3 cursor-pointer hover:bg-gray-100 select-none w-[350px]"
+                  onClick={() => handleSort("product_name")}
+                >
+                  Product name
+                </th>
+                <th
+                  className="p-3 cursor-pointer hover:bg-gray-100 select-none"
+                  onClick={() => handleSort("product_category")}
+                >
+                  Category
+                </th>
+                <th
+                  className="p-3 cursor-pointer hover:bg-gray-100 select-none"
+                  onClick={() => handleSort("group")}
+                >
+                  Group
+                </th>
+                <th
+                  className="p-3 cursor-pointer hover:bg-gray-100 select-none"
+                  onClick={() => handleSort("quantity_initial")}
+                >
+                  Initial
+                </th>
+                <th
+                  className="p-3 cursor-pointer hover:bg-gray-100 select-none"
+                  onClick={() => handleSort("quantity_packing")}
+                >
+                  Packing
+                </th>
+                <th
+                  className="p-3 cursor-pointer hover:bg-gray-100 select-none"
+                  onClick={() => handleSort("quantity_loading")}
+                >
+                  Loading
+                </th>
+                <th
+                  className="p-3 cursor-pointer hover:bg-gray-100 select-none"
+                  onClick={() => handleSort("quantity_definitive")}
+                >
+                  Definitive
+                </th>
                 {/* <th className="p-3">Delivery date</th> */}
-                <th className="p-3 cursor-pointer hover:bg-gray-100 select-none rounded-tr-lg" onClick={() => handleSortMissing()}>Missing</th>
+                <th
+                  className="p-3 cursor-pointer hover:bg-gray-100 select-none rounded-tr-lg"
+                  onClick={() => handleSortMissing()}
+                >
+                  Missing
+                </th>
               </tr>
             </thead>
             <tbody>
@@ -381,6 +440,9 @@ function ProductState() {
                   var missing =
                     productState.quantity_initial -
                     productState.quantity_definitive;
+                  if (productState.quantity_definitive === null) {
+                    missing = 0;
+                  }
                   return (
                     <tr
                       key={productState.id}
@@ -421,10 +483,11 @@ function ProductState() {
                         {productState.delivery_date}
                       </td> */}
                       <td
-                        className={`py-1 px-2 text-center ${productState.quantity_definitive === null
-                          ? "hidden"
-                          : ""
-                          }`}
+                        className={`py-1 px-2 text-center ${
+                          productState.quantity_definitive === null
+                            ? "hidden"
+                            : ""
+                        }`}
                       >
                         {!isNaN(missing) ? missing : null}
                       </td>
@@ -438,10 +501,11 @@ function ProductState() {
               <button
                 onClick={prevPage}
                 disabled={page === 1}
-                className={`w-8 h-8 mr-2 font-medium text-dark-blue bg-[#EDF6FF] text-center rounded-full cursor-pointer transition-all flex justify-center items-center ${page === 1
-                  ? "hidden"
-                  : "text-dark-blue bg-[#EDF6FF] hover:bg-primary-blue hover:text-white"
-                  }`}
+                className={`w-8 h-8 mr-2 font-medium text-dark-blue bg-[#EDF6FF] text-center rounded-full cursor-pointer transition-all flex justify-center items-center ${
+                  page === 1
+                    ? "hidden"
+                    : "text-dark-blue bg-[#EDF6FF] hover:bg-primary-blue hover:text-white"
+                }`}
               >
                 <ChevronLeftIcon className="h-5 w-5 text-center" />
               </button>
@@ -455,10 +519,11 @@ function ProductState() {
                   <button
                     onClick={nextPage}
                     disabled={page === totalPages}
-                    className={`w-8 h-8 font-medium bg-[#EDF6FF] text-center rounded-full cursor-pointer transition-all flex justify-center items-center ${page === totalPages
-                      ? "hidden"
-                      : "text-dark-blue bg-[#EDF6FF] hover:bg-primary-blue hover:text-white"
-                      }`}
+                    className={`w-8 h-8 font-medium bg-[#EDF6FF] text-center rounded-full cursor-pointer transition-all flex justify-center items-center ${
+                      page === totalPages
+                        ? "hidden"
+                        : "text-dark-blue bg-[#EDF6FF] hover:bg-primary-blue hover:text-white"
+                    }`}
                   >
                     <ChevronRightIcon className="h-5 w-5 text-center" />
                   </button>

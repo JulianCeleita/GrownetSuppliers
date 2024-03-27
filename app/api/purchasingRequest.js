@@ -3,23 +3,15 @@ import { purchasingUrl, wholesalersUrl } from "../config/urls.config";
 import { formatISO } from "date-fns";
 
 export const fetchOrderWholesaler = (
-  start,
-  end,
+  workDate,
   token,
   setOrdersWholeseler,
   setIsLoading
 ) => {
-  if (!end || !start || start === new Date()) {
-    return;
-  }
-
-  const formattedStartDate = formatISO(start, { representation: "date" });
-  const formattedEndDate = formatISO(end, { representation: "date" });
-
   const postData = {
     date: {
-      start: formattedStartDate,
-      end: formattedEndDate,
+      start: workDate,
+      end: workDate,
     },
   };
   console.log("🚀 ~ postData:", postData);
