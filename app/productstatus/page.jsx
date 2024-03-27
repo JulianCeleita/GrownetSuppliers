@@ -51,7 +51,9 @@ function ProductState() {
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState();
   const [presentationsOptions, setPresentationsOptions] = useState([]);
+  const [sortBy, setSortBy] = useState({ column: null, asc: true });
   const [showScrollButton, setShowScrollButton] = useState(false);
+  let sortedPresentations = [];
   //Flecha
   useEffect(() => {
     const handleScroll = () => {
@@ -71,8 +73,6 @@ function ProductState() {
       behavior: "smooth",
     });
   };
-
-  let sortedPresentations = [];
 
   const formatDateToShow = (dateString) => {
     if (!dateString) return "Loading...";
@@ -127,8 +127,13 @@ function ProductState() {
   }, [selectedStartDate, selectedEndDate]);
 
   useEffect(() => {
-    setStartDate(new Date(workDate));
-    setEndDate(new Date(workDate));
+    const workDateObj = new Date(workDate);
+
+    workDateObj.setDate(workDateObj.getDate() + 1);
+
+    setStartDate(workDateObj);
+    setEndDate(workDateObj);
+
     setSelectedStartDate(workDate);
     setSelectedEndDate(workDate);
     fetchGroups(token, user, setGroups, setIsLoading);
@@ -173,7 +178,39 @@ function ProductState() {
       }));
       setPresentationsOptions(options);
     }
-  }, [presentations]);
+
+  }, [presentations])
+
+  const handleSort = (columnName) => {
+    setSortBy((prevSortBy) => ({
+      column: columnName,
+      asc: prevSortBy.column === columnName ? !prevSortBy.asc : true,
+    }));
+  };
+
+  const handleSortMissing = () => {
+    setSortBy((prevSortBy) => ({
+      column: "missing",
+      asc: !prevSortBy.asc,
+    }));
+  };
+
+  const sortedProductsStatus = productsStatus.slice().sort((a, b) => {
+    if (sortBy.column === "missing") {
+      const missingA = a.quantity_initial - a.quantity_definitive;
+      const missingB = b.quantity_initial - b.quantity_definitive;
+      return sortBy.asc ? missingA - missingB : missingB - missingA;
+    }
+    const columnA = a[sortBy.column];
+    const columnB = b[sortBy.column];
+    let comparison = 0;
+    if (columnA > columnB) {
+      comparison = 1;
+    } else if (columnA < columnB) {
+      comparison = -1;
+    }
+    return sortBy.asc ? comparison : comparison * -1;
+  });
 
   return (
     <Layout>
@@ -195,11 +232,11 @@ function ProductState() {
             value={
               selectedPresentationId
                 ? {
-                    value: selectedPresentationId,
-                    label: presentationsOptions.find(
-                      (item) => item.value === selectedPresentationId
-                    ).label,
-                  }
+                  value: selectedPresentationId,
+                  label: presentationsOptions.find(
+                    (item) => item.value === selectedPresentationId
+                  ).label,
+                }
                 : null
             }
             onChange={(selectedOption) =>
@@ -307,24 +344,24 @@ function ProductState() {
           <table className="w-[95%] bg-white rounded-2xl  shadow-[0_8px_30px_rgb(0,0,0,0.12)]">
             <thead className="sticky top-0 bg-white shadow-[0px_11px_15px_-3px_#edf2f7] ">
               <tr className="border-b-2 border-stone-100 text-dark-blue">
-                <th className="p-3 rounded-tl-lg">Acc number</th>
-                <th className="p-3">Acc name</th>
-                <th className="p-3">Inv. number</th>
-                <th className="p-3">Product code</th>
-                <th className="p-3 w-[350px]">Product name</th>
-                <th className="p-3">Category</th>
-                <th className="p-3">Group</th>
-                <th className="p-3">Initial</th>
-                <th className="p-3">Packing</th>
-                <th className="p-3">Loading</th>
-                <th className="p-3">Definitive</th>
+                <th className="p-3 cursor-pointer hover:bg-gray-100 select-none rounded-tl-lg" onClick={() => handleSort("accountNumber")}>Acc number</th>
+                <th className="p-3 cursor-pointer hover:bg-gray-100 select-none" onClick={() => handleSort("accountName")}>Acc name</th>
+                <th className="p-3 cursor-pointer hover:bg-gray-100 select-none" onClick={() => handleSort("reference")}>Inv. number</th>
+                <th className="p-3 cursor-pointer hover:bg-gray-100 select-none" onClick={() => handleSort("presentation_code")}>Product code</th>
+                <th className="p-3 cursor-pointer hover:bg-gray-100 select-none w-[350px]" onClick={() => handleSort("product_name")}>Product name</th>
+                <th className="p-3 cursor-pointer hover:bg-gray-100 select-none" onClick={() => handleSort("product_category")}>Category</th>
+                <th className="p-3 cursor-pointer hover:bg-gray-100 select-none" onClick={() => handleSort("group")}>Group</th>
+                <th className="p-3 cursor-pointer hover:bg-gray-100 select-none" onClick={() => handleSort("quantity_initial")}>Initial</th>
+                <th className="p-3 cursor-pointer hover:bg-gray-100 select-none" onClick={() => handleSort("quantity_packing")}>Packing</th>
+                <th className="p-3 cursor-pointer hover:bg-gray-100 select-none" onClick={() => handleSort("quantity_loading")}>Loading</th>
+                <th className="p-3 cursor-pointer hover:bg-gray-100 select-none" onClick={() => handleSort("quantity_definitive")}>Definitive</th>
                 {/* <th className="p-3">Delivery date</th> */}
-                <th className="p-3 rounded-tr-lg">Missing</th>
+                <th className="p-3 cursor-pointer hover:bg-gray-100 select-none rounded-tr-lg" onClick={() => handleSortMissing()}>Missing</th>
               </tr>
             </thead>
             <tbody>
               {!isLoading &&
-                productsStatus?.map((productState) => {
+                sortedProductsStatus?.map((productState) => {
                   var missing =
                     productState.quantity_initial -
                     productState.quantity_definitive;
@@ -341,10 +378,10 @@ function ProductState() {
                         {productState.reference}
                       </td>
                       <td className="py-1 text-center">
-                        {productState.product_code}
+                        {productState.presentation_code}
                       </td>
                       <td className="py-1 px-2 ">
-                        {productState.product_name}
+                        {productState.product_name} - {productState.packsize}
                       </td>
                       <td className="py-1 px-2">
                         {productState.product_category}
