@@ -360,7 +360,7 @@ function ProductState() {
             <thead className="sticky top-0 bg-white shadow-[0px_11px_15px_-3px_#edf2f7] ">
               <tr className="border-b-2 border-stone-100 text-dark-blue">
                 <th
-                  className="p-3 cursor-pointer hover:bg-gray-100 select-none rounded-tl-lg"
+                  className="p-3 cursor-pointer hover:bg-gray-100 select-none rounded-tl-lg w-[70px]"
                   onClick={() => handleSort("accountNumber")}
                 >
                   Acc number
@@ -372,13 +372,13 @@ function ProductState() {
                   Acc name
                 </th>
                 <th
-                  className="p-3 cursor-pointer hover:bg-gray-100 select-none"
+                  className="p-3 cursor-pointer hover:bg-gray-100 select-none w-[70px]"
                   onClick={() => handleSort("reference")}
                 >
                   Inv. number
                 </th>
                 <th
-                  className="p-3 cursor-pointer hover:bg-gray-100 select-none"
+                  className="p-3 cursor-pointer hover:bg-gray-100 select-none w-[70px]"
                   onClick={() => handleSort("presentation_code")}
                 >
                   Product code
@@ -396,7 +396,7 @@ function ProductState() {
                   Category
                 </th> */}
                 <th
-                  className="p-3 cursor-pointer hover:bg-gray-100 select-none"
+                  className="p-3 cursor-pointer hover:bg-gray-100 select-none w-[70px]"
                   onClick={() => handleSort("group")}
                 >
                   Group
@@ -427,7 +427,7 @@ function ProductState() {
                 </th>
                 {/* <th className="p-3">Delivery date</th> */}
                 <th
-                  className="p-3 cursor-pointer hover:bg-gray-100 select-none rounded-tr-lg"
+                  className="p-3 cursor-pointer hover:bg-gray-100 select-none rounded-tr-lg w-[70px]"
                   onClick={() => handleSortMissing()}
                 >
                   Missing
