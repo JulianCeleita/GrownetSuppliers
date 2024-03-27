@@ -282,7 +282,7 @@ function ProductState() {
               All groups
             </option>
             {groups &&
-              groups.map((group) => (
+              groups?.map((group) => (
                 <option key={group.id} value={group.id}>
                   {group.group}
                 </option>
@@ -318,7 +318,7 @@ function ProductState() {
             </thead>
             <tbody>
               {!isLoading &&
-                productsStatus.map((productState) => {
+                productsStatus?.map((productState) => {
                   var missing =
                     productState.quantity_initial -
                     productState.quantity_definitive;
