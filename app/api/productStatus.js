@@ -13,7 +13,7 @@ export const fetchProductStatus = (
   page,
   setPage,
   setTotalPages,
-  missing
+  amedment
 ) => {
   if (!end || !start || start === new Date()) {
     return;
@@ -29,7 +29,7 @@ export const fetchProductStatus = (
     groupId: group,
     presentationId: presentation,
     page: page,
-    missing: missing
+    amedment: amedment
   }
   axios
     .get(productStatusUrl, {

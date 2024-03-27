@@ -123,7 +123,8 @@ function ProductState() {
       selectedGroup,
       page,
       setPage,
-      setTotalPages
+      setTotalPages,
+      missingFilter
     );
   }, [selectedStartDate, selectedEndDate]);
 
@@ -340,9 +341,8 @@ function ProductState() {
             onChange={handleMissingFilterChange}
             className="form-select py-3 px-2 rounded-md border border-gray-300 text-sm custom:text-base h-[52px]"
           >
-            <option value="">All</option>
-            <option value="0">Missing</option>
-            <option value="1">Available</option>
+            <option value="0">All</option>
+            <option value="1">Amedments</option>
           </select>
 
           <button
