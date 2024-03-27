@@ -799,7 +799,7 @@ function Purchasing() {
                             editableRows[order.presentation_code]?.notes !==
                             undefined
                               ? editableRows[order.presentation_code]?.notes
-                              : order.note ?? ""
+                              : ""
                           }
                           onChange={(e) =>
                             handleEditField(

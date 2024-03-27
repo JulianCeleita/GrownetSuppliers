@@ -389,12 +389,12 @@ function ProductState() {
                 >
                   Product name
                 </th>
-                <th
+                {/* <th
                   className="p-3 cursor-pointer hover:bg-gray-100 select-none"
                   onClick={() => handleSort("product_category")}
                 >
                   Category
-                </th>
+                </th> */}
                 <th
                   className="p-3 cursor-pointer hover:bg-gray-100 select-none"
                   onClick={() => handleSort("group")}
@@ -461,9 +461,9 @@ function ProductState() {
                       <td className="py-1 px-2 ">
                         {productState.product_name} - {productState.packsize}
                       </td>
-                      <td className="py-1 px-2">
+                      {/* <td className="py-1 px-2">
                         {productState.product_category}
-                      </td>
+                      </td> */}
                       <td className="py-1 px-2 text-center">
                         {productState.group}
                       </td>
