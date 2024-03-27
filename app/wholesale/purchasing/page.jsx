@@ -351,8 +351,8 @@ function Purchasing() {
         [productCode]: {
           ...existingProduct,
           [key]: value,
-          ...(cost !== null && { cost }),
-          ...(notes !== null && { notes }),
+          ...(cost !== null && !existingProduct?.cost && { cost }),
+          ...(notes !== null && !existingProduct?.notes && { notes }),
           ...(label !== null && { label }),
           ...(wholesaler !== null &&
             !existingProduct?.wholesaler && { wholesaler }),
@@ -562,14 +562,9 @@ function Purchasing() {
                     <div className="flex gap-2">
                       <input
                         type="checkbox"
-                        checked={isCheckedWholesaler.includes(
-                          wholesaler.name
-                        )}
+                        checked={isCheckedWholesaler.includes(wholesaler.name)}
                         onChange={(event) =>
-                          handleCheckboxWholesalerChange(
-                            event,
-                            wholesaler.name
-                          )
+                          handleCheckboxWholesalerChange(event, wholesaler.name)
                         }
                         className="form-checkbox h-4 w-4 text-primary-blue cursor-pointer"
                       />
