@@ -49,6 +49,8 @@ function ProductState() {
   const [selectedPresentationId, setSelectedPresentationId] = useState(null);
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState();
+  const [presentationsOptions, setPresentationsOptions] = useState([]);
+  let sortedPresentations = []
 
   const formatDateToShow = (dateString) => {
     if (!dateString) return "Loading...";
@@ -56,7 +58,6 @@ function ProductState() {
     const parts = dateString.split("-").map((part) => parseInt(part, 10));
     const utcDate = new Date(Date.UTC(parts[0], parts[1] - 1, parts[2]));
 
-    utcDate.setDate(utcDate.getDate() - 1);
 
     const day = String(utcDate.getUTCDate()).padStart(2, "0");
     const month = String(utcDate.getUTCMonth() + 1).padStart(2, "0");
@@ -112,6 +113,10 @@ function ProductState() {
     fetchGroups(token, user, setGroups, setIsLoading);
   }, [workDate]);
 
+  useEffect(() => {
+    fetchPresentationsSupplier(token, user, setPresentations, setIsLoading);
+  }, []);
+
 
   const applyFilters = () => {
     fetchProductStatus(
@@ -131,40 +136,27 @@ function ProductState() {
     applyFilters()
   }, [page])
 
-  //Delete
-  const [showDeleteModal, setShowDeleteModal] = useState(false);
-
-  const handleDeletePresentation = (presentation) => {
-    const { id } = presentation;
-    axios
-      .delete(`${deletePresentationUrl}${id}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      })
-      .then((response) => {
-        setShowDeleteModal(false);
-        if (user && user.rol_name === "super") {
-          fetchPresentations(token, setProducts, setIsLoading);
-        } else {
-          fetchPresentationsSupplier(token, user, setProducts, setIsLoading);
-        }
-      })
-      .catch((error) => {
-        console.error("Error al eliminar la presentación:", error);
-      });
-  };
-
   useEffect(() => {
-    fetchPresentationsSupplier(token, user, setPresentations, setIsLoading);
-  }, [token]);
+    if (presentations) {
+      sortedPresentations = presentations.slice().sort((a, b) => {
+        const presentationProductNameA = a.product_name || "";
+        const presentationProductNameB = b.product_name || "";
+        return presentationProductNameA.localeCompare(presentationProductNameB);
+      });
+      console.log("🚀 ~ sortedPresentations=presentations.slice ~ sortedPresentations:", sortedPresentations)
+      const options = sortedPresentations.map((item) => ({
+        value: item.id,
+        label: `${item.code} - ${item.product_name} - ${item.name}`,
+      }));
+      setPresentationsOptions(options);
+    }
 
-  const presentationsOptions =
-    presentations &&
-    presentations.map((item) => ({
-      value: item.id,
-      label: `${item.code} - ${item.product_name} - ${item.name}`,
-    }));
+  }, [presentations])
+
+
+
+
+
 
   return (
     <Layout>
@@ -204,11 +196,11 @@ function ProductState() {
             value={
               selectedPresentationId
                 ? {
-                  value: selectedPresentationId,
-                  label: presentationsOptions.find(
-                    (item) => item.value === selectedPresentationId
-                  ).label,
-                }
+                    value: selectedPresentationId,
+                    label: presentationsOptions.find(
+                      (item) => item.value === selectedPresentationId
+                    ).label,
+                  }
                 : null
             }
             onChange={(selectedOption) =>
@@ -382,8 +374,8 @@ function ProductState() {
                 onClick={prevPage}
                 disabled={page === 1}
                 className={`w-8 h-8 mr-2 font-medium text-dark-blue bg-[#EDF6FF] text-center rounded-full cursor-pointer transition-all flex justify-center items-center ${page === 1
-                    ? "hidden"
-                    : "text-dark-blue bg-[#EDF6FF] hover:bg-primary-blue hover:text-white"
+                  ? "hidden"
+                  : "text-dark-blue bg-[#EDF6FF] hover:bg-primary-blue hover:text-white"
                   }`}
               >
                 <ChevronLeftIcon className="h-5 w-5 text-center" />
@@ -399,8 +391,8 @@ function ProductState() {
                     onClick={nextPage}
                     disabled={page === totalPages}
                     className={`w-8 h-8 font-medium bg-[#EDF6FF] text-center rounded-full cursor-pointer transition-all flex justify-center items-center ${page === totalPages
-                        ? "hidden"
-                        : "text-dark-blue bg-[#EDF6FF] hover:bg-primary-blue hover:text-white"
+                      ? "hidden"
+                      : "text-dark-blue bg-[#EDF6FF] hover:bg-primary-blue hover:text-white"
                       }`}
                   >
                     <ChevronRightIcon className="h-5 w-5 text-center" />
@@ -410,22 +402,8 @@ function ProductState() {
             </div>
           )}
         </div>
-        <EditPresentation
-          isvisible={showEditPresentations}
-          onClose={() => setShowEditPresentations(false)}
-          presentation={selectedPresentation}
-          setPresentations={setProducts}
-          setIsLoading={setIsLoading}
-        />
-        <CreateProduct
-          isvisible={showNewPresentations}
-          onClose={() => setShowNewPresentations(false)}
-          setProducts={setProducts}
-          setIsLoading={setIsLoading}
-        />
-
         {isLoading && (
-          <div className="flex justify-center items-center mb-20">
+          <div className="flex justify-center items-center -mt-[7rem]">
             <div className="loader"></div>
           </div>
         )}
